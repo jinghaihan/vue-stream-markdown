@@ -1,0 +1,21 @@
+{
+  "button": {
+    "zoomIn": "Zoom In",
+    "zoomOut": "Zoom Out",
+    "resetZoom": "Reset Zoom",
+    "preview": "Preview",
+    "source": "Source",
+    "collapse": "Collapse",
+    "copy": "Copy",
+    "download": "Download",
+    "minimize": "Minimize",
+    "maximize": "Maximize"
+  },
+  "error": {
+    "vanilla": "Error",
+    "image": "Image failed to load",
+    "mermaid": "Mermaid failed to render",
+    "katex": "Katex failed to render",
+    "harden": "Blocked"
+  }
+}

@@ -1,0 +1,63 @@
+.vue-stream-markdown .monaco-editor,
+.vue-stream-markdown .monaco-diff-editor,
+.vue-stream-markdown .monaco-component {
+  --vscode-editor-background: var(--background);
+  --vscode-editorGutter-background: var(--background);
+}
+
+.vue-stream-markdown .monaco-editor .line-numbers {
+  color: color-mix(in oklab, var(--muted-foreground) 50%, transparent);
+}
+
+.vue-stream-markdown .tippy-box {
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid var(--border);
+}
+.vue-stream-markdown .tippy-arrow {
+  color: var(--popover);
+}
+.vue-stream-markdown .tippy-box > .tippy-svg-arrow {
+  border-top-color: var(--popover);
+}
+
+.vjs-tree {
+  color: var(--foreground);
+  font-family: var(--font-mono);
+}
+
+.vjs-tree .vjs-tree-brackets:hover,
+.vjs-tree .vjs-carets:hover {
+  color: var(--primary);
+}
+
+.vjs-tree .vjs-tree-node.is-highlight,
+.vjs-tree .vjs-tree-node:hover {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.vjs-tree .vjs-tree-node .vjs-indent-unit.has-line {
+  border-color: var(--border);
+}
+
+.vjs-tree .vjs-tree-node .vjs-node-index {
+  color: color-mix(in oklab, var(--muted-foreground) 50%, transparent);
+}
+
+.vjs-tree .vjs-value-null,
+.vjs-value-undefined {
+  color: var(--muted-foreground);
+}
+
+.vjs-tree .vjs-value-boolean {
+  color: var(--chart-4);
+}
+
+.vjs-tree .vjs-value-number {
+  color: var(--chart-3);
+}
+
+.vjs-tree .vjs-value-string {
+  color: var(--chart-2);
+}

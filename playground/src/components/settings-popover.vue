@@ -1,0 +1,142 @@
+<script setup lang="ts">
+import type { SelectItem } from 'vue-stream-markdown'
+import { bundledThemesInfo } from 'shiki'
+import { watch } from 'vue'
+import Settings from '~icons/lucide/settings'
+import IconButton from './icon-button.vue'
+import Input from './input.vue'
+import Label from './label.vue'
+import Select from './select.vue'
+import Switch from './switch.vue'
+import Tooltip from './tooltip.vue'
+
+const autoScroll = defineModel<boolean>('autoScroll', { required: false, default: true })
+const staticMode = defineModel<boolean>('staticMode', { required: false, default: false })
+const typedStep = defineModel<number>('typedStep', { required: false, default: 1 })
+const typedDelay = defineModel<number>('typedDelay', { required: false, default: 16 })
+
+const shikiLightTheme = defineModel<string>('shikiLightTheme', { required: false, default: 'github-light' })
+const shikiDarkTheme = defineModel<string>('shikiDarkTheme', { required: false, default: 'github-dark' })
+const mermaidLightTheme = defineModel<string>('mermaidLightTheme', { required: false, default: 'neutral' })
+const mermaidDarkTheme = defineModel<string>('mermaidDarkTheme', { required: false, default: 'dark' })
+
+const BLOCK_CLASSES = [
+  'h-12',
+  'flex',
+  'items-center',
+  'justify-between',
+  'rounded-md',
+  'hover:bg-muted',
+  'duration-150',
+  'px-2',
+]
+
+const BLOCK_TITLE_CLASSES = [
+  'font-semibold',
+  'text-lg',
+  'h-8',
+  'pl-2',
+]
+
+const LABEL_CLASSES = [
+  'font-semibold',
+  'shrink-0',
+  'w-28',
+]
+
+const DIVIDER_CLASSES = [
+  'my-4',
+  'border-border',
+]
+
+const SHIKI_THEMES: SelectItem[] = bundledThemesInfo.map(theme => ({
+  label: theme.displayName,
+  value: theme.id,
+}))
+
+const MERMAID_THEMES: SelectItem[] = [
+  { label: 'Default', value: 'default' },
+  { label: 'Dark', value: 'dark' },
+  { label: 'Forest', value: 'forest' },
+  { label: 'Neutral', value: 'neutral' },
+  { label: 'Base', value: 'base' },
+]
+
+watch(() => autoScroll.value, () => {
+  if (autoScroll.value)
+    staticMode.value = false
+})
+
+watch(() => staticMode.value, () => {
+  if (staticMode.value)
+    autoScroll.value = false
+})
+</script>
+
+<template>
+  <Tooltip
+    trigger="click"
+    placement="bottom"
+    :interactive="true"
+  >
+    <IconButton :icon="Settings" />
+
+    <template #content>
+      <div class="py-2 flex flex-col">
+        <h3 :class="BLOCK_TITLE_CLASSES">
+          General
+        </h3>
+
+        <div :class="BLOCK_CLASSES">
+          <Label :class="LABEL_CLASSES">Static Mode</Label>
+          <Switch v-model:value="staticMode" />
+        </div>
+
+        <div :class="BLOCK_CLASSES">
+          <Label :class="LABEL_CLASSES">Auto Scroll</Label>
+          <Switch v-model:value="autoScroll" />
+        </div>
+
+        <div :class="BLOCK_CLASSES">
+          <Label :class="LABEL_CLASSES">Typed Step</Label>
+          <Input v-model:value="typedStep" type="number" placeholder="Typed step" />
+        </div>
+
+        <div :class="BLOCK_CLASSES">
+          <Label :class="LABEL_CLASSES">Typed Delay</Label>
+          <Input v-model:value="typedDelay" type="number" placeholder="Typed delay" />
+        </div>
+
+        <hr :class="DIVIDER_CLASSES">
+        <h3 :class="BLOCK_TITLE_CLASSES">
+          Shiki
+        </h3>
+
+        <div :class="BLOCK_CLASSES">
+          <Label :class="LABEL_CLASSES">Light Theme</Label>
+          <Select v-model:value="shikiLightTheme" :options="SHIKI_THEMES" />
+        </div>
+
+        <div :class="BLOCK_CLASSES">
+          <Label :class="LABEL_CLASSES">Dark Theme</Label>
+          <Select v-model:value="shikiDarkTheme" :options="SHIKI_THEMES" />
+        </div>
+
+        <hr :class="DIVIDER_CLASSES">
+        <h3 :class="BLOCK_TITLE_CLASSES">
+          Mermaid
+        </h3>
+
+        <div :class="BLOCK_CLASSES">
+          <Label :class="LABEL_CLASSES">Light Theme</Label>
+          <Select v-model:value="mermaidLightTheme" :options="MERMAID_THEMES" />
+        </div>
+
+        <div :class="BLOCK_CLASSES">
+          <Label :class="LABEL_CLASSES">Dark Theme</Label>
+          <Select v-model:value="mermaidDarkTheme" :options="MERMAID_THEMES" />
+        </div>
+      </div>
+    </template>
+  </Tooltip>
+</template>

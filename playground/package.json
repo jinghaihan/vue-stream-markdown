@@ -1,0 +1,15 @@
+{
+  "name": "playground",
+  "type": "module",
+  "version": "0.0.0-alpha.0",
+  "dependencies": {
+    "@monaco-editor/loader": "catalog:frontend",
+    "@unocss/reset": "catalog:style",
+    "@vueuse/core": "catalog:utils",
+    "clsx": "catalog:style",
+    "lz-string": "catalog:prod",
+    "tailwind-merge": "catalog:style",
+    "vue": "catalog:frontend",
+    "vue-json-pretty": "catalog:frontend"
+  }
+}

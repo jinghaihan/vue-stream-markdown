@@ -1,0 +1,10 @@
+.vp-doc .stream-markdown {
+  --background: var(--vp-c-bg);
+  --foreground: var(--vp-c-text-1);
+  --primary: var(--vp-c-brand-1);
+}
+
+.vp-doc .stream-markdown table {
+  display: table;
+  margin: 0;
+}

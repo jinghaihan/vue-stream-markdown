@@ -1,0 +1,95 @@
+# vue-stream-markdown
+
+[![npm version][npm-version-src]][npm-version-href]
+[![License][license-src]][license-href]
+
+A markdown renderer specially optimized for streaming scenarios, inspired by [streamdown](https://streamdown.ai/). Designed to achieve smoother streaming rendering through syntax inference and highly customizable rendering elements.
+
+```sh
+pnpm add vue-stream-markdown
+```
+
+<br>
+
+<p align="center">
+<a href="https://docs-vue-stream-markdown.netlify.app/">📚 Documentation</a> |
+<a href="https://play-vue-stream-markdown.netlify.app/">🤹‍♂️ Playground</a>
+</p>
+
+<br>
+
+<p align='center'>
+<img src='./assets/screenshot.png' />
+</p>
+
+## Features
+
+- **Streaming-optimized rendering** - Incomplete node completion with loading states for images, tables, and code blocks to prevent visual jitter
+- **Incremental rendering** - Leverages [Shiki](https://shiki.style/)'s `codeToTokens` API for token-level updates, reducing DOM recreation overhead
+- **Progressive Mermaid rendering** - Throttled, streaming-friendly diagram rendering with loading states
+- **Streaming LaTeX rendering** - Progressive math equation rendering with KaTeX support
+- **Interactive controls** - Copy and download buttons for images, tables, and code blocks
+- **Fully customizable** - Replace any AST node with your own Vue components
+- **Theme-aware scoped styles** - Scoped styles under `.stream-markdown` with semantic `data-stream-markdown` attributes, following [shadcn/ui](https://ui.shadcn.com/) design system
+- **Beautiful built-in typography** - No atomic CSS required (Tailwind/UnoCSS), self-contained styles
+- **Content hardening & security** - Built-in protection against malicious Markdown with URL validation and protocol blocking
+
+## Usage
+
+For detailed usage and API documentation, please refer to the [Documentation](https://docs-vue-stream-markdown.netlify.app/).
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { Markdown } from 'vue-stream-markdown'
+// If you don't have shadcn CSS variables globally, import the theme
+import 'vue-stream-markdown/theme.css'
+
+const content = ref('# Hello World\n\nThis is a markdown content.')
+</script>
+
+<template>
+  <Markdown :content="content" />
+</template>
+```
+
+## Credit
+
+This project is inspired by [streamdown](https://streamdown.ai/) and even uses some source code from it.
+
+This project also uses and benefits from:
+
+- [mdast](https://github.com/syntax-tree/mdast) - Markdown Abstract Syntax Tree format
+- [Shiki](https://shiki.style/) - Beautiful syntax highlighting
+- [Mermaid](https://mermaid.js.org/) - Diagramming and charting tool
+- [KaTeX](https://katex.org/) - Fast math typesetting library for the web
+- [Remend](https://github.com/vercel/streamdown/tree/main/packages/remend) - Intelligently parses and styles incomplete Markdown blocks
+
+## Troubleshooting
+
+The playground supports generating shareable links and provides streaming controls (forward/backward navigation) for debugging streaming rendering issues.
+
+If you encounter any problems, please:
+
+1. Use the **Generate Share Links** button in the playground to create a shareable link with your current content
+2. Enable the **AST Result** toggle to view the parsed AST syntax tree
+3. Copy the markdown content and AST syntax tree at the time of the issue
+
+Please provide the shareable link, markdown content, and AST syntax tree when creating an issue. This will help me reproduce and diagnose the problem more effectively.
+
+## License
+
+[MIT](./LICENSE) License © [jinghaihan](https://github.com/jinghaihan)
+
+<!-- Badges -->
+
+[npm-version-src]: https://img.shields.io/npm/v/vue-stream-markdown?style=flat&colorA=080f12&colorB=1fa669
+[npm-version-href]: https://npmjs.com/package/vue-stream-markdown
+[npm-downloads-src]: https://img.shields.io/npm/dm/vue-stream-markdown?style=flat&colorA=080f12&colorB=1fa669
+[npm-downloads-href]: https://npmjs.com/package/vue-stream-markdown
+[bundle-src]: https://img.shields.io/bundlephobia/minzip/vue-stream-markdown?style=flat&colorA=080f12&colorB=1fa669&label=minzip
+[bundle-href]: https://bundlephobia.com/result?p=vue-stream-markdown
+[license-src]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat&colorA=080f12&colorB=1fa669
+[license-href]: https://github.com/jinghaihan/vue-stream-markdown/LICENSE
+[jsdocs-src]: https://img.shields.io/badge/jsdocs-reference-080f12?style=flat&colorA=080f12&colorB=1fa669
+[jsdocs-href]: https://www.jsdocs.io/package/vue-stream-markdown

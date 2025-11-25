@@ -1,0 +1,10 @@
+{
+  "name": "documentation",
+  "type": "module",
+  "version": "0.0.0-alpha.0",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "name": "vue-stream-markdown",
+  "type": "module",
+  "version": "0.0.0-alpha.0",
+  "packageManager": "pnpm@10.24.0",
+  "description": "Streaming markdown output, Useful for text streams like LLM outputs.",
+  "author": "jinghaihan",
+  "license": "MIT",
+  "homepage": "https://github.com/jinghaihan/vue-stream-markdown#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jinghaihan/vue-stream-markdown.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jinghaihan/vue-stream-markdown/issues"
+  },
+  "keywords": [
+    "vue",
+    "markdown",
+    "stream",
+    "mermaid",
+    "latex",
+    "katex",
+    "customizable"
+  ],
+  "exports": {
+    ".": "./dist/index.js",
+    "./theme.css": "./dist/theme.css",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "dev:docs": "pnpm --filter documentation dev",
+    "build": "tsdown",
+    "build:play": "vite build",
+    "build:docs": "pnpm --filter documentation build",
+    "deps": "taze major -I",
+    "lint": "eslint",
+    "typecheck": "vue-tsc --noEmit",
+    "test": "vitest",
+    "release": "bumpp",
+    "bootstrap": "pnpm install",
+    "prepare": "simple-git-hooks",
+    "prepublishOnly": "pnpm build"
+  },
+  "peerDependencies": {
+    "katex": ">=0.16.20",
+    "mermaid": ">=11",
+    "shiki": ">=3.15.0",
+    "vue": ">=3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "katex": {
+      "optional": true
+    },
+    "mermaid": {
+      "optional": true
+    },
+    "shiki": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@vueuse/core": "catalog:utils",
+    "markdown-it-async": "catalog:markdown",
+    "medium-zoom": "catalog:frontend",
+    "remend": "catalog:markdown",
+    "tippy.js": "catalog:frontend",
+    "vue-tippy": "catalog:frontend"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "catalog:lint",
+    "@antfu/utils": "catalog:utils",
+    "@iconify-json/catppuccin": "catalog:icons",
+    "@iconify-json/lucide": "catalog:icons",
+    "@types/node": "catalog:types",
+    "@unocss/eslint-plugin": "catalog:lint",
+    "@vitejs/plugin-vue": "catalog:build",
+    "@vue/test-utils": "catalog:test",
+    "bumpp": "catalog:cli",
+    "eslint": "catalog:lint",
+    "eslint-plugin-format": "catalog:lint",
+    "happy-dom": "catalog:dev",
+    "lint-staged": "catalog:lint",
+    "mdast-util-from-markdown": "catalog:parser",
+    "mdast-util-frontmatter": "catalog:parser",
+    "mdast-util-gfm": "catalog:parser",
+    "mdast-util-math": "catalog:parser",
+    "mdast-util-to-markdown": "catalog:parser",
+    "micromark-extension-cjk-friendly": "catalog:parser",
+    "micromark-extension-cjk-friendly-gfm-strikethrough": "catalog:parser",
+    "micromark-extension-frontmatter": "catalog:parser",
+    "micromark-extension-gfm": "catalog:parser",
+    "micromark-extension-math": "catalog:parser",
+    "micromark-util-types": "catalog:parser",
+    "pncat": "catalog:cli",
+    "simple-git-hooks": "catalog:lint",
+    "taze": "catalog:cli",
+    "tsdown": "catalog:build",
+    "tsx": "catalog:script",
+    "typescript": "catalog:tsc",
+    "unocss": "catalog:style",
+    "unplugin-icons": "catalog:build",
+    "unplugin-lightningcss": "catalog:build",
+    "vite": "catalog:build",
+    "vitepress": "catalog:docs",
+    "vitest": "catalog:test",
+    "vue-tsc": "catalog:tsc"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged"
+  },
+  "lint-staged": {
+    "*": "eslint --fix"
+  }
+}

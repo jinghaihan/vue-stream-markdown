@@ -1,0 +1,21 @@
+{
+  "button": {
+    "zoomIn": "放大",
+    "zoomOut": "缩小",
+    "resetZoom": "重置缩放",
+    "preview": "预览",
+    "source": "源代码",
+    "collapse": "折叠",
+    "copy": "复制",
+    "download": "下载",
+    "minimize": "最小化",
+    "maximize": "最大化"
+  },
+  "error": {
+    "vanilla": "错误",
+    "image": "图片加载失败",
+    "mermaid": "Mermaid 渲染失败",
+    "katex": "Katex 渲染失败",
+    "harden": "已拦截"
+  }
+}
