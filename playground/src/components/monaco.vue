@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import type { Monaco } from '@monaco-editor/loader'
+import type { BuiltinTheme, Highlighter } from 'shiki'
 import type { Editor } from '../types'
 import loader from '@monaco-editor/loader'
-import { computed, nextTick, ref, shallowRef, watch } from 'vue'
+import { shikiToMonaco } from '@shikijs/monaco'
+import { createHighlighter } from 'shiki'
+import { computed, nextTick, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
 import { isDark } from '../composable'
 
 const props = withDefaults(defineProps<{
   content?: string
+  theme?: [BuiltinTheme, BuiltinTheme]
 }>(), {
   content: '',
+  theme: () => ['github-light', 'github-dark'],
 })
 
 const emits = defineEmits<{
@@ -17,16 +22,26 @@ const emits = defineEmits<{
 
 const editorRef = ref<HTMLDivElement>()
 
+const highlighter = shallowRef<Highlighter>()
 const monaco = shallowRef<Monaco>()
 const editor = shallowRef<Editor>()
 
-const theme = computed(() => isDark.value ? 'vs-dark' : 'vs')
+const theme = computed(() => isDark.value ? props.theme[1] : props.theme[0])
 
 async function initEditor() {
   await nextTick()
   const element = editorRef.value
   if (!element)
     return
+
+  highlighter.value = await createHighlighter({
+    themes: props.theme,
+    langs: ['markdown'],
+  })
+
+  monaco.value.languages.register({ id: 'markdown' })
+
+  highlighterToMonaco()
 
   editor.value = monaco.value.editor.create(element, {
     language: 'markdown',
@@ -49,15 +64,37 @@ async function initEditor() {
   })
 }
 
+async function updateTheme() {
+  if (!highlighter.value || !editor.value)
+    return
+
+  const loadedThemes = highlighter.value.getLoadedThemes()
+  for (const theme of props.theme) {
+    if (!loadedThemes.includes(theme!))
+      await highlighter.value.loadTheme(theme)
+  }
+
+  highlighterToMonaco()
+
+  editor.value.updateOptions({
+    theme: theme.value,
+  })
+}
+
+function highlighterToMonaco() {
+  // @ts-expect-error type is broken
+  shikiToMonaco(highlighter.value, monaco.value)
+}
+
 loader.init().then((data: Monaco) => {
   monaco.value = data
   initEditor()
 })
 
-watch(isDark, () => {
-  editor.value?.updateOptions({
-    theme: theme.value,
-  })
+watch(() => [isDark.value, theme.value], updateTheme)
+
+onBeforeUnmount(() => {
+  highlighter.value?.dispose()
 })
 
 defineExpose({

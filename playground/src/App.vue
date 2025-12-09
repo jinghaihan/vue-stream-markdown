@@ -93,7 +93,8 @@ function stopTypeWriting() {
 
 function terminateTypeWriting() {
   typedEnable.value = false
-  userConfig.value.showAstResult = false
+  if (!userConfig.value.staticMode)
+    userConfig.value.showAstResult = false
   terminate()
 }
 
@@ -190,7 +191,12 @@ initContent()
     </template>
 
     <template #editor>
-      <Monaco ref="monacoRef" :content="content" @change="onEditorChange" />
+      <Monaco
+        ref="monacoRef"
+        :content="content"
+        :theme="shikiOptions.theme"
+        @change="onEditorChange"
+      />
     </template>
 
     <template #markdown>

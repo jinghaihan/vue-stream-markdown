@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "dependencies": {
     "@monaco-editor/loader": "catalog:frontend",
+    "@shikijs/monaco": "catalog:syntax",
     "@unocss/reset": "catalog:style",
     "@vueuse/core": "catalog:utils",
     "clsx": "catalog:style",

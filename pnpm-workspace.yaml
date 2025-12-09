@@ -64,6 +64,8 @@ catalogs:
     clsx: ^2.1.1
     tailwind-merge: ^3.4.0
     unocss: ^66.5.10
+  syntax:
+    '@shikijs/monaco': ^3.19.0
   test:
     '@vue/test-utils': ^2.4.6
     vitest: ^4.0.15
