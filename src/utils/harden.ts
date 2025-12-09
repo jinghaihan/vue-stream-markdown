@@ -1,20 +1,4 @@
-const safeProtocols = new Set([
-  'https:',
-  'http:',
-  'irc:',
-  'ircs:',
-  'mailto:',
-  'xmpp:',
-  'blob:',
-])
-
-// Protocols that should NEVER be allowed for security reasons
-const blockedProtocols = new Set([
-  'javascript:',
-  'data:',
-  'file:',
-  'vbscript:',
-])
+// ported from https://github.com/vercel-labs/markdown-sanitizers/blob/main/rehype-harden/src/index.ts
 
 function parseUrl(url: unknown, defaultOrigin: string): URL | null {
   if (typeof url !== 'string')
@@ -33,6 +17,16 @@ function parseUrl(url: unknown, defaultOrigin: string): URL | null {
         return null
       }
     }
+    // For relative URLs without defaultOrigin, use a dummy base to parse them
+    // This allows wildcard "*" to work with relative URLs
+    if (url.startsWith('/') || url.startsWith('./') || url.startsWith('../')) {
+      try {
+        return new URL(url, 'http://example.com')
+      }
+      catch {
+        return null
+      }
+    }
     return null
   }
 }
@@ -40,8 +34,26 @@ function parseUrl(url: unknown, defaultOrigin: string): URL | null {
 function isPathRelativeUrl(url: unknown): boolean {
   if (typeof url !== 'string')
     return false
-  return url.startsWith('/')
+  return url.startsWith('/') || url.startsWith('./') || url.startsWith('../')
 }
+
+const safeProtocols = new Set([
+  'https:',
+  'http:',
+  'irc:',
+  'ircs:',
+  'mailto:',
+  'xmpp:',
+  'blob:',
+])
+
+// Protocols that should NEVER be allowed for security reasons
+const blockedProtocols = new Set([
+  'javascript:',
+  'data:',
+  'file:',
+  'vbscript:',
+])
 
 export function transformUrl(
   url: unknown,
