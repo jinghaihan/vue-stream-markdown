@@ -20,3 +20,10 @@ export const incompleteUrlPattern = /!?\[[^\]]+\]\([^)]*$/
 
 export const tableRowPattern = /^\|.*\|.*\|/
 export const separatorPattern = /^\|[\s:]*-{3,}[\s:]*(?:\|[\s:]*-{3,}[\s:]*)+\|?$/
+
+// Match standalone `-` without trailing space (to distinguish from regular list items like `- `)
+export const standaloneDashPattern = /^\s*-$/
+export const taskListPattern = /^\s*- \[[x ]\]/i
+// Match standalone `> -` without trailing space
+export const quoteStandaloneDashPattern = /^>\s*-$/
+export const quoteTaskListPattern = /^>\s*- \[[x ]\]/i

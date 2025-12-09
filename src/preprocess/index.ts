@@ -8,6 +8,7 @@ import { fixLink } from './link'
 import { crlfPattern } from './pattern'
 import { fixStrong } from './strong'
 import { fixTable } from './table'
+import { fixTaskList } from './task-list'
 import { preprocessLaTeX, preprocessThinkTag } from './vendored'
 
 export * from './pattern'
@@ -33,6 +34,7 @@ export function preprocess(content: string): string {
     fixCode,
     fixTable,
     fixInlineMath,
+    fixTaskList,
     remend,
   ])(content)
 }
@@ -44,6 +46,7 @@ export {
   fixLink,
   fixStrong,
   fixTable,
+  fixTaskList,
   preprocessLaTeX,
   preprocessThinkTag,
   proprocessContent,
