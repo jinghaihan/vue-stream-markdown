@@ -74,7 +74,7 @@ const content = ref('# Hello World\n\nThis is a markdown content.')
 
 ### Previewers
 
-- `previewers` (boolean | PreviewerConfig): Enable or configure previewers (HTML, Mermaid, etc.)
+- `previewers` (boolean | PreviewerConfig): Enable or configure previewers for any programming language. By default, HTML and Mermaid have built-in previewers. You can add custom previewers for any language.
 
 ## Quick Links
 
@@ -83,7 +83,7 @@ For detailed configuration options, see the corresponding sections in the [Confi
 - [Parser Options](/config/parser) - Customize markdown parsing behavior (affects how markdown is parsed and transformed)
 - [Display Options](/config/display-options) - Configure display settings (affects Shiki, Mermaid, KaTeX, images, and code blocks)
 - [Controls](/config/controls) - Detailed control configuration (affects interactive buttons like copy, download, etc.)
-- [Previewers](/config/previewers) - Configure previewer components (affects HTML and Mermaid preview rendering)
+- [Previewers](/config/previewers) - Configure previewer components for any programming language (affects code block preview rendering)
 - [Security](/config/security) - Security and hardening options (affects URL validation and protocol blocking)
 - [Custom Renderers](/config/node-renderers) - Replace default renderers with custom components (affects how each AST node type is rendered)
 - [Internationalization](/config/i18n) - Locale and translation configuration (affects all text content in the component)

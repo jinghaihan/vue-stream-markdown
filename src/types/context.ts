@@ -83,10 +83,12 @@ export type ControlsConfig
 
 export type PreviewerConfig
   = | boolean
-    | {
-      html?: boolean | Component
+    | ({
       mermaid?: boolean | Component
-    }
+      html?: boolean | Component
+    } & {
+      [key: string]: Component
+    })
 
 export interface ShikiOptions {
   theme?: [BuiltinTheme, BuiltinTheme]

@@ -73,25 +73,37 @@ const disableMermaidPreviewer = {
 
 # Previewers
 
-The previewers configuration allows you to enable, disable, or customize preview components for specific code block types, including HTML and Mermaid diagrams.
+The previewers configuration allows you to enable, disable, or customize preview components for any programming language in code blocks. By default, HTML and Mermaid diagrams have built-in previewers, but you can add custom previewers for any language.
 
 ## previewers
 
 - **Type:** `boolean | PreviewerConfig`
-- **Default:** `true` (all previewers enabled by default)
+- **Default:** `true` (built-in previewers enabled by default)
 
-Configuration for code block previewers. Set to `false` to disable all previewers, or configure specific previewer types. When configuring specific previewers, you only need to specify the options you want to customize - other previewers will remain enabled by default.
+Configuration for code block previewers. Set to `false` to disable all previewers, or configure specific previewer types. When `previewers` is set to `true`, only HTML and Mermaid have default previewers enabled. For other languages, you need to explicitly configure a custom previewer component.
 
 ### PreviewerConfig Interface
 
 ```typescript
 type PreviewerConfig
   = | boolean
-    | {
-      html?: boolean | Component
-      mermaid?: boolean | Component
-    }
+    | Record<string, boolean | Component>
 ```
+
+The `PreviewerConfig` is a record where:
+- **Key**: The language identifier (e.g., `'html'`, `'mermaid'`, `'javascript'`, `'python'`, `'vue'`, etc.)
+- **Value**:
+  - For `html` and `mermaid`: `boolean` (to enable/disable default previewer) or `Component` (custom previewer)
+  - For all other languages: `Component` only (no built-in previewers available)
+
+### Default Behavior
+
+When `previewers` is set to `true`:
+- HTML code blocks use the default HTML previewer (sandboxed iframe)
+- Mermaid code blocks use the default Mermaid previewer (SVG rendering)
+- All other languages have no previewer by default
+
+To add previewers for other languages, you must explicitly configure them with custom components.
 
 ## html
 
@@ -200,6 +212,43 @@ const previewers: PreviewerConfig = {
 ```
 
 When using a custom component, it will receive the same props as the default Mermaid previewer component, which includes the code block node data, Mermaid options, and dark mode state.
+
+## Custom Previewers for Other Languages
+
+For languages other than `html` and `mermaid`, you must provide a custom `Component` (boolean values are not accepted since there are no built-in previewers for these languages).
+
+The previewer component will receive `CodeNodeRendererProps`
+
+```vue
+<!-- JavaScriptPreviewer.vue -->
+<script setup lang="ts">
+import type { CodeNodeRendererProps } from 'vue-stream-markdown'
+
+const props = defineProps<CodeNodeRendererProps>()
+</script>
+
+<template>
+  <div class="js-previewer">
+    <!-- Your custom preview rendering -->
+  </div>
+</template>
+```
+
+```vue
+<script setup lang="ts">
+import type { PreviewerConfig } from 'vue-stream-markdown'
+import { Markdown } from 'vue-stream-markdown'
+import JavaScriptPreviewer from './JavaScriptPreviewer.vue'
+
+const previewers: PreviewerConfig = {
+  javascript: JavaScriptPreviewer,
+}
+</script>
+
+<template>
+  <Markdown :content="content" :previewers="previewers" />
+</template>
+```
 
 ## Disabling All Previewers
 

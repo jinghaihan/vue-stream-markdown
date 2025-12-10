@@ -8,6 +8,7 @@
     "@unocss/reset": "catalog:style",
     "@vueuse/core": "catalog:utils",
     "clsx": "catalog:style",
+    "echarts": "catalog:frontend",
     "lz-string": "catalog:prod",
     "tailwind-merge": "catalog:style",
     "vue": "catalog:frontend",
