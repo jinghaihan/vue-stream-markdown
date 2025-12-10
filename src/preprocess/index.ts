@@ -9,7 +9,7 @@ import { crlfPattern } from './pattern'
 import { fixStrong } from './strong'
 import { fixTable } from './table'
 import { fixTaskList } from './task-list'
-import { preprocessLaTeX, preprocessThinkTag } from './vendored'
+import { preprocessLaTeX } from './vendored'
 
 export * from './pattern'
 
@@ -21,7 +21,6 @@ export function normalize(content: string): string {
   return flow([
     proprocessContent,
     preprocessLaTeX,
-    preprocessThinkTag,
   ])(content)
 }
 
@@ -48,7 +47,6 @@ export {
   fixTable,
   fixTaskList,
   preprocessLaTeX,
-  preprocessThinkTag,
   proprocessContent,
   remend,
 }

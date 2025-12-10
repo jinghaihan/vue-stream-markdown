@@ -176,17 +176,6 @@
   transform: translateX(-50%);
 }
 
-.stream-markdown .typewriter-enter-from {
-  opacity: 0;
-}
-.stream-markdown .typewriter-enter-active {
-  transition: opacity var(--typewriter-transition-duration) ease-out;
-  will-change: opacity;
-}
-.stream-markdown .typewriter-enter-to {
-  opacity: 1;
-}
-
 .stream-markdown [data-stream-markdown='segmented'] {
   display: flex;
   align-items: center;
@@ -615,6 +604,17 @@
 
 .stream-markdown [data-stream-markdown='code'] {
   padding: 1rem;
+}
+
+.stream-markdown .typewriter-enter-from {
+  opacity: 0;
+}
+.stream-markdown .typewriter-enter-active {
+  transition: opacity var(--typewriter-transition-duration) ease-out;
+  will-change: opacity;
+}
+.stream-markdown .typewriter-enter-to {
+  opacity: 1;
 }
 
 .stream-markdown .modal-enter-from,
