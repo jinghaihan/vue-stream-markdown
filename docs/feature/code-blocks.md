@@ -163,6 +163,32 @@ const codeOptions: CodeOptions = {
 
 This allows you to customize the display options per language, which is especially useful for mobile devices with limited width where you might want to hide language indicators to make room for preview/source toggle controls.
 
+#### Custom Language Icons
+
+In language-specific options, you can also provide a custom Vue component as the language icon:
+
+```vue
+<script setup lang="ts">
+import type { CodeOptions } from 'vue-stream-markdown'
+import { Markdown } from 'vue-stream-markdown'
+import ChartPie from '~icons/lucide/chart-pie'
+
+const codeOptions: CodeOptions = {
+  language: {
+    echarts: {
+      languageIcon: ChartPie,
+    },
+  },
+}
+</script>
+
+<template>
+  <Markdown :code-options="codeOptions" />
+</template>
+```
+
+When you provide a `Component` for `languageIcon` in language-specific options, it will be used instead of the default built-in icon for that language. This is useful when you want to use custom icons that better represent your specific use case.
+
 ### Language Icons
 
 The language icons displayed in code blocks are provided by [Catppuccin](https://github.com/catppuccin/catppuccin). Special thanks to the Catppuccin team for their beautiful icon collection that enhances the visual experience of code blocks.

@@ -128,7 +128,11 @@ export interface CodeOptions {
    *   },
    * }
    */
-  language?: Record<string, CodeOptions>
+  language?: Record<string, CodeOptionsLanguage>
+}
+
+export interface CodeOptionsLanguage extends Omit<CodeOptions, 'languageIcon'> {
+  languageIcon?: boolean | Component
 }
 
 // https://github.com/vercel-labs/markdown-sanitizers

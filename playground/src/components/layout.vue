@@ -30,16 +30,8 @@ watch(
       return
     }
 
-    // current is typing, so hide the input editor and ast result
-    if (typedEnable.value) {
-      showInputEditor.value = false
-      showAstResult.value = false
-      return
-    }
-
-    if (shouldToggle.value) {
-      showAstResult.value = false
-    }
+    showInputEditor.value = false
+    showAstResult.value = false
   },
   { immediate: true },
 )

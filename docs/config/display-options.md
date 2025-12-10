@@ -69,7 +69,15 @@ interface CodeOptions {
    * Language specific code options
    * Allows you to override display options for specific programming languages
    */
-  language?: Record<string, CodeOptions>
+  language?: Record<string, CodeOptionsLanguage>
+}
+
+interface CodeOptionsLanguage extends Omit<CodeOptions, 'languageIcon'> {
+  /**
+   * Custom language icon component or boolean
+   * When set to a Component, it will be used as the icon for that specific language
+   */
+  languageIcon?: boolean | Component
 }
 ```
 
@@ -77,10 +85,12 @@ All options default to `true` (visible). Set any option to `false` to hide the c
 
 ### languageIcon
 
-- **Type:** `boolean | undefined`
+- **Type:** `boolean | undefined` (global), `boolean | Component | undefined` (language-specific)
 - **Default:** `true`
 
 Whether to display language icons for code blocks. Language icons are shown in the code block header to visually indicate the programming language.
+
+In language-specific options (within the `language` field), you can also provide a Vue `Component` to use a custom icon for that specific language.
 
 **Only language icon enabled:**
 
@@ -146,6 +156,32 @@ const codeOptions: CodeOptions = {
 ```
 
 In this example, all code blocks will show language icons, language names, and line numbers by default. However, Mermaid code blocks will only show line numbers, hiding the language icon and name.
+
+**Example: Custom language icon component**
+
+You can provide a custom Vue component as the language icon for specific languages:
+
+```vue
+<script setup lang="ts">
+import type { CodeOptions } from 'vue-stream-markdown'
+import { Markdown } from 'vue-stream-markdown'
+import ChartPie from '~icons/lucide/chart-pie'
+
+const codeOptions: CodeOptions = {
+  language: {
+    echarts: {
+      languageIcon: ChartPie,
+    },
+  },
+}
+</script>
+
+<template>
+  <Markdown :content="content" :code-options="codeOptions" />
+</template>
+```
+
+In this example, all code blocks will use the default language icons, but `echarts` code blocks will use the custom `CustomIcon` component instead.
 
 ### Usage Example
 

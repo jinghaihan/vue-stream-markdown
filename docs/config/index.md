@@ -308,6 +308,8 @@ Configuration for code block display options.
 
 Whether to display language icons for code blocks.
 
+> **Note:** In language-specific options (within the `language` field), `languageIcon` can also be a Vue `Component` to use a custom icon component for that specific language.
+
 #### languageName
 
 - **Type:** `boolean`
@@ -325,6 +327,8 @@ Whether to display line numbers for code blocks.
 - **Type:** `Record<string, CodeOptions> | undefined`
 
 Language-specific code options. Allows you to override display options for specific programming languages. The keys should match the language identifiers used in code blocks (e.g., `'typescript'`, `'python'`, `'mermaid'`).
+
+> **Note:** In language-specific options, `languageIcon` can be `boolean | Component` to use a custom icon component for that specific language.
 
 ### imageOptions
 

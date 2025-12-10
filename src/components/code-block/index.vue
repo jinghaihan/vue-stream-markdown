@@ -76,7 +76,14 @@ const showCopy = computed(() => isControlEnabled('code.copy'))
 const showDownload = computed(() => isControlEnabled('code.download'))
 const showFullscreen = computed(() => isControlEnabled('code.fullscreen'))
 
-const icon = computed(() => LANGUAGE_ICONS[language.value] || LANGUAGE_ICONS.text)
+const icon = computed(() => {
+  const custom = codeOptions.value?.language?.[language.value]?.languageIcon
+  // Custom language icon component
+  if (typeof custom === 'object')
+    return custom
+  const builtin = LANGUAGE_ICONS[language.value] || LANGUAGE_ICONS.text
+  return builtin
+})
 
 const previewable = computed((): boolean => {
   if (previewers.value === false)

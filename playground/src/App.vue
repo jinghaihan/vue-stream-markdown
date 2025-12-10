@@ -5,6 +5,7 @@ import { useCycleList, useResizeObserver } from '@vueuse/core'
 import { decompressFromEncodedURIComponent } from 'lz-string'
 import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { Markdown, SUPPORT_LANGUAGES, useTippy } from 'vue-stream-markdown'
+import ChartPie from '~icons/lucide/chart-pie'
 import Actions from './components/actions.vue'
 import AstResult from './components/ast-result.vue'
 import CopyButton from './components/copy-button.vue'
@@ -78,7 +79,10 @@ const codeOptions = computed((): CodeOptions => {
     language: {
       mermaid: options,
       html: options,
-      echarts: options,
+      echarts: {
+        ...options,
+        languageIcon: options.languageIcon === false ? false : ChartPie,
+      },
     },
   }
 })
