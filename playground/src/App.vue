@@ -4,7 +4,7 @@ import { throttle } from '@antfu/utils'
 import { useCycleList, useResizeObserver } from '@vueuse/core'
 import { decompressFromEncodedURIComponent } from 'lz-string'
 import { computed, defineAsyncComponent, ref, watch } from 'vue'
-import { Markdown, SUPPORT_LANGUAGES, useTippy } from 'vue-stream-markdown'
+import { Markdown, SUPPORT_LANGUAGES } from 'vue-stream-markdown'
 import ChartPie from '~icons/lucide/chart-pie'
 import Actions from './components/actions.vue'
 import AstResult from './components/ast-result.vue'
@@ -20,10 +20,6 @@ import { getContentFromUrl } from './utils'
 import 'vue-stream-markdown/index.css'
 
 const EChartsPreviewer = defineAsyncComponent(() => import('./components/echarts.vue'))
-
-const { initTippy } = useTippy({
-  isDark,
-})
 
 const markdownRef = ref()
 const parsedNodes = computed(() => markdownRef.value?.getParsedNodes() ?? [])
@@ -175,7 +171,6 @@ useResizeObserver(() => markdownRef.value?.$el, () => {
   scrollToBottom()
 })
 
-initTippy()
 initContent()
 </script>
 
@@ -225,7 +220,7 @@ initContent()
 
     <template #markdown>
       <ScrollTriggerGroup :get-container="getContainer">
-        <CopyButton :content="typedContent" />
+        <CopyButton :content="markdownContent" />
       </ScrollTriggerGroup>
 
       <div ref="containerRef" class="scrollbar-gutter-stable pr-4 h-full overflow-auto">

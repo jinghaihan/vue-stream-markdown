@@ -32,7 +32,6 @@ function onSelect(item: SelectItem) {
     ref="tooltipRef"
     trigger="click"
     placement="bottom"
-    :interactive="true"
   >
     <button
       class="px-3 py-2 flex gap-2 items-center"

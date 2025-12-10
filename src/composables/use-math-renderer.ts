@@ -4,7 +4,7 @@ import { throttle } from '@antfu/utils'
 import { computed, ref, unref, watch } from 'vue'
 import { useKatex } from './use-katex'
 
-export interface UseMathRendererOptions {
+interface UseMathRendererOptions {
   node: MaybeRef<InlineMathNode | MathNode>
   katexOptions?: MaybeRef<KatexOptions | undefined>
   throttle?: MaybeRef<number>

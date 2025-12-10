@@ -5,7 +5,7 @@ import mediumZoom from 'medium-zoom'
 import { computed, onBeforeUnmount, ref, toRefs, watch } from 'vue'
 import NodeList from './components/node-list.vue'
 import { NODE_RENDERERS } from './components/renderers'
-import { useContext, useKatex, useMermaid, useShiki, useTippy } from './composables'
+import { useContext, useKatex, useMermaid, useShiki } from './composables'
 import { ICONS } from './constants'
 import { loadLocaleMessages } from './locales'
 import { MarkdownParser } from './markdown-parser'
@@ -31,10 +31,6 @@ const { shikiOptions, mermaidOptions, isDark } = toRefs(props)
 const containerRef = ref<HTMLDivElement>()
 
 const { provideContext } = useContext()
-
-const { initTippy } = useTippy({
-  isDark,
-})
 
 const zoom = mediumZoom('[data-zoomable]', {
   background: 'color-mix(in oklab, var(--background) 80%, transparent)',
@@ -72,8 +68,6 @@ const { preload: preloadMermaid, dispose: disposeMermaid } = useMermaid({
 const { preload: preloadKatex, dispose: disposeKatex } = useKatex()
 
 async function bootstrap() {
-  initTippy()
-
   const tasks = []
   if (props.locale !== 'en-US')
     tasks.push(loadLocaleMessages(props.locale))

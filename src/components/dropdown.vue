@@ -36,8 +36,7 @@ function handleClick(event: MouseEvent, item: SelectItem) {
   <Tooltip
     ref="tooltipRef"
     trigger="click"
-    placement="bottom"
-    :interactive="true"
+    placement="bottom-end"
     data-stream-markdown="dropdown"
   >
     <template #content>

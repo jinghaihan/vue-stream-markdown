@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 
-export interface UseZoomOptions {
+interface UseZoomOptions {
   minZoom?: number
   maxZoom?: number
   zoomStep?: number
@@ -10,7 +10,7 @@ export interface UseZoomOptions {
   initialTranslateY?: number
 }
 
-export interface ZoomPanState {
+interface ZoomState {
   zoom: number
   translateX: number
   translateY: number
@@ -199,7 +199,7 @@ export function useZoom(options: UseZoomOptions = {}) {
   }
 
   // Get current state
-  function getState(): ZoomPanState {
+  function getState(): ZoomState {
     return {
       zoom: zoom.value,
       translateX: translateX.value,
@@ -208,7 +208,7 @@ export function useZoom(options: UseZoomOptions = {}) {
   }
 
   // Set state
-  function setState(state: Partial<ZoomPanState>) {
+  function setState(state: Partial<ZoomState>) {
     if (state.zoom)
       zoom.value = Math.min(Math.max(state.zoom, minZoom), maxZoom)
 

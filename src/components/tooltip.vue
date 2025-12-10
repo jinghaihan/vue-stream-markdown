@@ -1,43 +1,73 @@
 <script setup lang="ts">
-import type { DefaultProps } from 'tippy.js'
-import { computed, ref } from 'vue'
-import { Tippy } from 'vue-tippy'
-import { useContext } from '../composables'
+import type { Placement } from '@floating-ui/vue'
+import { toRefs } from 'vue'
+import { useContext, useFloatingElement } from '../composables'
 
-withDefaults(defineProps<{
-  content?: string
-  trigger?: DefaultProps['trigger']
-  placement?: DefaultProps['placement']
-  interactive?: DefaultProps['interactive']
-}>(), {})
-
-const { isDark, getContainer } = useContext()
-
-const tippyRef = ref()
-
-const appendTo = computed(() => getContainer() || 'parent')
-
-defineExpose({
-  show: () => tippyRef.value?.show(),
-  hide: () => tippyRef.value?.hide(),
+defineOptions({
+  inheritAttrs: false,
 })
+
+const props = withDefaults(defineProps<{
+  content?: string
+  trigger?: 'hover' | 'click'
+  placement?: Placement
+  delay?: number | [number, number]
+}>(), {
+  trigger: 'hover',
+  placement: 'top',
+  delay: () => [100, 100],
+})
+
+const { placement, delay, trigger } = toRefs(props)
+
+const { getContainer } = useContext()
+
+const {
+  referenceEl,
+  floatingEl,
+  open,
+  appendTo,
+  floatingStyle,
+  show,
+  hide,
+  onMouseEnter,
+  onMouseLeave,
+  onClick,
+  onFloatingEnter,
+  onFloatingLeave,
+} = useFloatingElement({
+  placement,
+  delay,
+  trigger,
+  getContainer,
+})
+
+defineExpose({ show, hide })
 </script>
 
 <template>
-  <Tippy
-    ref="tippyRef"
-    :trigger="trigger"
-    :placement="placement"
-    :interactive="interactive"
-    :append-to="appendTo"
-    :theme="isDark ? '' : 'light'"
-    data-stream-markdown="tooltip"
+  <span
+    v-bind="$attrs"
+    ref="referenceEl"
+    @mouseenter="onMouseEnter"
+    @mouseleave="onMouseLeave"
+    @click="onClick"
   >
-    <template #content>
+    <slot />
+  </span>
+
+  <Teleport :to="appendTo">
+    <div
+      v-if="open"
+      ref="floatingEl"
+      :style="floatingStyle"
+      data-stream-markdown="tooltip"
+      @mouseenter="onFloatingEnter"
+      @mouseleave="onFloatingLeave"
+    >
       <slot name="content">
         <pre data-stream-markdown="tooltip-overlay">{{ content }}</pre>
       </slot>
-    </template>
-    <slot />
-  </Tippy>
+    </div>
+  </Teleport>
 </template>

@@ -27,7 +27,7 @@ const mermaidLightTheme = defineModel<string>('mermaidLightTheme', { required: f
 const mermaidDarkTheme = defineModel<string>('mermaidDarkTheme', { required: false, default: 'dark' })
 
 const BLOCK_CLASSES = [
-  'h-12',
+  'h-11',
   'flex',
   'items-center',
   'justify-between',
@@ -39,8 +39,8 @@ const BLOCK_CLASSES = [
 
 const BLOCK_TITLE_CLASSES = [
   'font-semibold',
-  'text-lg',
-  'pl-2',
+  'pl-1',
+  'mb-1',
 ]
 
 const LABEL_CLASSES = [
@@ -83,15 +83,11 @@ watch(() => staticMode.value, () => {
 </script>
 
 <template>
-  <Tooltip
-    trigger="click"
-    placement="bottom"
-    :interactive="true"
-  >
+  <Tooltip trigger="click" placement="bottom">
     <IconButton :icon="Settings" />
 
     <template #content>
-      <div class="py-2 flex flex-col">
+      <div class="px-2 py-3 flex flex-col">
         <h3 :class="BLOCK_TITLE_CLASSES">
           General
         </h3>

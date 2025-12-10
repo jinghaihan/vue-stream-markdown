@@ -1,29 +1,70 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { Tippy } from 'vue-tippy'
-import { isDark } from '../composable'
+import type { Placement } from '@floating-ui/vue'
+import { toRefs } from 'vue'
+import { useFloatingElement } from 'vue-stream-markdown'
 
-withDefaults(defineProps<{
+defineOptions({
+  inheritAttrs: false,
+})
+
+const props = withDefaults(defineProps<{
   content?: string
+  trigger?: 'hover' | 'click'
+  placement?: Placement
+  delay?: number | [number, number]
 }>(), {
-  content: '',
+  trigger: 'hover',
+  placement: 'top',
+  delay: () => [100, 100],
 })
 
-const tippyRef = ref()
+const { trigger, placement, delay } = toRefs(props)
 
-defineExpose({
-  show: () => tippyRef.value?.show(),
-  hide: () => tippyRef.value?.hide(),
+const {
+  referenceEl,
+  floatingEl,
+  open,
+  appendTo,
+  floatingStyle,
+  show,
+  hide,
+  onMouseEnter,
+  onMouseLeave,
+  onClick,
+  onFloatingEnter,
+  onFloatingLeave,
+} = useFloatingElement({
+  trigger,
+  placement,
+  delay,
 })
+
+defineExpose({ show, hide })
 </script>
 
 <template>
-  <Tippy ref="tippyRef" :theme="isDark ? '' : 'light'">
-    <template #content>
-      <slot name="content">
-        <pre>{{ content }}</pre>
-      </slot>
-    </template>
+  <span
+    v-bind="$attrs"
+    ref="referenceEl"
+    @mouseenter="onMouseEnter"
+    @mouseleave="onMouseLeave"
+    @click="onClick"
+  >
     <slot />
-  </Tippy>
+  </span>
+
+  <Teleport :to="appendTo">
+    <div
+      v-if="open"
+      ref="floatingEl"
+      class="text-popover-foreground border border-border rounded-md bg-popover z-100"
+      :style="floatingStyle"
+      @mouseenter="onFloatingEnter"
+      @mouseleave="onFloatingLeave"
+    >
+      <slot name="content">
+        <pre class="text-sm px-2 py-1">{{ content }}</pre>
+      </slot>
+    </div>
+  </Teleport>
 </template>

@@ -34,7 +34,6 @@ function onClick(event: MouseEvent) {
 <template>
   <Tooltip
     v-if="name"
-    append-to="parent"
     :content="name"
     :placement="placement"
   >

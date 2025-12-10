@@ -43,18 +43,23 @@
   opacity: 0.5;
 }
 
-.stream-markdown .tippy-box {
+.stream-markdown [data-stream-markdown='tooltip'] {
   background: var(--popover);
   color: var(--popover-foreground);
   border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  z-index: 100;
 }
 
-.stream-markdown .tippy-arrow {
-  color: var(--popover);
+.stream-markdown [data-stream-markdown='tooltip-overlay'] {
+  padding-block: 0.25rem;
+  padding-inline: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
 }
 
-.stream-markdown .tippy-box > .tippy-svg-arrow {
-  border-top-color: var(--popover);
+.stream-markdown [data-stream-markdown='dropdown-overlay'] {
+  padding: 0.25rem;
 }
 
 .stream-markdown [data-stream-markdown='button'] {
@@ -76,10 +81,6 @@
 .stream-markdown [data-stream-markdown='button']:hover {
   color: var(--foreground);
   background-color: var(--accent);
-}
-
-.stream-markdown [data-stream-markdown='dropdown-overlay'] {
-  padding: 0.25rem;
 }
 
 .stream-markdown [data-stream-markdown='error-component'] {
@@ -234,11 +235,6 @@
   padding-block: 0.5rem;
   font-size: 0.875rem;
   line-height: 1.25rem;
-}
-
-.stream-markdown [data-stream-markdown='tooltip-overlay'] {
-  padding-block: 0.25rem;
-  padding-inline: 0.5rem;
 }
 
 .stream-markdown [data-stream-markdown='zoom-container'] {
