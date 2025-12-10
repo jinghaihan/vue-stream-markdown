@@ -7,7 +7,7 @@ StreamMarkdown provides comprehensive configuration options to customize the mar
 - [Parser](/config/parser) - Configure markdown parsing options including preprocessing, postprocessing, and markdown-it extensions.
 - [Display Options](/config/display-options) - Configure display settings for code blocks and images.
 - [Controls](/config/controls) - Configure interactive controls for tables, code blocks, images, and mermaid diagrams.
-- [Previewers](/config/previewers) - Configure preview components for HTML and Mermaid diagrams.
+- [Previewers](/config/previewers) - Configure preview components for any programming language in code blocks.
 - [Security](/config/security) - Configure security options for sanitizing links and images.
 - [External Options](/config/external-options) - Configure external libraries including Shiki, Mermaid, and KaTeX.
 - [Custom Renderers](/config/node-renderers) - Configure custom node renderers.
@@ -176,19 +176,17 @@ Position of the zoom control button.
 
 - **Type:** `boolean | PreviewerConfig`
 
-Configuration for preview components. Set to `false` to disable all previewers, or configure specific previewer types.
+Configuration for preview components. Set to `false` to disable all previewers, or configure specific previewer types for any programming language.
 
-#### html
+The `PreviewerConfig` is a record where keys are language identifiers (e.g., `'html'`, `'mermaid'`, `'javascript'`, etc.) and values are either `boolean` (to enable/disable default previewers) or `Component` (to provide a custom previewer component).
 
-- **Type:** `boolean | Component`
+By default, only `html` and `mermaid` have built-in previewers. For other languages, you need to explicitly configure custom previewer components.
 
-Enable HTML previewer or provide a custom component.
+#### Examples
 
-#### mermaid
-
-- **Type:** `boolean | Component`
-
-Enable Mermaid previewer or provide a custom component.
+- `html: boolean | Component` - Enable/disable HTML previewer or provide a custom component
+- `mermaid: boolean | Component` - Enable/disable Mermaid previewer or provide a custom component
+- `javascript: Component` - Custom previewer component for JavaScript
 
 ### shikiOptions
 

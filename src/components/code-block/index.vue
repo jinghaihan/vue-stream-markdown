@@ -82,23 +82,42 @@ const previewable = computed((): boolean => {
   if (previewers.value === false)
     return false
 
-  const mermaid = language.value === 'mermaid' && hasMermaid.value
   const html = language.value === 'html' && !props.node.loading
+  const mermaid = language.value === 'mermaid' && hasMermaid.value
 
-  if (typeof previewers.value === 'object') {
-    const _mermaid = previewers.value.mermaid !== false && mermaid
-    const _html = previewers.value.html !== false && html
-    return _mermaid || _html
+  if (previewers.value === true) {
+    if (language.value === 'html' && html)
+      return true
+    if (language.value === 'mermaid' && mermaid)
+      return true
+    return false
   }
 
-  return mermaid || html
+  if (typeof previewers.value === 'object') {
+    if (previewers.value[language.value] === false)
+      return false
+
+    if (language.value === 'html' && html)
+      return true
+    if (language.value === 'mermaid' && mermaid)
+      return true
+
+    // Custom previewer component, load when is completed
+    const component = previewers.value[language.value]
+    if (typeof component === 'object')
+      return !!component
+
+    return false
+  }
+
+  return false
 })
 
 const PreviewComponent = computed((): Component => {
   if (!previewers.value || typeof previewers.value === 'boolean')
     return CODE_PREVIEWERS[language.value]
 
-  const data = previewers.value[language.value as keyof typeof previewers.value]
+  const data = previewers.value[language.value]
   if (data === false)
     return CODE_PREVIEWERS[language.value]
 
