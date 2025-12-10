@@ -10,6 +10,7 @@ export const MARKDOWN_NAME: Record<string, string> = {
   './landing-page.md': 'Landing Page',
   './mathematics.md': 'Mathematics',
   './mermaid.md': 'Mermaid Diagrams',
+  './previewers.md': 'Custom Previewers',
   './typography.md': 'Typography',
 }
 

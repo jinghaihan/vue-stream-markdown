@@ -3,7 +3,7 @@ import type { CodeOptions, MermaidOptions, SelectItem, ShikiOptions } from 'vue-
 import { throttle } from '@antfu/utils'
 import { useCycleList, useResizeObserver } from '@vueuse/core'
 import { decompressFromEncodedURIComponent } from 'lz-string'
-import { computed, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { Markdown, SUPPORT_LANGUAGES, useTippy } from 'vue-stream-markdown'
 import Actions from './components/actions.vue'
 import AstResult from './components/ast-result.vue'
@@ -17,6 +17,8 @@ import { isDark, isMobile, userConfig, useTypedEffect } from './composable'
 import { DEFAULT_MARKDOWN_PATH, getPresetContent } from './markdown'
 import { getContentFromUrl } from './utils'
 import 'vue-stream-markdown/index.css'
+
+const EChartsPreviewer = defineAsyncComponent(() => import('./components/echarts.vue'))
 
 const { initTippy } = useTippy({
   isDark,
@@ -60,6 +62,9 @@ const markdownContent = computed(() => mode.value === 'static' ? content.value :
 const shikiOptions = computed((): ShikiOptions => {
   return {
     theme: [userConfig.value.shikiLightTheme, userConfig.value.shikiDarkTheme],
+    langAlias: {
+      echarts: 'sh',
+    },
   }
 })
 
@@ -73,6 +78,7 @@ const codeOptions = computed((): CodeOptions => {
     language: {
       mermaid: options,
       html: options,
+      echarts: options,
     },
   }
 })
@@ -229,6 +235,9 @@ initContent()
           :shiki-options="shikiOptions"
           :code-options="codeOptions"
           :mermaid-options="mermaidOptions"
+          :previewers="{
+            echarts: EChartsPreviewer,
+          }"
         />
       </div>
     </template>
