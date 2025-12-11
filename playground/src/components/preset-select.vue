@@ -46,8 +46,8 @@ function onSelect(item: SelectItem) {
         <button
           v-for="item in options"
           :key="item.value"
-          class="p-2 flex items-center justify-start"
-          :class="BUTTON_CLASSES"
+          class="text-sm p-2 flex items-center justify-start"
+          :class="[...BUTTON_CLASSES]"
           @click="() => onSelect(item)"
         >
           {{ item.label }}

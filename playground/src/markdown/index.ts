@@ -6,6 +6,7 @@ export const DEFAULT_MARKDOWN_PATH = './landing-page.md'
 export const MARKDOWN_NAME: Record<string, string> = {
   './cjk-support.md': 'CJK Language Support',
   './code-blocks.md': 'Code Blocks',
+  './footnote.md': 'Footnote',
   './gfm.md': 'GitHub Flavored Markdown',
   './image-carousel.md': 'Image Carousel',
   './landing-page.md': 'Landing Page',
