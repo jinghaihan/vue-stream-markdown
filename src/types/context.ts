@@ -65,6 +65,7 @@ export type ImageControlsConfig
     | {
       preview?: boolean
       download?: boolean
+      carousel?: boolean
       flip?: boolean
       rotate?: boolean
       controlPosition?: ZoomControlPosition

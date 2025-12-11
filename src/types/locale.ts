@@ -14,6 +14,8 @@ export interface LocaleConfig {
     flipX: string
     rotateLeft: string
     rotateRight: string
+    previous: string
+    next: string
   }
   error: {
     vanilla: string

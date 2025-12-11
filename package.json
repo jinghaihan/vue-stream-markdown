@@ -101,6 +101,7 @@
     "pncat": "catalog:cli",
     "simple-git-hooks": "catalog:lint",
     "taze": "catalog:cli",
+    "treechop": "catalog:dev",
     "tsdown": "catalog:build",
     "tsx": "catalog:script",
     "typescript": "catalog:tsc",

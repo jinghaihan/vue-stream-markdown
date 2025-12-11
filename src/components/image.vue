@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import type { ControlsConfig } from '../types'
+import type { ControlsConfig, ImageNode } from '../types'
+import { useCycleList } from '@vueuse/core'
+import { treeFlatFilter } from 'treechop'
 import { computed, ref, toRefs, watch } from 'vue'
 import { useContext, useControls, useI18n, useMediumZoom } from '../composables'
 import { saveImage } from '../utils'
@@ -28,12 +30,24 @@ const emits = defineEmits<{
 const { margin, controls } = toRefs(props)
 
 const { t } = useI18n()
-const { icons } = useContext()
+const { icons, parsedNodes } = useContext()
 const { isControlEnabled, getControlValue } = useControls({
   controls,
 })
 
+const imageNodes = computed(
+  () => treeFlatFilter(parsedNodes.value, node => node.type === 'image' && !node.loading),
+)
+const imageList = computed(() => [
+  ...new Set(imageNodes.value.map(node => (node as ImageNode).url)),
+])
+const { state: imageSrc, prev, next } = useCycleList(imageList, {
+  initialValue: props.src,
+  fallbackIndex: 0,
+})
+
 const enableDownload = computed(() => isControlEnabled('image.download'))
+const enableCarousel = computed(() => isControlEnabled('image.carousel'))
 const enableFlip = computed(() => isControlEnabled('image.flip'))
 const enableRotate = computed(() => isControlEnabled('image.rotate'))
 
@@ -96,9 +110,9 @@ function handleClose() {
 }
 
 function download() {
-  if (!props.src)
+  if (!imageSrc.value)
     return
-  saveImage(props.src, props.alt)
+  saveImage(imageSrc.value, props.alt)
 }
 
 function flipHorizontal() {
@@ -122,6 +136,10 @@ watch(open, (data) => {
     scaleX.value = 1
     scaleY.value = 1
     rotate.value = 0
+
+    // restore the initial image src
+    if (props.src)
+      imageSrc.value = props.src
   }
 })
 </script>
@@ -163,11 +181,28 @@ watch(open, (data) => {
     >
       <template #controls="buttonProps">
         <Button
-          v-if="src && enableDownload"
+          v-if="imageSrc && enableDownload"
           v-bind="buttonProps"
           :icon="icons.download"
           :name="t('button.download')"
           @click="download"
+        />
+        <Button
+          v-if="imageList.length > 1 && enableCarousel"
+          v-bind="buttonProps"
+          :icon="icons.arrowLeft"
+          :name="t('button.previous')"
+          @click="() => prev()"
+        />
+        <Button
+          v-if="imageList.length > 1 && enableCarousel"
+          v-bind="buttonProps"
+          :icon="icons.arrowRight || icons.arrowLeft"
+          :name="t('button.next')"
+          :button-style="{
+            transform: icons.arrowRight ? undefined : 'scaleX(-1)',
+          }"
+          @click="() => next()"
         />
         <Button
           v-if="enableFlip"
@@ -207,7 +242,7 @@ watch(open, (data) => {
 
       <img
         ref="_zoomElementRef"
-        :src="src"
+        :src="imageSrc"
         :alt="alt"
         :title="title"
         :style="imageStyle"

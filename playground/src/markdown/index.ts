@@ -7,6 +7,7 @@ export const MARKDOWN_NAME: Record<string, string> = {
   './cjk-support.md': 'CJK Language Support',
   './code-blocks.md': 'Code Blocks',
   './gfm.md': 'GitHub Flavored Markdown',
+  './image-carousel.md': 'Image Carousel',
   './landing-page.md': 'Landing Page',
   './mathematics.md': 'Mathematics',
   './mermaid.md': 'Mermaid Diagrams',

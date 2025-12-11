@@ -5,7 +5,7 @@ export * from './previewers'
 export * from './renderers'
 
 /// keep-sorted
-export const COMMON_COMPONENTS: Record<string, Component> = {
+export const UI: Record<string, Component> = {
   Button: defineAsyncComponent(() => import('./button.vue')),
   CodeBlock: defineAsyncComponent(() => import('./code-block/index.vue')),
   Dropdown: defineAsyncComponent(() => import('./dropdown.vue')),

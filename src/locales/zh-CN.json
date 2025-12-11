@@ -13,7 +13,9 @@
     "flipY": "翻转 Y",
     "flipX": "翻转 X",
     "rotateLeft": "左转",
-    "rotateRight": "右转"
+    "rotateRight": "右转",
+    "previous": "上个",
+    "next": "下个"
   },
   "error": {
     "vanilla": "错误",

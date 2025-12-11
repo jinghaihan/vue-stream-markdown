@@ -3,11 +3,9 @@ import type { CodeNodeRendererProps } from 'vue-stream-markdown'
 import { useResizeObserver } from '@vueuse/core'
 import * as echarts from 'echarts'
 import { computed, onMounted, ref, shallowRef, watch } from 'vue'
-import { COMMON_COMPONENTS } from 'vue-stream-markdown'
+import { UI } from 'vue-stream-markdown'
 
 const props = defineProps<CodeNodeRendererProps>()
-
-const { ErrorComponent } = COMMON_COMPONENTS
 
 const chartRef = ref<HTMLDivElement>()
 const chart = shallowRef<echarts.ECharts>()
@@ -48,6 +46,6 @@ useResizeObserver(chartRef, () => {
 <template>
   <div>
     <div ref="chartRef" class="h-100" />
-    <ErrorComponent v-if="hasError" />
+    <UI.ErrorComponent v-if="hasError" />
   </div>
 </template>

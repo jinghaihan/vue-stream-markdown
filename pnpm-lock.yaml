@@ -35,6 +35,9 @@ catalogs:
     happy-dom:
       specifier: ^20.0.11
       version: 20.0.11
+    treechop:
+      specifier: ^0.1.2
+      version: 0.1.2
   docs:
     vitepress:
       specifier: ^1.6.4
@@ -283,6 +286,9 @@ importers:
       taze:
         specifier: catalog:cli
         version: 19.9.2
+      treechop:
+        specifier: catalog:dev
+        version: 0.1.2
       tsdown:
         specifier: catalog:build
         version: 0.17.2(synckit@0.11.11)(typescript@5.9.3)(unplugin-lightningcss@0.4.3)(vue-tsc@3.1.8(typescript@5.9.3))
@@ -3969,6 +3975,9 @@ packages:
   tree-kill@1.2.2:
     resolution: {integrity: sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A==}
     hasBin: true
+
+  treechop@0.1.2:
+    resolution: {integrity: sha512-kLq4BKuGTDeJMJJ8eMjdRqEEBr62ytaG2ptsJVpCWrH6OSFJVCgTJRt7kvxz9AKsam5qvanS0mm1hpfNFAGWcw==}
 
   trim-lines@3.0.1:
     resolution: {integrity: sha512-kRj8B+YHZCc9kQYdWfJB2/oUl9rA99qbowYYBtr4ui4mZyAQ2JpvVBd/6U2YloATfqBhBTSMhTpgBHtU0Mf3Rg==}
@@ -8382,6 +8391,8 @@ snapshots:
   totalist@3.0.1: {}
 
   tree-kill@1.2.2: {}
+
+  treechop@0.1.2: {}
 
   trim-lines@3.0.1: {}
 

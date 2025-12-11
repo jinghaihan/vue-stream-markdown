@@ -172,6 +172,12 @@ Enable preview functionality for images. When enabled, users can click on the im
 
 Enable download button for images.
 
+##### carousel
+
+- **Type:** `boolean`
+
+Enable carousel functionality for images. When enabled and there are multiple images in the document, users can navigate between images using previous/next buttons when the image is opened in preview mode.
+
 ##### flip
 
 - **Type:** `boolean`

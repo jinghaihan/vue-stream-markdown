@@ -22,6 +22,11 @@ const imageExample = `
 ![Placeholder Image](https://placehold.co/600x400)
 `
 
+const imageListExample = `
+![Placeholder Image](https://placehold.co/600x400)
+![Placeholder Image](https://placehold.co/600x500)
+`
+
 const mermaidExample = `
 \`\`\`mermaid
 graph TD
@@ -89,6 +94,16 @@ const codeOnlyFullscreen = {
 const imageOnlyDownload = {
   image: {
     download: true,
+    carousel: false,
+    flip: false,
+    rotate: false,
+  },
+}
+
+const imageOnlyCarousel = {
+  image: {
+    download: false,
+    carousel: true,
     flip: false,
     rotate: false,
   },
@@ -97,6 +112,7 @@ const imageOnlyDownload = {
 const imageOnlyFlip = {
   image: {
     download: false,
+    carousel: false,
     flip: true,
     rotate: false,
   },
@@ -105,6 +121,7 @@ const imageOnlyFlip = {
 const imageOnlyRotate = {
   image: {
     download: false,
+    carousel: false,
     flip: false,
     rotate: true,
   },
@@ -387,7 +404,7 @@ const controls: ControlsConfig = {
 
 Controls for images. Can be a boolean or an object with specific options.
 
-> **Note:** The `preview` control enables clicking on the image to open it in preview mode (zoomed/fullscreen). The `download` control appears when hovering over the image. Other controls (`flip`, `rotate`, and `controlPosition`) are only displayed when the image is opened in preview mode (zoomed/fullscreen).
+> **Note:** The `preview` control enables clicking on the image to open it in preview mode (zoomed/fullscreen). The `download` control appears when hovering over the image. Other controls (`carousel`, `flip`, `rotate`, and `controlPosition`) are only displayed when the image is opened in preview mode (zoomed/fullscreen).
 
 ### Interface
 
@@ -397,6 +414,7 @@ type ImageControlsConfig
     | {
       preview?: boolean
       download?: boolean
+      carousel?: boolean
       flip?: boolean
       rotate?: boolean
       controlPosition?: ZoomControlPosition
@@ -420,6 +438,17 @@ Enable download button for images. When enabled, a download button appears when 
 **Only download button enabled:**
 
 <StreamMarkdown :content="imageExample" :controls="imageOnlyDownload" />
+
+### carousel
+
+- **Type:** `boolean | undefined`
+- **Default:** `true`
+
+Enable carousel functionality for images. When enabled and there are multiple images in the document, users can navigate between images using previous/next buttons when the image is opened in preview mode (zoomed/fullscreen). The carousel buttons are only displayed when there are multiple images in the document.
+
+**Only carousel control enabled:**
+
+<StreamMarkdown :content="imageListExample" :controls="imageOnlyCarousel" />
 
 ### flip
 
@@ -448,7 +477,7 @@ Enable rotate functionality for images. When enabled, users can rotate the image
 - **Type:** `ZoomControlPosition | undefined`
 - **Default:** `'bottom-center'`
 
-Position of the control buttons for images in preview mode. The control buttons include download, flip, rotate, and zoom controls.
+Position of the control buttons for images in preview mode. The control buttons include download, carousel, flip, rotate, and zoom controls.
 
 **Image with controls at top-right:**
 

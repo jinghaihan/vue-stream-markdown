@@ -2,6 +2,7 @@ import { defineAsyncComponent } from 'vue'
 
 /// keep-sorted
 export const ICONS = {
+  arrowLeft: defineAsyncComponent(() => import('~icons/lucide/arrow-left')),
   check: defineAsyncComponent(() => import('~icons/lucide/check')),
   code: defineAsyncComponent(() => import('~icons/lucide/code')),
   collapse: defineAsyncComponent(() => import('~icons/lucide/chevron-down')),

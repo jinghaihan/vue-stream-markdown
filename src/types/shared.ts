@@ -5,6 +5,7 @@ export type IconName
   = | keyof typeof ICONS
     | 'flipVertical'
     | 'rotateRight'
+    | 'arrowRight'
 
 export interface SelectItem {
   label: string

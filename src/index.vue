@@ -76,6 +76,7 @@ watch(() => props.locale, () => loadLocaleMessages(props.locale))
 provideContext({
   icons,
   isDark,
+  parsedNodes,
   getContainer,
   onCopied: (content: string) => {
     emits('copied', content)

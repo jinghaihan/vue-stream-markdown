@@ -291,12 +291,6 @@
   color: var(--muted-foreground);
 }
 
-@media (max-width: 1024px) {
-  .stream-markdown [data-stream-markdown='code-block-header'] {
-    padding-inline: 0.75rem;
-  }
-}
-
 .stream-markdown [data-stream-markdown='code-block-content'] {
   overflow: auto;
 }
@@ -595,6 +589,15 @@
 
 .stream-markdown [data-stream-markdown='code'] {
   padding: 1rem;
+}
+
+@media (max-width: 1024px) {
+  .stream-markdown [data-stream-markdown='code-block-header'] {
+    padding-inline: 0.75rem;
+  }
+  .stream-markdown [data-stream-markdown='zoom-controls'] {
+    gap: 0;
+  }
 }
 
 .stream-markdown .typewriter-enter-from {
