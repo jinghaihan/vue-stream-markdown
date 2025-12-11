@@ -21,8 +21,9 @@ export interface StreamMarkdownProps extends StreamMarkdownContext, MarkdownPars
 export interface MarkdownParserOptions {
   mdastOptions?: MdastOptions
   normalize?: (content: string) => string
+  postNormalize?: (data: SyntaxTree) => SyntaxTree
   preprocess?: (content: string) => string
-  postprocess?: (content: SyntaxTree) => SyntaxTree
+  postprocess?: (data: SyntaxTree) => SyntaxTree
   extendMarkdownIt?: (md: MarkdownItAsync) => void
 }
 

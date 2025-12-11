@@ -10,7 +10,7 @@ import { gfmStrikethroughCjkFriendly } from 'micromark-extension-cjk-friendly-gf
 import { frontmatter } from 'micromark-extension-frontmatter'
 import { gfm } from 'micromark-extension-gfm'
 import { math } from 'micromark-extension-math'
-import { postprocess } from './postprocess'
+import { postNormalize, postprocess } from './postprocess'
 import { normalize, preprocess } from './preprocess'
 import { findLastLeafNode } from './utils'
 
@@ -78,8 +78,11 @@ export class MarkdownParser {
       ],
     })
 
+    const normal = this.options.postprocess ?? postNormalize
+    const treeData = normal(data)
+
     const post = this.options.postprocess ?? postprocess
-    const resolved = this.mode === 'streaming' ? post(data) : data
+    const resolved = this.mode === 'streaming' ? post(treeData) : treeData
 
     if (!loading || this.mode === 'static')
       return resolved
