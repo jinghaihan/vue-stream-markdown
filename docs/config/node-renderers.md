@@ -82,7 +82,6 @@ All custom renderers receive the following props through their specific Props ty
 - `node` - The parsed markdown node (typed according to the node type)
 - `markdownParser` - The `MarkdownParser` instance
 - `nodeRenderers` - The merged node renderers object
-- `mediumZoom` - The medium-zoom instance for image zooming
 - `indexKey` - A unique key for the node
 - `getContainer` - Function to get the container element
 - `isDark` - Dark mode state

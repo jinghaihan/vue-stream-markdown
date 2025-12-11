@@ -11,10 +11,6 @@ export default defineConfig({
       name: 'markdown',
       match: [/remend/],
     },
-    {
-      name: 'frontend',
-      match: [/medium-zoom/],
-    },
   ]),
   postRun: 'eslint --fix "**/package.json" "**/pnpm-workspace.yaml"',
 })

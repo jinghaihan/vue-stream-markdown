@@ -406,6 +406,15 @@
   line-height: 1.25rem;
 }
 
+.stream-markdown [data-stream-markdown='image'] {
+  display: block;
+  height: auto;
+  max-width: 100%;
+  border-radius: 0.5rem;
+  object-fit: contain;
+  cursor: pointer;
+}
+
 .stream-markdown [data-stream-markdown='image-figure'] {
   display: inline-block;
 }
@@ -413,14 +422,6 @@
 .stream-markdown [data-stream-markdown='image-wrapper'] {
   position: relative;
   text-align: center;
-}
-
-.stream-markdown [data-stream-markdown='image'] {
-  display: block;
-  max-width: 100%;
-  height: auto;
-  object-fit: contain;
-  border-radius: 0.5rem;
 }
 
 .stream-markdown [data-stream-markdown='image-caption'] {
@@ -431,12 +432,13 @@
 }
 
 .stream-markdown [data-stream-markdown='image-mask'] {
-  display: none;
+  opacity: 0;
   position: absolute;
   inset: 0;
   border-radius: 0.5rem;
   background-color: rgb(0 0 0 / 0.1);
   pointer-events: none;
+  transition: opacity var(--default-transition-duration) ease;
 }
 
 .stream-markdown [data-stream-markdown='image-download-button'] {

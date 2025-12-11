@@ -49,9 +49,6 @@ catalogs:
     echarts:
       specifier: ^6.0.0
       version: 6.0.0
-    medium-zoom:
-      specifier: ^1.1.0
-      version: 1.1.0
     vue:
       specifier: ^3.5.25
       version: 3.5.25
@@ -192,9 +189,6 @@ importers:
       markdown-it-async:
         specifier: catalog:markdown
         version: 2.2.0
-      medium-zoom:
-        specifier: catalog:frontend
-        version: 1.1.0
       mermaid:
         specifier: '>=11'
         version: 11.12.1
@@ -3317,9 +3311,6 @@ packages:
 
   mdurl@2.0.0:
     resolution: {integrity: sha512-Lf+9+2r+Tdp5wXDXC4PcIBjTDtq4UKjCPMQhKIuzpJNW0b96kVqSwW0bT7FhRSfmAiFYgP+SCRvdrDozfh0U5w==}
-
-  medium-zoom@1.1.0:
-    resolution: {integrity: sha512-ewyDsp7k4InCUp3jRmwHBRFGyjBimKps/AJLjRSox+2q/2H4p/PNpQf+pwONWlJiOudkBXtbdmVbFjqyybfTmQ==}
 
   mermaid@11.12.1:
     resolution: {integrity: sha512-UlIZrRariB11TY1RtTgUWp65tphtBv4CSq7vyS2ZZ2TgoMjs2nloq+wFqxiwcxlhHUvs7DPGgMjs2aeQxz5h9g==}
@@ -7575,8 +7566,6 @@ snapshots:
   mdn-data@2.12.2: {}
 
   mdurl@2.0.0: {}
-
-  medium-zoom@1.1.0: {}
 
   mermaid@11.12.1:
     dependencies:

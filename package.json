@@ -71,7 +71,6 @@
     "@floating-ui/vue": "catalog:frontend",
     "@vueuse/core": "catalog:utils",
     "markdown-it-async": "catalog:markdown",
-    "medium-zoom": "catalog:frontend",
     "remend": "catalog:markdown"
   },
   "devDependencies": {

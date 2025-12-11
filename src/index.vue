@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
 import type { IconName, NodeRenderers, StreamMarkdownProps } from './types'
-import mediumZoom from 'medium-zoom'
 import { computed, onBeforeUnmount, ref, toRefs, watch } from 'vue'
 import NodeList from './components/node-list.vue'
 import { NODE_RENDERERS } from './components/renderers'
@@ -9,7 +8,6 @@ import { useContext, useKatex, useMermaid, useShiki } from './composables'
 import { ICONS } from './constants'
 import { loadLocaleMessages } from './locales'
 import { MarkdownParser } from './markdown-parser'
-import 'medium-zoom/dist/style.css'
 
 const props = withDefaults(defineProps<StreamMarkdownProps>(), {
   mode: 'streaming',
@@ -31,10 +29,6 @@ const { shikiOptions, mermaidOptions, isDark } = toRefs(props)
 const containerRef = ref<HTMLDivElement>()
 
 const { provideContext } = useContext()
-
-const zoom = mediumZoom('[data-zoomable]', {
-  background: 'color-mix(in oklab, var(--background) 80%, transparent)',
-})
 
 const markdownParser = new MarkdownParser({
   mode: props.mode,
@@ -112,7 +106,6 @@ defineExpose({
       :markdown-parser="markdownParser"
       :node-renderers="nodeRenderers"
       :nodes="parsedNodes"
-      :medium-zoom="zoom"
       :get-container="getContainer"
     />
   </div>

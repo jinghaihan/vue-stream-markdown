@@ -1,4 +1,3 @@
-import type { Zoom } from 'medium-zoom'
 import type { MarkdownParser } from '../markdown-parser'
 import type { StreamMarkdownContext } from './context'
 import type {
@@ -42,7 +41,6 @@ export interface NodeRendererProps extends StreamMarkdownContext {
   markdownParser: MarkdownParser
   nodeRenderers: NodeRenderers
   node: ParsedNode
-  mediumZoom: Zoom
   indexKey: number | string
   getContainer: () => HTMLElement | undefined
 }

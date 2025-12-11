@@ -24,8 +24,3 @@
 .dark::view-transition-old(root) {
   z-index: 9999;
 }
-
-.medium-zoom-overlay,
-.medium-zoom-image--opened {
-  z-index: 2147483647;
-}

@@ -55,12 +55,6 @@ const Error = computed(() => isHardenUrl.value
 
 function handleLoaded() {
   imageLoaded.value = true
-
-  if (fallbackAttempted.value)
-    return
-
-  if (imgRef.value)
-    props.mediumZoom.attach(imgRef.value)
 }
 
 function handleError() {
@@ -120,12 +114,12 @@ async function handleDownload() {
 
 function handleMouseEnter() {
   if (maskRef.value)
-    maskRef.value.style.display = 'block'
+    maskRef.value.style.opacity = 1
 }
 
 function handleMouseLeave() {
   if (maskRef.value)
-    maskRef.value.style.display = 'none'
+    maskRef.value.style.opacity = 0
 }
 </script>
 
@@ -159,19 +153,14 @@ function handleMouseLeave() {
 
       <img
         v-if="!isLoading && !isHardenUrl && typeof transformedUrl === 'string'"
-        ref="imgRef"
+        :ref="imgRef"
         :key="transformedUrl"
         data-stream-markdown="image"
         :src="transformedUrl"
         :alt="alt"
         :title="title"
-        :style="{
-          opacity: isLoading ? 0 : 1,
-          cursor: isLoading ? 'default' : 'pointer',
-        }"
         loading="lazy"
         decoding="async"
-        data-zoomable
         @load="handleLoaded"
         @error="handleError"
       >
