@@ -591,6 +591,11 @@
   padding: 1rem;
 }
 
+.stream-markdown [data-stream-markdown='footnote-reference'] {
+  color: var(--primary);
+  cursor: pointer;
+}
+
 @media (max-width: 1024px) {
   .stream-markdown [data-stream-markdown='code-block-header'] {
     padding-inline: 0.75rem;
