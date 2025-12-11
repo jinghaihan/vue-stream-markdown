@@ -69,9 +69,9 @@ This project also uses and benefits from:
 ### Code Sources
 - [markstream-vue](https://github.com/Simon-He95/markstream-vue) - The original inspiration for learning AST-based custom markdown rendering, and the source of the animation implementation used in this project
 - [ast-explorer](https://github.com/sxzz/ast-explorer) - Learned AST knowledge from this project, and the playground layout inspiration and AST syntax tree filtering code are derived from it
+- [medium-zoom](https://github.com/francoischalifour/medium-zoom) - Inspired the custom image zoom implementation
 - [markdown-sanitizers](https://github.com/vercel-labs/markdown-sanitizers) - URL validation and security hardening logic in `src/utils/harden.ts` is ported from `rehype-harden`
 - [Dify](https://github.com/langgenius/dify) - LaTeX preprocessing logic in `src/preprocess/vendored/markdown-utils.ts` is ported from Dify
-
 ## Acknowledgments
 
 I would like to express my sincere gratitude to those who provided guidance and support during the project selection phase and promotion phase of this project. Without their encouragement and support, I would not have been able to complete this work. In particular, the [streamdown](https://streamdown.ai/) community provided excellent code guidance and even helped fix several issues.

@@ -1,24 +1,31 @@
 <script setup lang="ts">
 import type { CSSProperties } from 'vue'
-import { useEventListener } from '@vueuse/core'
+import { createReusableTemplate, useEventListener } from '@vueuse/core'
 import { computed, useSlots } from 'vue'
+import { useContext } from '../composables'
 
 const props = withDefaults(defineProps<{
   title?: string
   zIndex?: number
+  modalStyle?: CSSProperties
   headerStyle?: CSSProperties
-  getContainer?: () => HTMLElement | undefined
+  transition?: string
 }>(), {
   zIndex: 1000,
+  transition: 'modal',
 })
 
 const slots = useSlots()
 
 const open = defineModel<boolean>('open', { required: false, default: false })
 
-const container = props.getContainer ? props.getContainer() || 'body' : 'body'
+const [DefineTemplate, ReuseTemplate] = createReusableTemplate()
+
+const { getContainer } = useContext()
+const container = getContainer() || 'body'
 
 const modalStyle = computed(() => ({
+  ...props.modalStyle,
   zIndex: props.zIndex,
 }))
 const showHeader = computed(() => !!props.title || !!slots.title || !!slots.extra)
@@ -30,22 +37,27 @@ useEventListener(document, 'keyup', (event) => {
 </script>
 
 <template>
+  <DefineTemplate>
+    <div v-if="open" data-stream-markdown="modal" :style="modalStyle">
+      <header v-if="showHeader" data-stream-markdown="modal-header" :style="headerStyle">
+        <slot name="title">
+          {{ title }}
+        </slot>
+        <slot name="header-center">
+          <div />
+        </slot>
+        <slot name="actions" />
+      </header>
+      <main data-stream-markdown="modal-body">
+        <slot />
+      </main>
+    </div>
+  </DefineTemplate>
+
   <teleport :to="container">
-    <Transition name="modal" appear>
-      <div v-if="open" data-stream-markdown="modal" :style="modalStyle">
-        <header v-if="showHeader" data-stream-markdown="modal-header" :style="headerStyle">
-          <slot name="title">
-            {{ title }}
-          </slot>
-          <slot name="header-center">
-            <div />
-          </slot>
-          <slot name="actions" />
-        </header>
-        <main data-stream-markdown="modal-body">
-          <slot />
-        </main>
-      </div>
+    <Transition v-if="transition" :name="transition" appear>
+      <ReuseTemplate />
     </Transition>
+    <ReuseTemplate v-else />
   </teleport>
 </template>

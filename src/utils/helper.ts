@@ -1,3 +1,5 @@
+const fileExtensionPattern = /\.[^/.]+$/
+
 export function flow<T>(fns: Array<(arg: T) => T>): (arg: T) => T {
   return (input: T) => fns.reduce((acc, fn) => fn(acc), input)
 }
@@ -12,6 +14,50 @@ export function save(filename: string, content: string | Blob, mimeType: string)
   a.click()
   document.body.removeChild(a)
   URL.revokeObjectURL(url)
+}
+
+export async function saveImage(url: string, alt?: string) {
+  const response = await fetch(url)
+  const blob = await response.blob()
+  const urlPath = new URL(url, window.location.origin).pathname
+  const originalFilename = urlPath.split('/').pop() || ''
+  const extension = originalFilename.split('.').pop()
+  const hasExtension
+    = originalFilename.includes('.')
+      && extension !== undefined
+      && extension.length <= 4
+
+  let filename = ''
+
+  if (hasExtension) {
+    filename = originalFilename
+  }
+  else {
+    // Determine extension from blob type
+    const mimeType = blob.type
+    let fileExtension = 'png' // default
+
+    if (mimeType.includes('jpeg') || mimeType.includes('jpg')) {
+      fileExtension = 'jpg'
+    }
+    else if (mimeType.includes('png')) {
+      fileExtension = 'png'
+    }
+    else if (mimeType.includes('svg')) {
+      fileExtension = 'svg'
+    }
+    else if (mimeType.includes('gif')) {
+      fileExtension = 'gif'
+    }
+    else if (mimeType.includes('webp')) {
+      fileExtension = 'webp'
+    }
+
+    const baseName = alt || originalFilename || 'image'
+    filename = `${baseName.replace(fileExtensionPattern, '')}.${fileExtension}`
+  }
+
+  save(filename, blob, blob.type)
 }
 
 export function svgToPngBlob(svgString: string, options?: { scale?: number }): Promise<Blob> {

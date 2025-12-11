@@ -42,7 +42,6 @@ export interface NodeRendererProps extends StreamMarkdownContext {
   nodeRenderers: NodeRenderers
   node: ParsedNode
   indexKey: number | string
-  getContainer: () => HTMLElement | undefined
 }
 
 export interface BlockquoteNodeRendererProps extends NodeRendererProps {

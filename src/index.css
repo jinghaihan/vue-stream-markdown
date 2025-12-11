@@ -304,11 +304,13 @@
 .stream-markdown [data-stream-markdown='code-block-header'] > :first-child {
   flex: 1;
 }
+
 .stream-markdown [data-stream-markdown='code-block-header'] > :last-child {
   flex: 1;
   display: flex;
   justify-content: flex-end;
 }
+
 .stream-markdown [data-stream-markdown='code-block-header'] > :nth-child(2) {
   position: absolute;
   left: 50%;

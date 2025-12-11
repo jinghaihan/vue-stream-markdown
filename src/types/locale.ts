@@ -10,6 +10,10 @@ export interface LocaleConfig {
     download: string
     minimize: string
     maximize: string
+    flipY: string
+    flipX: string
+    rotateLeft: string
+    rotateRight: string
   }
   error: {
     vanilla: string

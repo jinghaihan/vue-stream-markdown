@@ -83,7 +83,6 @@ All custom renderers receive the following props through their specific Props ty
 - `markdownParser` - The `MarkdownParser` instance
 - `nodeRenderers` - The merged node renderers object
 - `indexKey` - A unique key for the node
-- `getContainer` - Function to get the container element
 - `isDark` - Dark mode state
 
 ## Example: Custom Heading Renderer
@@ -157,4 +156,4 @@ const nodeRenderers: NodeRenderers = {
 - Custom renderers are merged with default renderers, so you only need to specify the ones you want to override
 - Use the provided Props types for full TypeScript support
 - The `NodeList` component is available for rendering child nodes
-- Renderers receive all context props including `isDark`, `getContainer`...
+- Renderers receive all context props including `node`, `isDark`...

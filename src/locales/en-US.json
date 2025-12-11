@@ -9,7 +9,11 @@
     "copy": "Copy",
     "download": "Download",
     "minimize": "Minimize",
-    "maximize": "Maximize"
+    "maximize": "Maximize",
+    "flipY": "Flip Y",
+    "flipX": "Flip X",
+    "rotateLeft": "Rotate Left",
+    "rotateRight": "Rotate Right"
   },
   "error": {
     "vanilla": "Error",

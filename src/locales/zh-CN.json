@@ -9,7 +9,11 @@
     "copy": "复制",
     "download": "下载",
     "minimize": "最小化",
-    "maximize": "最大化"
+    "maximize": "最大化",
+    "flipY": "翻转 Y",
+    "flipX": "翻转 X",
+    "rotateLeft": "左转",
+    "rotateRight": "右转"
   },
   "error": {
     "vanilla": "错误",

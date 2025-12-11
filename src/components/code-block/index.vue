@@ -2,7 +2,7 @@
 import type { BuiltinLanguage } from 'shiki'
 import type { Component, CSSProperties } from 'vue'
 import type { CodeNodeRendererProps, SelectItem } from '../../types'
-import { useClipboard } from '@vueuse/core'
+import { createReusableTemplate, useClipboard } from '@vueuse/core'
 import { computed, defineAsyncComponent, ref, toRefs, watch } from 'vue'
 import { useCodeOptions, useContext, useControls, useI18n, useMermaid } from '../../composables'
 import {
@@ -32,6 +32,8 @@ interface Action {
   onClick: (event: MouseEvent, item?: SelectItem) => void
 }
 
+const CodeNode = defineAsyncComponent(() => import('../renderers/code/index.vue'))
+
 const { controls, previewers, codeOptions } = toRefs(props)
 
 const { t } = useI18n()
@@ -42,7 +44,7 @@ const { isControlEnabled } = useControls({
 })
 const { installed: hasMermaid } = useMermaid()
 
-const CodeNode = defineAsyncComponent(() => import('../renderers/code/index.vue'))
+const [DefineTemplate, ReuseTemplate] = createReusableTemplate()
 
 const { onCopied } = useContext()
 const { copy, copied } = useClipboard({
@@ -211,6 +213,21 @@ watch(
 </script>
 
 <template>
+  <DefineTemplate>
+    <LanguageTitle
+      v-if="showLanguageTitle"
+      :icon="icon"
+      :language="language"
+      :show-icon="showLanguageIcon"
+      :show-name="showLanguageName"
+    />
+    <PreviewSegmented
+      v-else-if="previewable"
+      v-model:mode="mode"
+      v-model:collapsed="collapsed"
+    />
+    <div v-else />
+  </DefineTemplate>
   <div
     data-stream-markdown="code-block"
     :data-collapsed="collapsed"
@@ -221,19 +238,7 @@ watch(
   >
     <header data-stream-markdown="code-block-header">
       <slot name="title">
-        <LanguageTitle
-          v-if="showLanguageTitle"
-          :icon="icon"
-          :language="language"
-          :show-icon="showLanguageIcon"
-          :show-name="showLanguageName"
-        />
-        <PreviewSegmented
-          v-else-if="previewable"
-          v-model:mode="mode"
-          v-model:collapsed="collapsed"
-        />
-        <div v-else />
+        <ReuseTemplate />
       </slot>
 
       <slot name="header-center">
@@ -269,22 +274,9 @@ watch(
         color: 'var(--muted-foreground)',
         borderBottom: '1px solid var(--border)',
       }"
-      :get-container="props.getContainer"
     >
       <template #title>
-        <LanguageTitle
-          v-if="showLanguageTitle"
-          :icon="icon"
-          :language="language"
-          :show-icon="showLanguageIcon"
-          :show-name="showLanguageName"
-        />
-        <PreviewSegmented
-          v-else-if="previewable"
-          v-model:mode="mode"
-          v-model:collapsed="collapsed"
-        />
-        <div v-else />
+        <ReuseTemplate />
       </template>
 
       <template #header-center>

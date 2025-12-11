@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { CSSProperties } from 'vue'
 import type { ZoomControlPosition } from '../types'
 import { computed, ref } from 'vue'
 import { useContext, useI18n, useZoom } from '../composables'
@@ -6,10 +7,14 @@ import Button from './button.vue'
 
 const props = withDefaults(defineProps<{
   showControl?: boolean
+  controlSize?: 'vanilla' | 'large'
   position?: ZoomControlPosition
+  containerStyle?: CSSProperties
 }>(), {
   showControl: true,
+  controlSize: 'vanilla',
   position: 'bottom-right',
+  containerStyle: () => ({}),
 })
 
 const containerRef = ref<HTMLElement>()
@@ -36,7 +41,7 @@ const {
 
 const zoomPercent = computed(() => `${Math.round(zoom.value * 100)}%`)
 
-const controlsStyle = computed(() => {
+const controlsPosition = computed(() => {
   switch (props.position) {
     case 'top-left':
       return {
@@ -47,6 +52,12 @@ const controlsStyle = computed(() => {
       return {
         top: '0.5rem',
         right: '0.5rem',
+      }
+    case 'top-center':
+      return {
+        top: '0.5rem',
+        left: '50%',
+        transform: 'translateX(-50%)',
       }
     case 'bottom-left':
       return {
@@ -65,6 +76,19 @@ const controlsStyle = computed(() => {
         bottom: '0.5rem',
         right: '0.5rem',
       }
+  }
+})
+
+const controlButtonProps = computed(() => {
+  if (props.controlSize === 'vanilla')
+    return {}
+
+  return {
+    iconWidth: 18,
+    iconHeight: 18,
+    buttonStyle: {
+      fontSize: '0.875rem',
+    },
   }
 })
 
@@ -102,25 +126,27 @@ function onTouchEnd(event: TouchEvent) {
     @pointercancel.prevent="stopDrag"
     @pointerleave.prevent="stopDrag"
   >
-    <div v-if="showControl" data-stream-markdown="zoom-controls" :style="controlsStyle">
-      <slot name="controls">
-        <Button
-          :icon="icons.zoomIn"
-          :name="t('button.zoomIn')"
-          @click="zoomIn"
-        />
-        <Button
-          :icon="icons.zoomOut"
-          :name="t('button.zoomOut')"
-          @click="zoomOut"
-        />
-        <Button
-          :title="t('button.resetZoom')"
-          :name="zoomPercent"
-          variant="text"
-          @click="resetZoom"
-        />
-      </slot>
+    <div v-if="showControl" data-stream-markdown="zoom-controls" :style="controlsPosition" @click.stop>
+      <slot name="controls" v-bind="controlButtonProps" />
+      <Button
+        :icon="icons.zoomIn"
+        :name="t('button.zoomIn')"
+        v-bind="controlButtonProps"
+        @click="zoomIn"
+      />
+      <Button
+        :icon="icons.zoomOut"
+        :name="t('button.zoomOut')"
+        v-bind="controlButtonProps"
+        @click="zoomOut"
+      />
+      <Button
+        :title="t('button.resetZoom')"
+        :name="zoomPercent"
+        variant="text"
+        v-bind="controlButtonProps"
+        @click="resetZoom"
+      />
     </div>
 
     <div data-stream-markdown="zoom-inner">
@@ -128,8 +154,10 @@ function onTouchEnd(event: TouchEvent) {
         data-stream-markdown="zoom-transform-container"
         :style="{
           ...transformStyle,
+          ...containerStyle,
           cursor: isDragging ? 'grabbing' : 'grab',
         }"
+        @click.stop
       >
         <slot />
       </div>
