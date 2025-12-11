@@ -174,7 +174,7 @@ Controls for Mermaid diagrams. Can be a boolean or an object with zoom options.
 
 ##### position
 
-- **Type:** `'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'`
+- **Type:** `ZoomControlPosition`
 
 Position of the zoom control button.
 

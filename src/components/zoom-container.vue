@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import type { ZoomControlPosition } from '../types'
 import { computed, ref } from 'vue'
 import { useContext, useI18n, useZoom } from '../composables'
 import Button from './button.vue'
 
 const props = withDefaults(defineProps<{
   showControl?: boolean
-  position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+  position?: ZoomControlPosition
 }>(), {
   showControl: true,
   position: 'bottom-right',
@@ -52,6 +53,12 @@ const controlsStyle = computed(() => {
         bottom: '0.5rem',
         left: '0.5rem',
       }
+    case 'bottom-center':
+      return {
+        bottom: '0.5rem',
+        left: '50%',
+        transform: 'translateX(-50%)',
+      }
     case 'bottom-right':
     default:
       return {
@@ -96,22 +103,24 @@ function onTouchEnd(event: TouchEvent) {
     @pointerleave.prevent="stopDrag"
   >
     <div v-if="showControl" data-stream-markdown="zoom-controls" :style="controlsStyle">
-      <Button
-        :icon="icons.zoomIn"
-        :name="t('button.zoomIn')"
-        @click="zoomIn"
-      />
-      <Button
-        :icon="icons.zoomOut"
-        :name="t('button.zoomOut')"
-        @click="zoomOut"
-      />
-      <Button
-        :title="t('button.resetZoom')"
-        :name="zoomPercent"
-        variant="text"
-        @click="resetZoom"
-      />
+      <slot name="controls">
+        <Button
+          :icon="icons.zoomIn"
+          :name="t('button.zoomIn')"
+          @click="zoomIn"
+        />
+        <Button
+          :icon="icons.zoomOut"
+          :name="t('button.zoomOut')"
+          @click="zoomOut"
+        />
+        <Button
+          :title="t('button.resetZoom')"
+          :name="zoomPercent"
+          variant="text"
+          @click="resetZoom"
+        />
+      </slot>
     </div>
 
     <div data-stream-markdown="zoom-inner">

@@ -62,11 +62,10 @@ const { preload: preloadMermaid, dispose: disposeMermaid } = useMermaid({
 const { preload: preloadKatex, dispose: disposeKatex } = useKatex()
 
 async function bootstrap() {
-  const tasks = []
+  const tasks = [preloadShiki(), preloadMermaid(), preloadKatex()]
   if (props.locale !== 'en-US')
     tasks.push(loadLocaleMessages(props.locale))
-
-  await Promise.all([...tasks, preloadShiki(), preloadMermaid(), preloadKatex()])
+  await Promise.all(tasks)
 }
 
 bootstrap()

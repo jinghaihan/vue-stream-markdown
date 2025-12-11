@@ -414,13 +414,13 @@ Controls for Mermaid diagrams. Can be a boolean or an object with zoom options.
 type ZoomControlsConfig
   = | boolean
     | {
-      position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+      position?: ZoomControlPosition
     }
 ```
 
 ### position
 
-- **Type:** `'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | undefined`
+- **Type:** `ZoomControlPosition | undefined`
 - **Default:** `'bottom-right'`
 
 Position of the zoom control button for Mermaid diagrams. The zoom controls allow users to zoom in, zoom out, and reset the zoom level of Mermaid diagrams.

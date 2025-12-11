@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { CSSProperties } from 'vue'
+import { useEventListener } from '@vueuse/core'
 import { computed, useSlots } from 'vue'
 
 const props = withDefaults(defineProps<{
@@ -21,6 +22,11 @@ const modalStyle = computed(() => ({
   zIndex: props.zIndex,
 }))
 const showHeader = computed(() => !!props.title || !!slots.title || !!slots.extra)
+
+useEventListener(document, 'keyup', (event) => {
+  if (event.key === 'Escape' || event.key === 'Esc')
+    open.value = false
+})
 </script>
 
 <template>
