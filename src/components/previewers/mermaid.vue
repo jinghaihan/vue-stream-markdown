@@ -2,7 +2,7 @@
 import type { CodeNodeRendererProps, ZoomControlPosition } from '../../types'
 import { throttle } from '@antfu/utils'
 import { useResizeObserver } from '@vueuse/core'
-import { computed, ref, toRefs, watch } from 'vue'
+import { computed, nextTick, ref, toRefs, watch } from 'vue'
 import { useControls } from '../../composables'
 import { useMermaid } from '../../composables/use-mermaid'
 import ErrorComponent from '../error-component.vue'
@@ -116,7 +116,9 @@ const render = throttle(
     const data = await renderMermaid(code.value)
     if (data) {
       svg.value = data
-      updateHeight()
+      nextTick(() => {
+        updateHeight()
+      })
     }
     renderFlag.value = true
   },

@@ -23,7 +23,7 @@ const open = defineModel<boolean>('open', { required: false, default: false })
 const [DefineTemplate, ReuseTemplate] = createReusableTemplate()
 
 const { getContainer } = useContext()
-const container = getContainer() || 'body'
+const container = computed(() => getContainer() || 'body')
 
 const modalStyle = computed(() => ({
   ...props.modalStyle,
