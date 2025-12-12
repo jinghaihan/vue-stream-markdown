@@ -1,6 +1,6 @@
 # Parser Configuration
 
-The parser configuration allows you to customize the markdown parsing process through three main functions: `normalize`, `preprocess`, and `postprocess`. These functions work together to handle content normalization, syntax completion, and AST post-processing.
+The parser configuration allows you to customize the markdown parsing process through four main functions: `normalize`, `preprocess`, `postNormalize`, and `postprocess`. These functions work together to handle content normalization, syntax completion, and AST post-processing.
 
 ## normalize
 
@@ -101,12 +101,54 @@ The following functions are available for use in `preprocess`:
 - `fixInlineMath`: Completes incomplete inline math syntax (`$math$`)
 - `remend`: Intelligently parses and completes incomplete Markdown syntax blocks (from [remend](https://github.com/vercel/streamdown/tree/main/packages/remend), a library from the [streamdown](https://streamdown.ai/) project). It automatically detects and completes unterminated syntax, providing the foundation for streaming-friendly Markdown parsing
 
+## postNormalize
+
+- **Type:** `(data: SyntaxTree) => SyntaxTree`
+- **Default:** Built-in postNormalize function
+
+The `postNormalize` function is executed after the AST (Abstract Syntax Tree) is generated, but before `postprocess`. It is used for basic AST normalization tasks, such as reorganizing footnote definitions.
+
+### How It Works
+
+The parser processes the AST in the following order:
+1. Markdown is parsed into an AST
+2. `postNormalize` is applied (for basic normalization)
+3. `postprocess` is applied (for streaming-specific processing)
+
+### Customization
+
+You can customize the `postNormalize` function to modify the AST:
+
+```vue
+<script setup lang="ts">
+import type { SyntaxTree } from 'vue-stream-markdown'
+import { Markdown } from 'vue-stream-markdown'
+
+// Custom postNormalize
+function postNormalize(ast: SyntaxTree): SyntaxTree {
+  // Your custom AST normalization logic
+  // For example, reorganize nodes, normalize structure, etc.
+  return ast
+}
+</script>
+
+<template>
+  <Markdown :content="content" :post-normalize="postNormalize" />
+</template>
+```
+
+### Built-in PostNormalize Functions
+
+The following functions are available for use in `postNormalize`:
+
+- `postFixFootnote`: Reorganizes footnote definitions by moving them to the end of the document
+
 ## postprocess
 
 - **Type:** `(content: SyntaxTree) => SyntaxTree`
 - **Default:** Built-in postprocess function
 
-The `postprocess` function is executed after the AST (Abstract Syntax Tree) is generated. It is used to perform preset processing on the AST syntax tree before rendering.
+The `postprocess` function is executed after `postNormalize`. It is used to perform streaming-specific processing on the AST syntax tree before rendering. In streaming mode, `postprocess` is always applied; in static mode, it is skipped.
 
 ### Customization
 
@@ -138,43 +180,27 @@ The following functions are available for use in `postprocess`:
 
 ## Complete Example
 
-Here's a complete example showing how to use all three functions together:
+Here's a complete example showing how to use all four functions together:
 
 ```vue
 <script setup lang="ts">
 import type { SyntaxTree } from 'vue-stream-markdown'
 import {
-  fixCode,
-  fixStrong,
   flow,
   Markdown,
   normalize,
-  postFixText,
+  postNormalize,
   postprocess,
   preprocess
 } from 'vue-stream-markdown'
 
-// Custom normalize: combine built-in functions
-const customNormalize = flow([
-  (content: string) => content.trim(),
-  normalize, // Then apply built-in normalize
-])
-
-// Custom preprocess: only fix strong and code
-const customPreprocess = flow([
-  fixStrong,
-  fixCode,
-])
-
-// Custom postprocess: add your own logic
+const customNormalize = flow([normalize])
+const customPreprocess = flow([preprocess])
+function customPostNormalize(ast: SyntaxTree): SyntaxTree {
+  return postNormalize(ast)
+}
 function customPostprocess(ast: SyntaxTree): SyntaxTree {
-  // Apply built-in postprocess first
-  const processed = postprocess(ast)
-
-  // Then add your custom logic
-  // For example, add metadata to nodes
-
-  return processed
+  return postprocess(ast)
 }
 </script>
 
@@ -183,6 +209,7 @@ function customPostprocess(ast: SyntaxTree): SyntaxTree {
     :content="content"
     :normalize="customNormalize"
     :preprocess="customPreprocess"
+    :post-normalize="customPostNormalize"
     :postprocess="customPostprocess"
   />
 </template>

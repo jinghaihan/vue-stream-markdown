@@ -7,6 +7,7 @@ export const ICONS = {
   code: defineAsyncComponent(() => import('~icons/lucide/code')),
   collapse: defineAsyncComponent(() => import('~icons/lucide/chevron-down')),
   copy: defineAsyncComponent(() => import('~icons/lucide/copy')),
+  cornerDownLeft: defineAsyncComponent(() => import('~icons/lucide/corner-down-left')),
   download: defineAsyncComponent(() => import('~icons/lucide/download')),
   error: defineAsyncComponent(() => import('~icons/lucide/circle-alert')),
   flipHorizontal: defineAsyncComponent(() => import('~icons/lucide/flip-horizontal')),

@@ -7,6 +7,7 @@ export const NODE_RENDERERS: NodeRenderers = {
   code: defineAsyncComponent(() => import('./code/index.vue')),
   delete: defineAsyncComponent(() => import('./delete.vue')),
   emphasis: defineAsyncComponent(() => import('./emphasis.vue')),
+  footnoteDefinition: defineAsyncComponent(() => import('./footnote-definition.vue')),
   footnoteReference: defineAsyncComponent(() => import('./footnote-reference.vue')),
   heading: defineAsyncComponent(() => import('./heading.vue')),
   image: defineAsyncComponent(() => import('./image.vue')),

@@ -82,11 +82,17 @@ Function to normalize the markdown content before parsing.
 
 Function to preprocess the markdown content before parsing.
 
+### postNormalize
+
+- **Type:** `(data: SyntaxTree) => SyntaxTree`
+
+Function to normalize the syntax tree after parsing but before postprocess. Used for basic AST normalization tasks, such as reorganizing footnote definitions.
+
 ### postprocess
 
 - **Type:** `(content: SyntaxTree) => SyntaxTree`
 
-Function to postprocess the syntax tree after parsing.
+Function to postprocess the syntax tree after postNormalize. In streaming mode, this is always applied; in static mode, it is skipped.
 
 ### extendMarkdownIt
 

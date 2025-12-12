@@ -4,7 +4,7 @@
     "zoomOut": "缩小",
     "resetZoom": "重置缩放",
     "preview": "预览",
-    "source": "源代码",
+    "source": "代码",
     "collapse": "折叠",
     "copy": "复制",
     "download": "下载",
@@ -15,7 +15,8 @@
     "rotateLeft": "左转",
     "rotateRight": "右转",
     "previous": "上个",
-    "next": "下个"
+    "next": "下个",
+    "back": "返回"
   },
   "error": {
     "vanilla": "错误",

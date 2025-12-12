@@ -15,7 +15,8 @@
     "rotateLeft": "Rotate Left",
     "rotateRight": "Rotate Right",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "back": "Back"
   },
   "error": {
     "vanilla": "Error",

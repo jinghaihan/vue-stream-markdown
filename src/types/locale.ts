@@ -16,6 +16,7 @@ export interface LocaleConfig {
     rotateRight: string
     previous: string
     next: string
+    back: string
   }
   error: {
     vanilla: string

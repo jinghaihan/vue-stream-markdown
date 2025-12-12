@@ -12,7 +12,7 @@ const label = computed(() => props.node.label ?? id.value)
 
 function scrollToFootnote() {
   const container = getContainer() || document.body
-  const footnoteElement = container.querySelector(`#footnote-${id.value}`)
+  const footnoteElement = container.querySelector(`#footnote-definition-${id.value}`)
   if (!footnoteElement)
     return
   footnoteElement.scrollIntoView({ behavior: 'smooth' })

@@ -596,6 +596,26 @@
   cursor: pointer;
 }
 
+.stream-markdown [data-stream-markdown='footnote-definition'] {
+  color: var(--muted-foreground);
+}
+
+.stream-markdown [data-stream-markdown='footnote-definition'] [data-stream-markdown='footnote-definition-label'] {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 0.25rem;
+}
+
+.stream-markdown [data-stream-markdown='footnote-definition'] [data-stream-markdown='footnote-definition-button'] {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 0.25rem;
+}
+
+.stream-markdown [data-stream-markdown='footnote-definition'] p {
+  display: inline;
+}
+
 @media (max-width: 1024px) {
   .stream-markdown [data-stream-markdown='code-block-header'] {
     padding-inline: 0.75rem;
