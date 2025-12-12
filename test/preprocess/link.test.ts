@@ -74,6 +74,26 @@ describe('fixLink', () => {
       const complete = '![mdast](https://raw.githubusercontent.com/logo.svg)'
       expect(fixLink(complete)).toBe(complete)
     })
+
+    describe('empty alt text', () => {
+      it('should complete image with empty alt and incomplete URL', () => {
+        expect(fixLink('![](')).toBe('![]()')
+      })
+
+      it('should complete image with empty alt and missing URL part', () => {
+        expect(fixLink('![]')).toBe('![]()')
+      })
+
+      it('should complete image with empty alt and incomplete URL in context', () => {
+        expect(fixLink('Text ![](')).toBe('Text ![]()')
+        expect(fixLink('Text ![]')).toBe('Text ![]()')
+      })
+
+      it('should not modify complete image with empty alt', () => {
+        const complete = '![]()'
+        expect(fixLink(complete)).toBe(complete)
+      })
+    })
   })
 
   describe('paragraph boundaries', () => {

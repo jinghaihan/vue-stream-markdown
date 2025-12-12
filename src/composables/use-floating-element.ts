@@ -29,7 +29,10 @@ export function useFloatingElement(options: UseFloatingElementOptions) {
   })
 
   const appendTo = computed(() => {
-    return parentEl.value || options.getContainer?.() || 'body'
+    const target = options.getContainer?.() || parentEl.value
+    if (target instanceof HTMLElement && !document.body.contains(target))
+      return 'body'
+    return target || 'body'
   })
 
   const { x, y, strategy, update } = useFloating(

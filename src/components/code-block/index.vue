@@ -83,8 +83,7 @@ const icon = computed(() => {
   // Custom language icon component
   if (typeof custom === 'object')
     return custom
-  const builtin = LANGUAGE_ICONS[language.value] || LANGUAGE_ICONS.text
-  return builtin
+  return LANGUAGE_ICONS[language.value] || LANGUAGE_ICONS.text
 })
 
 const previewable = computed((): boolean => {

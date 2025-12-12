@@ -13,7 +13,7 @@ export function useCodeOptions(options: UseCodeOptionsOptions) {
 
   const languageCodeOptions = computed(() => {
     const specificOptions = codeOptions.value?.language?.[language.value]
-    return specificOptions ?? codeOptions.value
+    return { ...codeOptions.value, ...(specificOptions ?? {}) }
   })
 
   const showLanguageIcon = computed(() => {

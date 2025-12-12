@@ -15,8 +15,8 @@ export const doubleTildePattern = /~~/g
 export const doubleDollarPattern = /\$\$/g
 
 export const incompleteBracketPattern = /!?\[[^\]]*$/
-export const incompleteLinkTextPattern = /!?\[[^\]]+\]\s*$/
-export const incompleteUrlPattern = /!?\[[^\]]+\]\([^)]*$/
+export const incompleteLinkTextPattern = /!?\[[^\]]*\]\s*$/
+export const incompleteUrlPattern = /!?\[[^\]]*\]\([^)]*$/
 export const incompleteFootnoteRefPattern = /\[\^[^\]]*$/
 export const trailingStandaloneBracketPattern = /(\[)\s*$/
 
