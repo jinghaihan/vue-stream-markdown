@@ -1,4 +1,9 @@
 <script setup>
+const incompleteFootnote = `> "Knowledge is power—but digital knowledge is acceleration."[^1]`
+const completeFootnote = `> "Knowledge is power—but digital knowledge is acceleration."[^1]
+
+[^1]: Definition of the quote`
+
 const incompleteLink = `[Click here to visit`
 const completeLink = `[Click here](https://example.com)`
 
@@ -24,7 +29,34 @@ vue-stream-markdown builds upon the powerful unterminated block parsing capabili
 
 ## Enhanced Features
 
-vue-stream-markdown extends remend's capabilities with enhanced handling for links, images, tables, inline math, and syntax trimming. These enhancements provide better visual feedback and prevent broken interactions during streaming.
+vue-stream-markdown extends remend's capabilities with enhanced handling for footnotes, links, images, tables, inline math, and syntax trimming. These enhancements provide better visual feedback and prevent broken interactions during streaming.
+
+### Footnotes
+
+vue-stream-markdown removes incomplete footnote references (`[^label]`) that don't have corresponding definitions (`[^label]:`). This prevents broken footnote references from appearing during streaming, especially when the definition hasn't arrived yet.
+
+**Incomplete footnote reference (removed):**
+```markdown
+> "Knowledge is power—but digital knowledge is acceleration."[^1]
+```
+
+<StreamMarkdown mode="streaming" :content="incompleteFootnote" />
+
+**Complete footnote (kept):**
+```markdown
+> "Knowledge is power—but digital knowledge is acceleration."[^1]
+
+[^1]: Definition of the quote
+```
+
+<StreamMarkdown :content="completeFootnote" />
+
+#### How It Works
+
+- **Reference removal**: Removes footnote references (`[^label]`) that don't have a corresponding definition (`[^label]:`) in the entire content
+- **Incomplete reference handling**: Also removes incomplete references like `[^1` (missing closing bracket)
+- **Code block awareness**: Ignores footnote references inside code blocks (both fenced code blocks and inline code)
+- **Definition detection**: Scans the entire content to find all footnote definitions before processing references
 
 ### Links
 
@@ -49,6 +81,7 @@ Unlike remend which extracts link text and displays it as plain text, vue-stream
 - **During streaming**: The link syntax is completed, but the link is rendered with `pointer-events: none` and no underline, preventing broken navigation
 - **When complete**: The link becomes fully interactive with an underline, indicating it's ready to be clicked
 - **Visual feedback**: Users can see the link structure forming, but can't accidentally click on incomplete links
+- **Trailing bracket removal**: Standalone `[` or `![` at the end of content (without any content after) are automatically removed to prevent visual artifacts during streaming
 
 ### Images
 
@@ -150,12 +183,22 @@ Result:
 
 ## Streaming Examples
 
+### Footnote Streaming
+
+As content streams in, incomplete footnote references are removed until their definitions appear:
+
+- `Text [^1]` → `Text ` (reference removed if definition doesn't exist)
+- `Text [^1` → `Text ` (incomplete reference removed)
+- `Text [^1]\n\n[^1]: Definition` → `Text [^1]\n\n[^1]: Definition` (reference kept when definition exists)
+
 ### Link Streaming
 
 As content streams in, incomplete links render with loading state (no underline, non-clickable), then become fully interactive when complete:
 
 - `[Click here` → Loading state (non-clickable)
 - `[Click here](https://example.com)` → Fully clickable with underline
+- `Text [` → `Text ` (standalone bracket removed)
+- `Text ![\n` → `Text ` (standalone bracket and trailing newline removed)
 
 ### Image Streaming
 

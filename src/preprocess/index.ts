@@ -3,6 +3,7 @@ import { flow } from '../utils'
 import { fixCode } from './code'
 import { fixDelete } from './delete'
 import { fixEmphasis } from './emphasis'
+import { fixFootnote } from './footnote'
 import { fixInlineMath } from './inline-math'
 import { fixLink } from './link'
 import { crlfPattern } from './pattern'
@@ -26,6 +27,7 @@ export function normalize(content: string): string {
 
 export function preprocess(content: string): string {
   return flow([
+    fixFootnote,
     fixStrong,
     fixEmphasis,
     fixDelete,
@@ -42,6 +44,7 @@ export {
   fixCode,
   fixDelete,
   fixEmphasis,
+  fixFootnote,
   fixLink,
   fixStrong,
   fixTable,

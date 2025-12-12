@@ -89,4 +89,48 @@ describe('fixLink', () => {
       expect(fixLink('[First\n\n[Second](url)')).toBe('[First\n\n[Second](url)')
     })
   })
+
+  describe('trailing standalone brackets', () => {
+    it('should remove trailing standalone [', () => {
+      expect(fixLink('Text [')).toBe('Text ')
+    })
+
+    it('should remove trailing standalone ![', () => {
+      expect(fixLink('Text ![')).toBe('Text ')
+    })
+
+    it('should remove trailing standalone [ with whitespace', () => {
+      expect(fixLink('Text [ ')).toBe('Text ')
+      expect(fixLink('Text [\n')).toBe('Text ')
+    })
+
+    it('should remove trailing standalone ![ with whitespace', () => {
+      expect(fixLink('Text ![ ')).toBe('Text ')
+      expect(fixLink('Text ![\n')).toBe('Text ')
+    })
+
+    it('should remove standalone [ at start of line', () => {
+      expect(fixLink('Text\n[')).toBe('Text\n')
+      expect(fixLink('Text\n![')).toBe('Text\n')
+    })
+
+    it('should remove standalone [ after blank line', () => {
+      expect(fixLink('Para1\n\n[')).toBe('Para1\n\n')
+      expect(fixLink('Para1\n\n![')).toBe('Para1\n\n')
+    })
+
+    it('should not remove [ when it has content', () => {
+      expect(fixLink('Text [content')).toBe('Text [content]()')
+      expect(fixLink('Text ![alt')).toBe('Text ![alt]()')
+    })
+
+    it('should not remove [ when it is part of complete link', () => {
+      expect(fixLink('Text [link](url)')).toBe('Text [link](url)')
+      expect(fixLink('Text ![alt](url)')).toBe('Text ![alt](url)')
+    })
+
+    it('should handle multiple paragraphs with standalone bracket', () => {
+      expect(fixLink('Para1 [link](url)\n\nPara2 [')).toBe('Para1 [link](url)\n\nPara2 ')
+    })
+  })
 })

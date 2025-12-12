@@ -36,7 +36,7 @@ function scrollToReference() {
         color: 'var(--primary)',
       }"
       :button-style="{
-        padding: '4px',
+        padding: '0.25rem',
       }"
       @click="scrollToReference"
     />

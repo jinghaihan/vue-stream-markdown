@@ -17,6 +17,15 @@ export const doubleDollarPattern = /\$\$/g
 export const incompleteBracketPattern = /!?\[[^\]]*$/
 export const incompleteLinkTextPattern = /!?\[[^\]]+\]\s*$/
 export const incompleteUrlPattern = /!?\[[^\]]+\]\([^)]*$/
+export const incompleteFootnoteRefPattern = /\[\^[^\]]*$/
+export const trailingStandaloneBracketPattern = /(!?\[)\s*$/
+
+// Footnote patterns
+export const footnoteDefPattern = /\[\^[^\]]+\]:/g
+export const footnoteRefPattern = /\[\^[^\]]+\]/g
+export const footnoteDefLinePattern = /^\s*\[\^[^\]]+\]:/
+export const footnoteDefLabelPattern = /\[\^([^\]]+)\]:/
+export const footnoteRefLabelPattern = /\[\^([^\]]+)\]/
 
 export const tableRowPattern = /^\|.*\|.*\|/
 export const separatorPattern = /^\|[\s:]*-{3,}[\s:]*(?:\|[\s:]*-{3,}[\s:]*)+\|?$/

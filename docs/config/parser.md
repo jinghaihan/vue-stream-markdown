@@ -92,10 +92,11 @@ const preprocess = flow([
 
 The following functions are available for use in `preprocess`:
 
+- `fixFootnote`: Removes incomplete footnote references (`[^label]`) that don't have corresponding definitions (`[^label]:`)
 - `fixStrong`: Completes incomplete strong syntax (`**bold**`)
 - `fixEmphasis`: Completes incomplete emphasis syntax (`*italic*`)
 - `fixDelete`: Completes incomplete strikethrough syntax (`~~deleted~~`)
-- `fixLink`: Completes incomplete link syntax (`[text](url)`)
+- `fixLink`: Completes incomplete link syntax (`[text](url)`) and removes trailing standalone brackets (`[` or `![`) without content
 - `fixCode`: Completes incomplete code block syntax (```code```)
 - `fixTable`: Completes incomplete table syntax
 - `fixInlineMath`: Completes incomplete inline math syntax (`$math$`)
