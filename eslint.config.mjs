@@ -7,6 +7,9 @@ export default antfu({
     css: true,
   },
   ignores: [
-    'playground/src/markdown/**/code-blocks.md',
+    'playground/app/markdown/**/code-blocks.md',
   ],
+  rules: {
+    'pnpm/yaml-enforce-settings': 'off',
+  },
 })

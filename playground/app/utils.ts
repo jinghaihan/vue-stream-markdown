@@ -49,7 +49,7 @@ export function filterObjectKeys(ast: unknown, exclude: string[]) {
   )
 }
 
-export function getContentFromUrl(url: string = location.href): string {
+export function getContentFromUrl(url: string = ''): string {
   const params = new URLSearchParams(url.split('?')[1])
   return params.get('content') || ''
 }

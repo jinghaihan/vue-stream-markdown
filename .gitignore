@@ -25,3 +25,4 @@ dev-dist
 *.sw?
 
 cache
+.nuxt

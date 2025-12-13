@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { useResizeObserver } from '@vueuse/core'
-import { computed, onMounted, ref } from 'vue'
 import VueJsonPretty from 'vue-json-pretty'
-import { isDark } from '../composable'
+import { useDark } from '../composable'
 import { filterObjectKeys } from '../utils'
 import CopyButton from './copy-button.vue'
 import Input from './input.vue'
@@ -15,6 +14,8 @@ const props = withDefaults(defineProps<{
 }>(), {
   parsedNodes: () => [],
 })
+
+const { isDark } = useDark()
 
 const containerRef = ref<HTMLDivElement>()
 const height = ref<number>(0)

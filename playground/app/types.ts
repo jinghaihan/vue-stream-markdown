@@ -1,6 +1,5 @@
 import type loader from '@monaco-editor/loader'
 import type { BuiltinTheme } from 'shiki'
-import type { Component } from 'vue'
 
 export type Monaco = Awaited<ReturnType<typeof loader.init>>
 export type Editor = Awaited<ReturnType<Monaco['editor']['create']>>
@@ -13,10 +12,8 @@ export interface UserConfig {
   typedDelay: number
   showInputEditor: boolean
   showAstResult: boolean
-
   shikiLightTheme: BuiltinTheme
   shikiDarkTheme: BuiltinTheme
-
   mermaidLightTheme: string
   mermaidDarkTheme: string
 }
@@ -29,4 +26,10 @@ export interface IconButtonProps {
   variant?: 'default' | 'toggle'
   placement?: 'top' | 'bottom'
   defaultActive?: boolean
+}
+
+export interface Action extends IconButtonProps {
+  key: string
+  onClick: (e: MouseEvent) => void
+  visible?: () => boolean
 }

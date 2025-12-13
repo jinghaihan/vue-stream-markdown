@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { IconButtonProps } from '../types'
-import { computed, ref } from 'vue'
 import { cn } from '../utils'
 import Tooltip from './tooltip.vue'
 

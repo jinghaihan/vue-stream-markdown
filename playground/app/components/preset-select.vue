@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { SelectOption } from 'vue-stream-markdown'
-import { ref } from 'vue'
 import SwatchBook from '~icons/lucide/swatch-book'
 import { getPresetOptions } from '../markdown'
 import Tooltip from './tooltip.vue'

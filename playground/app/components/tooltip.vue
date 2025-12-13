@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Placement } from '@floating-ui/vue'
-import { toRefs } from 'vue'
 import { useFloatingElement } from 'vue-stream-markdown'
 
 defineOptions({

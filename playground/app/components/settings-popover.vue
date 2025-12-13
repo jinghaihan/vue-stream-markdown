@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { SelectOption } from 'vue-stream-markdown'
 import { bundledThemesInfo } from 'shiki'
-import { watch } from 'vue'
 import Settings from '~icons/lucide/settings'
 import IconButton from './icon-button.vue'
 import Input from './input.vue'

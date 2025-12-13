@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import type { IconButtonProps } from '../types'
+import type { Action } from '../types'
 import { useClipboard } from '@vueuse/core'
 import { compressToEncodedURIComponent } from 'lz-string'
-import { computed, nextTick } from 'vue'
 import BookOpenText from '~icons/lucide/book-open-text'
 import BrushClean from '~icons/lucide/brush-cleaning'
 import Check from '~icons/lucide/check'
@@ -19,15 +18,9 @@ import SkipForward from '~icons/lucide/skip-forward'
 import SquareCode from '~icons/lucide/square-code'
 import Sun from '~icons/lucide/sun'
 import { homepage } from '../../../package.json'
-import { isDark, toggleDark } from '../composable'
+import { useDark } from '../composable'
 import IconButton from './icon-button.vue'
 import SettingsPopover from './settings-popover.vue'
-
-interface Action extends IconButtonProps {
-  key: string
-  onClick: (e: MouseEvent) => void
-  visible?: () => boolean
-}
 
 const props = withDefaults(defineProps<{
   content?: string
@@ -40,6 +33,8 @@ const props = withDefaults(defineProps<{
   isTyping: true,
   content: '',
 })
+
+const { isDark, toggleDark } = useDark()
 
 const { copy, copied } = useClipboard({
   legacy: true,
