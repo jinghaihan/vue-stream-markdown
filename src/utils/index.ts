@@ -1,5 +1,6 @@
 export * from './harden'
 export * from './helper'
+export * from './inference'
 export * from './module'
 export * from './parser'
 export * from './table'

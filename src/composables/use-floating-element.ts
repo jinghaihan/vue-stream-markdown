@@ -3,6 +3,7 @@ import type { MaybeRef } from 'vue'
 import { autoUpdate, flip, offset, shift, useFloating } from '@floating-ui/vue'
 import { useEventListener } from '@vueuse/core'
 import { computed, ref, unref } from 'vue'
+import { isClient } from '../utils'
 
 interface UseFloatingElementOptions {
   trigger?: MaybeRef<'hover' | 'click'>
@@ -25,10 +26,14 @@ export function useFloatingElement(options: UseFloatingElementOptions) {
   const open = ref(false)
 
   const parentEl = computed(() => {
+    if (!isClient())
+      return null
     return referenceEl.value?.parentElement || null
   })
 
   const appendTo = computed(() => {
+    if (!isClient())
+      return options.getContainer?.() || 'body'
     const target = options.getContainer?.() || parentEl.value
     if (target instanceof HTMLElement && !document.body.contains(target))
       return 'body'
@@ -59,19 +64,23 @@ export function useFloatingElement(options: UseFloatingElementOptions) {
     clearTimers()
     const { show: showDelay } = getDelay()
 
-    showTimer = window.setTimeout(() => {
-      open.value = true
-      update()
-    }, showDelay)
+    if (isClient()) {
+      showTimer = window.setTimeout(() => {
+        open.value = true
+        update()
+      }, showDelay)
+    }
   }
 
   function hide() {
     clearTimers()
     const { hide: hideDelay } = getDelay()
 
-    hideTimer = window.setTimeout(() => {
-      open.value = false
-    }, hideDelay)
+    if (isClient()) {
+      hideTimer = window.setTimeout(() => {
+        open.value = false
+      }, hideDelay)
+    }
   }
 
   function toggle() {
@@ -131,9 +140,11 @@ export function useFloatingElement(options: UseFloatingElementOptions) {
   function onFloatingLeave() {
     const { hide: hideDelay } = getDelay()
     if (trigger.value === 'hover') {
-      hideTimer = window.setTimeout(() => {
-        hide()
-      }, hideDelay)
+      if (isClient()) {
+        hideTimer = window.setTimeout(() => {
+          hide()
+        }, hideDelay)
+      }
     }
   }
 
@@ -148,7 +159,8 @@ export function useFloatingElement(options: UseFloatingElementOptions) {
     }
   }
 
-  useEventListener(document, 'click', handleClickOutside)
+  if (isClient())
+    useEventListener(document, 'click', handleClickOutside)
 
   return {
     referenceEl,

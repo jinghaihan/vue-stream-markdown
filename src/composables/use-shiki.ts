@@ -9,7 +9,7 @@ import type { MaybeRef } from 'vue'
 import type { ShikiOptions } from '../types'
 import { computed, ref, unref } from 'vue'
 import { DEFAULT_DARK_THEME, DEFAULT_LIGHT_THEME, LANGUAGE_ALIAS } from '../constants'
-import { hasShiki } from '../utils'
+import { hasShiki, isClient } from '../utils'
 
 interface UseShikiOptions {
   lang?: MaybeRef<string>
@@ -128,13 +128,15 @@ export function useShiki(options?: UseShikiOptions) {
     highlighter = null
   }
 
-  (async () => {
-    if (highlighter) {
-      installed.value = true
-      return
-    }
-    installed.value = await hasShiki()
-  })()
+  if (isClient()) {
+    (async () => {
+      if (highlighter) {
+        installed.value = true
+        return
+      }
+      installed.value = await hasShiki()
+    })()
+  }
 
   return {
     installed,

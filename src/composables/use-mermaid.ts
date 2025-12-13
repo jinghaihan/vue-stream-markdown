@@ -3,7 +3,7 @@ import type { MaybeRef } from 'vue'
 import type { MermaidOptions } from '../types'
 import { randomStr } from '@antfu/utils'
 import { computed, ref, unref } from 'vue'
-import { hasMermaid, save, svgToPngBlob } from '../utils'
+import { hasMermaid, isClient, save, svgToPngBlob } from '../utils'
 
 interface UseMermaidOptions {
   mermaidOptions?: MaybeRef<MermaidOptions | undefined>
@@ -60,7 +60,7 @@ export function useMermaid(options?: UseMermaidOptions) {
 
   async function renderMermaid(code: string): Promise<string | null> {
     const isValid = await parseMermaid(code)
-    if (!isValid)
+    if (!isValid || !isClient())
       return null
 
     const id = `mermaid-${randomStr()}`
@@ -97,7 +97,8 @@ export function useMermaid(options?: UseMermaidOptions) {
 
       if (format === 'png') {
         const blob = await svgToPngBlob(svg)
-        save('diagram.png', blob, 'image/png')
+        if (blob)
+          save('diagram.png', blob, 'image/png')
       }
     }
     catch (error) {
@@ -118,13 +119,15 @@ export function useMermaid(options?: UseMermaidOptions) {
     chart.value = ''
   }
 
-  (async () => {
-    if (mermaid) {
-      installed.value = true
-      return
-    }
-    installed.value = await hasMermaid()
-  })()
+  if (isClient()) {
+    (async () => {
+      if (mermaid) {
+        installed.value = true
+        return
+      }
+      installed.value = await hasMermaid()
+    })()
+  }
 
   return {
     installed,

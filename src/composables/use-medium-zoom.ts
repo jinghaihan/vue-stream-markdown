@@ -1,5 +1,6 @@
 import type { MaybeRef } from 'vue'
 import { computed, nextTick, ref, unref } from 'vue'
+import { isClient } from '../utils'
 
 interface UseMediumZoomOptions {
   margin?: MaybeRef<number>
@@ -53,7 +54,7 @@ export function useMediumZoom(options: UseMediumZoomOptions) {
 
   function calculateTransforms() {
     const original = elementRef.value
-    if (!original || !clonedElementRef.value)
+    if (!isClient() || !original || !clonedElementRef.value)
       return
 
     const rect = original.getBoundingClientRect()
@@ -82,7 +83,7 @@ export function useMediumZoom(options: UseMediumZoomOptions) {
 
   async function zoomIn() {
     const el = elementRef.value
-    if (!el)
+    if (!isClient() || !el)
       return
 
     const cloned = cloneElement()
@@ -128,7 +129,7 @@ export function useMediumZoom(options: UseMediumZoomOptions) {
   }
 
   async function zoomOut() {
-    if (!clonedElementRef.value) {
+    if (!isClient() || !clonedElementRef.value) {
       options.close?.()
       return
     }

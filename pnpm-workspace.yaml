@@ -1,7 +1,12 @@
+catalogMode: prefer
+shellEmulator: true
+trustPolicy: no-downgrade
+
 packages:
   - .
   - playground
   - docs
+
 catalogs:
   build:
     '@vitejs/plugin-vue': ^6.0.2
@@ -71,6 +76,7 @@ catalogs:
   utils:
     '@antfu/utils': ^9.3.0
     '@vueuse/core': ^14.1.0
+
 onlyBuiltDependencies:
   - esbuild
   - simple-git-hooks

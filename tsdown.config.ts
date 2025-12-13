@@ -6,7 +6,12 @@ export default defineConfig([
   {
     entry: ['./src/index'],
     target: 'chrome89',
-    platform: 'browser',
+    platform: 'neutral',
+    inputOptions: {
+      resolve: {
+        mainFields: ['module', 'main'],
+      },
+    },
     dts: {
       vue: true,
     },

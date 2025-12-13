@@ -2,6 +2,7 @@ import type { MaybeRef, MaybeRefOrGetter } from 'vue'
 import { useStyleTag } from '@vueuse/core'
 import { computed, onBeforeUnmount, toValue, unref, watchEffect } from 'vue'
 import { SHADCN_SCHEMAS } from '../constants'
+import { isClient } from '../utils'
 
 const reg = /^(?:hsl|rgb|oklch|lab|lch)\(/
 
@@ -20,11 +21,11 @@ export function useTailwindV3Theme(options: UseTailwindV3ThemeOptions) {
 
   const element = computed((): Element | undefined => {
     const el = toValue(options.element)
-    return el || (typeof window !== 'undefined' ? document.body : undefined)
+    return el || (isClient() ? document.body : undefined)
   })
 
   function generateCSS() {
-    if (!element.value || typeof window === 'undefined')
+    if (!element.value || !isClient())
       return
 
     const computedStyle = window.getComputedStyle(element.value)

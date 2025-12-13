@@ -12,7 +12,7 @@ const props = withDefaults(defineProps<{
   transition?: string
   close?: () => void
 }>(), {
-  zIndex: 1000,
+  zIndex: 100,
   transition: 'modal',
 })
 

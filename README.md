@@ -33,6 +33,7 @@ pnpm add vue-stream-markdown
 - **Theme-aware scoped styles** - Scoped styles under `.stream-markdown` with semantic `data-stream-markdown` attributes, following [shadcn/ui](https://ui.shadcn.com/) design system
 - **Beautiful built-in typography** - No atomic CSS required (Tailwind/UnoCSS), self-contained styles
 - **Content hardening & security** - Built-in protection against malicious Markdown with URL validation and protocol blocking
+- **SSR support** - Full server-side rendering compatibility with environment detection utilities
 
 ## Usage
 

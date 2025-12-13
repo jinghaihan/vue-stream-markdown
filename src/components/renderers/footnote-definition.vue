@@ -2,6 +2,7 @@
 import type { FootnoteDefinitionNodeRendererProps } from '../../types'
 import { computed } from 'vue'
 import { useContext, useI18n } from '../../composables'
+import { isClient } from '../../utils'
 import Button from '../button.vue'
 import NodeList from '../node-list.vue'
 
@@ -16,6 +17,9 @@ const label = computed(() => props.node.label ?? id.value)
 const title = computed(() => `${label.value}.`)
 
 function scrollToReference() {
+  if (!isClient())
+    return
+
   const container = getContainer() || document.body
   const footnoteElement = container.querySelector(`#footnote-reference-${id.value}`)
   if (!footnoteElement)

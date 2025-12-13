@@ -212,7 +212,7 @@ const headerControls = computed(
 )
 
 const modalControls = computed(
-  () => resolveControls<CodeNodeRendererProps>('code', builtinControls.value, props).filter(i => i.key !== 'collapse'),
+  () => resolveControls<CodeNodeRendererProps>('code', headerControls.value, props).filter(i => i.key !== 'collapse'),
 )
 
 watch(

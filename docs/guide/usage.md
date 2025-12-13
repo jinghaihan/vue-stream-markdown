@@ -47,6 +47,19 @@ const content = ref('# Hello World\n\nThis is a markdown content.')
 </template>
 ```
 
+## Server-Side Rendering (SSR)
+
+This component library supports server-side rendering. When using with Nuxt.js, you need to add the CSS imports in your `nuxt.config.ts`:
+
+```ts
+export default defineNuxtConfig({
+  css: [
+    'vue-stream-markdown/index.css',
+    'vue-stream-markdown/theme.css',
+  ],
+})
+```
+
 ## Configuration
 
 ### Core Props

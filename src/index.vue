@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Icons, NodeRenderers, StreamMarkdownProps } from './types'
-import { computed, onBeforeUnmount, ref, toRefs, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, toRefs, watch } from 'vue'
 import NodeList from './components/node-list.vue'
 import { NODE_RENDERERS } from './components/renderers'
 import { useContext, useKatex, useMermaid, useShiki } from './composables'
@@ -71,7 +71,7 @@ async function bootstrap() {
   await Promise.all(tasks)
 }
 
-bootstrap()
+onMounted(bootstrap)
 
 watch(() => props.mode, () => markdownParser.updateMode(props.mode))
 watch(() => props.locale, () => loadLocaleMessages(props.locale))

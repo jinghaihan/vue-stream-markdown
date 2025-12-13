@@ -2,6 +2,7 @@
 import type { FootnoteReferenceNodeRendererProps } from '../../types'
 import { computed } from 'vue'
 import { useContext } from '../../composables'
+import { isClient } from '../../utils'
 
 const props = withDefaults(defineProps<FootnoteReferenceNodeRendererProps>(), {})
 
@@ -11,6 +12,9 @@ const id = computed(() => props.node.identifier)
 const label = computed(() => props.node.label ?? id.value)
 
 function scrollToFootnote() {
+  if (!isClient())
+    return
+
   const container = getContainer() || document.body
   const footnoteElement = container.querySelector(`#footnote-definition-${id.value}`)
   if (!footnoteElement)

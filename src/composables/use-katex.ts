@@ -1,6 +1,6 @@
 import type { KatexOptions } from 'katex'
 import { ref } from 'vue'
-import { hasKatex } from '../utils'
+import { hasKatex, isClient } from '../utils'
 
 let existingKatex: boolean = false
 
@@ -26,23 +26,35 @@ export function useKatex() {
   }
 
   async function preload() {
-    if (await hasKatex())
-      import('katex/dist/katex.min.css')
+    if (!isClient())
+      return
+
+    if (await hasKatex()) {
+      // Dynamically import CSS only in client environment
+      // Using a function to prevent Vite from analyzing this import during SSR
+      const loadCSS = async () => {
+        if (isClient())
+          await import('katex/dist/katex.min.css')
+      }
+      await loadCSS()
+    }
   }
 
   function dispose() {
 
   }
 
-  (async () => {
-    if (existingKatex === true) {
-      installed.value = true
-      return
-    }
+  if (isClient()) {
+    (async () => {
+      if (existingKatex === true) {
+        installed.value = true
+        return
+      }
 
-    installed.value = await hasKatex()
-    existingKatex = installed.value
-  })()
+      installed.value = await hasKatex()
+      existingKatex = installed.value
+    })()
+  }
 
   return {
     installed,
