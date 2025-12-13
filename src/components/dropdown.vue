@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import type { SelectItem } from '../types'
+import type { SelectOption } from '../types'
 import { ref } from 'vue'
 import Button from './button.vue'
 import Tooltip from './tooltip.vue'
 
 withDefaults(defineProps<{
   title?: string
-  options?: SelectItem[]
+  options?: SelectOption[]
 }>(), {
   options: () => [],
 })
 
 const emits = defineEmits<{
-  (e: 'click', event: MouseEvent, item: SelectItem): void
+  (e: 'click', event: MouseEvent, item: SelectOption): void
 }>()
 
 const tooltipRef = ref<InstanceType<typeof Tooltip>>()
@@ -26,7 +26,7 @@ const BUTTON_STYLE = {
   lineHeight: '1.25rem',
 }
 
-function handleClick(event: MouseEvent, item: SelectItem) {
+function handleClick(event: MouseEvent, item: SelectOption) {
   emits('click', event, item)
   tooltipRef.value?.hide()
 }

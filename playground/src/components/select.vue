@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { SelectItem } from 'vue-stream-markdown'
+import type { SelectOption } from 'vue-stream-markdown'
 import ChevronDown from '~icons/lucide/chevron-down'
 
 withDefaults(defineProps<{
   size?: 'sm' | 'default'
-  options?: SelectItem[]
+  options?: SelectOption[]
 }>(), {
   size: 'default',
   options: () => [],

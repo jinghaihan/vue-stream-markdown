@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { Component, CSSProperties } from 'vue'
-import type { SelectItem } from '../types'
+import type { ButtonProps, SelectOption } from '../types'
 import { createReusableTemplate } from '@vueuse/core'
 import { computed } from 'vue'
 import Dropdown from './dropdown.vue'
@@ -11,18 +10,7 @@ defineOptions({
   inheritAttrs: false,
 })
 
-const props = withDefaults(defineProps<{
-  variant?: 'icon' | 'text'
-  name: string
-  buttonClass?: string | string[] | Record<string, unknown>
-  buttonStyle?: CSSProperties
-  icon?: string | Component
-  iconWidth?: number
-  iconHeight?: number
-  iconClass?: string | string[] | Record<string, unknown>
-  iconStyle?: CSSProperties
-  options?: SelectItem[]
-}>(), {
+const props = withDefaults(defineProps<ButtonProps>(), {
   variant: 'icon',
   buttonStyle: () => ({}),
   iconWidth: 14,
@@ -32,7 +20,7 @@ const props = withDefaults(defineProps<{
 })
 
 const emits = defineEmits<{
-  (e: 'click', event: MouseEvent, item?: SelectItem): void
+  (e: 'click', event: MouseEvent, item?: SelectOption): void
 }>()
 
 const [DefineTemplate, ReuseTemplate] = createReusableTemplate()
@@ -45,7 +33,7 @@ function onClick(event: MouseEvent) {
   emits('click', event)
 }
 
-function onDropdownClick(event: MouseEvent, item: SelectItem) {
+function onDropdownClick(event: MouseEvent, item: SelectOption) {
   if (item)
     emits('click', event, item)
 }

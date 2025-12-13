@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { CSSProperties } from 'vue'
-import type { SelectItem } from '../types'
+import type { SelectOption } from '../types'
 import Button from './button.vue'
 
 const props = withDefaults(defineProps<{
-  options?: SelectItem[]
+  options?: SelectOption[]
   buttonStyle?: CSSProperties
 }>(), {
   options: () => [],
@@ -20,7 +20,7 @@ const modelValue = defineModel<string>('value', { required: false, default: '' }
 if (props.options.length && !modelValue.value)
   modelValue.value = props.options[0].value
 
-function getButtonStyle(item: SelectItem) {
+function getButtonStyle(item: SelectOption) {
   return {
     paddingBlock: '0.25rem',
     backgroundColor: modelValue.value === item.value ? 'var(--accent)' : undefined,
@@ -28,7 +28,7 @@ function getButtonStyle(item: SelectItem) {
   }
 }
 
-function onClick(item: SelectItem) {
+function onClick(item: SelectOption) {
   modelValue.value = item.value
   emits('change', item.value)
 }

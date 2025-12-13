@@ -9,18 +9,26 @@ export type Icons = Record<IconName, Component>
   & Partial<Record<OptionalIconName, Component>>
   & Record<string, Component>
 
-export interface SelectItem {
+export interface SelectOption {
   label: string
   value: string
   icon?: string
 }
 
-export interface Action {
-  key: string
+export interface ButtonProps {
+  variant?: 'icon' | 'text'
   name: string
-  icon: string
-  iconStyle?: CSSProperties
+  buttonClass?: string | string[] | Record<string, unknown>
   buttonStyle?: CSSProperties
-  options?: SelectItem[]
-  onClick: (event: MouseEvent, item?: SelectItem) => void
+  icon?: string | Component
+  iconWidth?: number
+  iconHeight?: number
+  iconClass?: string | string[] | Record<string, unknown>
+  iconStyle?: CSSProperties
+  options?: SelectOption[]
+}
+
+export interface Control extends ButtonProps {
+  key: string
+  onClick: (event: MouseEvent, item?: SelectOption) => void
 }

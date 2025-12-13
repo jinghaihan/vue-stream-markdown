@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CodeOptions, MermaidOptions, SelectItem, ShikiOptions } from 'vue-stream-markdown'
+import type { CodeOptions, MermaidOptions, SelectOption, ShikiOptions } from 'vue-stream-markdown'
 import { throttle } from '@antfu/utils'
 import { useCycleList, useResizeObserver } from '@vueuse/core'
 import { decompressFromEncodedURIComponent } from 'lz-string'
@@ -101,7 +101,7 @@ function onEditorChange(data: string) {
   content.value = data
 }
 
-async function changePresetContent(item: SelectItem) {
+async function changePresetContent(item: SelectOption) {
   terminateTypeWriting()
 
   const data = await getPresetContent(item.value)

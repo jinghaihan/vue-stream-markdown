@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { SelectItem } from 'vue-stream-markdown'
+import type { SelectOption } from 'vue-stream-markdown'
 import { ref } from 'vue'
 import SwatchBook from '~icons/lucide/swatch-book'
 import { getPresetOptions } from '../markdown'
 import Tooltip from './tooltip.vue'
 
 const emits = defineEmits<{
-  (e: 'select', item: SelectItem): void
+  (e: 'select', item: SelectOption): void
 }>()
 
 const tooltipRef = ref()
@@ -21,7 +21,7 @@ const BUTTON_CLASSES = [
   'hover:bg-accent',
 ]
 
-function onSelect(item: SelectItem) {
+function onSelect(item: SelectOption) {
   tooltipRef.value?.hide()
   emits('select', item)
 }

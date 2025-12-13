@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CSSProperties } from 'vue'
-import type { ZoomControlPosition } from '../types'
+import type { Control, ZoomControlPosition } from '../types'
 import { computed, ref } from 'vue'
 import { useI18n, useZoom } from '../composables'
 import Button from './button.vue'
@@ -91,6 +91,30 @@ const controlButtonProps = computed(() => {
   }
 })
 
+const controls = computed((): Control[] => [
+  {
+    ...controlButtonProps.value,
+    key: 'zoomIn',
+    icon: 'zoomIn',
+    name: t('button.zoomIn'),
+    onClick: zoomIn,
+  },
+  {
+    ...controlButtonProps.value,
+    key: 'zoomOut',
+    icon: 'zoomOut',
+    name: t('button.zoomOut'),
+    onClick: zoomOut,
+  },
+  {
+    ...controlButtonProps.value,
+    key: 'resetZoom',
+    variant: 'text',
+    name: zoomPercent.value,
+    onClick: resetZoom,
+  },
+])
+
 function onWheel(event: WheelEvent) {
   if (containerRef.value)
     handleWheel(event, containerRef.value)
@@ -128,23 +152,10 @@ function onTouchEnd(event: TouchEvent) {
     <div v-if="showControl" data-stream-markdown="zoom-controls" :style="controlsPosition" @click.stop>
       <slot name="controls" v-bind="controlButtonProps" />
       <Button
-        icon="zoomIn"
-        :name="t('button.zoomIn')"
-        v-bind="controlButtonProps"
-        @click="zoomIn"
-      />
-      <Button
-        icon="zoomOut"
-        :name="t('button.zoomOut')"
-        v-bind="controlButtonProps"
-        @click="zoomOut"
-      />
-      <Button
-        :title="t('button.resetZoom')"
-        :name="zoomPercent"
-        variant="text"
-        v-bind="controlButtonProps"
-        @click="resetZoom"
+        v-for="item in controls"
+        v-bind="item"
+        :key="item.key"
+        @click="item.onClick"
       />
     </div>
 

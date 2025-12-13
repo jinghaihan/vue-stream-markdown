@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Action, ControlsConfig, ImageNode, ParsedNode } from '../types'
+import type { Control, ControlsConfig, ImageNode, ParsedNode } from '../types'
 import { useCycleList } from '@vueuse/core'
 import { treeFlatFilter } from 'treechop'
 import { computed, ref, toRefs, watch } from 'vue'
@@ -91,7 +91,7 @@ const imageStyle = computed(() => ({
   ...elementStyle.value,
 }))
 
-const actions = computed((): Action[] => [
+const zoomControls = computed((): Control[] => [
   {
     key: 'download',
     icon: 'download',
@@ -150,7 +150,7 @@ const actions = computed((): Action[] => [
       : { transform: 'scaleX(-1)' },
     visible: () => enableRotate.value,
   },
-].filter(action => !action.visible || action.visible()))
+].filter(i => !i.visible || i.visible()))
 
 function handleLoad(event: Event) {
   loaded.value = true
@@ -245,13 +245,10 @@ watch(open, (data) => {
     >
       <template #controls="buttonProps">
         <Button
-          v-for="action in actions"
-          :key="action.key"
-          v-bind="buttonProps"
-          :icon="action.icon"
-          :name="action.name"
-          :button-style="action.buttonStyle"
-          @click="action.onClick"
+          v-for="item in zoomControls"
+          v-bind="{ ...buttonProps, ...item }"
+          :key="item.key"
+          @click="item.onClick"
         />
       </template>
 

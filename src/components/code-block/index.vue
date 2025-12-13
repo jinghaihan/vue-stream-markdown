@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { BuiltinLanguage } from 'shiki'
 import type { Component } from 'vue'
-import type { Action, CodeNodeRendererProps, SelectItem } from '../../types'
+import type { CodeNodeRendererProps, Control, SelectOption } from '../../types'
 import { createReusableTemplate, useClipboard } from '@vueuse/core'
 import { computed, defineAsyncComponent, ref, toRefs, watch } from 'vue'
 import { useCodeOptions, useContext, useControls, useI18n, useMermaid } from '../../composables'
@@ -154,7 +154,7 @@ const downloadOptions = computed(() => {
   ]
 })
 
-const actions = computed((): Action[] => {
+const headerControls = computed((): Control[] => {
   return [
     {
       name: t('button.collapse'),
@@ -185,7 +185,7 @@ const actions = computed((): Action[] => {
       icon: 'download',
       options: downloadOptions.value.length > 0 ? downloadOptions.value : undefined,
       visible: () => showDownload.value && !!LANGUAGE_EXTENSIONS[language.value],
-      onClick: (_event: MouseEvent, item?: SelectItem) => {
+      onClick: (_event: MouseEvent, item?: SelectOption) => {
         if (props.node.loading)
           return
 
@@ -208,7 +208,7 @@ const actions = computed((): Action[] => {
     },
   ].filter(button => !button.visible || button.visible())
 })
-const ModalActions = computed((): Action[] => actions.value.filter(i => i.key !== 'collapse'))
+const modalControls = computed((): Control[] => headerControls.value.filter(i => i.key !== 'collapse'))
 
 watch(
   () => previewable.value,
@@ -260,7 +260,7 @@ watch(
       </slot>
 
       <slot name="actions">
-        <Actions :actions="actions" />
+        <Actions :actions="headerControls" />
       </slot>
     </header>
 
@@ -297,7 +297,7 @@ watch(
       </template>
 
       <template #actions>
-        <Actions :actions="ModalActions" />
+        <Actions :actions="modalControls" />
       </template>
 
       <component

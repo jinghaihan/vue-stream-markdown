@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SelectItem } from 'vue-stream-markdown'
+import type { SelectOption } from 'vue-stream-markdown'
 import { bundledThemesInfo } from 'shiki'
 import { watch } from 'vue'
 import Settings from '~icons/lucide/settings'
@@ -59,12 +59,12 @@ const DIVIDER_CLASSES = [
   'border-border',
 ]
 
-const SHIKI_THEMES: SelectItem[] = bundledThemesInfo.map(theme => ({
+const SHIKI_THEMES: SelectOption[] = bundledThemesInfo.map(theme => ({
   label: theme.displayName,
   value: theme.id,
 }))
 
-const MERMAID_THEMES: SelectItem[] = [
+const MERMAID_THEMES: SelectOption[] = [
   { label: 'Default', value: 'default' },
   { label: 'Dark', value: 'dark' },
   { label: 'Forest', value: 'forest' },

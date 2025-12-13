@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { Action } from '../../types'
+import type { Control } from '../../types'
 import Button from '../button.vue'
 
 withDefaults(defineProps<{
-  actions?: Action[]
+  actions?: Control[]
 }>(), {
   actions: () => [],
 })
@@ -12,13 +12,10 @@ withDefaults(defineProps<{
 <template>
   <div data-stream-markdown="actions">
     <Button
-      v-for="action in actions"
-      :key="action.key"
-      :name="action.name"
-      :icon="action.icon"
-      :icon-style="action.iconStyle"
-      :options="action.options"
-      @click="action.onClick"
+      v-for="item in actions"
+      v-bind="item"
+      :key="item.key"
+      @click="item.onClick"
     />
   </div>
 </template>
