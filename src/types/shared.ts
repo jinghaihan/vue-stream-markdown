@@ -1,11 +1,13 @@
-import type { CSSProperties } from 'vue'
+import type { Component, CSSProperties } from 'vue'
 import type { ICONS } from '../constants'
 
-export type IconName
-  = | keyof typeof ICONS
-    | 'flipVertical'
-    | 'rotateRight'
-    | 'arrowRight'
+export type OptionalIconName = 'flipVertical' | 'rotateRight' | 'arrowRight'
+
+export type IconName = keyof typeof ICONS
+
+export type Icons = Record<IconName, Component>
+  & Partial<Record<OptionalIconName, Component>>
+  & Record<string, Component>
 
 export interface SelectItem {
   label: string

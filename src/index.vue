@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { Component } from 'vue'
-import type { IconName, NodeRenderers, StreamMarkdownProps } from './types'
+import type { Icons, NodeRenderers, StreamMarkdownProps } from './types'
 import { computed, onBeforeUnmount, ref, toRefs, watch } from 'vue'
 import NodeList from './components/node-list.vue'
 import { NODE_RENDERERS } from './components/renderers'
@@ -48,10 +47,10 @@ const nodeRenderers = computed((): NodeRenderers => ({
   ...props.nodeRenderers,
 }))
 
-const icons = computed(() => ({
+const icons = computed((): Icons => ({
   ...ICONS,
   ...props.icons,
-} as Record<IconName, Component>))
+}))
 
 function getContainer(): HTMLElement | undefined {
   return containerRef.value

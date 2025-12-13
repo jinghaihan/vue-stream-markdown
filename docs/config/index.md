@@ -43,7 +43,7 @@ Custom node renderers to override default rendering behavior for specific node t
 
 ### icons
 
-- **Type:** `Partial<Record<IconName, Component>>`
+- **Type:** `Partial<Icons>`
 
 Custom icon components to override default icons. You can provide custom Vue components for any of the available icon names. The available icon names are provided via TypeScript type hints.
 

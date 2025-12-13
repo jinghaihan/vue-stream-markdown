@@ -1,5 +1,5 @@
-import type { Component, MaybeRef } from 'vue'
-import type { IconName, ParsedNode } from '../types'
+import type { MaybeRef } from 'vue'
+import type { Icons, ParsedNode } from '../types'
 import { computed, inject, provide, unref } from 'vue'
 
 const CONTEXT_KEY = Symbol('stream-markdown-context')
@@ -7,7 +7,7 @@ const CONTEXT_KEY = Symbol('stream-markdown-context')
 interface Context {
   mode?: MaybeRef<'static' | 'streaming'>
   isDark?: MaybeRef<boolean>
-  icons?: MaybeRef<Record<IconName, Component>>
+  icons?: MaybeRef<Icons>
   enableAnimate?: MaybeRef<boolean | undefined>
   parsedNodes?: MaybeRef<ParsedNode[]>
   getContainer?: () => HTMLElement | undefined
@@ -18,7 +18,7 @@ export function useContext() {
   const context = injectContext()
 
   const mode = computed(() => unref(context.mode) ?? 'streaming')
-  const icons = computed((): Record<string, Component> => unref(context.icons) ?? {})
+  const icons = computed((): Partial<Icons> => unref(context.icons) ?? {})
   const isDark = computed(() => unref(context.isDark) ?? false)
   const enableAnimate = computed(() => unref(context.enableAnimate))
   const parsedNodes = computed(() => unref(context.parsedNodes) ?? [])
