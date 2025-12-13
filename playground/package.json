@@ -2,6 +2,16 @@
   "name": "playground",
   "type": "module",
   "version": "0.1.0",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "generate": "nuxt generate",
+    "prepare": "nuxt prepare",
+    "preview": "nuxt preview",
+    "start": "node .output/server/index.mjs",
+    "start:generate": "npx serve .output/public",
+    "typecheck": "nuxt typecheck"
+  },
   "dependencies": {
     "@monaco-editor/loader": "catalog:frontend",
     "@shikijs/monaco": "catalog:syntax",
@@ -12,6 +22,7 @@
     "lz-string": "catalog:prod",
     "tailwind-merge": "catalog:style",
     "vue": "catalog:frontend",
-    "vue-json-pretty": "catalog:frontend"
+    "vue-json-pretty": "catalog:frontend",
+    "vue-stream-markdown": "workspace:*"
   }
 }

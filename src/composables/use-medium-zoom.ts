@@ -21,9 +21,14 @@ export function useMediumZoom(options: UseMediumZoomOptions) {
   const initialTransform = ref<string>('')
   const targetTransform = ref<string>('')
 
-  const elementStyle = computed(() => ({
-    opacity: showClonedElement.value ? 0 : 1,
-  }))
+  const elementStyle = computed(() => {
+    if (!isClient())
+      return { opacity: 1 }
+
+    return {
+      opacity: showClonedElement.value ? 0 : 1,
+    }
+  })
 
   function cloneElement() {
     const original = elementRef.value
@@ -54,7 +59,7 @@ export function useMediumZoom(options: UseMediumZoomOptions) {
 
   function calculateTransforms() {
     const original = elementRef.value
-    if (!isClient() || !original || !clonedElementRef.value)
+    if (!original || !clonedElementRef.value)
       return
 
     const rect = original.getBoundingClientRect()
@@ -83,7 +88,7 @@ export function useMediumZoom(options: UseMediumZoomOptions) {
 
   async function zoomIn() {
     const el = elementRef.value
-    if (!isClient() || !el)
+    if (!el)
       return
 
     const cloned = cloneElement()
@@ -129,7 +134,7 @@ export function useMediumZoom(options: UseMediumZoomOptions) {
   }
 
   async function zoomOut() {
-    if (!isClient() || !clonedElementRef.value) {
+    if (!clonedElementRef.value) {
       options.close?.()
       return
     }

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useClipboard } from '@vueuse/core'
-import Check from '~icons/lucide/check'
-import Copy from '~icons/lucide/copy'
+import { Check, Copy } from '../icons'
 import IconButton from './icon-button.vue'
 
 const props = withDefaults(defineProps<{

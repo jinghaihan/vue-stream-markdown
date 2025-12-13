@@ -3,23 +3,15 @@ import type { CodeOptions, MermaidOptions, SelectOption, ShikiOptions } from 'vu
 import { throttle } from '@antfu/utils'
 import { useCycleList, useResizeObserver } from '@vueuse/core'
 import { decompressFromEncodedURIComponent } from 'lz-string'
-import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { Markdown, SUPPORT_LANGUAGES } from 'vue-stream-markdown'
-import ChartPie from '~icons/lucide/chart-pie'
-import Actions from './components/actions.vue'
-import AstResult from './components/ast-result.vue'
-import CopyButton from './components/copy-button.vue'
-import Layout from './components/layout.vue'
-import Monaco from './components/monaco.vue'
-import PresetSelect from './components/preset-select.vue'
-import ScrollTriggerGroup from './components/scroll-trigger-group.vue'
-import Title from './components/title.vue'
-import { isDark, isMobile, userConfig, useTypedEffect } from './composable'
+import { ChartPie } from './icons'
 import { DEFAULT_MARKDOWN_PATH, getPresetContent } from './markdown'
 import { getContentFromUrl } from './utils'
-import 'vue-stream-markdown/index.css'
 
 const EChartsPreviewer = defineAsyncComponent(() => import('./components/echarts.vue'))
+
+const { isDark } = useDark()
+const userConfig = useUserConfig()
 
 const markdownRef = ref()
 const parsedNodes = computed(() => markdownRef.value?.getParsedNodes() ?? [])
@@ -127,7 +119,7 @@ function terminateTypeWriting() {
 }
 
 async function initContent() {
-  const compressedContent = getContentFromUrl()
+  const compressedContent = getContentFromUrl(location.href)
   try {
     if (compressedContent)
       content.value = decompressFromEncodedURIComponent(compressedContent)
@@ -183,7 +175,9 @@ useResizeObserver(() => markdownRef.value?.$el, () => {
   scrollToBottom()
 })
 
-initContent()
+onMounted(() => {
+  initContent()
+})
 </script>
 
 <template>
@@ -196,9 +190,10 @@ initContent()
   >
     <template #actions>
       <div class="flex flex-col gap-2 items-center md:flex-row md:gap-4">
-        <Title />
+        <Name />
         <PresetSelect @select="changePresetContent" />
       </div>
+
       <Actions
         v-model:typing-index="typingIndex"
         v-model:static-mode="userConfig.staticMode"
@@ -222,12 +217,14 @@ initContent()
     </template>
 
     <template #editor>
-      <Monaco
-        ref="monacoRef"
-        :content="content"
-        :theme="shikiOptions.theme"
-        @change="onEditorChange"
-      />
+      <ClientOnly>
+        <Monaco
+          ref="monacoRef"
+          :content="content"
+          :theme="shikiOptions.theme"
+          @change="onEditorChange"
+        />
+      </ClientOnly>
     </template>
 
     <template #markdown>

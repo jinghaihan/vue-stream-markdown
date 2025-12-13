@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue'
-import { isMobile } from '../composable'
-
 const props = withDefaults(defineProps<{
   stop?: () => void
 }>(), {

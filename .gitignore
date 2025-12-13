@@ -24,4 +24,9 @@ dev-dist
 *.sln
 *.sw?
 
+# vitepress
 cache
+
+# nuxt
+.nuxt
+.output

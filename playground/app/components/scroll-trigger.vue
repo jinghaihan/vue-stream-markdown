@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import ArrowDownToLine from '~icons/lucide/arrow-down-to-line'
-import ArrowUpToLine from '~icons/lucide/arrow-up-to-line'
-import IconButton from './icon-button.vue'
+import { ArrowDownToLine, ArrowUpToLine } from '../icons'
 
 const props = withDefaults(defineProps<{
   variant?: 'up' | 'down'

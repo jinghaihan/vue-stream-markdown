@@ -64,23 +64,19 @@ export function useFloatingElement(options: UseFloatingElementOptions) {
     clearTimers()
     const { show: showDelay } = getDelay()
 
-    if (isClient()) {
-      showTimer = window.setTimeout(() => {
-        open.value = true
-        update()
-      }, showDelay)
-    }
+    showTimer = window.setTimeout(() => {
+      open.value = true
+      update()
+    }, showDelay)
   }
 
   function hide() {
     clearTimers()
     const { hide: hideDelay } = getDelay()
 
-    if (isClient()) {
-      hideTimer = window.setTimeout(() => {
-        open.value = false
-      }, hideDelay)
-    }
+    hideTimer = window.setTimeout(() => {
+      open.value = false
+    }, hideDelay)
   }
 
   function toggle() {
@@ -140,11 +136,9 @@ export function useFloatingElement(options: UseFloatingElementOptions) {
   function onFloatingLeave() {
     const { hide: hideDelay } = getDelay()
     if (trigger.value === 'hover') {
-      if (isClient()) {
-        hideTimer = window.setTimeout(() => {
-          hide()
-        }, hideDelay)
-      }
+      hideTimer = window.setTimeout(() => {
+        hide()
+      }, hideDelay)
     }
   }
 
@@ -159,8 +153,7 @@ export function useFloatingElement(options: UseFloatingElementOptions) {
     }
   }
 
-  if (isClient())
-    useEventListener(document, 'click', handleClickOutside)
+  useEventListener(document, 'click', handleClickOutside)
 
   return {
     referenceEl,

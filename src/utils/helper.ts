@@ -1,5 +1,3 @@
-import { isClient } from './inference'
-
 const fileExtensionPattern = /\.[^/.]+$/
 
 export function flow<T>(fns: Array<(arg: T) => T>): (arg: T) => T {
@@ -7,9 +5,6 @@ export function flow<T>(fns: Array<(arg: T) => T>): (arg: T) => T {
 }
 
 export function save(filename: string, content: string | Blob, mimeType: string) {
-  if (!isClient())
-    return
-
   const blob = typeof content === 'string' ? new Blob([content], { type: mimeType }) : content
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
@@ -22,9 +17,6 @@ export function save(filename: string, content: string | Blob, mimeType: string)
 }
 
 export async function saveImage(url: string, alt?: string) {
-  if (!isClient())
-    return
-
   const response = await fetch(url)
   const blob = await response.blob()
   const urlPath = new URL(url, window.location.origin).pathname
@@ -69,9 +61,6 @@ export async function saveImage(url: string, alt?: string) {
 }
 
 export function svgToPngBlob(svgString: string, options?: { scale?: number }): Promise<Blob> | null {
-  if (!isClient())
-    return null
-
   const scale = options?.scale ?? 5
 
   return new Promise((resolve, reject) => {

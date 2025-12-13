@@ -5,8 +5,6 @@ import type { Editor } from '../types'
 import loader from '@monaco-editor/loader'
 import { shikiToMonaco } from '@shikijs/monaco'
 import { createHighlighter } from 'shiki'
-import { computed, nextTick, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
-import { isDark } from '../composable'
 
 const props = withDefaults(defineProps<{
   content?: string
@@ -19,6 +17,8 @@ const props = withDefaults(defineProps<{
 const emits = defineEmits<{
   (e: 'change', content: string): void
 }>()
+
+const { isDark } = useDark()
 
 const editorRef = ref<HTMLDivElement>()
 

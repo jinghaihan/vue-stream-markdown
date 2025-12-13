@@ -1,8 +1,6 @@
-import type { MaybeRef } from 'vue'
-import { computed, onWatcherCleanup, ref, unref, watch } from 'vue'
 import { isString } from '../utils'
 
-export interface UseTypedEffectOptions {
+interface UseTypedEffectOptions {
   enabled?: MaybeRef<boolean>
   content: MaybeRef<string>
   step?: MaybeRef<number>

@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import type { SelectOption } from 'vue-stream-markdown'
-import { ref } from 'vue'
-import SwatchBook from '~icons/lucide/swatch-book'
+import { SwatchBook } from '../icons'
 import { getPresetOptions } from '../markdown'
-import Tooltip from './tooltip.vue'
 
 const emits = defineEmits<{
   (e: 'select', item: SelectOption): void

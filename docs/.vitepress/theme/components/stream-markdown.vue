@@ -14,7 +14,7 @@ const props = withDefaults(defineProps<{
 }>(), {
   mode: 'static',
   content: '',
-  typingDelay: 30,
+  typingDelay: 16,
 })
 
 const attrs = useAttrs()

@@ -10,7 +10,7 @@ function r(p: string) {
 
 export const alias: Record<string, string> = {
   'vue-stream-markdown': r('src/'),
-  '@shared': r('playground/src/'),
+  '@shared': r('playground/app/'),
 }
 
 export function getPlugins<T = Plugin>(): T[] {

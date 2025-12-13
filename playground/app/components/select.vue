@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { SelectOption } from 'vue-stream-markdown'
-import ChevronDown from '~icons/lucide/chevron-down'
+import { ChevronDown } from '../icons'
 
 withDefaults(defineProps<{
   size?: 'sm' | 'default'

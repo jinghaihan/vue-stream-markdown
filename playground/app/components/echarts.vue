@@ -2,7 +2,6 @@
 import type { CodeNodeRendererProps } from 'vue-stream-markdown'
 import { useResizeObserver } from '@vueuse/core'
 import * as echarts from 'echarts'
-import { computed, onMounted, ref, shallowRef, watch } from 'vue'
 import { UI } from 'vue-stream-markdown'
 
 const props = defineProps<CodeNodeRendererProps>()

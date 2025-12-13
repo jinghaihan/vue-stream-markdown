@@ -1,13 +1,7 @@
 <script setup lang="ts">
 import { useResizeObserver } from '@vueuse/core'
-import { computed, onMounted, ref } from 'vue'
 import VueJsonPretty from 'vue-json-pretty'
-import { isDark } from '../composable'
 import { filterObjectKeys } from '../utils'
-import CopyButton from './copy-button.vue'
-import Input from './input.vue'
-import Label from './label.vue'
-import ScrollTriggerGroup from './scroll-trigger-group.vue'
 import 'vue-json-pretty/lib/styles.css'
 
 const props = withDefaults(defineProps<{
@@ -15,6 +9,8 @@ const props = withDefaults(defineProps<{
 }>(), {
   parsedNodes: () => [],
 })
+
+const { isDark } = useDark()
 
 const containerRef = ref<HTMLDivElement>()
 const height = ref<number>(0)

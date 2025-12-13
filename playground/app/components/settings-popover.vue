@@ -1,14 +1,7 @@
 <script setup lang="ts">
 import type { SelectOption } from 'vue-stream-markdown'
 import { bundledThemesInfo } from 'shiki'
-import { watch } from 'vue'
-import Settings from '~icons/lucide/settings'
-import IconButton from './icon-button.vue'
-import Input from './input.vue'
-import Label from './label.vue'
-import Select from './select.vue'
-import Switch from './switch.vue'
-import Tooltip from './tooltip.vue'
+import { Settings } from '../icons'
 
 const props = withDefaults(defineProps<{
   toStep: (index: number) => void
