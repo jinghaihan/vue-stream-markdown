@@ -38,7 +38,10 @@ const markdownParser = new MarkdownParser({
   preprocess: props.preprocess,
 })
 
-const parsedNodes = computed(() => markdownParser.parseMarkdown(props.content))
+const processed = computed(() => markdownParser.parseMarkdown(props.content))
+
+const parsedNodes = computed(() => processed.value.nodes)
+const processedContent = computed(() => processed.value.content)
 
 const nodeRenderers = computed((): NodeRenderers => ({
   ...NODE_RENDERERS,
@@ -95,6 +98,7 @@ onBeforeUnmount(() => {
 defineExpose({
   getMarkdownParser: () => markdownParser,
   getParsedNodes: () => parsedNodes.value,
+  getProcessedContent: () => processedContent.value,
 })
 </script>
 

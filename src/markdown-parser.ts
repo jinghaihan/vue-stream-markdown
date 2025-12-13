@@ -47,13 +47,17 @@ export class MarkdownParser {
     this.mode = mode
   }
 
-  parseMarkdown(content: string): ParsedNode[] {
+  parseMarkdown(content: string): { content: string, nodes: ParsedNode[] } {
     if (!content)
-      return []
+      return { content: '', nodes: [] }
     this.update(content)
     if (!this.syntaxTree)
-      return []
-    return this.syntaxTree.children
+      return { content: this.content, nodes: [] }
+
+    return {
+      content: this.content,
+      nodes: this.syntaxTree.children,
+    }
   }
 
   markdownToHtml(content: string): string {

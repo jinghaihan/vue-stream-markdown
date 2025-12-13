@@ -23,6 +23,7 @@ const EChartsPreviewer = defineAsyncComponent(() => import('./components/echarts
 
 const markdownRef = ref()
 const parsedNodes = computed(() => markdownRef.value?.getParsedNodes() ?? [])
+const processedContent = computed(() => markdownRef.value?.getProcessedContent() ?? '')
 
 const containerRef = ref<HTMLDivElement>()
 const monacoRef = ref()
@@ -55,6 +56,13 @@ const {
 
 const mode = computed(() => userConfig.value.staticMode ? 'static' : 'streaming')
 const markdownContent = computed(() => mode.value === 'static' ? content.value : typedContent.value)
+
+const copyContent = computed(() => {
+  return JSON.stringify({
+    raw: markdownContent.value,
+    processed: processedContent.value,
+  }, null, 2)
+})
 
 const shikiOptions = computed((): ShikiOptions => {
   return {
@@ -224,7 +232,7 @@ initContent()
 
     <template #markdown>
       <ScrollTriggerGroup :get-container="getContainer">
-        <CopyButton :content="markdownContent" />
+        <CopyButton :content="copyContent" />
       </ScrollTriggerGroup>
 
       <div ref="containerRef" class="scrollbar-gutter-stable pr-4 h-full overflow-auto">
