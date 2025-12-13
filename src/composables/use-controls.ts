@@ -1,5 +1,5 @@
 import type { MaybeRef } from 'vue'
-import type { ControlsConfig } from '../types'
+import type { Control, ControlsConfig, ControlTransformer, NodeRendererProps } from '../types'
 import { computed, unref } from 'vue'
 
 interface UseControlsOptions {
@@ -40,5 +40,16 @@ export function useControls(options: UseControlsOptions) {
     }
   }
 
-  return { isControlEnabled, getControlValue }
+  function resolveControls<T extends NodeRendererProps = NodeRendererProps>(
+    type: string,
+    builtinControls: Control[],
+    props: T,
+  ) {
+    const customize = getControlValue<ControlTransformer<T>>(`${type}.customize`)
+    if (typeof customize !== 'function')
+      return builtinControls.filter(item => item.visible?.() ?? true)
+    return customize(builtinControls, props).filter(item => item.visible?.() ?? true)
+  }
+
+  return { isControlEnabled, getControlValue, resolveControls }
 }

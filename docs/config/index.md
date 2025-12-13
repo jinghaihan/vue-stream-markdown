@@ -211,7 +211,7 @@ Position of the control buttons for images.
 
 #### mermaid
 
-- **Type:** `boolean | ZoomControlsConfig`
+- **Type:** `boolean | MermaidControlsConfig`
 
 Controls for Mermaid diagrams. Can be a boolean or an object with zoom options.
 

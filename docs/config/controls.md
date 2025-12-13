@@ -157,6 +157,8 @@ const mermaidBottomLeft = {
 
 The controls configuration allows you to enable or disable interactive controls for various markdown elements, including tables, code blocks, images, and Mermaid diagrams.
 
+> **Note:** All control types (`table`, `code`, `image`, `mermaid`) support the `customize` option for fully customizing controls. See the [Customizing Controls](#customizing-controls) section for details.
+
 ## controls
 
 - **Type:** `boolean | ControlsConfig`
@@ -173,7 +175,7 @@ type ControlsConfig
       table?: boolean | TableControlsConfig
       code?: boolean | CodeControlsConfig
       image?: boolean | ImageControlsConfig
-      mermaid?: boolean | ZoomControlsConfig
+      mermaid?: boolean | MermaidControlsConfig
     }
 ```
 
@@ -192,6 +194,7 @@ type TableControlsConfig
     | {
       copy?: boolean | string
       download?: boolean | string
+      customize?: ControlTransformer<TableNodeRendererProps>
     }
 ```
 
@@ -270,6 +273,7 @@ type CodeControlsConfig
       copy?: boolean
       download?: boolean
       fullscreen?: boolean
+      customize?: ControlTransformer<CodeNodeRendererProps>
     }
 ```
 
@@ -418,6 +422,7 @@ type ImageControlsConfig
       flip?: boolean
       rotate?: boolean
       controlPosition?: ZoomControlPosition
+      customize?: ControlTransformer<ImageNodeRendererProps>
     }
 ```
 
@@ -485,7 +490,7 @@ Position of the control buttons for images in preview mode. The control buttons 
 
 ## mermaid
 
-- **Type:** `boolean | ZoomControlsConfig`
+- **Type:** `boolean | MermaidControlsConfig`
 - **Default:** `true` (zoom controls enabled)
 
 Controls for Mermaid diagrams. Can be a boolean or an object with zoom options.
@@ -493,10 +498,11 @@ Controls for Mermaid diagrams. Can be a boolean or an object with zoom options.
 ### Interface
 
 ```typescript
-type ZoomControlsConfig
+type MermaidControlsConfig
   = | boolean
     | {
       position?: ZoomControlPosition
+      customize?: ControlTransformer<CodeNodeRendererProps>
     }
 ```
 
@@ -561,6 +567,70 @@ import { Markdown } from 'vue-stream-markdown'
 const controls: ControlsConfig = {
   mermaid: {
     position: 'bottom-left',
+  },
+}
+</script>
+
+<template>
+  <Markdown :content="content" :controls="controls" />
+</template>
+```
+
+## Customizing Controls
+
+All control types (`table`, `code`, `image`, `mermaid`) support the `customize` option, which allows you to customize the built-in controls or add your own custom controls. The `customize` function receives the built-in controls array and the component props, and should return an array of controls to display.
+
+### customize
+
+- **Type:** `ControlTransformer<T>`
+- **Available for:** `table`, `code`, `image`, `mermaid`
+
+The `customize` function signature:
+
+```typescript
+type ControlTransformer<T extends NodeRendererProps = NodeRendererProps>
+  = (builtin: Control[], props: T) => Control[]
+```
+
+**Example:**
+
+```vue
+<script setup lang="ts">
+import type { ControlsConfig } from 'vue-stream-markdown'
+import { Markdown } from 'vue-stream-markdown'
+import Send from '~icons/lucide/send'
+
+const controls: ControlsConfig = {
+  table: {
+    customize: (builtin) => {
+      return [
+        ...builtin,
+        {
+          icon: Send,
+          name: 'send',
+          key: 'send',
+          onClick: () => {
+            console.log('send action')
+          },
+        },
+      ]
+    },
+  },
+  // Same pattern applies to code, image, and mermaid
+  code: {
+    customize: (builtin) => {
+      return builtin.filter(control => control.key !== 'download')
+    },
+  },
+  image: {
+    customize: (builtin, props) => {
+      return [...builtin]
+    },
+  },
+  mermaid: {
+    customize: (builtin) => {
+      return [...builtin]
+    },
   },
 }
 </script>

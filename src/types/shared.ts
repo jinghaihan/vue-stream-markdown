@@ -1,5 +1,6 @@
 import type { Component, CSSProperties } from 'vue'
 import type { ICONS } from '../constants'
+import type { NodeRendererProps } from './renderer'
 
 export type OptionalIconName = 'flipVertical' | 'rotateRight' | 'arrowRight'
 
@@ -30,5 +31,9 @@ export interface ButtonProps {
 
 export interface Control extends ButtonProps {
   key: string
+  visible?: () => boolean
   onClick: (event: MouseEvent, item?: SelectOption) => void
 }
+
+export type ControlTransformer<T extends NodeRendererProps = NodeRendererProps>
+  = (builtin: Control[], props: T) => Control[]

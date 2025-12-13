@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Control, ControlsConfig, ImageNode, ParsedNode } from '../types'
+import type { Control, ControlsConfig, ImageNode, ImageNodeRendererProps, ParsedNode } from '../types'
 import { useCycleList } from '@vueuse/core'
 import { treeFlatFilter } from 'treechop'
 import { computed, ref, toRefs, watch } from 'vue'
@@ -17,6 +17,7 @@ const props = withDefaults(defineProps<{
   margin?: number
   controls?: ControlsConfig
   transformHardenUrl?: (url: string) => string | null
+  nodeProps: ImageNodeRendererProps
 }>(), {
   preview: true,
   margin: 16,
@@ -32,7 +33,7 @@ const { margin, controls } = toRefs(props)
 
 const { t } = useI18n()
 const { icons, parsedNodes } = useContext()
-const { isControlEnabled, getControlValue } = useControls({
+const { isControlEnabled, getControlValue, resolveControls } = useControls({
   controls,
 })
 
@@ -91,7 +92,7 @@ const imageStyle = computed(() => ({
   ...elementStyle.value,
 }))
 
-const zoomControls = computed((): Control[] => [
+const builtinControls = computed((): Control[] => [
   {
     key: 'download',
     icon: 'download',
@@ -150,7 +151,11 @@ const zoomControls = computed((): Control[] => [
       : { transform: 'scaleX(-1)' },
     visible: () => enableRotate.value,
   },
-].filter(i => !i.visible || i.visible()))
+])
+
+const zoomControls = computed(
+  () => resolveControls<ImageNodeRendererProps>('image', builtinControls.value, props.nodeProps),
+)
 
 function handleLoad(event: Event) {
   loaded.value = true

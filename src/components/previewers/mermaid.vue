@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { CodeNodeRendererProps, ZoomControlPosition } from '../../types'
+import type { CodeNodeRendererProps, Control, ZoomControlPosition } from '../../types'
 import { throttle } from '@antfu/utils'
 import { useResizeObserver } from '@vueuse/core'
 import { computed, nextTick, ref, toRefs, watch } from 'vue'
-import { useControls } from '../../composables'
-import { useMermaid } from '../../composables/use-mermaid'
+import { useControls, useMermaid } from '../../composables'
+import Button from '../button.vue'
 import ErrorComponent from '../error-component.vue'
 import Spin from '../spin.vue'
 import ZoomContainer from '../zoom-container.vue'
@@ -20,7 +20,7 @@ const props = withDefaults(defineProps<CodeNodeRendererProps & {
 
 const { controls, mermaidOptions, isDark } = toRefs(props)
 
-const { isControlEnabled, getControlValue } = useControls({
+const { isControlEnabled, getControlValue, resolveControls } = useControls({
   controls,
 })
 
@@ -124,6 +124,10 @@ const render = throttle(
   },
 )
 
+const mermaidControls = computed(
+  (): Control[] => resolveControls<CodeNodeRendererProps>('mermaid', [], props),
+)
+
 watch(
   () => [
     code.value,
@@ -173,6 +177,15 @@ if (!props.containerHeight) {
     </template>
 
     <ZoomContainer :show-control="showControl" :position="controlPosition">
+      <template #controls="buttonProps">
+        <Button
+          v-for="item in mermaidControls"
+          v-bind="{ ...buttonProps, ...item }"
+          :key="item.key"
+          @click="item.onClick"
+        />
+      </template>
+
       <div data-stream-markdown="mermaid" v-html="svg" />
     </ZoomContainer>
   </div>

@@ -31,7 +31,7 @@ const [DefineTemplate, ReuseTemplate] = createReusableTemplate()
 
 const { t } = useI18n()
 
-const { isControlEnabled } = useControls({
+const { isControlEnabled, resolveControls } = useControls({
   controls,
 })
 const { installed: hasMermaid } = useMermaid()
@@ -154,61 +154,66 @@ const downloadOptions = computed(() => {
   ]
 })
 
-const headerControls = computed((): Control[] => {
-  return [
-    {
-      name: t('button.collapse'),
-      key: 'collapse',
-      icon: 'collapse',
-      iconStyle: {
-        transform: collapsed.value ? 'rotate(180deg)' : undefined,
-        transition: 'transform var(--default-transition-duration)',
-      },
-      visible: () => showCollapse.value,
-      onClick: () => collapsed.value = !collapsed.value,
+const builtinControls = computed((): Control[] => [
+  {
+    name: t('button.collapse'),
+    key: 'collapse',
+    icon: 'collapse',
+    iconStyle: {
+      transform: collapsed.value ? 'rotate(180deg)' : undefined,
+      transition: 'transform var(--default-transition-duration)',
     },
-    {
-      name: t('button.copy'),
-      key: 'copy',
-      icon: copied.value ? 'check' : 'copy',
-      visible: () => showCopy.value,
-      onClick: () => {
-        if (!props.node.value)
-          return
-        copy(props.node.value)
-        onCopied(props.node.value)
-      },
+    visible: () => showCollapse.value,
+    onClick: () => collapsed.value = !collapsed.value,
+  },
+  {
+    name: t('button.copy'),
+    key: 'copy',
+    icon: copied.value ? 'check' : 'copy',
+    visible: () => showCopy.value,
+    onClick: () => {
+      if (!props.node.value)
+        return
+      copy(props.node.value)
+      onCopied(props.node.value)
     },
-    {
-      name: t('button.download'),
-      key: 'download',
-      icon: 'download',
-      options: downloadOptions.value.length > 0 ? downloadOptions.value : undefined,
-      visible: () => showDownload.value && !!LANGUAGE_EXTENSIONS[language.value],
-      onClick: (_event: MouseEvent, item?: SelectOption) => {
-        if (props.node.loading)
-          return
+  },
+  {
+    name: t('button.download'),
+    key: 'download',
+    icon: 'download',
+    options: downloadOptions.value.length > 0 ? downloadOptions.value : undefined,
+    visible: () => showDownload.value && !!LANGUAGE_EXTENSIONS[language.value],
+    onClick: (_event: MouseEvent, item?: SelectOption) => {
+      if (props.node.loading)
+        return
 
-        if (!item || item.value === 'code') {
-          const extension = LANGUAGE_EXTENSIONS[language.value]
-          save(`file.${extension}`, props.node.value, 'text/plain')
-          return
-        }
+      if (!item || item.value === 'code') {
+        const extension = LANGUAGE_EXTENSIONS[language.value]
+        save(`file.${extension}`, props.node.value, 'text/plain')
+        return
+      }
 
-        if (item?.value === 'svg' || item?.value === 'png')
-          saveMermaid(item?.value as 'svg' | 'png', props.node.value)
-      },
+      if (item?.value === 'svg' || item?.value === 'png')
+        saveMermaid(item?.value as 'svg' | 'png', props.node.value)
     },
-    {
-      name: fullscreen.value ? t('button.minimize') : t('button.maximize'),
-      key: 'fullscreen',
-      icon: fullscreen.value ? 'minimize' : 'maximize',
-      visible: () => showFullscreen.value,
-      onClick: () => fullscreen.value = !fullscreen.value,
-    },
-  ].filter(button => !button.visible || button.visible())
-})
-const modalControls = computed((): Control[] => headerControls.value.filter(i => i.key !== 'collapse'))
+  },
+  {
+    name: fullscreen.value ? t('button.minimize') : t('button.maximize'),
+    key: 'fullscreen',
+    icon: fullscreen.value ? 'minimize' : 'maximize',
+    visible: () => showFullscreen.value,
+    onClick: () => fullscreen.value = !fullscreen.value,
+  },
+])
+
+const headerControls = computed(
+  () => resolveControls<CodeNodeRendererProps>('code', builtinControls.value, props),
+)
+
+const modalControls = computed(
+  () => resolveControls<CodeNodeRendererProps>('code', builtinControls.value, props).filter(i => i.key !== 'collapse'),
+)
 
 watch(
   () => previewable.value,

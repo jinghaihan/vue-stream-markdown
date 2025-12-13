@@ -117,6 +117,7 @@ function handleMouseLeave() {
         :preview="!fallbackAttempted && enablePreview"
         :controls="controls"
         :transform-harden-url="transformHardenUrl"
+        :node-props="props"
         @load="handleLoaded"
         @error="handleError"
       />

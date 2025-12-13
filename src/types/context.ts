@@ -8,7 +8,8 @@ import type { BuiltinTheme, BundledLanguage, BundledTheme, CodeToTokensOptions }
 import type { Component } from 'vue'
 import type { NodeRenderers, SyntaxTree } from './core'
 import type { LocaleConfig } from './locale'
-import type { Icons } from './shared'
+import type { CodeNodeRendererProps, ImageNodeRendererProps, TableNodeRendererProps } from './renderer'
+import type { ControlTransformer, Icons } from './shared'
 
 export interface StreamMarkdownProps extends StreamMarkdownContext, MarkdownParserOptions {
   mode?: 'static' | 'streaming'
@@ -51,6 +52,7 @@ export type TableControlsConfig
     | {
       copy?: boolean | string
       download?: boolean | string
+      customize?: ControlTransformer<TableNodeRendererProps>
     }
 
 export type CodeControlsConfig
@@ -60,6 +62,7 @@ export type CodeControlsConfig
       copy?: boolean
       download?: boolean
       fullscreen?: boolean
+      customize?: ControlTransformer<CodeNodeRendererProps>
     }
 
 export type ImageControlsConfig
@@ -71,6 +74,14 @@ export type ImageControlsConfig
       flip?: boolean
       rotate?: boolean
       controlPosition?: ZoomControlPosition
+      customize?: ControlTransformer<ImageNodeRendererProps>
+    }
+
+export type MermaidControlsConfig
+  = | boolean
+    | {
+      position?: ZoomControlPosition
+      customize?: ControlTransformer<CodeNodeRendererProps>
     }
 
 export type ZoomControlPosition
@@ -81,19 +92,13 @@ export type ZoomControlPosition
     | 'bottom-right'
     | 'bottom-center'
 
-export type ZoomControlsConfig
-  = | boolean
-    | {
-      position?: ZoomControlPosition
-    }
-
 export type ControlsConfig
   = | boolean
     | {
       table?: boolean | TableControlsConfig
       code?: boolean | CodeControlsConfig
       image?: boolean | ImageControlsConfig
-      mermaid?: boolean | ZoomControlsConfig
+      mermaid?: boolean | MermaidControlsConfig
     }
 
 export type PreviewerConfig

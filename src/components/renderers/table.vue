@@ -24,7 +24,7 @@ const { copy, copied } = useClipboard({
   legacy: true,
 })
 
-const { isControlEnabled } = useControls({
+const { isControlEnabled, resolveControls } = useControls({
   controls: props.controls,
 })
 
@@ -68,7 +68,7 @@ const options: SelectOption[] = [
   { label: 'Markdown', value: 'markdown' },
 ]
 
-const controls = computed((): Control[] => [
+const builtinControls = computed((): Control[] => [
   {
     name: t('button.copy'),
     key: 'copy',
@@ -99,7 +99,11 @@ const controls = computed((): Control[] => [
       save(`table.${data.extension}`, data.content, data.mimeType)
     },
   },
-].filter(item => item.visible()))
+])
+
+const controls = computed(
+  () => resolveControls<TableNodeRendererProps>('table', builtinControls.value, props),
+)
 
 function getNodes(cell: unknown) {
   return [cell] as ParsedNode[]
