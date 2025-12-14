@@ -1,4 +1,5 @@
 import { description } from '../package.json'
+import { alias } from '../shared'
 
 export default defineNuxtConfig({
   modules: [
@@ -8,6 +9,18 @@ export default defineNuxtConfig({
     '@nuxtjs/color-mode',
     '@nuxt/eslint',
   ],
+
+  typescript: {
+    tsConfig: {
+      compilerOptions: {
+        paths: {
+          'vue-stream-markdown': ['../src/'],
+        },
+      },
+    },
+  },
+
+  alias,
 
   css: [
     '../src/index.css',

@@ -10,7 +10,7 @@ export function findLastLeafNode(nodes: ParsedNode[]): ParsedNode | null {
         return found
       continue
     }
-    return node
+    return node ?? null
   }
   return null
 }

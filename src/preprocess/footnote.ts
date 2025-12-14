@@ -54,7 +54,7 @@ export function fixFootnote(content: string): string {
     for (const def of defMatches) {
       // Extract label from [^label]:
       const labelMatch = def.match(footnoteDefLabelPattern)
-      if (labelMatch)
+      if (labelMatch && labelMatch[1])
         definedLabels.add(labelMatch[1])
     }
   }
@@ -117,8 +117,8 @@ export function fixFootnote(content: string): string {
   // Pair up backticks to find inline code ranges
   for (let i = 0; i < backtickPositions.length; i += 2) {
     if (i + 1 < backtickPositions.length) {
-      const start = backtickPositions[i]
-      const end = backtickPositions[i + 1] + 1
+      const start = backtickPositions[i]!
+      const end = backtickPositions[i + 1]! + 1
       inlineCodeRanges.push({ start, end })
     }
   }
@@ -128,7 +128,7 @@ export function fixFootnote(content: string): string {
   let lineOffset = 0
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i]
+    const line = lines[i]!
     if (isFootnoteDefLine(line)) {
       const lineEnd = lineOffset + line.length
       footnoteDefRanges.push({ start: lineOffset, end: lineEnd })
@@ -143,7 +143,8 @@ export function fixFootnote(content: string): string {
 
   // Find the last paragraph (after the last blank line)
   for (let i = lines.length - 1; i >= 0; i--) {
-    if (lines[i].trim() === '') {
+    const line = lines[i]!
+    if (line.trim() === '') {
       lastParagraphStartIndex = i + 1
       break
     }
@@ -224,7 +225,9 @@ export function fixFootnote(content: string): string {
         }
         for (let i = 0; i < backtickPositions.length; i += 2) {
           if (i + 1 < backtickPositions.length) {
-            inlineCodeRanges.push({ start: backtickPositions[i], end: backtickPositions[i + 1] + 1 })
+            const start = backtickPositions[i]!
+            const end = backtickPositions[i + 1]! + 1
+            inlineCodeRanges.push({ start, end })
           }
         }
       }
@@ -257,12 +260,11 @@ export function fixFootnote(content: string): string {
     if (!isInCodeBlock && !isInInlineCode && !isInFootnoteDef) {
       // Extract label from [^label]
       const labelMatch = refText.match(footnoteRefLabelPattern)
-      if (labelMatch) {
-        const label = labelMatch[1]
+      if (labelMatch && labelMatch[1]) {
         refPositions.push({
           start: absolutePos,
           end: absolutePos + refText.length,
-          label,
+          label: labelMatch[1],
         })
       }
     }
@@ -276,7 +278,7 @@ export function fixFootnote(content: string): string {
   // Remove references that don't have corresponding definitions
   // Process from end to start to avoid index shifting issues
   for (let i = refPositions.length - 1; i >= 0; i--) {
-    const ref = refPositions[i]
+    const ref = refPositions[i]!
     if (!definedLabels.has(ref.label)) {
       // Remove the reference
       result = result.substring(0, ref.start) + result.substring(ref.end)

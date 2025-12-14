@@ -123,7 +123,7 @@ export class MarkdownParser {
 
     for (let i = nodes.length - 1; i >= 0; i--) {
       const node = nodes[i]
-      if (node.loading)
+      if (node?.loading)
         return true
       const nodeWithChildren = node as { children?: ParsedNode[] }
       if (nodeWithChildren.children && nodeWithChildren.children.length > 0)

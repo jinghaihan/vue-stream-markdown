@@ -79,8 +79,8 @@ function updateHeight() {
   if (viewBox) {
     const parts = viewBox.split(' ')
     if (parts.length === 4) {
-      w = Number.parseFloat(parts[2])
-      h = Number.parseFloat(parts[3])
+      w = Number.parseFloat(parts[2]!)
+      h = Number.parseFloat(parts[3]!)
     }
   }
 

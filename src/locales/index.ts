@@ -11,7 +11,10 @@ export const currentLocale = ref<string>('en-US')
 
 export async function loadLocaleMessages(language: string | LocaleConfig) {
   const load = async (language: string) => {
-    localeMessages.value = (await localesGlob[`./${language}.json`]()) as LocaleConfig
+    const fn = localesGlob[`./${language}.json`]
+    if (!fn)
+      return
+    localeMessages.value = (await fn()) as LocaleConfig
     currentLocale.value = language
   }
 

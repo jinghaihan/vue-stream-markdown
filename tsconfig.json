@@ -3,11 +3,13 @@
     "target": "esnext",
     "lib": ["es2023", "DOM"],
     "moduleDetection": "force",
+    "baseUrl": ".",
     "module": "preserve",
     "moduleResolution": "bundler",
     "paths": {
       "vue-stream-markdown": ["./src/"],
-      "@shared": ["./playground/app/"]
+      "@shared/*": ["./playground/app/*"],
+      "@shared/components/*": ["./playground/app/components/*"]
     },
     "resolveJsonModule": true,
     "types": [
@@ -16,6 +18,7 @@
       "unplugin-icons/types/vue"
     ],
     "strict": true,
+    "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "declaration": true,
     "emitDeclarationOnly": true,
@@ -24,5 +27,12 @@
     "verbatimModuleSyntax": true,
     "skipLibCheck": true
   },
+  "include": [
+    "src",
+    "docs/**/*.vue",
+    "docs/**/*.ts",
+    "docs/.**/**/*.ts",
+    "docs/.**/**/*.vue"
+  ],
   "exclude": ["node_modules", "dist", "playground"]
 }

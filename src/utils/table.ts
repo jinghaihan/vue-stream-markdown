@@ -104,7 +104,7 @@ export function tableDataToTSV(data: TableData): string {
     const parts: string[] = []
     // biome-ignore lint/style/useForOf: "Need index access to check character codes for performance"
     for (let i = 0; i < value.length; i += 1) {
-      const char = value[i]
+      const char = value[i]!
       if (char === '\t') {
         parts.push('\\t')
       }
@@ -163,7 +163,7 @@ export function escapeMarkdownTableCell(cell: string): string {
   const parts: string[] = []
   // biome-ignore lint/style/useForOf: "Need index access to check character codes for performance"
   for (let i = 0; i < cell.length; i += 1) {
-    const char = cell[i]
+    const char = cell[i]!
     if (char === '\\') {
       parts.push('\\\\')
     }
@@ -209,7 +209,7 @@ export function tableDataToMarkdown(data: TableData) {
     if (row.length < headers.length) {
       const paddedRow = Array.from({ length: headers.length })
       for (let i = 0; i < headers.length; i += 1) {
-        paddedRow[i] = i < row.length ? escapeMarkdownTableCell(row[i]) : ''
+        paddedRow[i] = i < row.length ? escapeMarkdownTableCell(row[i]!) : ''
       }
       markdownRows[rowIndex] = `| ${paddedRow.join(' | ')} |`
       rowIndex += 1

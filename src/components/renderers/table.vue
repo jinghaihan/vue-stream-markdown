@@ -34,7 +34,7 @@ const showDownload = computed(() => isControlEnabled('table.download'))
 const tableRef = ref()
 const align = computed(() => props.node.align || [])
 
-const headerCells = computed(() => props.node.children[0].children ?? [])
+const headerCells = computed(() => props.node.children?.[0]?.children ?? [])
 const bodyRows = computed(() => props.node.children.slice(1))
 
 const loading = computed(() => props.markdownParser.hasLoadingNode(props.node.children))

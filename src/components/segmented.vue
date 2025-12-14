@@ -18,7 +18,7 @@ const emits = defineEmits<{
 const modelValue = defineModel<string>('value', { required: false, default: '' })
 
 if (props.options.length && !modelValue.value)
-  modelValue.value = props.options[0].value
+  modelValue.value = props.options[0]!.value
 
 function getButtonStyle(item: SelectOption) {
   return {

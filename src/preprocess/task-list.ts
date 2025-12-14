@@ -32,12 +32,11 @@ export function fixTaskList(content: string): string {
   const lines = content.split('\n')
 
   // If content is empty or has no lines, return as is
-  if (lines.length === 0) {
+  if (lines.length === 0)
     return content
-  }
 
   // Get the last line
-  const lastLine = lines[lines.length - 1]
+  const lastLine = lines[lines.length - 1]!
 
   // Check if the last line is in a quote block (starts with `>`)
   // First check for incomplete task list in quote block `> - [`

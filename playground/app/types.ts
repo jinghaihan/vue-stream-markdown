@@ -1,5 +1,6 @@
 import type loader from '@monaco-editor/loader'
 import type { BuiltinTheme } from 'shiki'
+import type { Component } from 'vue'
 
 export type Monaco = Awaited<ReturnType<typeof loader.init>>
 export type Editor = Awaited<ReturnType<Monaco['editor']['create']>>

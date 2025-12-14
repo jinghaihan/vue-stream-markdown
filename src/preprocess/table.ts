@@ -41,11 +41,12 @@ export function fixTable(content: string): string {
 
   // Find the last truly blank line (not just trailing empty string from split)
   for (let i = lines.length - 1; i >= 0; i--) {
+    const line = lines[i]!
     // Skip the last element if it's empty (from trailing \n)
-    if (i === lines.length - 1 && lines[i].trim() === '') {
+    if (i === lines.length - 1 && line.trim() === '') {
       continue
     }
-    if (lines[i].trim() === '') {
+    if (line.trim() === '') {
       paragraphStartIndex = i + 1
       break
     }
@@ -64,7 +65,7 @@ export function fixTable(content: string): string {
   let headerRow = ''
 
   for (let i = 0; i < paragraphLines.length; i++) {
-    const line = paragraphLines[i].trim()
+    const line = paragraphLines[i]!.trim()
     // Check if it matches table row pattern or starts with | (might be incomplete)
     if (tableRowPattern.test(line) || (line.startsWith('|') && line.length > 1)) {
       headerRowIndex = i
@@ -111,7 +112,7 @@ export function fixTable(content: string): string {
   }
 
   // Case 2: There's a line after the header row
-  const nextLine = paragraphLines[headerRowIndex + 1].trim()
+  const nextLine = paragraphLines[headerRowIndex + 1]!.trim()
 
   // Check if next line is already a valid separator with correct column count
   if (separatorPattern.test(nextLine)) {
@@ -131,7 +132,7 @@ export function fixTable(content: string): string {
 
   if (afterLines.length > 1) {
     // There is a next line
-    const nextLineInContent = afterLines[1]
+    const nextLineInContent = afterLines[1]!
 
     if (nextLineInContent.startsWith('|') && nextLineInContent.includes('-')) {
       // Replace incomplete separator

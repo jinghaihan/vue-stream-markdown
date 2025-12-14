@@ -12,7 +12,8 @@ export function fixEmphasis(content: string): string {
   let paragraphStartIndex = 0
 
   for (let i = lines.length - 1; i >= 0; i--) {
-    if (lines[i].trim() === '') {
+    const line = lines[i]!
+    if (line.trim() === '') {
       paragraphStartIndex = i + 1
       break
     }

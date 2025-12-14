@@ -132,8 +132,8 @@ export function useZoom(options: UseZoomOptions = {}) {
       event.preventDefault()
       isPinching.value = true
 
-      const touch1 = event.touches[0]
-      const touch2 = event.touches[1]
+      const touch1 = event.touches[0]!
+      const touch2 = event.touches[1]!
 
       const distance = getTouchDistance(touch1, touch2)
       const centerX = (touch1.clientX + touch2.clientX) / 2
@@ -160,8 +160,9 @@ export function useZoom(options: UseZoomOptions = {}) {
     if (event.touches.length === 2 && touchZoomState.value) {
       event.preventDefault()
 
-      const touch1 = event.touches[0]
-      const touch2 = event.touches[1]
+      const touch1 = event.touches[0]!
+      const touch2 = event.touches[1]!
+
       const currentDistance = getTouchDistance(touch1, touch2)
       const scale = currentDistance / touchZoomState.value.initialDistance
       const newZoom = touchZoomState.value.initialZoom * scale

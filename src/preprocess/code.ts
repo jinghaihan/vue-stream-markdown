@@ -64,7 +64,7 @@ function removeTrailingIncompleteBackticks(content: string): string {
   // Check if content ends with backticks (possibly preceded/followed by whitespace)
   const match = content.match(trailingBackticksPattern)
 
-  if (!match)
+  if (!match || !match[1])
     return content
 
   const backtickSequence = match[1]
@@ -83,7 +83,8 @@ function removeTrailingIncompleteBackticks(content: string): string {
     let paragraphStartIndex = 0
 
     for (let i = lines.length - 1; i >= 0; i--) {
-      if (lines[i].trim() === '') {
+      const line = lines[i]!
+      if (line.trim() === '') {
         paragraphStartIndex = i + 1
         break
       }
@@ -152,7 +153,7 @@ function fixCodeBlock(content: string): string {
     // Check if there's a newline after the opening fence (indicating code content starts)
     // or if there's non-whitespace content (language identifier)
     const hasNewline = afterFence.includes('\n')
-    const firstLine = hasNewline ? afterFence.split('\n')[0] : afterFence
+    const firstLine = hasNewline ? afterFence.split('\n')[0] ?? '' : afterFence
     const hasLanguage = firstLine.trim().length > 0
 
     // If there's actual content (language or code after newline), complete the block
@@ -191,7 +192,8 @@ function fixInlineCode(content: string): string {
   let paragraphStartIndex = 0
 
   for (let i = lines.length - 1; i >= 0; i--) {
-    if (lines[i].trim() === '') {
+    const line = lines[i]!
+    if (line.trim() === '') {
       paragraphStartIndex = i + 1
       break
     }

@@ -45,7 +45,8 @@ export function fixInlineMath(content: string): string {
 
   // Find the last blank line
   for (let i = lines.length - 1; i >= 0; i--) {
-    if (lines[i].trim() === '') {
+    const line = lines[i]!
+    if (line.trim() === '') {
       paragraphStartIndex = i + 1
       break
     }
@@ -100,7 +101,7 @@ export function fixInlineMath(content: string): string {
     // Check if this is block math
     // Block math typically has $$ on its own line (possibly with whitespace)
     // or $$ followed immediately by newline
-    const lineAfterDollar = afterLast.split('\n')[0]
+    const lineAfterDollar = afterLast.split('\n')[0] ?? ''
     const hasContentAfter = lineAfterDollar.trim().length > 0
     const isBlockMathByAfter = !hasContentAfter && afterLast.startsWith('\n')
 
@@ -109,8 +110,9 @@ export function fixInlineMath(content: string): string {
     const linesInParagraph = lastParagraph.split('\n')
     let lineWithDollar = ''
     for (let i = linesInParagraph.length - 1; i >= 0; i--) {
-      if (linesInParagraph[i].includes('$$')) {
-        lineWithDollar = linesInParagraph[i]
+      const line = linesInParagraph[i]!
+      if (line.includes('$$')) {
+        lineWithDollar = line
         break
       }
     }

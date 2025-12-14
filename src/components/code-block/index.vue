@@ -111,18 +111,19 @@ const previewable = computed((): boolean => {
   return false
 })
 
-const PreviewComponent = computed((): Component => {
+const PreviewComponent = computed((): Component | undefined => {
+  const previewer = CODE_PREVIEWERS[language.value]
   if (!previewers.value || typeof previewers.value === 'boolean')
-    return CODE_PREVIEWERS[language.value]
+    return previewer
 
   const data = previewers.value[language.value]
   if (data === false)
-    return CODE_PREVIEWERS[language.value]
+    return previewer
 
   if (data && typeof data !== 'boolean')
     return data as Component
 
-  return CODE_PREVIEWERS[language.value]
+  return previewer
 })
 
 function normalizeHeight(height: string | number) {

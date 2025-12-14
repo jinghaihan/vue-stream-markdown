@@ -33,7 +33,8 @@ export function fixStrong(content: string): string {
 
   // Find the last blank line
   for (let i = lines.length - 1; i >= 0; i--) {
-    if (lines[i].trim() === '') {
+    const line = lines[i]!
+    if (line.trim() === '') {
       paragraphStartIndex = i + 1
       break
     }

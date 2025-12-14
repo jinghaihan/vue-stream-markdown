@@ -22,7 +22,6 @@
     "lz-string": "catalog:prod",
     "tailwind-merge": "catalog:style",
     "vue": "catalog:frontend",
-    "vue-json-pretty": "catalog:frontend",
-    "vue-stream-markdown": "workspace:*"
+    "vue-json-pretty": "catalog:frontend"
   }
 }

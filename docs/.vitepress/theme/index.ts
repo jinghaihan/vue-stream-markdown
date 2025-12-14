@@ -1,3 +1,4 @@
+import type { Theme } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import SiteLayout from './components/site-layout.vue'
 import StreamMarkdown from './components/stream-markdown.vue'
@@ -13,4 +14,4 @@ export default {
   enhanceApp({ app }) {
     app.component('StreamMarkdown', StreamMarkdown)
   },
-}
+} satisfies Theme
