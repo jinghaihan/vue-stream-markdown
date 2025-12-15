@@ -10,8 +10,8 @@ catalogs:
       specifier: ^6.0.3
       version: 6.0.3
     tsdown:
-      specifier: ^0.17.4
-      version: 0.17.4
+      specifier: 0.17.2
+      version: 0.17.2
     unplugin-icons:
       specifier: ^22.5.0
       version: 22.5.0
@@ -327,7 +327,7 @@ importers:
         version: 0.1.2
       tsdown:
         specifier: catalog:build
-        version: 0.17.4(synckit@0.11.11)(typescript@5.9.3)(unplugin-lightningcss@0.4.3)(vue-tsc@3.1.8(typescript@5.9.3))
+        version: 0.17.2(synckit@0.11.11)(typescript@5.9.3)(unplugin-lightningcss@0.4.3)(vue-tsc@3.1.8(typescript@5.9.3))
       tsx:
         specifier: catalog:script
         version: 4.21.0
@@ -6220,8 +6220,8 @@ packages:
     resolution: {integrity: sha512-q5W7tVM71e2xjHZTlgfTDoPF/SmqKG5hddq9SzR49CH2hayqRKJtQ4mtRlSxKaJlR/+9rEM+mnBHf7I2/BQcpQ==}
     engines: {node: '>=6.10'}
 
-  tsdown@0.17.4:
-    resolution: {integrity: sha512-z+kNuv1rwM1POQIufDUVrdNc/uGy0ueRVafCyDH39IdHxin4JXgB8DNGSPoqdIpcOpqUoRbNreK8NxENFmlhKw==}
+  tsdown@0.17.2:
+    resolution: {integrity: sha512-SuU+0CWm/95KfXqojHTVuwcouIsdn7HpYcwDyOdKktJi285NxKwysjFUaxYLxpCNqqPvcFvokXLO4dZThRwzkw==}
     engines: {node: '>=20.19.0'}
     hasBin: true
     peerDependencies:
@@ -13529,11 +13529,10 @@ snapshots:
 
   ts-dedent@2.2.0: {}
 
-  tsdown@0.17.4(synckit@0.11.11)(typescript@5.9.3)(unplugin-lightningcss@0.4.3)(vue-tsc@3.1.8(typescript@5.9.3)):
+  tsdown@0.17.2(synckit@0.11.11)(typescript@5.9.3)(unplugin-lightningcss@0.4.3)(vue-tsc@3.1.8(typescript@5.9.3)):
     dependencies:
       ansis: 4.2.0
       cac: 6.7.14
-      defu: 6.1.4
       empathic: 2.0.0
       hookable: 5.5.3
       import-without-cache: 0.2.3
