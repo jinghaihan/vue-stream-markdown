@@ -11,6 +11,7 @@ const chart = shallowRef<echarts.ECharts>()
 
 const code = computed(() => props.node.value.trim())
 const loading = computed(() => !!props.node.loading)
+const isDark = computed<boolean>(() => props.isDark)
 
 const hasError = ref<boolean>(false)
 
@@ -20,7 +21,7 @@ function renderChart() {
   if (!chartRef.value || !data.value)
     return
 
-  chart.value = echarts.init(chartRef.value)
+  chart.value = echarts.init(chartRef.value, isDark.value ? 'dark' : 'default')
   chart.value.setOption(data.value)
 }
 
@@ -44,6 +45,10 @@ watch(
   },
   { immediate: true },
 )
+
+watch(() => isDark.value, () => {
+  chart.value?.setTheme(isDark.value ? 'dark' : 'default')
+}, { immediate: true })
 
 onMounted(() => {
   if (data.value && !chart.value)
