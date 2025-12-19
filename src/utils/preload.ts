@@ -19,7 +19,7 @@ export async function preloadAsyncComponents(
     if (exclude.length > 0 && exclude.includes(key))
       return
 
-    // @ts-expect-error __asyncLoader is not typed
+    // @ts-expect-error __asyncLoader is private
     loaders.push(component.__asyncLoader())
   })
 

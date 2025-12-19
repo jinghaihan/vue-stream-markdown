@@ -26,9 +26,31 @@
  * fixTaskList('> **Note**: Here\'s a quote with tasks:\n\n> -')
  * // Returns: '> **Note**: Here\'s a quote with tasks:\n\n'
  */
-import { incompleteTaskListPattern, quoteIncompleteTaskListPattern, quoteStandaloneDashPattern, quoteTaskListPattern, standaloneDashPattern, taskListPattern } from './pattern'
+import { incompleteTaskListPattern, quoteIncompleteTaskListPattern, quoteStandaloneDashPattern, quoteTaskListPattern, standaloneDashPattern, taskListPattern, tripleBacktickPattern } from './pattern'
 
 export function fixTaskList(content: string): string {
+  // Don't process if we're inside a code block (unclosed)
+  const codeBlockMatches = content.match(tripleBacktickPattern)
+  const codeBlockCount = codeBlockMatches ? codeBlockMatches.length : 0
+  if (codeBlockCount % 2 === 1) {
+    return content
+  }
+
+  // Check if the last line is inside a code block
+  // Find all code block ranges
+  const codeBlockRanges: Array<{ start: number, end: number }> = []
+  let searchStart = 0
+  while (true) {
+    const codeBlockStart = content.indexOf('```', searchStart)
+    if (codeBlockStart === -1)
+      break
+    const codeBlockEnd = content.indexOf('```', codeBlockStart + 3)
+    if (codeBlockEnd === -1)
+      break
+    codeBlockRanges.push({ start: codeBlockStart, end: codeBlockEnd + 3 })
+    searchStart = codeBlockEnd + 3
+  }
+
   const lines = content.split('\n')
 
   // If content is empty or has no lines, return as is
@@ -38,6 +60,27 @@ export function fixTaskList(content: string): string {
   // Get the last line
   const lastLine = lines[lines.length - 1]
   if (!lastLine) {
+    return content
+  }
+
+  // Calculate the position of the last line in the content
+  let lastLineStartPos = 0
+  for (let i = 0; i < lines.length - 1; i++) {
+    const line = lines[i]
+    if (line !== undefined) {
+      lastLineStartPos += line.length + 1 // +1 for newline
+    }
+  }
+  const lastLineEndPos = lastLineStartPos + lastLine.length
+
+  // Check if the last line is inside a code block
+  const isLastLineInCodeBlock = codeBlockRanges.some(
+    range => (lastLineStartPos >= range.start && lastLineStartPos < range.end)
+      || (lastLineEndPos > range.start && lastLineEndPos <= range.end)
+      || (lastLineStartPos < range.start && lastLineEndPos > range.end),
+  )
+
+  if (isLastLineInCodeBlock) {
     return content
   }
 

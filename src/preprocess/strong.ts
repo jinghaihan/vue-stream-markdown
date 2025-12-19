@@ -1,4 +1,4 @@
-import { doubleAsteriskPattern, doubleUnderscorePattern, singleAsteriskPattern, singleUnderscorePattern, trailingStandaloneDashWithNewlinesPattern } from './pattern'
+import { codeBlockPattern, doubleAsteriskPattern, doubleUnderscorePattern, singleAsteriskPattern, singleUnderscorePattern, trailingStandaloneDashWithNewlinesPattern, tripleBacktickPattern } from './pattern'
 import { calculateParagraphOffset, getLastParagraphWithIndex } from './utils'
 
 /**
@@ -32,19 +32,29 @@ export function fixStrong(content: string): string {
     return ''
   }
 
+  // Don't process if we're inside a code block (unclosed)
+  const codeBlockMatches = content.match(tripleBacktickPattern)
+  const codeBlockCount = codeBlockMatches ? codeBlockMatches.length : 0
+  if (codeBlockCount % 2 === 1) {
+    return content
+  }
+
   // Find the last paragraph (after the last blank line)
   const { lastParagraph } = getLastParagraphWithIndex(content)
+
+  // Remove code blocks from the last paragraph to avoid processing strong inside them
+  const lastParagraphWithoutCodeBlocks = lastParagraph.replace(codeBlockPattern, '')
 
   // Check if content ends with a single * or _ (not ** or __)
   const endsWithSingleAsterisk = content.endsWith('*') && !content.endsWith('**')
   const endsWithSingleUnderscore = content.endsWith('_') && !content.endsWith('__')
 
-  // Count ** in the last paragraph only
-  const asteriskMatches = lastParagraph.match(doubleAsteriskPattern)
+  // Count ** in the last paragraph only (excluding code blocks)
+  const asteriskMatches = lastParagraphWithoutCodeBlocks.match(doubleAsteriskPattern)
   const asteriskCount = asteriskMatches ? asteriskMatches.length : 0
 
-  // Count __ in the last paragraph only
-  const underscoreMatches = lastParagraph.match(doubleUnderscorePattern)
+  // Count __ in the last paragraph only (excluding code blocks)
+  const underscoreMatches = lastParagraphWithoutCodeBlocks.match(doubleUnderscorePattern)
   const underscoreCount = underscoreMatches ? underscoreMatches.length : 0
 
   // Track what needs to be done
@@ -55,8 +65,8 @@ export function fixStrong(content: string): string {
 
   // Check asterisk
   if (asteriskCount % 2 === 1) {
-    const lastStarPos = lastParagraph.lastIndexOf('**')
-    const afterLast = lastParagraph.substring(lastStarPos + 2).trim()
+    const lastStarPos = lastParagraphWithoutCodeBlocks.lastIndexOf('**')
+    const afterLast = lastParagraphWithoutCodeBlocks.substring(lastStarPos + 2).trim()
 
     if (afterLast.length > 0) {
       needsAsteriskCompletion = true
@@ -68,8 +78,8 @@ export function fixStrong(content: string): string {
 
   // Check underscore
   if (underscoreCount % 2 === 1) {
-    const lastUnderscorePos = lastParagraph.lastIndexOf('__')
-    const afterLast = lastParagraph.substring(lastUnderscorePos + 2).trim()
+    const lastUnderscorePos = lastParagraphWithoutCodeBlocks.lastIndexOf('__')
+    const afterLast = lastParagraphWithoutCodeBlocks.substring(lastUnderscorePos + 2).trim()
 
     if (afterLast.length > 0) {
       needsUnderscoreCompletion = true
@@ -87,11 +97,12 @@ export function fixStrong(content: string): string {
     removedTrailingSingle = true
     // Recalculate after removal
     const { lastParagraph: newLastParagraph } = getLastParagraphWithIndex(content)
-    const newAsteriskMatches = newLastParagraph.match(doubleAsteriskPattern)
+    const newLastParagraphWithoutCodeBlocks = newLastParagraph.replace(codeBlockPattern, '')
+    const newAsteriskMatches = newLastParagraphWithoutCodeBlocks.match(doubleAsteriskPattern)
     const newAsteriskCount = newAsteriskMatches ? newAsteriskMatches.length : 0
     if (newAsteriskCount % 2 === 1) {
-      const lastStarPos = newLastParagraph.lastIndexOf('**')
-      const afterLast = newLastParagraph.substring(lastStarPos + 2).trim()
+      const lastStarPos = newLastParagraphWithoutCodeBlocks.lastIndexOf('**')
+      const afterLast = newLastParagraphWithoutCodeBlocks.substring(lastStarPos + 2).trim()
       if (afterLast.length > 0) {
         needsAsteriskCompletion = true
         needsAsteriskRemoval = false
@@ -109,11 +120,12 @@ export function fixStrong(content: string): string {
     removedTrailingSingle = true
     // Recalculate after removal
     const { lastParagraph: newLastParagraph } = getLastParagraphWithIndex(content)
-    const newUnderscoreMatches = newLastParagraph.match(doubleUnderscorePattern)
+    const newLastParagraphWithoutCodeBlocks = newLastParagraph.replace(codeBlockPattern, '')
+    const newUnderscoreMatches = newLastParagraphWithoutCodeBlocks.match(doubleUnderscorePattern)
     const newUnderscoreCount = newUnderscoreMatches ? newUnderscoreMatches.length : 0
     if (newUnderscoreCount % 2 === 1) {
-      const lastUnderscorePos = newLastParagraph.lastIndexOf('__')
-      const afterLast = newLastParagraph.substring(lastUnderscorePos + 2).trim()
+      const lastUnderscorePos = newLastParagraphWithoutCodeBlocks.lastIndexOf('__')
+      const afterLast = newLastParagraphWithoutCodeBlocks.substring(lastUnderscorePos + 2).trim()
       if (afterLast.length > 0) {
         needsUnderscoreCompletion = true
         needsUnderscoreRemoval = false
@@ -149,8 +161,8 @@ export function fixStrong(content: string): string {
   // Handle completions - check for both ** and __, and also check for single * or _
   if (needsAsteriskCompletion && needsUnderscoreCompletion) {
     // Both need completion - complete the one that appears first
-    const firstAsteriskPos = lastParagraph.indexOf('**')
-    const firstUnderscorePos = lastParagraph.indexOf('__')
+    const firstAsteriskPos = lastParagraphWithoutCodeBlocks.indexOf('**')
+    const firstUnderscorePos = lastParagraphWithoutCodeBlocks.indexOf('__')
     if (firstAsteriskPos < firstUnderscorePos) {
       // Asterisk appears first, complete underscore first, then asterisk
       return `${content}__**`
@@ -166,7 +178,8 @@ export function fixStrong(content: string): string {
     // But only if we didn't just remove a trailing single *
     if (!removedTrailingSingle) {
       const { lastParagraph: currentLastParagraph } = getLastParagraphWithIndex(content)
-      const withoutDoubleAsterisk = currentLastParagraph.replace(doubleAsteriskPattern, '')
+      const currentLastParagraphWithoutCodeBlocks = currentLastParagraph.replace(codeBlockPattern, '')
+      const withoutDoubleAsterisk = currentLastParagraphWithoutCodeBlocks.replace(doubleAsteriskPattern, '')
       const singleAsteriskMatches = withoutDoubleAsterisk.match(singleAsteriskPattern)
       const singleAsteriskCount = singleAsteriskMatches ? singleAsteriskMatches.length : 0
       if (singleAsteriskCount % 2 === 1) {
@@ -182,7 +195,8 @@ export function fixStrong(content: string): string {
     // But only if we didn't just remove a trailing single _
     if (!removedTrailingSingle) {
       const { lastParagraph: currentLastParagraph } = getLastParagraphWithIndex(content)
-      const withoutDoubleUnderscore = currentLastParagraph.replace(doubleUnderscorePattern, '')
+      const currentLastParagraphWithoutCodeBlocks = currentLastParagraph.replace(codeBlockPattern, '')
+      const withoutDoubleUnderscore = currentLastParagraphWithoutCodeBlocks.replace(doubleUnderscorePattern, '')
       const singleUnderscoreMatches = withoutDoubleUnderscore.match(singleUnderscorePattern)
       const singleUnderscoreCount = singleUnderscoreMatches ? singleUnderscoreMatches.length : 0
       if (singleUnderscoreCount % 2 === 1) {

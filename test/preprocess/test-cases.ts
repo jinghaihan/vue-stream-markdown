@@ -127,8 +127,8 @@ export const codeTestCases: TestCasesByCategory = {
       expected: '```javascript\n```',
     },
     {
-      description: 'should ignore inline code inside unclosed code block',
-      input: '```js\nconst x = `template',
+      description: 'should ignore inline code inside code block',
+      input: '```js\nconst x = `template\n```',
       expected: '```js\nconst x = `template\n```',
     },
     {
@@ -224,6 +224,21 @@ export const deleteTestCases: TestCasesByCategory = {
       input: '~~text~',
       expected: '~~text~~',
     },
+    {
+      description: 'should ignore ~~ inside code block',
+      input: '```\nconst x = ~~value\n```',
+      expected: '```\nconst x = ~~value\n```',
+    },
+    {
+      description: 'should ignore ~~ inside code block',
+      input: '```\nconst x = ~~value\n```',
+      expected: '```\nconst x = ~~value\n```',
+    },
+    {
+      description: 'should process ~~ outside code block',
+      input: '```\ncode\n```\n\nText ~~strike',
+      expected: '```\ncode\n```\n\nText ~~strike~~',
+    },
   ],
 }
 
@@ -311,6 +326,26 @@ export const emphasisTestCases: TestCasesByCategory = {
       description: 'should prioritize _ over * when both unclosed',
       input: '_underscore and *asterisk',
       expected: '_underscore and *asterisk*_',
+    },
+    {
+      description: 'should ignore * inside code block',
+      input: '```\nconst x = *value\n```',
+      expected: '```\nconst x = *value\n```',
+    },
+    {
+      description: 'should ignore _ inside code block',
+      input: '```\nconst x = _value\n```',
+      expected: '```\nconst x = _value\n```',
+    },
+    {
+      description: 'should ignore * inside code block',
+      input: '```\nconst x = *value\n```',
+      expected: '```\nconst x = *value\n```',
+    },
+    {
+      description: 'should process * outside code block',
+      input: '```\ncode\n```\n\nText *italic',
+      expected: '```\ncode\n```\n\nText *italic*',
     },
   ],
 }
@@ -419,6 +454,26 @@ export const strongTestCases: TestCasesByCategory = {
       description: 'should complete __ with unclosed _',
       input: '__bold and _mixed',
       expected: '__bold and _mixed___',
+    },
+    {
+      description: 'should ignore ** inside code block',
+      input: '```\nconst x = **value\n```',
+      expected: '```\nconst x = **value\n```',
+    },
+    {
+      description: 'should ignore __ inside code block',
+      input: '```\nconst x = __value\n```',
+      expected: '```\nconst x = __value\n```',
+    },
+    {
+      description: 'should ignore ** inside code block',
+      input: '```\nconst x = **value\n```',
+      expected: '```\nconst x = **value\n```',
+    },
+    {
+      description: 'should process ** outside code block',
+      input: '```\ncode\n```\n\nText **bold',
+      expected: '```\ncode\n```\n\nText **bold**',
     },
   ],
 }
@@ -788,6 +843,21 @@ export const tableTestCases: TestCasesByCategory = {
       input: '| Column A | Column B | Column C\n',
       expected: '| Column A | Column B | Column C |\n| --- | --- | --- |',
     },
+    {
+      description: 'should ignore table inside code block',
+      input: '```\n| Column A | Column B | Column C |\n```',
+      expected: '```\n| Column A | Column B | Column C |\n```',
+    },
+    {
+      description: 'should process table outside code block',
+      input: '```\ncode\n```\n\n| Column A | Column B |',
+      expected: '```\ncode\n```\n\n| Column A | Column B |\n| --- | --- |',
+    },
+    {
+      description: 'should ignore table in code block with other content',
+      input: '```js\nconst table = "| A | B |"\n| Column A | Column B |\n```',
+      expected: '```js\nconst table = "| A | B |"\n| Column A | Column B |\n```',
+    },
   ],
 }
 
@@ -842,6 +912,26 @@ export const taskListTestCases: TestCasesByCategory = {
       description: 'should remove standalone dash in quote',
       input: '> -',
       expected: '',
+    },
+    {
+      description: 'should ignore - inside code block',
+      input: '```\n- task item\n```',
+      expected: '```\n- task item\n```',
+    },
+    {
+      description: 'should ignore - inside code block',
+      input: '```\n- task item\n```',
+      expected: '```\n- task item\n```',
+    },
+    {
+      description: 'should process - outside code block',
+      input: '```\ncode\n```\n\n- [ ] Task',
+      expected: '```\ncode\n```\n\n- [ ] Task',
+    },
+    {
+      description: 'should remove standalone - outside code block',
+      input: '```\ncode\n```\n\n-',
+      expected: '```\ncode\n```\n',
     },
   ],
 }

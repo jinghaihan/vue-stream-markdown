@@ -28,13 +28,27 @@ import { getLastParagraphWithIndex } from './utils'
  * // Returns: '| a | b |\n| --- | --- |' (no change, already complete)
  */
 export function fixTable(content: string): string {
-  // Don't process if we're inside a code block
+  // Don't process if we're inside a code block (unclosed)
   const codeBlockMatches = content.match(tripleBacktickPattern)
   const codeBlockCount = codeBlockMatches ? codeBlockMatches.length : 0
 
   // If odd number of code block fences, we're inside a code block
   if (codeBlockCount % 2 === 1)
     return content
+
+  // Find all code block ranges to check if table is inside a closed code block
+  const codeBlockRanges: Array<{ start: number, end: number }> = []
+  let searchStart = 0
+  while (true) {
+    const codeBlockStart = content.indexOf('```', searchStart)
+    if (codeBlockStart === -1)
+      break
+    const codeBlockEnd = content.indexOf('```', codeBlockStart + 3)
+    if (codeBlockEnd === -1)
+      break
+    codeBlockRanges.push({ start: codeBlockStart, end: codeBlockEnd + 3 })
+    searchStart = codeBlockEnd + 3
+  }
 
   // Find the last paragraph (after the last blank line)
   const { lastParagraph } = getLastParagraphWithIndex(content, true)
@@ -67,6 +81,21 @@ export function fixTable(content: string): string {
   if (headerRowIndex === -1)
     return content
 
+  // Check if the header row is inside a code block
+  const headerRowPos = content.lastIndexOf(headerRow)
+  if (headerRowPos !== -1) {
+    const headerRowEndPos = headerRowPos + headerRow.length
+    const isHeaderRowInCodeBlock = codeBlockRanges.some(
+      range => (headerRowPos >= range.start && headerRowPos < range.end)
+        || (headerRowEndPos > range.start && headerRowEndPos <= range.end)
+        || (headerRowPos < range.start && headerRowEndPos > range.end),
+    )
+
+    if (isHeaderRowInCodeBlock) {
+      return content
+    }
+  }
+
   // Check if header row is complete (ends with |)
   // This ensures we complete incomplete headers during streaming to avoid flickering
   const trimmedHeader = headerRow.trim()
@@ -86,8 +115,7 @@ export function fixTable(content: string): string {
 
   const separator = generateSeparator(headerColumns)
 
-  // Find the position of the original header row in content
-  const headerRowPos = content.lastIndexOf(headerRow)
+  // Use the headerRowPos we already found above
   const beforeHeaderRow = content.substring(0, headerRowPos)
   const afterHeaderRow = content.substring(headerRowPos + headerRow.length)
 
