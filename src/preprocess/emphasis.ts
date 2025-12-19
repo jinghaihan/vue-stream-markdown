@@ -1,4 +1,4 @@
-import { doubleAsteriskPattern, doubleUnderscorePattern, singleAsteriskPattern, singleUnderscorePattern, trailingStandaloneDashWithNewlinesPattern } from './pattern'
+import { codeBlockPattern, doubleAsteriskPattern, doubleUnderscorePattern, singleAsteriskPattern, singleUnderscorePattern, trailingStandaloneDashWithNewlinesPattern, tripleBacktickPattern } from './pattern'
 import { calculateParagraphOffset, getLastParagraphWithIndex } from './utils'
 
 /**
@@ -8,19 +8,29 @@ import { calculateParagraphOffset, getLastParagraphWithIndex } from './utils'
  * This respects Markdown's rule that emphasis cannot span across paragraphs.
  */
 export function fixEmphasis(content: string): string {
+  // Don't process if we're inside a code block (unclosed)
+  const codeBlockMatches = content.match(tripleBacktickPattern)
+  const codeBlockCount = codeBlockMatches ? codeBlockMatches.length : 0
+  if (codeBlockCount % 2 === 1) {
+    return content
+  }
+
   // Find the last paragraph
   const lines = content.split('\n')
   const { lastParagraph, startIndex: paragraphStartIndex } = getLastParagraphWithIndex(content)
 
+  // Remove code blocks from the last paragraph to avoid processing emphasis inside them
+  const lastParagraphWithoutCodeBlocks = lastParagraph.replace(codeBlockPattern, '')
+
   // Check asterisk emphasis first (original behavior)
   // Remove ** to count only single *
-  const withoutDoubleAsterisk = lastParagraph.replace(doubleAsteriskPattern, '')
+  const withoutDoubleAsterisk = lastParagraphWithoutCodeBlocks.replace(doubleAsteriskPattern, '')
   const asteriskMatches = withoutDoubleAsterisk.match(singleAsteriskPattern)
   const asteriskCount = asteriskMatches ? asteriskMatches.length : 0
 
   // Check underscore emphasis
   // Remove __ to count only single _
-  const withoutDoubleUnderscore = lastParagraph.replace(doubleUnderscorePattern, '')
+  const withoutDoubleUnderscore = lastParagraphWithoutCodeBlocks.replace(doubleUnderscorePattern, '')
   const underscoreMatches = withoutDoubleUnderscore.match(singleUnderscorePattern)
   const underscoreCount = underscoreMatches ? underscoreMatches.length : 0
 
