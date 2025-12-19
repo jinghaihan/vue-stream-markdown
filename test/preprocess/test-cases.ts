@@ -1,50 +1,50 @@
-export interface SimpleTestCase {
+export interface TestCase {
   description: string
   input: string
   expected: string
 }
 
-export type TestCasesByCategory = Record<string, SimpleTestCase[]>
+export type TestCasesByCategory = Record<string, TestCase[]>
 
 export const codeTestCases: TestCasesByCategory = {
   'code-inline': [
     {
-      description: 'should handle trailing ` without content',
+      description: 'should remove bare `',
       input: '`',
       expected: '',
     },
     {
-      description: 'should handle trailing `` without content',
+      description: 'should remove bare ``',
       input: '``',
       expected: '',
     },
     {
-      description: 'should handle trailing ``` without content',
+      description: 'should remove bare ```',
       input: '```',
       expected: '',
     },
     {
-      description: 'should remove trailing ` without content',
+      description: 'should remove trailing `',
       input: 'Text `',
       expected: 'Text',
     },
     {
-      description: 'should handle trailing `` without content',
+      description: 'should remove trailing ``',
       input: 'Text ``',
       expected: 'Text',
     },
     {
-      description: 'should handle trailing ``` without content',
+      description: 'should remove trailing ```',
       input: 'Text ```',
       expected: 'Text',
     },
     {
-      description: 'should complete unclosed ` with content',
+      description: 'should complete unclosed `',
       input: 'Hello `world',
       expected: 'Hello `world`',
     },
     {
-      description: 'should not modify already closed inline code',
+      description: 'should not modify closed inline code',
       input: 'Hello `world`',
       expected: 'Hello `world`',
     },
@@ -54,27 +54,27 @@ export const codeTestCases: TestCasesByCategory = {
       expected: 'Hello',
     },
     {
-      description: 'should handle multiple ` in same paragraph',
+      description: 'should complete multiple unclosed ` in paragraph',
       input: '`a` and `b',
       expected: '`a` and `b`',
     },
     {
-      description: 'should handle ` spanning multiple lines',
+      description: 'should complete ` spanning multiple lines',
       input: 'Hello `world\nand more code',
       expected: 'Hello `world\nand more code`',
     },
     {
-      description: 'should not interfere with code blocks when counting inline code',
+      description: 'should ignore code blocks when counting inline code',
       input: '```js\ncode\n``` and `inline',
       expected: '```js\ncode\n``` and `inline`',
     },
     {
-      description: 'should handle multiple unclosed inline codes (only complete the last)',
+      description: 'should only complete last unclosed inline code',
       input: 'Para1 `one\n\nPara2 `two',
       expected: 'Para1 `one\n\nPara2 `two`',
     },
     {
-      description: 'should handle backticks in different contexts',
+      description: 'should complete unclosed ` in context',
       input: 'Text with ` and more',
       expected: 'Text with ` and more`',
     },
@@ -82,57 +82,57 @@ export const codeTestCases: TestCasesByCategory = {
 
   'code-block': [
     {
-      description: 'should complete unclosed code block with content',
+      description: 'should complete unclosed code block',
       input: '```javascript\nconst x = 1',
       expected: '```javascript\nconst x = 1\n```',
     },
     {
-      description: 'should handle trailing ` without content',
+      description: 'should complete code block with trailing `',
       input: '```javascript\nconst x = 1`',
       expected: '```javascript\nconst x = 1\n```',
     },
     {
-      description: 'should handle trailing `` without content',
+      description: 'should complete code block with trailing ``',
       input: '```javascript\nconst x = 1``',
       expected: '```javascript\nconst x = 1\n```',
     },
     {
-      description: 'should complete code block that already ends with newline',
+      description: 'should complete code block ending with newline',
       input: '```python\nprint("hello")\n',
       expected: '```python\nprint("hello")\n```',
     },
     {
-      description: 'should not modify already closed code blocks',
+      description: 'should not modify closed code blocks',
       input: '```js\ncode\n```',
       expected: '```js\ncode\n```',
     },
     {
-      description: 'should handle code blocks spanning multiple paragraphs',
+      description: 'should complete code block spanning multiple paragraphs',
       input: '```javascript\nfunction test() {\n\n  return true;\n}',
       expected: '```javascript\nfunction test() {\n\n  return true;\n}\n```',
     },
     {
-      description: 'should complete last code block when multiple blocks exist',
+      description: 'should complete last code block when multiple exist',
       input: '```js\ncode1\n```\n\nText\n\n```python\ncode2',
       expected: '```js\ncode1\n```\n\nText\n\n```python\ncode2\n```',
     },
     {
-      description: 'should handle code blocks without language identifiers',
+      description: 'should complete code block without language',
       input: '```\nplain code',
       expected: '```\nplain code\n```',
     },
     {
-      description: 'should handle code block with only language identifier',
+      description: 'should complete code block with only language',
       input: '```javascript',
       expected: '```javascript\n```',
     },
     {
-      description: 'should not process inline code when inside code block',
+      description: 'should ignore inline code inside unclosed code block',
       input: '```js\nconst x = `template',
       expected: '```js\nconst x = `template\n```',
     },
     {
-      description: 'should not complete inline code inside complete code blocks',
+      description: 'should not process inline code inside closed code block',
       input: '```js\nconst x = `template\n```',
       expected: '```js\nconst x = `template\n```',
     },
@@ -140,12 +140,12 @@ export const codeTestCases: TestCasesByCategory = {
 
   'code-mixed': [
     {
-      description: 'should handle both inline code and code blocks',
+      description: 'should handle inline code and code blocks together',
       input: '```js\ncode\n```\n\nUse `variable',
       expected: '```js\ncode\n```\n\nUse `variable`',
     },
     {
-      description: 'should complete code block before processing inline code',
+      description: 'should complete code block before inline code',
       input: 'Text `inline` code\n\n```js\nconst x = 1',
       expected: 'Text `inline` code\n\n```js\nconst x = 1\n```',
     },
@@ -155,72 +155,72 @@ export const codeTestCases: TestCasesByCategory = {
 export const deleteTestCases: TestCasesByCategory = {
   delete: [
     {
-      description: 'should complete unclosed ~~ with content',
+      description: 'should complete unclosed ~~',
       input: 'Hello ~~world',
       expected: 'Hello ~~world~~',
     },
     {
-      description: 'should complete unclosed ~~ with single ~',
+      description: 'should complete unclosed ~~ with trailing ~',
       input: 'Hello ~~world~',
       expected: 'Hello ~~world~~',
     },
     {
-      description: 'should not modify already closed ~~',
+      description: 'should not modify closed ~~',
       input: 'Hello ~~world~~',
       expected: 'Hello ~~world~~',
     },
     {
-      description: 'should remove bare single ~ without content',
+      description: 'should remove bare ~',
       input: '~',
       expected: '',
     },
     {
-      description: 'should remove bare ~~ without content',
+      description: 'should remove bare ~~',
       input: '~~',
       expected: '',
     },
     {
-      description: 'should remove ~~ when there is no content after it',
+      description: 'should remove trailing ~~',
       input: 'Hello ~~',
       expected: 'Hello',
     },
     {
-      description: 'should remove ~~ and trailing whitespace',
+      description: 'should remove trailing ~~ with whitespace',
       input: 'Hello ~~   ',
       expected: 'Hello',
     },
     {
-      description: 'should handle multiple ~~ in same paragraph',
+      description: 'should complete multiple unclosed ~~ in paragraph',
       input: '~~a~~ and ~~b',
       expected: '~~a~~ and ~~b~~',
     },
     {
-      description: 'should only process last paragraph after blank line for ~~',
+      description: 'should only process last paragraph',
       input: 'Para1 ~~unclosed\n\nPara2 ~~text',
       expected: 'Para1 ~~unclosed\n\nPara2 ~~text~~',
     },
     {
-      description: 'should handle mixed formatting with other markdown',
+      description: 'should complete ~~ with other markdown',
       input: '**bold** and ~~strike',
       expected: '**bold** and ~~strike~~',
     },
     {
-      description: 'should handle complex scenarios with mixed ~ and ~~ (single ~ after complete)',
+      description: 'should remove trailing ~ after closed ~~',
       input: '~~complete~~ text~',
       expected: '~~complete~~ text',
     },
     {
-      description: 'should handle complex scenarios with mixed ~ and ~~ (incomplete ending with ~)',
+      description: 'should complete ~~ ending with single ~',
       input: '~~incomplete text~',
       expected: '~~incomplete text~~',
     },
     {
-      description: 'should handle edge cases with whitespace and single ~',
+      description: 'should complete ~~ with trailing ~ and whitespace',
       input: '~~text ~',
       expected: '~~text ~~',
     },
     {
-      description: 'should handle single ~ at end with unclosed ~~ before it',
+      description: 'should complete ~~ with single trailing ~',
       input: '~~text~',
       expected: '~~text~~',
     },
@@ -230,22 +230,22 @@ export const deleteTestCases: TestCasesByCategory = {
 export const emphasisTestCases: TestCasesByCategory = {
   'emphasis-asterisk': [
     {
-      description: 'should remove bare * without content',
+      description: 'should remove bare *',
       input: '*',
       expected: '',
     },
     {
-      description: 'should complete unclosed * with content',
+      description: 'should complete unclosed *',
       input: 'Hello *world',
       expected: 'Hello *world*',
     },
     {
-      description: 'should handle * spanning multiple lines',
+      description: 'should complete * spanning multiple lines',
       input: 'Hello *world\nand more text',
       expected: 'Hello *world\nand more text*',
     },
     {
-      description: 'should not modify already closed *',
+      description: 'should not modify closed *',
       input: 'Hello *world*',
       expected: 'Hello *world*',
     },
@@ -264,9 +264,8 @@ export const emphasisTestCases: TestCasesByCategory = {
       input: 'Para1 *unclosed\n\nPara2 *text',
       expected: 'Para1 *unclosed\n\nPara2 *text*',
     },
-
     {
-      description: 'should prioritize * over _ when both are unclosed',
+      description: 'should prioritize * over _ when both unclosed',
       input: '*asterisk and _underscore',
       expected: '*asterisk and _underscore_*',
     },
@@ -274,22 +273,22 @@ export const emphasisTestCases: TestCasesByCategory = {
 
   'emphasis-underscore': [
     {
-      description: 'should remove bare _ without content',
+      description: 'should remove bare _',
       input: '_',
       expected: '',
     },
     {
-      description: 'should complete unclosed _ with content',
+      description: 'should complete unclosed _',
       input: 'Hello _world',
       expected: 'Hello _world_',
     },
     {
-      description: 'should handle _ spanning multiple lines',
+      description: 'should complete _ spanning multiple lines',
       input: 'Hello _world\nand more text',
       expected: 'Hello _world\nand more text_',
     },
     {
-      description: 'should not modify already closed _',
+      description: 'should not modify closed _',
       input: 'Hello _world_',
       expected: 'Hello _world_',
     },
@@ -308,9 +307,8 @@ export const emphasisTestCases: TestCasesByCategory = {
       input: 'Para1 _unclosed\n\nPara2 _text',
       expected: 'Para1 _unclosed\n\nPara2 _text_',
     },
-
     {
-      description: 'should prioritize _ over * when both are unclosed',
+      description: 'should prioritize _ over * when both unclosed',
       input: '_underscore and *asterisk',
       expected: '_underscore and *asterisk*_',
     },
@@ -320,27 +318,27 @@ export const emphasisTestCases: TestCasesByCategory = {
 export const strongTestCases: TestCasesByCategory = {
   'strong-asterisk': [
     {
-      description: 'should complete unclosed ** in streaming content',
+      description: 'should complete unclosed **',
       input: 'Hello **world',
       expected: 'Hello **world**',
     },
     {
-      description: 'should handle trailing * without content',
+      description: 'should complete ** with trailing *',
       input: 'Hello **world*',
       expected: 'Hello **world**',
     },
     {
-      description: 'should not modify already closed **',
+      description: 'should not modify closed **',
       input: 'Hello **world**',
       expected: 'Hello **world**',
     },
     {
-      description: 'should remove bare ** without content',
+      description: 'should remove bare **',
       input: '**',
       expected: '',
     },
     {
-      description: 'should remove bare single * without content',
+      description: 'should remove bare *',
       input: '*',
       expected: '',
     },
@@ -350,22 +348,22 @@ export const strongTestCases: TestCasesByCategory = {
       expected: 'Hello',
     },
     {
-      description: 'should only process last paragraph after blank line',
+      description: 'should only process last paragraph',
       input: 'Para1 **unclosed\n\nPara2 **text',
       expected: 'Para1 **unclosed\n\nPara2 **text**',
     },
     {
-      description: 'should handle ** spanning multiple lines',
+      description: 'should complete ** spanning multiple lines',
       input: 'Hello **world\nand more text',
       expected: 'Hello **world\nand more text**',
     },
     {
-      description: 'should prioritize ** over __ when both are unclosed',
+      description: 'should prioritize ** over __ when both unclosed',
       input: '**asterisk and __underscore',
       expected: '**asterisk and __underscore__**',
     },
     {
-      description: 'should complete ** when mixed with unclosed *',
+      description: 'should complete ** with unclosed *',
       input: '**bold and *mixed',
       expected: '**bold and *mixed***',
     },
@@ -373,27 +371,27 @@ export const strongTestCases: TestCasesByCategory = {
 
   'strong-underscore': [
     {
-      description: 'should complete unclosed __ in streaming content',
+      description: 'should complete unclosed __',
       input: 'Hello __world',
       expected: 'Hello __world__',
     },
     {
-      description: 'should handle trailing _ without content',
+      description: 'should complete __ with trailing _',
       input: 'Hello __world_',
       expected: 'Hello __world__',
     },
     {
-      description: 'should not modify already closed __',
+      description: 'should not modify closed __',
       input: 'Hello __world__',
       expected: 'Hello __world__',
     },
     {
-      description: 'should remove bare __ without content',
+      description: 'should remove bare __',
       input: '__',
       expected: '',
     },
     {
-      description: 'should remove bare single _ without content',
+      description: 'should remove bare _',
       input: '_',
       expected: '',
     },
@@ -403,22 +401,22 @@ export const strongTestCases: TestCasesByCategory = {
       expected: 'Hello',
     },
     {
-      description: 'should only process last paragraph after blank line',
+      description: 'should only process last paragraph',
       input: 'Para1 __unclosed\n\nPara2 __text',
       expected: 'Para1 __unclosed\n\nPara2 __text__',
     },
     {
-      description: 'should handle __ spanning multiple lines',
+      description: 'should complete __ spanning multiple lines',
       input: 'Hello __world\nand more text',
       expected: 'Hello __world\nand more text__',
     },
     {
-      description: 'should prioritize __ over ** when both are unclosed',
+      description: 'should prioritize __ over ** when both unclosed',
       input: '__underscore and **asterisk',
       expected: '__underscore and **asterisk**__',
     },
     {
-      description: 'should complete __ when mixed with unclosed _',
+      description: 'should complete __ with unclosed _',
       input: '__bold and _mixed',
       expected: '__bold and _mixed___',
     },
@@ -433,12 +431,12 @@ export const linkTestCases: TestCasesByCategory = {
       expected: '[Google]()',
     },
     {
-      description: 'should add URL part when only text is present',
+      description: 'should complete link with only text',
       input: '[Google]',
       expected: '[Google]()',
     },
     {
-      description: 'should not remove bracket when it has content after',
+      description: 'should complete link with content after bracket',
       input: 'Text [ content',
       expected: 'Text [ content]()',
     },
@@ -453,22 +451,22 @@ export const linkTestCases: TestCasesByCategory = {
       expected: '[Google](https://www.goo)',
     },
     {
-      description: 'should not modify complete links',
+      description: 'should not modify closed link',
       input: '[Google](https://www.google.com)',
       expected: '[Google](https://www.google.com)',
     },
     {
-      description: 'should complete link with missing closing bracket and content',
+      description: 'should complete link in context',
       input: 'Visit [Google',
       expected: 'Visit [Google]()',
     },
     {
-      description: 'should only process last paragraph after blank line for links',
+      description: 'should only process last paragraph',
       input: 'Para1 [unclosed\n\nPara2 [text',
       expected: 'Para1 [unclosed\n\nPara2 [text]()',
     },
     {
-      description: 'should handle incomplete link in last paragraph',
+      description: 'should complete incomplete link in last paragraph',
       input: '[Complete](url)\n\n[Incomplete',
       expected: '[Complete](url)\n\n[Incomplete]()',
     },
@@ -483,7 +481,7 @@ export const linkTestCases: TestCasesByCategory = {
       expected: 'Text',
     },
     {
-      description: 'should remove standalone bracket with trailing newline',
+      description: 'should remove standalone [ with newline',
       input: 'Text [\n',
       expected: 'Text',
     },
@@ -496,12 +494,12 @@ export const linkTestCases: TestCasesByCategory = {
       expected: '![alt]()',
     },
     {
-      description: 'should add URL part when only alt is present',
+      description: 'should complete image with only alt',
       input: '![alt]',
       expected: '![alt]()',
     },
     {
-      description: 'should not remove bracket when it has content after',
+      description: 'should complete image with content after bracket',
       input: 'Text ![ content',
       expected: 'Text ![ content]()',
     },
@@ -516,22 +514,22 @@ export const linkTestCases: TestCasesByCategory = {
       expected: '![mdast](https://image.png)',
     },
     {
-      description: 'should not modify complete images',
+      description: 'should not modify closed image',
       input: '![mdast](https://raw.githubusercontent.com/logo.svg)',
       expected: '![mdast](https://raw.githubusercontent.com/logo.svg)',
     },
     {
-      description: 'should complete image with missing closing bracket and content',
+      description: 'should complete image in context',
       input: 'Visit ![Google',
       expected: 'Visit ![Google]()',
     },
     {
-      description: 'should only process last paragraph after blank line for images',
+      description: 'should only process last paragraph',
       input: 'Para1 ![unclosed\n\nPara2 ![text',
       expected: 'Para1 ![unclosed\n\nPara2 ![text]()',
     },
     {
-      description: 'should handle incomplete image in last paragraph',
+      description: 'should complete incomplete image in last paragraph',
       input: '![Complete](url)\n\n![Incomplete',
       expected: '![Complete](url)\n\n![Incomplete]()',
     },
@@ -546,7 +544,7 @@ export const linkTestCases: TestCasesByCategory = {
       expected: 'Text',
     },
     {
-      description: 'should remove standalone bracket with trailing newline',
+      description: 'should remove standalone ![ with newline',
       input: 'Text ![\n',
       expected: 'Text',
     },
@@ -556,22 +554,22 @@ export const linkTestCases: TestCasesByCategory = {
       expected: '![]()',
     },
     {
-      description: 'should complete image with empty alt and missing URL part',
+      description: 'should complete image with empty alt',
       input: '![]',
       expected: '![]()',
     },
     {
-      description: 'should complete image with empty alt and incomplete URL in context',
+      description: 'should complete image with empty alt in context',
       input: 'Text ![](',
       expected: 'Text ![]()',
     },
     {
-      description: 'should complete image with empty alt and missing URL part in context',
+      description: 'should complete image with empty alt in context',
       input: 'Text ![]',
       expected: 'Text ![]()',
     },
     {
-      description: 'should not modify complete image with empty alt',
+      description: 'should not modify closed image with empty alt',
       input: '![]()',
       expected: '![]()',
     },
@@ -581,32 +579,32 @@ export const linkTestCases: TestCasesByCategory = {
 export const inlineMathTestCases: TestCasesByCategory = {
   'inline-math': [
     {
-      description: 'should complete unclosed $$ with content',
+      description: 'should complete unclosed $$',
       input: 'The formula is $$x = 1',
       expected: 'The formula is $$x = 1$$',
     },
     {
-      description: 'should handle trailing $ without content',
+      description: 'should complete $$ with trailing $',
       input: 'The formula is $$x = 1$',
       expected: 'The formula is $$x = 1$$',
     },
     {
-      description: 'should not modify already closed $$',
+      description: 'should not modify closed $$',
       input: 'The formula is $$x = 1$$',
       expected: 'The formula is $$x = 1$$',
     },
     {
-      description: 'should remove bare $$ without content',
+      description: 'should remove bare $$',
       input: '$$',
       expected: '',
     },
     {
-      description: 'should remove bare $ without content',
+      description: 'should remove bare $',
       input: '$',
       expected: '',
     },
     {
-      description: 'should remove trailing $$ when no content',
+      description: 'should remove trailing $$',
       input: 'Text $$',
       expected: 'Text',
     },
@@ -616,37 +614,37 @@ export const inlineMathTestCases: TestCasesByCategory = {
       expected: 'Hello',
     },
     {
-      description: 'should only process last paragraph after blank line for $$',
+      description: 'should only process last paragraph',
       input: 'Para1 $$x$$\n\nPara2 $$y',
       expected: 'Para1 $$x$$\n\nPara2 $$y$$',
     },
     {
-      description: 'should only process last paragraph after blank line for $$ spanning multiple lines',
+      description: 'should not process $$ spanning multiple lines',
       input: 'Hello $$world\nand more text',
       expected: 'Hello $$world\nand more text',
     },
     {
-      description: 'should complete when ending with single $ after content',
+      description: 'should complete $$ ending with single $',
       input: '$$\\int u \\, dv = uv - \\int v \\, du$',
       expected: '$$\\int u \\, dv = uv - \\int v \\, du$$',
     },
     {
-      description: 'should complete when ending with single $ in multi-paragraph',
+      description: 'should complete $$ with trailing $ in multi-paragraph',
       input: 'Para1 $$x$$\n\nPara2 $$y = 1$',
       expected: 'Para1 $$x$$\n\nPara2 $$y = 1$$',
     },
     {
-      description: 'should find last dollar pair skipping inline code',
+      description: 'should ignore $$ in inline code',
       input: 'Text `$$` and $$x = 1',
       expected: 'Text `$$` and $$x = 1$$',
     },
     {
-      description: 'should not process inside code blocks (unclosed)',
+      description: 'should ignore $$ in code blocks',
       input: '```\n$$x = 1\n```',
       expected: '```\n$$x = 1\n```',
     },
     {
-      description: 'should not process inside inline code (backticks)',
+      description: 'should ignore $$ in inline code',
       input: 'Wrap inline mathematical expressions with `$$`:',
       expected: 'Wrap inline mathematical expressions with `$$`:',
     },
@@ -656,62 +654,62 @@ export const inlineMathTestCases: TestCasesByCategory = {
 export const tableTestCases: TestCasesByCategory = {
   table: [
     {
-      description: 'should add separator after table header without trailing newline',
+      description: 'should add separator after header without newline',
       input: '| Column A | Column B | Column C |',
       expected: '| Column A | Column B | Column C |\n| --- | --- | --- |',
     },
     {
-      description: 'should add separator after complete table header',
+      description: 'should add separator after header with newline',
       input: '| Column A | Column B | Column C |\n',
       expected: '| Column A | Column B | Column C |\n| --- | --- | --- |',
     },
     {
-      description: 'should handle header row with only one pipe',
+      description: 'should complete header with single pipe',
       input: '| A',
       expected: '| A |\n| --- |',
     },
     {
-      description: 'should find header row starting with pipe',
+      description: 'should complete header starting with pipe',
       input: '| A | B',
       expected: '| A | B |\n| --- | --- |',
     },
     {
-      description: 'should handle no next line after header',
+      description: 'should add separator when no next line',
       input: '| A | B | C |',
       expected: '| A | B | C |\n| --- | --- | --- |',
     },
     {
-      description: 'should handle incomplete separator starting with pipe',
+      description: 'should complete incomplete separator',
       input: '| A | B | C |\n|',
       expected: '| A | B | C |\n| --- | --- | --- |\n|',
     },
     {
-      description: 'should handle header row not at start of paragraph',
+      description: 'should add separator for header not at start',
       input: 'Text\n| A | B | C |\n',
       expected: 'Text\n| A | B | C |\n| --- | --- | --- |',
     },
     {
-      description: 'should complete partial separator with correct column count',
+      description: 'should complete partial separator',
       input: '| Column A | Column B | Column C |\n| --- |',
       expected: '| Column A | Column B | Column C |\n| --- | --- | --- |',
     },
     {
-      description: 'should replace incomplete separator with complete one',
+      description: 'should replace incomplete separator',
       input: '| Column A | Column B | Column C |\n|----|----|',
       expected: '| Column A | Column B | Column C |\n| --- | --- | --- |',
     },
     {
-      description: 'should not modify complete table',
+      description: 'should not modify closed table',
       input: '| Column A | Column B | Column C |\n| --- | --- | --- |\n| A1 | B1 | C1 |',
       expected: '| Column A | Column B | Column C |\n| --- | --- | --- |\n| A1 | B1 | C1 |',
     },
     {
-      description: 'should complete incomplete header row without trailing newline',
+      description: 'should complete header without trailing newline',
       input: '| Column A | Column B | Column C',
       expected: '| Column A | Column B | Column C |\n| --- | --- | --- |',
     },
     {
-      description: 'should complete incomplete header row (missing closing pipe) at end of paragraph',
+      description: 'should complete header missing closing pipe',
       input: '| Column A | Column B | Column C\n',
       expected: '| Column A | Column B | Column C |\n| --- | --- | --- |',
     },
@@ -721,7 +719,7 @@ export const tableTestCases: TestCasesByCategory = {
 export const taskListTestCases: TestCasesByCategory = {
   'task-list': [
     {
-      description: 'should remove standalone dash at the end',
+      description: 'should remove trailing standalone dash',
       input: '- [ ] Task 1\n-',
       expected: '- [ ] Task 1',
     },
@@ -731,42 +729,42 @@ export const taskListTestCases: TestCasesByCategory = {
       expected: '- [X] Task 1',
     },
     {
-      description: 'should remove standalone dash after multiple task items',
+      description: 'should remove standalone dash after multiple items',
       input: '- [ ] Task 1\n- [x] Task 2\n-',
       expected: '- [ ] Task 1\n- [x] Task 2',
     },
     {
-      description: 'should keep valid task list items',
+      description: 'should not modify valid task list',
       input: '- [ ] Task 1\n- [x] Task 2',
       expected: '- [ ] Task 1\n- [x] Task 2',
     },
     {
-      description: 'should handle single line with standalone dash',
+      description: 'should remove standalone dash',
       input: '-',
       expected: '',
     },
     {
-      description: 'should handle single line with incomplete task list',
+      description: 'should remove incomplete task list',
       input: '- [',
       expected: '',
     },
     {
-      description: 'should keep dash with space (regular list item)',
+      description: 'should remove regular list item dash',
       input: '- [ ] Task 1\n- ',
       expected: '- [ ] Task 1',
     },
     {
-      description: 'should remove incomplete task list item with opening bracket',
+      description: 'should remove incomplete task list with bracket',
       input: '- [ ] Task 1\n- [',
       expected: '- [ ] Task 1',
     },
     {
-      description: 'should remove incomplete task list in quote block',
+      description: 'should remove incomplete task list in quote',
       input: '> - [',
       expected: '',
     },
     {
-      description: 'should remove standalone dash in quote block',
+      description: 'should remove standalone dash in quote',
       input: '> -',
       expected: '',
     },
@@ -776,17 +774,17 @@ export const taskListTestCases: TestCasesByCategory = {
 export const footnoteTestCases: TestCasesByCategory = {
   footnote: [
     {
-      description: 'should remove footnote reference without definition',
+      description: 'should remove reference without definition',
       input: 'Text [^1]',
       expected: 'Text',
     },
     {
-      description: 'should keep footnote reference with definition',
+      description: 'should keep reference with definition',
       input: 'Text [^1]\n\n[^1]: Definition',
       expected: 'Text [^1]\n\n[^1]: Definition',
     },
     {
-      description: 'should remove multiple footnote references without definitions',
+      description: 'should remove multiple references without definitions',
       input: 'Text [^1] and [^2]',
       expected: 'Text and',
     },
@@ -801,22 +799,22 @@ export const footnoteTestCases: TestCasesByCategory = {
       expected: 'Text and [^2] and\n\n[^2]: Second',
     },
     {
-      description: 'should remove incomplete footnote reference (simple)',
+      description: 'should remove incomplete reference',
       input: 'Text [^1',
       expected: 'Text',
     },
     {
-      description: 'should remove incomplete footnote reference (missing closing bracket)',
+      description: 'should remove incomplete reference missing bracket',
       input: '"Knowledge is power—but digital knowledge is acceleration."[^1',
       expected: '"Knowledge is power—but digital knowledge is acceleration."',
     },
     {
-      description: 'should remove incomplete footnote reference (quote block)',
+      description: 'should remove incomplete reference in quote',
       input: '> "Knowledge is power—but digital knowledge is acceleration."[^1',
       expected: '> "Knowledge is power—but digital knowledge is acceleration."',
     },
     {
-      description: 'should handle incomplete reference in last paragraph',
+      description: 'should remove incomplete reference in last paragraph',
       input: 'Para1\n\nText [^1',
       expected: 'Para1\n\nText',
     },
@@ -826,37 +824,37 @@ export const footnoteTestCases: TestCasesByCategory = {
       expected: 'Text\nMore text',
     },
     {
-      description: 'should handle footnote references spanning multiple lines in same paragraph',
+      description: 'should remove reference spanning multiple lines',
       input: 'Text [^1]\nand more text',
       expected: 'Text\nand more text',
     },
     {
-      description: 'should handle multiple paragraphs with mixed references',
+      description: 'should handle mixed references in multiple paragraphs',
       input: 'Para1 [^1]\n\nPara2 [^2]\n\n[^1]: First',
       expected: 'Para1 [^1]\n\nPara2\n\n[^1]: First',
     },
     {
-      description: 'should ignore footnote references in code blocks',
+      description: 'should ignore references in code blocks',
       input: '```\n[^1]\n```\n\nText [^1]',
       expected: '```\n[^1]\n```\n\nText',
     },
     {
-      description: 'should ignore footnote references in inline code blocks',
+      description: 'should ignore references in inline code',
       input: 'Text `[^1]` and [^1]',
       expected: 'Text `[^1]` and',
     },
     {
-      description: 'should skip references inside code blocks when finding',
+      description: 'should skip references in code blocks when finding',
       input: '```\n[^1]\n```\n\nText [^1]',
       expected: '```\n[^1]\n```\n\nText',
     },
     {
-      description: 'should skip references inside inline code when finding',
+      description: 'should skip references in inline code when finding',
       input: 'Text `[^1]` and [^1]',
       expected: 'Text `[^1]` and',
     },
     {
-      description: 'should handle code blocks with footnote-like text',
+      description: 'should ignore footnote-like text in code blocks',
       input: '```\n[^1]: This is not a real definition\n```\n\nText [^1]',
       expected: '```\n[^1]: This is not a real definition\n```\n\nText',
     },
@@ -866,12 +864,12 @@ export const footnoteTestCases: TestCasesByCategory = {
       expected: '```\n```\n\n```\n```\n\nText',
     },
     {
-      description: 'should recalculate code blocks after removing incomplete reference',
+      description: 'should recalculate code blocks after removing reference',
       input: '```\ncode\n```\n\nText [^1',
       expected: '```\ncode\n```\n\nText',
     },
     {
-      description: 'should recalculate inline code after removing incomplete reference',
+      description: 'should recalculate inline code after removing reference',
       input: 'Text `code` and [^1',
       expected: 'Text `code` and',
     },
@@ -890,11 +888,11 @@ export const testCasesByCategory: TestCasesByCategory = {
   ...footnoteTestCases,
 }
 
-export function getTestCases(): SimpleTestCase[] {
+export function getTestCases(): TestCase[] {
   return Object.values(testCasesByCategory).flat()
 }
 
-export function getTestCasesByCategory(category: string): SimpleTestCase[] {
+export function getTestCasesByCategory(category: string): TestCase[] {
   return testCasesByCategory[category] || []
 }
 
@@ -902,6 +900,6 @@ export function getTestCaseCategories(): string[] {
   return Object.keys(testCasesByCategory)
 }
 
-export function getTestCasesByCategories(categories: string[]): SimpleTestCase[] {
+export function getTestCasesByCategories(categories: string[]): TestCase[] {
   return categories.flatMap(category => getTestCasesByCategory(category))
 }
