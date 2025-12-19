@@ -86,6 +86,7 @@
     "@unocss/eslint-plugin": "catalog:lint",
     "@unocss/nuxt": "catalog:style",
     "@vitejs/plugin-vue": "catalog:build",
+    "@vitest/coverage-v8": "catalog:test",
     "@vue/test-utils": "catalog:test",
     "@vueuse/nuxt": "catalog:utils",
     "bumpp": "catalog:cli",

@@ -1,4 +1,5 @@
 import { separatorPattern, tableRowPattern, tripleBacktickPattern } from './pattern'
+import { getLastParagraphWithIndex } from './utils'
 
 /**
  * Fix incomplete table syntax in streaming markdown
@@ -36,23 +37,7 @@ export function fixTable(content: string): string {
     return content
 
   // Find the last paragraph (after the last blank line)
-  const lines = content.split('\n')
-  let paragraphStartIndex = 0
-
-  // Find the last truly blank line (not just trailing empty string from split)
-  for (let i = lines.length - 1; i >= 0; i--) {
-    const line = lines[i]!
-    // Skip the last element if it's empty (from trailing \n)
-    if (i === lines.length - 1 && line.trim() === '') {
-      continue
-    }
-    if (line.trim() === '') {
-      paragraphStartIndex = i + 1
-      break
-    }
-  }
-
-  const lastParagraph = lines.slice(paragraphStartIndex).join('\n')
+  const { lastParagraph } = getLastParagraphWithIndex(content, true)
   const paragraphLines = lastParagraph.split('\n').filter(line => line.trim() !== '')
 
   // Check if any line in the last paragraph is a table header row
@@ -65,11 +50,15 @@ export function fixTable(content: string): string {
   let headerRow = ''
 
   for (let i = 0; i < paragraphLines.length; i++) {
-    const line = paragraphLines[i]!.trim()
+    const line = paragraphLines[i]
+    if (!line) {
+      continue
+    }
+    const trimmedLine = line.trim()
     // Check if it matches table row pattern or starts with | (might be incomplete)
-    if (tableRowPattern.test(line) || (line.startsWith('|') && line.length > 1)) {
+    if (tableRowPattern.test(trimmedLine) || (trimmedLine.startsWith('|') && trimmedLine.length > 1)) {
       headerRowIndex = i
-      headerRow = line
+      headerRow = trimmedLine
       break
     }
   }
@@ -112,7 +101,11 @@ export function fixTable(content: string): string {
   }
 
   // Case 2: There's a line after the header row
-  const nextLine = paragraphLines[headerRowIndex + 1]!.trim()
+  const nextLineRaw = paragraphLines[headerRowIndex + 1]
+  if (!nextLineRaw) {
+    return content
+  }
+  const nextLine = nextLineRaw.trim()
 
   // Check if next line is already a valid separator with correct column count
   if (separatorPattern.test(nextLine)) {
@@ -132,7 +125,10 @@ export function fixTable(content: string): string {
 
   if (afterLines.length > 1) {
     // There is a next line
-    const nextLineInContent = afterLines[1]!
+    const nextLineInContent = afterLines[1]
+    if (!nextLineInContent) {
+      return content
+    }
 
     if (nextLineInContent.startsWith('|') && nextLineInContent.includes('-')) {
       // Replace incomplete separator

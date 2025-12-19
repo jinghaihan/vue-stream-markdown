@@ -68,6 +68,7 @@ catalogs:
   syntax:
     '@shikijs/monaco': ^3.20.0
   test:
+    '@vitest/coverage-v8': ^4.0.15
     '@vue/test-utils': ^2.4.6
     vitest: ^4.0.15
   tsc:
@@ -79,7 +80,6 @@ catalogs:
     '@antfu/utils': ^9.3.0
     '@vueuse/core': ^14.1.0
     '@vueuse/nuxt': ^14.1.0
-
 onlyBuiltDependencies:
   - esbuild
   - simple-git-hooks

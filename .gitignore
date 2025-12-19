@@ -24,6 +24,9 @@ dev-dist
 *.sln
 *.sw?
 
+# vitest
+coverage
+
 # vitepress
 cache
 

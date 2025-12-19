@@ -1,4 +1,5 @@
 import { codeBlockPattern, doubleDollarPattern, tripleBacktickPattern } from './pattern'
+import { calculateParagraphOffset, getLastParagraphWithIndex } from './utils'
 
 /**
  * Fix unclosed inline math ($$) syntax in streaming markdown
@@ -29,37 +30,23 @@ import { codeBlockPattern, doubleDollarPattern, tripleBacktickPattern } from './
  * // Returns: '$$\n' (no completion, this is block math)
  */
 export function fixInlineMath(content: string): string {
-  // Don't process if we're inside a code block
-  // Count code block fences to check if we're inside one
+  // Handle bare single $ first
+  if (content === '$') {
+    return ''
+  }
+
+  // Don't process if we're inside a code block (unclosed)
   const codeBlockMatches = content.match(tripleBacktickPattern)
   const codeBlockCount = codeBlockMatches ? codeBlockMatches.length : 0
-
-  // If odd number of code block fences, we're inside a code block - don't process math
   if (codeBlockCount % 2 === 1)
     return content
 
   // Find the last paragraph (after the last blank line)
-  // A blank line is defined as a line with only whitespace
   const lines = content.split('\n')
-  let paragraphStartIndex = 0
-
-  // Find the last blank line
-  for (let i = lines.length - 1; i >= 0; i--) {
-    const line = lines[i]!
-    if (line.trim() === '') {
-      paragraphStartIndex = i + 1
-      break
-    }
-  }
-
-  // Get the last paragraph
-  const lastParagraph = lines.slice(paragraphStartIndex).join('\n')
+  const { lastParagraph, startIndex: paragraphStartIndex } = getLastParagraphWithIndex(content)
 
   // Remove code blocks and inline code from the last paragraph to avoid counting $$ inside them
-  // First remove code blocks (```...```)
   let withoutCodeBlocks = lastParagraph.replace(codeBlockPattern, '')
-  // Then remove inline code (`...`) but not triple backticks
-  // Pattern: `...` where ... doesn't contain newlines or backticks
   const inlineCodePattern = /`[^`\n]+`/g
   withoutCodeBlocks = withoutCodeBlocks.replace(inlineCodePattern, '')
 
@@ -69,71 +56,40 @@ export function fixInlineMath(content: string): string {
 
   // Only complete if odd number of $$ (unclosed)
   if (dollarCount % 2 === 1) {
-    // Find the last $$ position in the original lastParagraph (not withoutCodeBlocks)
-    // But we need to make sure it's not inside a code block
+    // Find the last $$ position in the original lastParagraph (not inside code blocks)
     const lastDollarPos = findLastDollarPairNotInCodeBlock(lastParagraph)
-
     if (lastDollarPos === -1)
       return content
 
     let afterLast = lastParagraph.substring(lastDollarPos + 2)
 
-    // Check if afterLast is just a single $ with no content before it
-    // This prevents cases like "$$$" from being completed
-    const afterLastTrimmed = afterLast.trim()
-    const isJustSingleDollar = afterLastTrimmed === '$'
+    // Inline math cannot contain newlines - if $$ is followed immediately by \n, don't process
+    // Also, if $$ is followed by content that contains \n, it's not inline math
+    if (afterLast.startsWith('\n') || afterLast.includes('\n')) {
+      return content
+    }
 
-    if (isJustSingleDollar) {
-      // Don't complete if it's just a single $ with no content, as that's not inline math syntax
+    // Check if afterLast is just a single $ with no content
+    const afterLastTrimmed = afterLast.trim()
+    if (afterLastTrimmed === '$') {
       return content
     }
 
     // If afterLast ends with a single $ (not $$), remove it first
     // This handles cases like "$$\int u \, dv = uv - \int v \, du$"
-    // We should complete it to "$$\int u \, dv = uv - \int v \, du$$"
     let shouldRemoveTrailingDollar = false
     if (afterLast.endsWith('$') && !afterLast.endsWith('$$')) {
       shouldRemoveTrailingDollar = true
-      // Remove the trailing single $ from afterLast
       afterLast = afterLast.slice(0, -1)
     }
 
-    // Check if this is block math
-    // Block math typically has $$ on its own line (possibly with whitespace)
-    // or $$ followed immediately by newline
-    const lineAfterDollar = afterLast.split('\n')[0] ?? ''
-    const hasContentAfter = lineAfterDollar.trim().length > 0
-    const isBlockMathByAfter = !hasContentAfter && afterLast.startsWith('\n')
+    // Check if there's content after $$ (on the same line, since inline math can't span lines)
+    const hasContentAfter = afterLast.trim().length > 0
 
-    // Check if $$ is on its own line (block math indicator)
-    // Find the line containing the last $$
-    const linesInParagraph = lastParagraph.split('\n')
-    let lineWithDollar = ''
-    for (let i = linesInParagraph.length - 1; i >= 0; i--) {
-      const line = linesInParagraph[i]!
-      if (line.includes('$$')) {
-        lineWithDollar = line
-        break
-      }
-    }
-
-    // If the line containing $$ has only $$ (with possible whitespace), it's block math
-    // Remove all $$ from the line and check if only whitespace remains
-    const lineWithoutDollar = lineWithDollar.replace(/\$\$/g, '')
-    const isBlockMathByLine = lineWithoutDollar.trim() === '' && afterLast.startsWith('\n')
-
-    // If it's block math ($$ on its own line followed by newline), don't complete it
-    // (let subsequent preprocess handle it)
-    if (isBlockMathByAfter || isBlockMathByLine) {
-      return content
-    }
-
-    // If there's content after $$, complete it as inline math
     if (hasContentAfter) {
-      // If we removed a trailing single $, we need to remove it from content first
+      // Complete inline math
       if (shouldRemoveTrailingDollar) {
-        const beforeLastParagraph = lines.slice(0, paragraphStartIndex).join('\n')
-        const offset = beforeLastParagraph.length > 0 ? beforeLastParagraph.length + 1 : 0
+        const offset = calculateParagraphOffset(paragraphStartIndex, lines)
         const actualLastDollarPos = offset + lastDollarPos
         const contentBeforeMath = content.substring(0, actualLastDollarPos + 2)
         const contentAfterMath = lastParagraph.substring(lastDollarPos + 2, lastParagraph.length - 1)
@@ -142,12 +98,10 @@ export function fixInlineMath(content: string): string {
       return `${content}$$`
     }
     else {
-      // Remove the trailing $$ to avoid showing it as plain text
-      // Calculate the position in the full content
-      const beforeLastParagraph = lines.slice(0, paragraphStartIndex).join('\n')
-      const offset = beforeLastParagraph.length > 0 ? beforeLastParagraph.length + 1 : 0
+      // Remove the trailing $$ and any trailing whitespace
+      const offset = calculateParagraphOffset(paragraphStartIndex, lines)
       const actualLastDollarPos = offset + lastDollarPos
-      return content.slice(0, actualLastDollarPos) + content.slice(actualLastDollarPos + 2)
+      return content.slice(0, actualLastDollarPos).trimEnd()
     }
   }
 

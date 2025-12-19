@@ -5,6 +5,7 @@ import {
   trailingWhitespacePattern,
   tripleBacktickPattern,
 } from './pattern'
+import { calculateParagraphOffset, getLastParagraphWithIndex } from './utils'
 
 /**
  * Fix unclosed code syntax in streaming markdown
@@ -36,6 +37,11 @@ import {
  * // Returns: '```' (no completion, code block has no content)
  */
 export function fixCode(content: string): string {
+  // Check if we're inside a code block before cleaning
+  const codeBlockMatches = content.match(tripleBacktickPattern)
+  const codeBlockCount = codeBlockMatches ? codeBlockMatches.length : 0
+  const isInsideCodeBlock = codeBlockCount % 2 === 1
+
   // First, remove trailing incomplete backtick sequences
   // This prevents showing intermediate states like `, ``, or ``` at the end
   const cleaned = removeTrailingIncompleteBackticks(content)
@@ -43,9 +49,14 @@ export function fixCode(content: string): string {
   content = cleaned
 
   // Then handle code blocks (triple backticks) - these can span multiple paragraphs
-  // But don't complete if we just removed trailing backticks (user is still typing)
-  if (!wasCleanedUp)
+  // If we were inside a code block and cleaned up trailing backticks,
+  // we should still complete the code block
+  if (isInsideCodeBlock && wasCleanedUp) {
     content = fixCodeBlock(content)
+  }
+  else if (!wasCleanedUp) {
+    content = fixCodeBlock(content)
+  }
 
   // Finally handle inline code (single backticks) - only in last paragraph
   // But don't process if we just cleaned up (user is still typing)
@@ -79,18 +90,7 @@ function removeTrailingIncompleteBackticks(content: string): string {
   // For single backtick `
   if (backtickSequence.length === 1) {
     // Count backticks in the last paragraph before this one
-    const lines = beforeBackticks.split('\n')
-    let paragraphStartIndex = 0
-
-    for (let i = lines.length - 1; i >= 0; i--) {
-      const line = lines[i]!
-      if (line.trim() === '') {
-        paragraphStartIndex = i + 1
-        break
-      }
-    }
-
-    const lastParagraph = lines.slice(paragraphStartIndex).join('\n')
+    const { lastParagraph } = getLastParagraphWithIndex(beforeBackticks)
 
     // Remove code blocks from counting
     const withoutCodeBlocks = lastParagraph.replace(codeBlockPattern, '')
@@ -189,17 +189,7 @@ function fixInlineCode(content: string): string {
 
   // Find the last paragraph
   const lines = content.split('\n')
-  let paragraphStartIndex = 0
-
-  for (let i = lines.length - 1; i >= 0; i--) {
-    const line = lines[i]!
-    if (line.trim() === '') {
-      paragraphStartIndex = i + 1
-      break
-    }
-  }
-
-  const lastParagraph = lines.slice(paragraphStartIndex).join('\n')
+  const { lastParagraph, startIndex: paragraphStartIndex } = getLastParagraphWithIndex(content)
 
   // Remove triple backticks (code blocks) and their content to avoid interference
   // We need to remove complete code blocks from counting
@@ -247,8 +237,7 @@ function fixInlineCode(content: string): string {
 
     if (lastBacktickPos !== -1) {
       // Calculate actual position in the full content
-      const beforeLastParagraph = lines.slice(0, paragraphStartIndex).join('\n')
-      const offset = beforeLastParagraph.length > 0 ? beforeLastParagraph.length + 1 : 0
+      const offset = calculateParagraphOffset(paragraphStartIndex, lines)
       const actualPos = offset + lastBacktickPos
 
       const afterLast = content.substring(actualPos + 1).trim()

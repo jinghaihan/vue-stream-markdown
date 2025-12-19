@@ -36,62 +36,50 @@ export function fixTaskList(content: string): string {
     return content
 
   // Get the last line
-  const lastLine = lines[lines.length - 1]!
+  const lastLine = lines[lines.length - 1]
+  if (!lastLine) {
+    return content
+  }
 
   // Check if the last line is in a quote block (starts with `>`)
   // First check for incomplete task list in quote block `> - [`
   if (quoteIncompleteTaskListPattern.test(lastLine)) {
     // Remove the last line (the incomplete `> - [`)
     const newLines = lines.slice(0, -1)
-    const result = newLines.join('\n')
-    // If we had multiple lines, preserve the newline structure
-    // (the removed line was preceded by a newline)
-    if (lines.length > 1) {
-      return `${result}\n`
-    }
-    return result
+    return newLines.join('\n')
   }
 
   // Check for standalone dash in quote block
   if (quoteStandaloneDashPattern.test(lastLine) && !quoteTaskListPattern.test(lastLine)) {
     // Remove the last line (the standalone `> -`)
-    // This prevents leaving `> ` which could cause parsing issues
     const newLines = lines.slice(0, -1)
-    const result = newLines.join('\n')
-    // If we had multiple lines, preserve the newline structure
-    // (the removed line was preceded by a newline)
-    if (lines.length > 1) {
-      return `${result}\n`
-    }
-    return result
+    return newLines.join('\n')
   }
 
   // Check if the last line is an incomplete task list item `- [` (with optional trailing whitespace)
   if (incompleteTaskListPattern.test(lastLine)) {
     // Remove the last line (the incomplete `- [`)
     const newLines = lines.slice(0, -1)
-    const result = newLines.join('\n')
-    // If we had multiple lines, preserve the newline structure
-    // (the removed line was preceded by a newline)
-    if (lines.length > 1) {
-      return `${result}\n`
-    }
-    return result
+    return newLines.join('\n')
   }
 
   // Check if the last line is a standalone `-` (with optional trailing whitespace)
+  // or `- ` (dash with space, which is a regular list item, not a task list)
   // but not `- [ ]` or `- [x]` or `- [X]`
   // If it matches standalone dash but not a task list, remove it
   if (standaloneDashPattern.test(lastLine) && !taskListPattern.test(lastLine)) {
     // Remove the last line (the standalone `-`)
     const newLines = lines.slice(0, -1)
-    const result = newLines.join('\n')
-    // If we had multiple lines, preserve the newline structure
-    // (the removed line was preceded by a newline)
-    if (lines.length > 1) {
-      return `${result}\n`
-    }
-    return result
+    return newLines.join('\n')
+  }
+
+  // Check for `- ` (dash with space, regular list item, not a task list)
+  // Pattern: starts with optional whitespace, then `- `, then optional trailing whitespace
+  // But not a task list pattern
+  if (/^\s*-\s+$/.test(lastLine) && !taskListPattern.test(lastLine)) {
+    // Remove the last line (the `- `)
+    const newLines = lines.slice(0, -1)
+    return newLines.join('\n')
   }
 
   return content

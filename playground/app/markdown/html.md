@@ -12,8 +12,8 @@ Consider this example:
 <div onclick="maliciousFunction()">Click me</div>
 ```
 
+If rendered directly without sanitization, these could execute malicious JavaScript in the user's browser.
+
 <script>alert('XSS Attack')</script>
 <img src="x" onerror="alert('XSS')">
 <div onclick="maliciousFunction()">Click me</div>
-
-If rendered directly without sanitization, these could execute malicious JavaScript in the user's browser.

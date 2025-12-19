@@ -5,5 +5,8 @@ export default defineConfig({
   plugins: [Vue()],
   test: {
     environment: 'happy-dom',
+    coverage: {
+      include: ['src/preprocess/*.ts'],
+    },
   },
 })

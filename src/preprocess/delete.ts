@@ -1,4 +1,5 @@
 import { doubleTildePattern } from './pattern'
+import { getLastParagraphWithIndex } from './utils'
 
 /**
  * Fix unclosed strikethrough (~~) syntax in streaming markdown
@@ -24,20 +25,7 @@ import { doubleTildePattern } from './pattern'
 export function fixDelete(content: string): string {
   // Find the last paragraph (after the last blank line)
   // A blank line is defined as a line with only whitespace
-  const lines = content.split('\n')
-  let paragraphStartIndex = 0
-
-  // Find the last blank line
-  for (let i = lines.length - 1; i >= 0; i--) {
-    const line = lines[i]!
-    if (line.trim() === '') {
-      paragraphStartIndex = i + 1
-      break
-    }
-  }
-
-  // Get the last paragraph
-  const lastParagraph = lines.slice(paragraphStartIndex).join('\n')
+  const { lastParagraph, startIndex: paragraphStartIndex } = getLastParagraphWithIndex(content)
 
   // Count ~~ in the last paragraph only
   const matches = lastParagraph.match(doubleTildePattern)
@@ -85,9 +73,10 @@ export function fixDelete(content: string): string {
       return `${content}~~`
     }
     else {
-      // Remove the trailing ~~ and any whitespace after it
+      // Remove the trailing ~~ and any whitespace before and after it
       const beforeTilde = content.substring(0, content.length - afterLast.length - 2)
-      return beforeTilde
+      // Remove trailing whitespace from the result
+      return beforeTilde.trimEnd()
     }
   }
 

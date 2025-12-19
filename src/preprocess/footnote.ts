@@ -8,6 +8,7 @@ import {
   incompleteFootnoteRefPattern,
   tripleBacktickPattern,
 } from './pattern'
+import { calculateAbsolutePosition, getLastParagraphWithIndex } from './utils'
 
 /**
  * Remove incomplete footnote references ([^...]) in streaming markdown
@@ -116,10 +117,10 @@ export function fixFootnote(content: string): string {
 
   // Pair up backticks to find inline code ranges
   for (let i = 0; i < backtickPositions.length; i += 2) {
-    if (i + 1 < backtickPositions.length) {
-      const start = backtickPositions[i]!
-      const end = backtickPositions[i + 1]! + 1
-      inlineCodeRanges.push({ start, end })
+    const start = backtickPositions[i]
+    const end = backtickPositions[i + 1]
+    if (start !== undefined && end !== undefined) {
+      inlineCodeRanges.push({ start, end: end + 1 })
     }
   }
 
@@ -128,29 +129,20 @@ export function fixFootnote(content: string): string {
   let lineOffset = 0
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i]!
-    if (isFootnoteDefLine(line)) {
+    const line = lines[i]
+    if (line && isFootnoteDefLine(line)) {
       const lineEnd = lineOffset + line.length
       footnoteDefRanges.push({ start: lineOffset, end: lineEnd })
     }
-    lineOffset += line.length + 1 // +1 for newline
+    if (line) {
+      lineOffset += line.length + 1 // +1 for newline
+    }
   }
 
   // First, handle incomplete footnote references (e.g., [^1 without closing ])
   // These should be removed immediately, similar to how incomplete links are handled
   // Only process the last paragraph for incomplete references
-  let lastParagraphStartIndex = 0
-
-  // Find the last paragraph (after the last blank line)
-  for (let i = lines.length - 1; i >= 0; i--) {
-    const line = lines[i]!
-    if (line.trim() === '') {
-      lastParagraphStartIndex = i + 1
-      break
-    }
-  }
-
-  const lastParagraph = lines.slice(lastParagraphStartIndex).join('\n')
+  const { lastParagraph, startIndex: lastParagraphStartIndex } = getLastParagraphWithIndex(content)
   let result = content
 
   // Check for incomplete footnote reference in the last paragraph
@@ -159,9 +151,7 @@ export function fixFootnote(content: string): string {
     const incompleteRefPos = lastParagraph.lastIndexOf('[^')
     if (incompleteRefPos !== -1) {
       // Check if it's inside a code block or inline code
-      const absolutePos = lastParagraphStartIndex > 0
-        ? lines.slice(0, lastParagraphStartIndex).join('\n').length + 1 + incompleteRefPos
-        : incompleteRefPos
+      const absolutePos = calculateAbsolutePosition(lastParagraphStartIndex, incompleteRefPos, lines)
 
       const isInCodeBlock = codeBlockRanges.some(
         range => absolutePos >= range.start && absolutePos < range.end,
@@ -176,13 +166,17 @@ export function fixFootnote(content: string): string {
         const lineEnd = lastParagraph.indexOf('\n', incompleteRefPos)
         const refEnd = lineEnd !== -1 ? lineEnd : lastParagraph.length
 
-        // Calculate absolute position in full content
-        const beforeLastParagraph = lines.slice(0, lastParagraphStartIndex).join('\n')
-        const paragraphOffset = beforeLastParagraph.length > 0 ? beforeLastParagraph.length + 1 : 0
-        const absoluteStart = paragraphOffset + incompleteRefPos
-        const absoluteEnd = paragraphOffset + refEnd
+        // Find the start position, including a single preceding space if it exists
+        let refStart = incompleteRefPos
+        if (refStart > 0 && lastParagraph[refStart - 1] === ' ') {
+          refStart--
+        }
 
-        // Remove the incomplete reference (from [^ to end of line or end of content)
+        // Calculate absolute position in full content
+        const absoluteStart = calculateAbsolutePosition(lastParagraphStartIndex, refStart, lines)
+        const absoluteEnd = calculateAbsolutePosition(lastParagraphStartIndex, refEnd, lines)
+
+        // Remove the incomplete reference (from space before [^ to end of line or end of content)
         result = result.substring(0, absoluteStart) + result.substring(absoluteEnd)
         // Update content for further processing
         content = result
@@ -224,10 +218,10 @@ export function fixFootnote(content: string): string {
           }
         }
         for (let i = 0; i < backtickPositions.length; i += 2) {
-          if (i + 1 < backtickPositions.length) {
-            const start = backtickPositions[i]!
-            const end = backtickPositions[i + 1]! + 1
-            inlineCodeRanges.push({ start, end })
+          const start = backtickPositions[i]
+          const end = backtickPositions[i + 1]
+          if (start !== undefined && end !== undefined) {
+            inlineCodeRanges.push({ start, end: end + 1 })
           }
         }
       }
@@ -239,8 +233,8 @@ export function fixFootnote(content: string): string {
   let refMatch: RegExpExecArray | null = footnoteRefPattern.exec(content)
 
   while (refMatch !== null) {
-    const absolutePos = refMatch.index!
-    const refText = refMatch[0]
+    const absolutePos = refMatch.index ?? 0
+    const refText = refMatch[0] ?? ''
 
     // Check if this reference is inside a code block
     const isInCodeBlock = codeBlockRanges.some(
@@ -278,10 +272,16 @@ export function fixFootnote(content: string): string {
   // Remove references that don't have corresponding definitions
   // Process from end to start to avoid index shifting issues
   for (let i = refPositions.length - 1; i >= 0; i--) {
-    const ref = refPositions[i]!
-    if (!definedLabels.has(ref.label)) {
-      // Remove the reference
-      result = result.substring(0, ref.start) + result.substring(ref.end)
+    const ref = refPositions[i]
+    if (ref && !definedLabels.has(ref.label)) {
+      // Find the start position, including a single preceding space if it exists
+      let refStart = ref.start
+      if (refStart > 0 && result[refStart - 1] === ' ') {
+        refStart--
+      }
+
+      // Remove the reference along with preceding space (if any)
+      result = result.substring(0, refStart) + result.substring(ref.end)
     }
   }
 

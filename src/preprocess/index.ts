@@ -25,8 +25,8 @@ export function normalize(content: string): string {
   ])(content)
 }
 
-export function preprocess(content: string): string {
-  return flow([
+export function preprocess(content: string, streamdown: boolean = true): string {
+  const tasks: ((content: string) => string)[] = [
     fixFootnote,
     fixStrong,
     fixEmphasis,
@@ -36,8 +36,12 @@ export function preprocess(content: string): string {
     fixLink,
     fixTable,
     fixInlineMath,
-    remend,
-  ])(content)
+  ]
+
+  if (streamdown)
+    tasks.push(remend)
+
+  return flow(tasks)(content)
 }
 
 export {
