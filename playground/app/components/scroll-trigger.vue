@@ -5,8 +5,10 @@ const props = withDefaults(defineProps<{
   variant?: 'up' | 'down'
   getContainer: () => Element | null | undefined
   getScrollHeight?: () => number | undefined
+  isReverse?: boolean
 }>(), {
   variant: 'down',
+  isReverse: false,
 })
 
 const icon = computed(() => props.variant === 'up' ? ArrowUpToLine : ArrowDownToLine)
@@ -18,8 +20,15 @@ function onClick() {
   if (!container)
     return
 
+  let top: number
+  if (props.isReverse) {
+    top = props.variant === 'up' ? -container.scrollHeight : 0
+  }
+  else {
+    top = props.variant === 'up' ? 0 : container.scrollHeight
+  }
   container.scrollTo({
-    top: props.variant === 'up' ? 0 : container.scrollHeight,
+    top,
     behavior: 'smooth',
   })
 }

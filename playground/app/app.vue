@@ -10,6 +10,7 @@ import { getContentFromUrl, removeUnclosedGithubTag } from './utils'
 
 const EChartsPreviewer = defineAsyncComponent(() => import('./components/echarts.vue'))
 const HtmlNodeRenderer = defineAsyncComponent(() => import('./components/html.vue'))
+const SCROLL_THRESHOLD = 65
 
 const { isDark } = useDark()
 const userConfig = useUserConfig()
@@ -21,6 +22,7 @@ const processedContent = computed(() => markdownRef.value?.getProcessedContent()
 const containerRef = ref<HTMLDivElement>()
 const monacoRef = ref()
 const content = ref<string>('')
+const stopAutoScroll = ref<boolean>(!userConfig.value.autoScroll)
 
 const { state: locale, next: toggleLanguage } = useCycleList(SUPPORT_LANGUAGES, {
   initialValue: userConfig.value.locale,
@@ -115,6 +117,7 @@ async function changePresetContent(item: SelectOption) {
   content.value = data
   monacoRef.value?.setValue(data)
 
+  stopAutoScroll.value = !userConfig.value.autoScroll
   containerRef.value?.scrollTo({
     top: 0,
     behavior: 'instant',
@@ -160,7 +163,7 @@ function normalizeContent(content: string) {
 }
 
 const scrollToBottom = throttle(800, () => {
-  if (!userConfig.value.autoScroll)
+  if (!userConfig.value.autoScroll || stopAutoScroll.value)
     return
 
   const container = containerRef.value
@@ -168,10 +171,23 @@ const scrollToBottom = throttle(800, () => {
     return
 
   container.scrollTo({
-    top: container.scrollHeight,
+    top: 0,
     behavior: 'smooth',
   })
 })
+
+function onScroll() {
+  if (containerRef.value) {
+    const { scrollTop } = containerRef.value
+    const distanceFromBottom = -scrollTop
+    if (distanceFromBottom > SCROLL_THRESHOLD) {
+      stopAutoScroll.value = true
+    }
+    else if (distanceFromBottom <= 20) {
+      stopAutoScroll.value = false
+    }
+  }
+}
 
 // const { generateCSS } = useTailwindV3Theme({
 //   styleScope: 'body',
@@ -252,10 +268,10 @@ onMounted(() => {
         <CopyButton :content="copyContent" />
       </ScrollTriggerGroup>
 
-      <div ref="containerRef" class="scrollbar-gutter-stable pr-4 h-full overflow-auto">
+      <div ref="containerRef" class="scrollbar-gutter-stable pr-4 flex flex-col-reverse h-full overflow-auto" @scroll="onScroll">
         <Markdown
           ref="markdownRef"
-          class="flex flex-col gap-3"
+          class="flex flex-col gap-3 min-h-full"
           :mode="mode"
           :content="markdownContent"
           :locale="locale"
@@ -290,5 +306,9 @@ onMounted(() => {
 <style>
 .scrollbar-gutter-stable {
   scrollbar-gutter: stable;
+}
+
+.flex-col-reverse > * {
+  flex-shrink: 0;
 }
 </style>
