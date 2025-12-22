@@ -1,7 +1,7 @@
 {
   "name": "vue-stream-markdown",
   "type": "module",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "packageManager": "pnpm@10.25.0",
   "description": "Streaming markdown output, Useful for text streams like LLM outputs.",
   "author": "jinghaihan",
