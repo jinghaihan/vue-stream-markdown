@@ -96,9 +96,8 @@ export function useMermaid(options?: UseMermaidOptions) {
       }
 
       if (format === 'svg') {
-        const filename = 'diagram.svg'
         const mimeType = 'image/svg+xml'
-        save(filename, svg, mimeType)
+        save('diagram.svg', svg, mimeType)
       }
 
       if (format === 'png') {

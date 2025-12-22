@@ -1,5 +1,5 @@
 import type { MaybeRef } from 'vue'
-import type { Icons, ParsedNode, UIOptions } from '../types'
+import type { Icons, ParsedNode, StreamMarkdownProps, UIOptions } from '../types'
 import { computed, inject, provide, unref } from 'vue'
 
 const CONTEXT_KEY = Symbol('stream-markdown-context')
@@ -13,6 +13,7 @@ interface Context {
   parsedNodes?: MaybeRef<ParsedNode[]>
   getContainer?: () => HTMLElement | undefined
   getOverlayContainer?: () => Element | null
+  beforeDownload?: StreamMarkdownProps['beforeDownload']
   onCopied?: (content: string) => void
 }
 
@@ -55,6 +56,9 @@ export function useContext() {
     },
     get getOverlayContainer() {
       return context.getOverlayContainer || (() => null)
+    },
+    get beforeDownload() {
+      return context.beforeDownload || (() => true)
     },
     get onCopied() {
       return context.onCopied || (() => {})

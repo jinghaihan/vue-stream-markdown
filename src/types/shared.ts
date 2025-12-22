@@ -3,6 +3,8 @@ import type { NODE_RENDERERS, UI } from '../components'
 import type { ICONS } from '../constants'
 import type { NodeRendererProps } from './renderer'
 
+export type MaybePromise<T> = T | Promise<T>
+
 export type BuiltinNodeRenderers = keyof typeof NODE_RENDERERS
 export type BuiltinPreviewers = 'mermaid' | 'html'
 export type BuiltinUIComponents = keyof typeof UI

@@ -19,7 +19,7 @@ const props = withDefaults(defineProps<TableNodeRendererProps>(), {})
 
 const { t } = useI18n()
 
-const { onCopied } = useContext()
+const { beforeDownload, onCopied } = useContext()
 const { copy, copied } = useClipboard({
   legacy: true,
 })
@@ -91,12 +91,18 @@ const builtinControls = computed((): Control[] => [
     icon: 'download',
     options,
     visible: () => showDownload.value,
-    onClick: (_event: MouseEvent, item?: SelectOption) => {
+    onClick: async (_event: MouseEvent, item?: SelectOption) => {
       const format = (item?.value || 'csv') as 'csv' | 'tsv'
       const data = getTableContent(format)
       if (!data)
         return
-      save(`table.${data.extension}`, data.content, data.mimeType)
+
+      const result = await beforeDownload({
+        type: 'table',
+        content: data.content,
+      })
+      if (result)
+        save(`table.${data.extension}`, data.content, data.mimeType)
     },
   },
 ])

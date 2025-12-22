@@ -659,7 +659,7 @@ The Markdown component emits events that allow you to customize user interaction
 - **Type:** `(content: string) => void`
 - **Triggered when:** User copies content from a table or code block
 
-The `copied` event is emitted when a user successfully copies content using the copy button. This event provides the copied content as a parameter, allowing you to implement custom interactions such as displaying custom notifications, tracking analytics, or integrating with other parts of your application.
+Emitted when a user successfully copies content using the copy button.
 
 **Example:**
 
@@ -667,32 +667,42 @@ The `copied` event is emitted when a user successfully copies content using the 
 <script setup lang="ts">
 import { Markdown } from 'vue-stream-markdown'
 
-const content = `
-\`\`\`typescript
-function greet(name: string): string {
-  return \`Hello, \${name}!\`;
-}
-\`\`\`
-
-| Name | Age |
-|------|-----|
-| Alice | 30  |
-| Bob   | 25  |
-`
-
-function handleCopied(copiedContent: string) {
-  // Custom interaction logic
-  console.log('Content copied:', copiedContent)
-
-  // Example: Show custom notification
-  // toast.success('Content copied to clipboard!')
-
-  // Example: Track analytics
-  // analytics.track('content_copied', { length: copiedContent.length })
+function handleCopied(content: string) {
+  console.log('Content copied:', content)
 }
 </script>
 
 <template>
   <Markdown :content="content" @copied="handleCopied" />
+</template>
+```
+
+### beforeDownload
+
+- **Type:** `(event: DownloadEvent) => MaybePromise<boolean>`
+- **Triggered when:** User attempts to download content (images, code blocks, tables, or Mermaid diagrams)
+
+Callback invoked before any download operation. Return `true` to proceed, `false` to cancel. Useful for authentication checks or permission verification.
+
+**DownloadEvent Types:**
+
+- `{ type: 'image', url: string }`
+- `{ type: 'code' | 'table' | 'mermaid', content: string }`
+
+**Example:**
+
+```vue
+<script setup lang="ts">
+import type { DownloadEvent } from 'vue-stream-markdown'
+import { Markdown } from 'vue-stream-markdown'
+
+async function handleBeforeDownload(event: DownloadEvent): Promise<boolean> {
+  const confirmed = await confirm('Confirm download?')
+  return confirmed
+}
+</script>
+
+<template>
+  <Markdown :content="content" :before-download="handleBeforeDownload" />
 </template>
 ```

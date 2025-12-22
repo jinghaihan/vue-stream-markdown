@@ -444,3 +444,14 @@ Hide tooltips triggered by hover interactions, while keeping dropdowns triggered
 - **Type:** `boolean`
 
 Whether to use dark theme. This affects the theme selection for Shiki, Mermaid, and other components that support theming.
+
+### beforeDownload
+
+- **Type:** `(event: DownloadEvent) => MaybePromise<boolean>`
+
+Callback invoked before any download operation. Return `true` to proceed, `false` to cancel. Useful for authentication checks or permission verification.
+
+**DownloadEvent Types:**
+
+- `{ type: 'image', url: string }`
+- `{ type: 'code' | 'table' | 'mermaid', content: string }`

@@ -131,6 +131,7 @@ provideContext({
   parsedNodes,
   getContainer,
   getOverlayContainer,
+  beforeDownload: props.beforeDownload,
   onCopied: (content: string) => {
     emits('copied', content)
   },

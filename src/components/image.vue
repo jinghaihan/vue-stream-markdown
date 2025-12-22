@@ -4,7 +4,6 @@ import { useCycleList } from '@vueuse/core'
 import { treeFlatFilter } from 'treechop'
 import { computed, ref, toRefs, watch } from 'vue'
 import { useContext, useControls, useI18n, useMediumZoom } from '../composables'
-import { saveImage } from '../utils'
 import Button from './button.vue'
 import Modal from './modal.vue'
 import ZoomContainer from './zoom-container.vue'
@@ -18,6 +17,7 @@ const props = withDefaults(defineProps<{
   controls?: ControlsConfig
   transformHardenUrl?: (url: string) => string | null
   nodeProps: ImageNodeRendererProps
+  handleDownload?: (url: string) => Promise<void>
 }>(), {
   preview: true,
   margin: 16,
@@ -50,7 +50,7 @@ const { state: imageSrc, prev, next } = useCycleList(imageList, {
   fallbackIndex: 0,
 })
 
-const enableDownload = computed(() => isControlEnabled('image.download'))
+const enableDownload = computed(() => isControlEnabled('image.download') && !!props.handleDownload)
 const enableCarousel = computed(() => isControlEnabled('image.carousel'))
 const enableFlip = computed(() => isControlEnabled('image.flip'))
 const enableRotate = computed(() => isControlEnabled('image.rotate'))
@@ -97,7 +97,7 @@ const builtinControls = computed((): Control[] => [
     key: 'download',
     icon: 'download',
     name: t('button.download'),
-    onClick: download,
+    onClick: () => props.handleDownload?.(imageSrc.value),
     visible: () => !!imageSrc.value && enableDownload.value,
   },
   {
@@ -176,12 +176,6 @@ function handleClose() {
   if (isAnimating.value)
     return
   zoomOut()
-}
-
-function download() {
-  if (!imageSrc.value)
-    return
-  saveImage(imageSrc.value, props.alt)
 }
 
 function flipHorizontal() {

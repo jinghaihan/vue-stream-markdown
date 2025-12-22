@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ImageNodeRendererProps } from '../../types'
 import { computed, ref, toRefs } from 'vue'
-import { useControls, useI18n, useSanitizers } from '../../composables'
+import { useContext, useControls, useI18n, useSanitizers } from '../../composables'
 import { saveImage } from '../../utils'
 import Button from '../button.vue'
 import ErrorComponent from '../error-component.vue'
@@ -13,6 +13,8 @@ const props = withDefaults(defineProps<ImageNodeRendererProps>(), {})
 const { t } = useI18n()
 
 const { controls, hardenOptions } = toRefs(props)
+
+const { beforeDownload } = useContext()
 const { isControlEnabled } = useControls({
   controls,
 })
@@ -63,10 +65,15 @@ function handleError() {
   loadError.value = true
 }
 
-async function handleDownload() {
-  if (!imageSrc.value)
+async function handleDownload(url: string = imageSrc.value) {
+  if (!url)
     return
-  saveImage(imageSrc.value, alt.value)
+  const result = await beforeDownload({
+    type: 'image',
+    url,
+  })
+  if (result)
+    saveImage(url, alt.value)
 }
 
 function handleMouseEnter() {
@@ -102,7 +109,7 @@ function handleMouseLeave() {
           :button-style="{
             backgroundColor: 'color-mix(in oklab, var(--background) 90%, transparent)',
           }"
-          @click="handleDownload"
+          @click="() => handleDownload(imageSrc)"
         />
       </div>
 
@@ -118,6 +125,7 @@ function handleMouseLeave() {
         :controls="controls"
         :transform-harden-url="transformHardenUrl"
         :node-props="props"
+        :handle-download="handleDownload"
         @load="handleLoaded"
         @error="handleError"
       />

@@ -6,9 +6,10 @@ import type { Extension as MicromarkExtension } from 'micromark-util-types'
 import type { BuiltinTheme, BundledLanguage, BundledTheme, CodeToTokensOptions } from 'shiki'
 import type { Component } from 'vue'
 import type { NodeRenderers, SyntaxTree } from './core'
+import type { DownloadEvent } from './events'
 import type { LocaleConfig } from './locale'
 import type { CodeNodeRendererProps, ImageNodeRendererProps, TableNodeRendererProps } from './renderer'
-import type { BuiltinNodeRenderers, ControlTransformer, Icons } from './shared'
+import type { BuiltinNodeRenderers, ControlTransformer, Icons, MaybePromise } from './shared'
 
 export interface StreamMarkdownProps extends StreamMarkdownContext, MarkdownParserOptions {
   mode?: 'static' | 'streaming'
@@ -18,6 +19,7 @@ export interface StreamMarkdownProps extends StreamMarkdownContext, MarkdownPars
   preload?: PreloadConfig
   locale?: string | LocaleConfig
   enableAnimate?: boolean
+  beforeDownload?: (event: DownloadEvent) => MaybePromise<boolean>
 }
 
 export interface PreloadConfig {

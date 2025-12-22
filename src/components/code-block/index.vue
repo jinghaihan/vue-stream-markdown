@@ -36,7 +36,7 @@ const { isControlEnabled, getControlValue, resolveControls } = useControls({
 })
 const { installed: hasMermaid } = useMermaid()
 
-const { onCopied } = useContext()
+const { beforeDownload, onCopied } = useContext()
 const { copy, copied } = useClipboard({
   legacy: true,
 })
@@ -214,18 +214,31 @@ const builtinControls = computed((): Control[] => [
     icon: 'download',
     options: downloadOptions.value.length > 0 ? downloadOptions.value : undefined,
     visible: () => showDownload.value && !!LANGUAGE_EXTENSIONS[language.value],
-    onClick: (_event: MouseEvent, item?: SelectOption) => {
+    onClick: async (_event: MouseEvent, item?: SelectOption) => {
       if (props.node.loading)
         return
 
+      // Download code as plain text
       if (!item || item.value === 'code') {
         const extension = LANGUAGE_EXTENSIONS[language.value]
-        save(`file.${extension}`, props.node.value, 'text/plain')
+        const result = await beforeDownload({
+          type: 'code',
+          content: props.node.value,
+        })
+        if (result)
+          save(`file.${extension}`, props.node.value, 'text/plain')
         return
       }
 
-      if (item?.value === 'svg' || item?.value === 'png')
-        saveMermaid(item?.value as 'svg' | 'png', props.node.value)
+      // Download mermaid diagram as SVG or PNG
+      if (item?.value === 'svg' || item?.value === 'png') {
+        const result = await beforeDownload({
+          type: 'mermaid',
+          content: props.node.value,
+        })
+        if (result)
+          saveMermaid(item?.value as 'svg' | 'png', props.node.value)
+      }
     },
   },
   {
