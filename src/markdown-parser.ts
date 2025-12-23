@@ -1,4 +1,4 @@
-import type { BuiltinPluginContext, FromMarkdownExtension, MarkdownParserOptions, MicromarkExtension, ParsedNode, SyntaxTree, ToMarkdownExtension } from './types'
+import type { BuiltinPluginContext, FromMarkdownExtension, MarkdownParserOptions, MarkdownParserResult, MicromarkExtension, ParsedNode, SyntaxTree, ToMarkdownExtension } from './types'
 import { fromMarkdown } from 'mdast-util-from-markdown'
 import { toMarkdown } from 'mdast-util-to-markdown'
 import {
@@ -64,7 +64,7 @@ export class MarkdownParser {
     this.mode = mode
   }
 
-  parseMarkdown(content: string): { content: string, nodes: ParsedNode[] } {
+  parseMarkdown(content: string): MarkdownParserResult {
     if (!content)
       return { content: '', nodes: [] }
     this.update(content)

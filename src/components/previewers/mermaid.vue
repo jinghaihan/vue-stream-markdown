@@ -13,11 +13,13 @@ const props = withDefaults(defineProps<CodeNodeRendererProps & {
   interactive?: boolean
   throttle?: number
   minHeight?: number
+  immediateRender?: boolean
   containerHeight?: string | number
 }>(), {
   interactive: true,
   throttle: 300,
   minHeight: 60,
+  immediateRender: false,
 })
 
 const { controls, mermaidOptions, isDark } = toRefs(props)
@@ -60,6 +62,7 @@ const height = computed(() => {
 
 const { shouldRender } = useDeferredRender({
   targetRef: containerRef,
+  immediate: props.immediateRender,
 })
 
 const { renderMermaid } = useMermaid({

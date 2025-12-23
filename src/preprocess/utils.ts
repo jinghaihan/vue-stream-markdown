@@ -1,3 +1,5 @@
+import { codeBlockPattern, incompleteLinkImageUrlPattern, linkImagePattern } from './pattern'
+
 /**
  * Utility functions for preprocessing markdown content
  */
@@ -259,4 +261,62 @@ export function isWithinLinkOrImageUrl(
   }
 
   return false
+}
+
+/**
+ * Check if a position is within an HTML tag (between < and >)
+ *
+ * @param text - The text to check
+ * @param position - The position to check
+ * @returns True if the position is within an HTML tag
+ */
+export function isWithinHtmlTag(text: string, position: number): boolean {
+  let inHtmlTag = false
+
+  for (let i = 0; i < position; i += 1) {
+    if (text[i] === '<') {
+      // Check if it's not escaped and looks like an HTML tag
+      if (i === 0 || text[i - 1] !== '\\') {
+        inHtmlTag = true
+      }
+    }
+    else if (text[i] === '>') {
+      if (inHtmlTag && i > 0 && text[i - 1] !== '\\') {
+        inHtmlTag = false
+      }
+    }
+  }
+
+  return inHtmlTag
+}
+
+/**
+ * Remove link/image URLs and HTML tag content from text
+ * This is used to exclude URL content from markdown syntax counting
+ * (e.g., URLs may contain _, *, ~ which should not be counted as markdown syntax)
+ *
+ * @param text - The text to process
+ * @returns Text with link/image URLs and HTML tags removed (keeping only [text] or ![alt] part)
+ */
+export function removeUrlsFromText(text: string): string {
+  // First, remove code blocks to avoid processing URLs inside them
+  const withoutCodeBlocks = text.replace(codeBlockPattern, '')
+
+  // Remove HTML tags (including their attributes which may contain URLs)
+  // This handles cases like <file url="http://example.com/path_with_underscore">
+  let result = withoutCodeBlocks.replace(/<[^>]*>/g, '')
+
+  // Remove complete link/image URLs: [text](url) or ![alt](url)
+  // Replace the URL part with empty string, keep the [text] or ![alt] part
+  result = result.replace(linkImagePattern, (match) => {
+    return match.replace(/\]\([^)]*\)/, ']()')
+  })
+
+  // Remove incomplete link/image URLs: [text](url or ![alt](url
+  // Replace the incomplete URL part with empty string
+  result = result.replace(incompleteLinkImageUrlPattern, (match) => {
+    return match.replace(/\]\([^)]*$/, '](')
+  })
+
+  return result
 }

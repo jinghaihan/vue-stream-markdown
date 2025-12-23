@@ -2,6 +2,7 @@ export interface TestCase {
   description: string
   input: string
   expected: string
+  integrationExpected?: string
 }
 
 export type TestCasesByCategory = Record<string, TestCase[]>
@@ -243,16 +244,12 @@ export const deleteTestCases: TestCasesByCategory = {
       description: 'should ignore ~~ inside math block',
       input: 'The formula is $$x = 1 + 2~~3',
       expected: 'The formula is $$x = 1 + 2~~3',
+      integrationExpected: 'The formula is $$x = 1 + 2~~3$$',
     },
     {
-      description: 'should ignore ~~ inside link URL',
-      input: '[text](https://example.com/page~~',
-      expected: '[text](https://example.com/page~~',
-    },
-    {
-      description: 'should ignore ~~ inside image URL',
-      input: '![alt](https://example.com/image~~',
-      expected: '![alt](https://example.com/image~~',
+      description: 'should complete ~~ when URL contains tilde',
+      input: 'Text ~~strike~~ and [link](https://example.com/page~value) ~~more',
+      expected: 'Text ~~strike~~ and [link](https://example.com/page~value) ~~more~~',
     },
   ],
 }
@@ -366,31 +363,33 @@ export const emphasisTestCases: TestCasesByCategory = {
       description: 'should ignore * inside math block',
       input: 'The formula is $$x = 1 + 2*3',
       expected: 'The formula is $$x = 1 + 2*3',
+      integrationExpected: 'The formula is $$x = 1 + 2*3$$',
     },
     {
       description: 'should ignore _ inside math block',
       input: 'The formula is $$x = 1 + 2_3',
       expected: 'The formula is $$x = 1 + 2_3',
+      integrationExpected: 'The formula is $$x = 1 + 2_3$$',
     },
     {
-      description: 'should ignore * inside link URL',
-      input: '[text](https://example.com/page*',
-      expected: '[text](https://example.com/page*',
+      description: 'should complete * when URL contains asterisk',
+      input: 'Text *italic* and [link](https://example.com/page*value) *more',
+      expected: 'Text *italic* and [link](https://example.com/page*value) *more*',
     },
     {
-      description: 'should ignore _ inside link URL',
-      input: '[text](https://example.com/page_',
-      expected: '[text](https://example.com/page_',
+      description: 'should complete _ when URL contains underscore',
+      input: 'Text _italic_ and [link](https://example.com/page_with_underscore) _more',
+      expected: 'Text _italic_ and [link](https://example.com/page_with_underscore) _more_',
     },
     {
-      description: 'should ignore * inside image URL',
-      input: '![alt](https://example.com/image*',
-      expected: '![alt](https://example.com/image*',
+      description: 'should ignore _ in HTML tag url attribute',
+      input: '<file id="test" name="test.txt" url="http://example.com/path_with_underscore?param=value" size="135" />',
+      expected: '<file id="test" name="test.txt" url="http://example.com/path_with_underscore?param=value" size="135" />',
     },
     {
-      description: 'should ignore _ inside image URL',
-      input: '![alt](https://example.com/image_',
-      expected: '![alt](https://example.com/image_',
+      description: 'should ignore * in HTML tag url attribute',
+      input: '<file id="test" name="test.txt" url="http://example.com/path*value?param=test" size="135" />',
+      expected: '<file id="test" name="test.txt" url="http://example.com/path*value?param=test" size="135" />',
     },
   ],
 }
@@ -524,31 +523,23 @@ export const strongTestCases: TestCasesByCategory = {
       description: 'should ignore ** inside math block',
       input: 'The formula is $$x = 1 + 2**3',
       expected: 'The formula is $$x = 1 + 2**3',
+      integrationExpected: 'The formula is $$x = 1 + 2**3$$',
     },
     {
       description: 'should ignore __ inside math block',
       input: 'The formula is $$x = 1 + 2__3',
       expected: 'The formula is $$x = 1 + 2__3',
+      integrationExpected: 'The formula is $$x = 1 + 2__3$$',
     },
     {
-      description: 'should ignore ** inside link URL',
-      input: '[text](https://example.com/page**',
-      expected: '[text](https://example.com/page**',
+      description: 'should complete ** when URL contains underscore',
+      input: 'Text **bold** and [link](https://example.com/page_with_underscore) **more',
+      expected: 'Text **bold** and [link](https://example.com/page_with_underscore) **more**',
     },
     {
-      description: 'should ignore __ inside link URL',
-      input: '[text](https://example.com/page__',
-      expected: '[text](https://example.com/page__',
-    },
-    {
-      description: 'should ignore ** inside image URL',
-      input: '![alt](https://example.com/image**',
-      expected: '![alt](https://example.com/image**',
-    },
-    {
-      description: 'should ignore __ inside image URL',
-      input: '![alt](https://example.com/image__',
-      expected: '![alt](https://example.com/image__',
+      description: 'should complete __ when URL contains underscore',
+      input: 'Text __bold__ and [link](https://example.com/page_with_underscore) __more',
+      expected: 'Text __bold__ and [link](https://example.com/page_with_underscore) __more__',
     },
   ],
 }
@@ -629,6 +620,26 @@ export const linkTestCases: TestCasesByCategory = {
       description: 'should process link outside code block',
       input: '```\ncode\n```\n\nText [Google',
       expected: '```\ncode\n```\n\nText [Google]()',
+    },
+    {
+      description: 'should complete link with URL containing underscore',
+      input: '[text](https://example.com/page_with_underscore',
+      expected: '[text](https://example.com/page_with_underscore)',
+    },
+    {
+      description: 'should complete link with URL containing asterisk',
+      input: '[text](https://example.com/page*value',
+      expected: '[text](https://example.com/page*value)',
+    },
+    {
+      description: 'should complete link with URL containing tilde',
+      input: '[text](https://example.com/page~value',
+      expected: '[text](https://example.com/page~value)',
+    },
+    {
+      description: 'should complete link with URL containing multiple special chars',
+      input: '[text](https://example.com/page_with_underscore*and~tilde',
+      expected: '[text](https://example.com/page_with_underscore*and~tilde)',
     },
   ],
 
@@ -733,6 +744,21 @@ export const linkTestCases: TestCasesByCategory = {
       input: '```\ncode\n```\n\nText ![alt',
       expected: '```\ncode\n```\n\nText ![alt]()',
     },
+    {
+      description: 'should complete image with URL containing underscore',
+      input: '![alt](https://example.com/image_with_underscore',
+      expected: '![alt](https://example.com/image_with_underscore)',
+    },
+    {
+      description: 'should complete image with URL containing asterisk',
+      input: '![alt](https://example.com/image*value',
+      expected: '![alt](https://example.com/image*value)',
+    },
+    {
+      description: 'should complete image with URL containing tilde',
+      input: '![alt](https://example.com/image~value',
+      expected: '![alt](https://example.com/image~value)',
+    },
   ],
 }
 
@@ -807,6 +833,21 @@ export const inlineMathTestCases: TestCasesByCategory = {
       description: 'should ignore $$ in inline code',
       input: 'Wrap inline mathematical expressions with `$$`:',
       expected: 'Wrap inline mathematical expressions with `$$`:',
+    },
+    {
+      description: 'should complete $$ with LaTeX underscores in subscripts',
+      input: 'The sum of the first $$n$$ natural numbers: $$\\sum_{i=1}^{n} i = \\frac{n(',
+      expected: 'The sum of the first $$n$$ natural numbers: $$\\sum_{i=1}^{n} i = \\frac{n($$',
+    },
+    {
+      description: 'should complete $$ with LaTeX underscores and superscripts',
+      input: 'Formula: $$x_{i}^{2} + y_{j}',
+      expected: 'Formula: $$x_{i}^{2} + y_{j}$$',
+    },
+    {
+      description: 'should complete $$ with complex LaTeX expression',
+      input: 'Equation: $$\\int_{a}^{b} f(x) \\, dx = F(b) - F(a',
+      expected: 'Equation: $$\\int_{a}^{b} f(x) \\, dx = F(b) - F(a$$',
     },
   ],
 }

@@ -368,6 +368,7 @@ watch(
         v-if="previewable"
         v-show="mode === 'preview'"
         v-bind="props"
+        :immediate-render="true"
         container-height="100%"
       />
       <CodeNode

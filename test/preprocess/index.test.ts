@@ -13,7 +13,8 @@ describe('normalize', () => {
 describe('preprocess', () => {
   for (const testCase of getTestCases()) {
     it(testCase.description, () => {
-      expect(preprocess(testCase.input)).toBe(testCase.expected)
+      const expected = testCase.integrationExpected ?? testCase.expected
+      expect(preprocess(testCase.input)).toBe(expected)
     })
   }
 

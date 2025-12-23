@@ -9,6 +9,11 @@ export type NodeType = ParsedNode['type']
 
 export type NodeRenderers = Partial<Record<NodeType, Component>>
 
+export interface MarkdownParserResult {
+  content: string
+  nodes: ParsedNode[]
+}
+
 // > Alpha bravo charlie.
 export type BlockquoteNode = Extract<ParsedNode, { type: 'blockquote' }>
 

@@ -1,6 +1,7 @@
 import type { MaybeRef } from 'vue'
 import { useIntersectionObserver } from '@vueuse/core'
 import { onUnmounted, ref } from 'vue'
+import { createIdleCallback } from '../utils'
 
 interface UseDeferredRenderOptions {
   targetRef: MaybeRef<HTMLElement | null | undefined>
@@ -8,33 +9,6 @@ interface UseDeferredRenderOptions {
   debounceDelay?: number
   rootMargin?: string
   idleTimeout?: number
-}
-
-function createIdleCallback() {
-  const request = (cb: IdleRequestCallback, timeout = 500): number => {
-    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      return window.requestIdleCallback(cb, { timeout })
-    }
-
-    const start = Date.now()
-    // @ts-expect-error - window.setTimeout
-    return window.setTimeout(() => {
-      cb({
-        didTimeout: false,
-        timeRemaining: () =>
-          Math.max(0, 50 - (Date.now() - start)),
-      })
-    }, 1)
-  }
-
-  const cancel = (id: number) => {
-    if (typeof window !== 'undefined' && 'cancelIdleCallback' in window)
-      window.cancelIdleCallback(id)
-    else
-      clearTimeout(id)
-  }
-
-  return { request, cancel }
 }
 
 export function useDeferredRender(options: UseDeferredRenderOptions) {

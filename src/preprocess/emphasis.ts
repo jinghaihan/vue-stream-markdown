@@ -1,5 +1,5 @@
 import { codeBlockPattern, doubleAsteriskPattern, doubleUnderscorePattern, singleAsteriskPattern, singleUnderscorePattern, trailingStandaloneDashWithNewlinesPattern } from './pattern'
-import { calculateParagraphOffset, getLastParagraphWithIndex, isInsideUnclosedCodeBlock, isWithinLinkOrImageUrl, isWithinMathBlock } from './utils'
+import { calculateParagraphOffset, getLastParagraphWithIndex, isInsideUnclosedCodeBlock, isWithinHtmlTag, isWithinLinkOrImageUrl, isWithinMathBlock, removeUrlsFromText } from './utils'
 
 /**
  * Fix unclosed emphasis (* or _) syntax in streaming markdown
@@ -19,16 +19,18 @@ export function fixEmphasis(content: string): string {
 
   // Remove code blocks from the last paragraph to avoid processing emphasis inside them
   const lastParagraphWithoutCodeBlocks = lastParagraph.replace(codeBlockPattern, '')
+  // Remove URLs to avoid counting markdown syntax inside URLs (URLs may contain _, *, ~)
+  const lastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(lastParagraphWithoutCodeBlocks)
 
   // Check asterisk emphasis first (original behavior)
   // Remove ** to count only single *
-  const withoutDoubleAsterisk = lastParagraphWithoutCodeBlocks.replace(doubleAsteriskPattern, '')
+  const withoutDoubleAsterisk = lastParagraphWithoutCodeBlocksAndUrls.replace(doubleAsteriskPattern, '')
   const asteriskMatches = withoutDoubleAsterisk.match(singleAsteriskPattern)
   const asteriskCount = asteriskMatches ? asteriskMatches.length : 0
 
   // Check underscore emphasis
   // Remove __ to count only single _
-  const withoutDoubleUnderscore = lastParagraphWithoutCodeBlocks.replace(doubleUnderscorePattern, '')
+  const withoutDoubleUnderscore = lastParagraphWithoutCodeBlocksAndUrls.replace(doubleUnderscorePattern, '')
   const underscoreMatches = withoutDoubleUnderscore.match(singleUnderscorePattern)
   const underscoreCount = underscoreMatches ? underscoreMatches.length : 0
 
@@ -40,20 +42,47 @@ export function fixEmphasis(content: string): string {
 
   // Check asterisk
   if (asteriskCount % 2 === 1) {
-    const lastStarPos = withoutDoubleAsterisk.lastIndexOf('*')
-    // Calculate absolute position in content
+    // Find the last * in the original lastParagraph, but skip those in URLs
+    // We need to find the position in the original text, not in the URL-removed text
     const paragraphOffset = calculateParagraphOffset(paragraphStartIndex, lines)
-    const absoluteLastStarPos = paragraphOffset + lastStarPos
+    let lastStarPos = -1
 
-    // Check if the asterisk is in math block or link/image URL
-    if (isWithinMathBlock(content, absoluteLastStarPos) || isWithinLinkOrImageUrl(content, absoluteLastStarPos)) {
-      // Don't process if inside math block or link/image URL
+    // Search backwards in the original lastParagraph to find the last * that's not in a URL
+    for (let i = lastParagraph.length - 1; i >= 0; i--) {
+      if (lastParagraph[i] === '*') {
+        const absolutePos = paragraphOffset + i
+        // Skip if it's part of ** (we already removed those)
+        if (i > 0 && lastParagraph[i - 1] === '*') {
+          continue
+        }
+        // Skip if it's in a URL, math block, or HTML tag
+        if (!isWithinMathBlock(content, absolutePos) && !isWithinLinkOrImageUrl(content, absolutePos) && !isWithinHtmlTag(content, absolutePos)) {
+          lastStarPos = i
+          break
+        }
+      }
+    }
+
+    if (lastStarPos === -1) {
       return content
     }
 
-    const afterLast = withoutDoubleAsterisk.substring(lastStarPos + 1).trim()
+    // Check if there's content after the last * in the original text (skipping URLs)
+    let hasContentAfter = false
+    for (let i = lastStarPos + 1; i < lastParagraph.length; i++) {
+      const absolutePos = paragraphOffset + i
+      // Skip if it's in a URL, math block, or HTML tag
+      if (isWithinMathBlock(content, absolutePos) || isWithinLinkOrImageUrl(content, absolutePos) || isWithinHtmlTag(content, absolutePos)) {
+        continue
+      }
+      const char = lastParagraph[i]
+      if (char !== undefined && char.trim() !== '') {
+        hasContentAfter = true
+        break
+      }
+    }
 
-    if (afterLast.length > 0) {
+    if (hasContentAfter) {
       needsAsteriskCompletion = true
     }
     else {
@@ -63,20 +92,46 @@ export function fixEmphasis(content: string): string {
 
   // Check underscore
   if (underscoreCount % 2 === 1) {
-    const lastUnderscorePos = withoutDoubleUnderscore.lastIndexOf('_')
-    // Calculate absolute position in content
+    // Find the last _ in the original lastParagraph, but skip those in URLs
     const paragraphOffset = calculateParagraphOffset(paragraphStartIndex, lines)
-    const absoluteLastUnderscorePos = paragraphOffset + lastUnderscorePos
+    let lastUnderscorePos = -1
 
-    // Check if the underscore is in math block or link/image URL
-    if (isWithinMathBlock(content, absoluteLastUnderscorePos) || isWithinLinkOrImageUrl(content, absoluteLastUnderscorePos)) {
-      // Don't process if inside math block or link/image URL
+    // Search backwards in the original lastParagraph to find the last _ that's not in a URL
+    for (let i = lastParagraph.length - 1; i >= 0; i--) {
+      if (lastParagraph[i] === '_') {
+        const absolutePos = paragraphOffset + i
+        // Skip if it's part of __ (we already removed those)
+        if (i > 0 && lastParagraph[i - 1] === '_') {
+          continue
+        }
+        // Skip if it's in a URL, math block, or HTML tag
+        if (!isWithinMathBlock(content, absolutePos) && !isWithinLinkOrImageUrl(content, absolutePos) && !isWithinHtmlTag(content, absolutePos)) {
+          lastUnderscorePos = i
+          break
+        }
+      }
+    }
+
+    if (lastUnderscorePos === -1) {
       return content
     }
 
-    const afterLast = withoutDoubleUnderscore.substring(lastUnderscorePos + 1).trim()
+    // Check if there's content after the last _ in the original text (skipping URLs)
+    let hasContentAfter = false
+    for (let i = lastUnderscorePos + 1; i < lastParagraph.length; i++) {
+      const absolutePos = paragraphOffset + i
+      // Skip if it's in a URL, math block, or HTML tag
+      if (isWithinMathBlock(content, absolutePos) || isWithinLinkOrImageUrl(content, absolutePos) || isWithinHtmlTag(content, absolutePos)) {
+        continue
+      }
+      const char = lastParagraph[i]
+      if (char !== undefined && char.trim() !== '') {
+        hasContentAfter = true
+        break
+      }
+    }
 
-    if (afterLast.length > 0) {
+    if (hasContentAfter) {
       needsUnderscoreCompletion = true
     }
     else {
@@ -97,10 +152,22 @@ export function fixEmphasis(content: string): string {
 
   if (needsUnderscoreRemoval) {
     // Remove the trailing _ and all whitespace after it
+    // Find the last _ position in original text (already calculated above)
     const paragraphOffset = calculateParagraphOffset(paragraphStartIndex, lines)
-    const lastUnderscorePos = withoutDoubleUnderscore.lastIndexOf('_')
-    const absoluteLastUnderscorePos = paragraphOffset + lastUnderscorePos
-    let result = content.substring(0, absoluteLastUnderscorePos).trimEnd()
+    let lastUnderscorePosInOriginal = -1
+    for (let i = lastParagraph.length - 1; i >= 0; i--) {
+      if (lastParagraph[i] === '_' && (i === 0 || lastParagraph[i - 1] !== '_')) {
+        const absolutePos = paragraphOffset + i
+        if (!isWithinMathBlock(content, absolutePos) && !isWithinLinkOrImageUrl(content, absolutePos) && !isWithinHtmlTag(content, absolutePos)) {
+          lastUnderscorePosInOriginal = absolutePos
+          break
+        }
+      }
+    }
+    if (lastUnderscorePosInOriginal === -1) {
+      return content
+    }
+    let result = content.substring(0, lastUnderscorePosInOriginal).trimEnd()
     // If after removing _, we're left with a line ending in `- ` or `-\t`, remove the standalone dash line
     if (trailingStandaloneDashWithNewlinesPattern.test(result)) {
       result = result.replace(trailingStandaloneDashWithNewlinesPattern, '$1')

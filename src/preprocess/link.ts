@@ -1,4 +1,4 @@
-import { codeBlockPattern, doubleAsteriskPattern, doubleTildePattern, doubleUnderscorePattern, incompleteBracketPattern, incompleteLinkTextPattern, incompleteUrlPattern, singleAsteriskPattern, singleUnderscorePattern } from './pattern'
+import { codeBlockPattern, incompleteBracketPattern, incompleteLinkTextPattern, incompleteUrlPattern } from './pattern'
 import { findLastNonEmptyLineIndex, getLastParagraphWithIndex, isInsideUnclosedCodeBlock } from './utils'
 
 /**
@@ -123,26 +123,9 @@ export function fixLink(content: string): string {
 
   // Pattern 3: [text]( or [text](url or ![text]( or ![text](url - incomplete URL (has ]( but no closing ))
   // Match link/image that has ]( but no closing )
+  // Note: We don't check for markdown syntax in URLs because URLs commonly contain
+  // characters like _, *, ~ which should not be treated as markdown syntax
   if (incompleteUrlPattern.test(lastParagraphWithoutCodeBlocks)) {
-    // Check if the URL contains unclosed markdown syntax (**, __, ~~, *, _)
-    // If so, don't complete the link to avoid interfering with markdown syntax
-    const urlMatch = lastParagraphWithoutCodeBlocks.match(/\]\((.*)$/)
-    if (urlMatch && urlMatch[1]) {
-      const urlContent = urlMatch[1]
-      // Check if URL contains unclosed markdown syntax
-      const hasUnclosedStrong = (urlContent.match(doubleAsteriskPattern)?.length ?? 0) % 2 === 1
-        || (urlContent.match(doubleUnderscorePattern)?.length ?? 0) % 2 === 1
-      const hasUnclosedDelete = (urlContent.match(doubleTildePattern)?.length ?? 0) % 2 === 1
-      // Check for single * or _ (emphasis syntax)
-      const withoutDoubleAsterisk = urlContent.replace(doubleAsteriskPattern, '')
-      const withoutDoubleUnderscore = urlContent.replace(doubleUnderscorePattern, '')
-      const hasUnclosedEmphasis = (withoutDoubleAsterisk.match(singleAsteriskPattern)?.length ?? 0) % 2 === 1
-        || (withoutDoubleUnderscore.match(singleUnderscorePattern)?.length ?? 0) % 2 === 1
-      if (hasUnclosedStrong || hasUnclosedDelete || hasUnclosedEmphasis) {
-        // Don't complete link if URL contains unclosed markdown syntax
-        return content
-      }
-    }
     return `${content})`
   }
 

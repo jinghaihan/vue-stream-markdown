@@ -44,3 +44,14 @@ export const quoteIncompleteTaskListPattern = /^>\s*-\s*\[\s*$/
 // Match trailing standalone dash with optional whitespace (used to clean up after removing ** or *)
 // Captures the preceding newlines to preserve them
 export const trailingStandaloneDashWithNewlinesPattern = /(\n\n?)-[ \t]*$/
+
+// URL patterns - used to exclude URL content from markdown syntax counting
+// Match link/image URL: [text](url) or ![alt](url)
+// This matches the entire link/image syntax including the URL part
+export const linkImagePattern = /!?\[[^\]]*\]\([^)]*\)/g
+// Match incomplete link/image URL: [text](url or ![alt](url
+// This matches incomplete links/images where the URL is not closed
+export const incompleteLinkImageUrlPattern = /!?\[[^\]]*\]\([^)]*$/g
+// Match standalone URL (not part of markdown link syntax)
+// Matches http:// or https:// URLs that are not part of ](url) pattern
+export const standaloneUrlPattern = /https?:\/\/[^\s<>)]+/gi

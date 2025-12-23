@@ -1,5 +1,5 @@
 import { codeBlockPattern, doubleTildePattern } from './pattern'
-import { calculateParagraphOffset, getLastParagraphWithIndex, isInsideUnclosedCodeBlock, isWithinLinkOrImageUrl, isWithinMathBlock } from './utils'
+import { calculateParagraphOffset, getLastParagraphWithIndex, isInsideUnclosedCodeBlock, isWithinHtmlTag, isWithinLinkOrImageUrl, isWithinMathBlock, removeUrlsFromText } from './utils'
 
 /**
  * Fix unclosed strikethrough (~~) syntax in streaming markdown
@@ -34,9 +34,11 @@ export function fixDelete(content: string): string {
 
   // Remove code blocks from the last paragraph to avoid processing ~~ inside them
   const lastParagraphWithoutCodeBlocks = lastParagraph.replace(codeBlockPattern, '')
+  // Remove URLs to avoid counting markdown syntax inside URLs (URLs may contain _, *, ~)
+  const lastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(lastParagraphWithoutCodeBlocks)
 
-  // Count ~~ in the last paragraph only (excluding code blocks)
-  const matches = lastParagraphWithoutCodeBlocks.match(doubleTildePattern)
+  // Count ~~ in the last paragraph only (excluding code blocks and URLs)
+  const matches = lastParagraphWithoutCodeBlocksAndUrls.match(doubleTildePattern)
   const count = matches ? matches.length : 0
 
   // Check if the content ends with a single ~ (not ~~)
@@ -48,15 +50,16 @@ export function fixDelete(content: string): string {
     const contentWithoutLastTilde = content.slice(0, -1)
     const lastParagraphWithoutTilde = contentWithoutLastTilde.split('\n').slice(paragraphStartIndex).join('\n')
     const lastParagraphWithoutTildeAndCodeBlocks = lastParagraphWithoutTilde.replace(codeBlockPattern, '')
-    const matchesWithoutTilde = lastParagraphWithoutTildeAndCodeBlocks.match(doubleTildePattern)
+    const lastParagraphWithoutTildeAndCodeBlocksAndUrls = removeUrlsFromText(lastParagraphWithoutTildeAndCodeBlocks)
+    const matchesWithoutTilde = lastParagraphWithoutTildeAndCodeBlocksAndUrls.match(doubleTildePattern)
     const countWithoutTilde = matchesWithoutTilde ? matchesWithoutTilde.length : 0
 
     if (countWithoutTilde % 2 === 1) {
       // Odd number of ~~ means we have an unclosed strikethrough
       // But we need to make sure there's actual content after the last ~~
-      const lastTildePos = lastParagraphWithoutTildeAndCodeBlocks.lastIndexOf('~~')
+      const lastTildePos = lastParagraphWithoutTildeAndCodeBlocksAndUrls.lastIndexOf('~~')
       if (lastTildePos >= 0) {
-        const afterLastTilde = lastParagraphWithoutTildeAndCodeBlocks.substring(lastTildePos + 2)
+        const afterLastTilde = lastParagraphWithoutTildeAndCodeBlocksAndUrls.substring(lastTildePos + 2)
         // Only complete if there's actual content (including whitespace, but not empty)
         if (afterLastTilde.length > 0) {
           return `${content}~`
@@ -100,13 +103,13 @@ export function fixDelete(content: string): string {
     const paragraphOffset = calculateParagraphOffset(paragraphStartIndex, lines)
     const absoluteLastTildePos = paragraphOffset + actualLastTildePos
 
-    // Check if the tilde is in math block or link/image URL
-    if (isWithinMathBlock(content, absoluteLastTildePos) || isWithinLinkOrImageUrl(content, absoluteLastTildePos)) {
-      // Don't process if inside math block or link/image URL
+    // Check if the tilde is in math block, link/image URL, or HTML tag
+    if (isWithinMathBlock(content, absoluteLastTildePos) || isWithinLinkOrImageUrl(content, absoluteLastTildePos) || isWithinHtmlTag(content, absoluteLastTildePos)) {
+      // Don't process if inside math block, link/image URL, or HTML tag
       return content
     }
 
-    const afterLast = lastParagraphWithoutCodeBlocks.substring(lastParagraphWithoutCodeBlocks.lastIndexOf('~~') + 2)
+    const afterLast = lastParagraphWithoutCodeBlocksAndUrls.substring(lastParagraphWithoutCodeBlocksAndUrls.lastIndexOf('~~') + 2)
     const afterLastTrimmed = afterLast.trim()
 
     // If there's content after ~~, complete it

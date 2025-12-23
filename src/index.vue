@@ -40,13 +40,13 @@ const { provideContext } = useContext()
 
 const markdownParser = new MarkdownParser(props)
 
-const processed = computed(() => {
-  markdownParser.updateMode(props.mode)
-  return markdownParser.parseMarkdown(props.content)
-})
+// const { requestParse, result: processed } = useDirtyParser((content: string) => markdownParser.parseMarkdown(content))
+// watch(() => props.content, content => requestParse(content), { immediate: true })
 
-const parsedNodes = computed(() => processed.value.nodes)
-const processedContent = computed(() => processed.value.content)
+const processed = computed(() => markdownParser.parseMarkdown(props.content))
+
+const parsedNodes = computed(() => processed.value?.nodes ?? [])
+const processedContent = computed(() => processed.value?.content ?? '')
 
 const nodeRenderers = computed((): NodeRenderers => ({
   ...NODE_RENDERERS,

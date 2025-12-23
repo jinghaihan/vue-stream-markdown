@@ -1,5 +1,5 @@
 import { codeBlockPattern, doubleAsteriskPattern, doubleUnderscorePattern, singleAsteriskPattern, singleUnderscorePattern, trailingStandaloneDashWithNewlinesPattern } from './pattern'
-import { calculateParagraphOffset, getLastParagraphWithIndex, isInsideUnclosedCodeBlock, isWithinLinkOrImageUrl, isWithinMathBlock } from './utils'
+import { calculateParagraphOffset, getLastParagraphWithIndex, isInsideUnclosedCodeBlock, isWithinHtmlTag, isWithinLinkOrImageUrl, isWithinMathBlock, removeUrlsFromText } from './utils'
 
 /**
  * Fix unclosed strong (** or __) syntax in streaming markdown
@@ -43,17 +43,19 @@ export function fixStrong(content: string): string {
 
   // Remove code blocks from the last paragraph to avoid processing strong inside them
   const lastParagraphWithoutCodeBlocks = lastParagraph.replace(codeBlockPattern, '')
+  // Remove URLs to avoid counting markdown syntax inside URLs (URLs may contain _, *, ~)
+  const lastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(lastParagraphWithoutCodeBlocks)
 
   // Check if content ends with a single * or _ (not ** or __)
   const endsWithSingleAsterisk = content.endsWith('*') && !content.endsWith('**')
   const endsWithSingleUnderscore = content.endsWith('_') && !content.endsWith('__')
 
-  // Count ** in the last paragraph only (excluding code blocks)
-  const asteriskMatches = lastParagraphWithoutCodeBlocks.match(doubleAsteriskPattern)
+  // Count ** in the last paragraph only (excluding code blocks and URLs)
+  const asteriskMatches = lastParagraphWithoutCodeBlocksAndUrls.match(doubleAsteriskPattern)
   const asteriskCount = asteriskMatches ? asteriskMatches.length : 0
 
-  // Count __ in the last paragraph only (excluding code blocks)
-  const underscoreMatches = lastParagraphWithoutCodeBlocks.match(doubleUnderscorePattern)
+  // Count __ in the last paragraph only (excluding code blocks and URLs)
+  const underscoreMatches = lastParagraphWithoutCodeBlocksAndUrls.match(doubleUnderscorePattern)
   const underscoreCount = underscoreMatches ? underscoreMatches.length : 0
 
   // Track what needs to be done
@@ -90,13 +92,13 @@ export function fixStrong(content: string): string {
     const paragraphOffset = calculateParagraphOffset(paragraphStartIndex, lines)
     const absoluteLastStarPos = paragraphOffset + actualLastStarPos
 
-    // Check if the asterisk is in math block or link/image URL
-    if (isWithinMathBlock(content, absoluteLastStarPos) || isWithinLinkOrImageUrl(content, absoluteLastStarPos)) {
-      // Don't process if inside math block or link/image URL
+    // Check if the asterisk is in math block, link/image URL, or HTML tag
+    if (isWithinMathBlock(content, absoluteLastStarPos) || isWithinLinkOrImageUrl(content, absoluteLastStarPos) || isWithinHtmlTag(content, absoluteLastStarPos)) {
+      // Don't process if inside math block, link/image URL, or HTML tag
       return content
     }
 
-    const afterLast = lastParagraphWithoutCodeBlocks.substring(lastParagraphWithoutCodeBlocks.lastIndexOf('**') + 2).trim()
+    const afterLast = lastParagraphWithoutCodeBlocksAndUrls.substring(lastParagraphWithoutCodeBlocksAndUrls.lastIndexOf('**') + 2).trim()
 
     if (afterLast.length > 0) {
       needsAsteriskCompletion = true
@@ -134,13 +136,13 @@ export function fixStrong(content: string): string {
     const paragraphOffset = calculateParagraphOffset(paragraphStartIndex, lines)
     const absoluteLastUnderscorePos = paragraphOffset + actualLastUnderscorePos
 
-    // Check if the underscore is in math block or link/image URL
-    if (isWithinMathBlock(content, absoluteLastUnderscorePos) || isWithinLinkOrImageUrl(content, absoluteLastUnderscorePos)) {
-      // Don't process if inside math block or link/image URL
+    // Check if the underscore is in math block, link/image URL, or HTML tag
+    if (isWithinMathBlock(content, absoluteLastUnderscorePos) || isWithinLinkOrImageUrl(content, absoluteLastUnderscorePos) || isWithinHtmlTag(content, absoluteLastUnderscorePos)) {
+      // Don't process if inside math block, link/image URL, or HTML tag
       return content
     }
 
-    const afterLast = lastParagraphWithoutCodeBlocks.substring(lastParagraphWithoutCodeBlocks.lastIndexOf('__') + 2).trim()
+    const afterLast = lastParagraphWithoutCodeBlocksAndUrls.substring(lastParagraphWithoutCodeBlocksAndUrls.lastIndexOf('__') + 2).trim()
 
     if (afterLast.length > 0) {
       needsUnderscoreCompletion = true
@@ -159,11 +161,12 @@ export function fixStrong(content: string): string {
     // Recalculate after removal
     const { lastParagraph: newLastParagraph } = getLastParagraphWithIndex(content)
     const newLastParagraphWithoutCodeBlocks = newLastParagraph.replace(codeBlockPattern, '')
-    const newAsteriskMatches = newLastParagraphWithoutCodeBlocks.match(doubleAsteriskPattern)
+    const newLastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(newLastParagraphWithoutCodeBlocks)
+    const newAsteriskMatches = newLastParagraphWithoutCodeBlocksAndUrls.match(doubleAsteriskPattern)
     const newAsteriskCount = newAsteriskMatches ? newAsteriskMatches.length : 0
     if (newAsteriskCount % 2 === 1) {
-      const lastStarPos = newLastParagraphWithoutCodeBlocks.lastIndexOf('**')
-      const afterLast = newLastParagraphWithoutCodeBlocks.substring(lastStarPos + 2).trim()
+      const lastStarPos = newLastParagraphWithoutCodeBlocksAndUrls.lastIndexOf('**')
+      const afterLast = newLastParagraphWithoutCodeBlocksAndUrls.substring(lastStarPos + 2).trim()
       if (afterLast.length > 0) {
         needsAsteriskCompletion = true
         needsAsteriskRemoval = false
@@ -182,11 +185,12 @@ export function fixStrong(content: string): string {
     // Recalculate after removal
     const { lastParagraph: newLastParagraph } = getLastParagraphWithIndex(content)
     const newLastParagraphWithoutCodeBlocks = newLastParagraph.replace(codeBlockPattern, '')
-    const newUnderscoreMatches = newLastParagraphWithoutCodeBlocks.match(doubleUnderscorePattern)
+    const newLastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(newLastParagraphWithoutCodeBlocks)
+    const newUnderscoreMatches = newLastParagraphWithoutCodeBlocksAndUrls.match(doubleUnderscorePattern)
     const newUnderscoreCount = newUnderscoreMatches ? newUnderscoreMatches.length : 0
     if (newUnderscoreCount % 2 === 1) {
-      const lastUnderscorePos = newLastParagraphWithoutCodeBlocks.lastIndexOf('__')
-      const afterLast = newLastParagraphWithoutCodeBlocks.substring(lastUnderscorePos + 2).trim()
+      const lastUnderscorePos = newLastParagraphWithoutCodeBlocksAndUrls.lastIndexOf('__')
+      const afterLast = newLastParagraphWithoutCodeBlocksAndUrls.substring(lastUnderscorePos + 2).trim()
       if (afterLast.length > 0) {
         needsUnderscoreCompletion = true
         needsUnderscoreRemoval = false
@@ -222,8 +226,8 @@ export function fixStrong(content: string): string {
   // Handle completions - check for both ** and __, and also check for single * or _
   if (needsAsteriskCompletion && needsUnderscoreCompletion) {
     // Both need completion - complete the one that appears first
-    const firstAsteriskPos = lastParagraphWithoutCodeBlocks.indexOf('**')
-    const firstUnderscorePos = lastParagraphWithoutCodeBlocks.indexOf('__')
+    const firstAsteriskPos = lastParagraphWithoutCodeBlocksAndUrls.indexOf('**')
+    const firstUnderscorePos = lastParagraphWithoutCodeBlocksAndUrls.indexOf('__')
     if (firstAsteriskPos < firstUnderscorePos) {
       // Asterisk appears first, complete underscore first, then asterisk
       return `${content}__**`
@@ -240,7 +244,8 @@ export function fixStrong(content: string): string {
     if (!removedTrailingSingle) {
       const { lastParagraph: currentLastParagraph } = getLastParagraphWithIndex(content)
       const currentLastParagraphWithoutCodeBlocks = currentLastParagraph.replace(codeBlockPattern, '')
-      const withoutDoubleAsterisk = currentLastParagraphWithoutCodeBlocks.replace(doubleAsteriskPattern, '')
+      const currentLastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(currentLastParagraphWithoutCodeBlocks)
+      const withoutDoubleAsterisk = currentLastParagraphWithoutCodeBlocksAndUrls.replace(doubleAsteriskPattern, '')
       const singleAsteriskMatches = withoutDoubleAsterisk.match(singleAsteriskPattern)
       const singleAsteriskCount = singleAsteriskMatches ? singleAsteriskMatches.length : 0
       if (singleAsteriskCount % 2 === 1) {
@@ -257,7 +262,8 @@ export function fixStrong(content: string): string {
     if (!removedTrailingSingle) {
       const { lastParagraph: currentLastParagraph } = getLastParagraphWithIndex(content)
       const currentLastParagraphWithoutCodeBlocks = currentLastParagraph.replace(codeBlockPattern, '')
-      const withoutDoubleUnderscore = currentLastParagraphWithoutCodeBlocks.replace(doubleUnderscorePattern, '')
+      const currentLastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(currentLastParagraphWithoutCodeBlocks)
+      const withoutDoubleUnderscore = currentLastParagraphWithoutCodeBlocksAndUrls.replace(doubleUnderscorePattern, '')
       const singleUnderscoreMatches = withoutDoubleUnderscore.match(singleUnderscorePattern)
       const singleUnderscoreCount = singleUnderscoreMatches ? singleUnderscoreMatches.length : 0
       if (singleUnderscoreCount % 2 === 1) {
