@@ -70,7 +70,9 @@
   },
   "dependencies": {
     "@floating-ui/dom": "catalog:frontend",
-    "@vueuse/core": "catalog:utils"
+    "@vueuse/core": "catalog:utils",
+    "marked": "catalog:parser",
+    "quick-lru": "catalog:prod"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:lint",

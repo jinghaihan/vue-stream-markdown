@@ -35,9 +35,10 @@ export interface PreloadConfig {
 export interface MarkdownParserOptions {
   mdastOptions?: MdastOptions
   normalize?: (content: string) => string
-  postNormalize?: (data: SyntaxTree) => SyntaxTree
   preprocess?: (content: string) => string
+  postNormalize?: (data: SyntaxTree) => SyntaxTree
   postprocess?: (data: SyntaxTree) => SyntaxTree
+  parseMarkdownIntoBlocks?: (content: string) => string[]
 }
 
 export interface MdastOptions {

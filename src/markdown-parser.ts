@@ -1,23 +1,28 @@
 import type { BuiltinPluginContext, FromMarkdownExtension, MarkdownParserOptions, MarkdownParserResult, MicromarkExtension, ParsedNode, SyntaxTree, ToMarkdownExtension } from './types'
 import { fromMarkdown } from 'mdast-util-from-markdown'
 import { toMarkdown } from 'mdast-util-to-markdown'
+import QuickLRU from 'quick-lru'
 import {
   BUILTIN_FROM_MDAST_EXTENSIONS,
   BUILTIN_MICROMARK_EXTENSIONS,
   BUILTIN_TO_MARKDOWN_EXTENSIONS,
 } from './constants'
 import { postNormalize, postprocess } from './postprocess'
-import { normalize, preprocess } from './preprocess'
+import { normalize, parseMarkdownIntoBlocks, preprocess } from './preprocess'
 import { findLastLeafNode, resolveBuiltinExtensions } from './utils'
 
 export interface Options extends MarkdownParserOptions {
   mode: 'streaming' | 'static'
 }
 
+const astCache = new QuickLRU<string, SyntaxTree>({
+  maxSize: 100,
+})
+
 export class MarkdownParser {
   private mode: Options['mode'] = 'streaming'
-  private content: string = ''
-  private syntaxTree: SyntaxTree | null = null
+  private contents: string[] = []
+  private asts: SyntaxTree[] = []
 
   private micromarkExtensions: MicromarkExtension[] = []
   private fromMdastExtensions: FromMarkdownExtension[] = []
@@ -50,54 +55,109 @@ export class MarkdownParser {
     )
   }
 
-  private update(data: string) {
-    const normal = this.options.normalize ?? normalize
-    data = normal(data)
-
-    const pre = this.options.preprocess ?? preprocess
-    this.content = this.mode === 'streaming' ? pre(data) : data
-
-    this.syntaxTree = this.markdownToAst(this.content, data !== this.content)
-  }
-
   updateMode(mode: 'streaming' | 'static') {
     this.mode = mode
   }
 
-  parseMarkdown(content: string): MarkdownParserResult {
-    if (!content)
-      return { content: '', nodes: [] }
-    this.update(content)
-    if (!this.syntaxTree)
-      return { content: this.content, nodes: [] }
+  private update(data: string) {
+    const normal = this.options.normalize ?? normalize
+    const pre = this.options.preprocess ?? preprocess
+    const parse = this.options.parseMarkdownIntoBlocks ?? parseMarkdownIntoBlocks
+
+    data = normal(data)
+
+    const blocks = this.mode === 'static' ? [data] : parse(data)
+
+    const asts: SyntaxTree[] = []
+    const contents: string[] = []
+
+    for (let index = 0; index < blocks.length; index++) {
+      const isLastBlock = index === blocks.length - 1
+      let content = blocks[index]!
+      // preprocess the last block
+      if (isLastBlock)
+        content = this.mode === 'streaming' ? pre(content) : content
+      contents.push(content)
+
+      const loading = blocks[index] !== content
+
+      // check if the ast is cached
+      if (astCache.has(content)) {
+        const ast = astCache.get(content)!
+        asts.push(this.updateAstLoading(ast, loading))
+        continue
+      }
+
+      const ast = this.markdownToAst(content)
+      astCache.set(content, ast)
+
+      const resolvedAst = this.updateAstLoading(ast, loading)
+      asts.push(resolvedAst)
+    }
+
+    this.asts = structuredClone(asts)
+    this.contents = contents
+  }
+
+  private updateAstLoading(ast: SyntaxTree, loading: boolean) {
+    loading = loading && this.mode === 'streaming'
+    const node = findLastLeafNode(ast.children)
+    if (!node)
+      return ast
+    return this.cloneAstNode(ast, node, loading)
+  }
+
+  private cloneAstNode(
+    ast: SyntaxTree,
+    targetNode: ParsedNode,
+    loading: boolean,
+  ): SyntaxTree {
+    const cloneNode = (node: ParsedNode): ParsedNode => {
+      if (node === targetNode)
+        return { ...node, loading }
+
+      const nodeWithChildren = node as { children?: ParsedNode[] }
+      if (nodeWithChildren.children) {
+        return {
+          ...node,
+          // @ts-expect-error - generate children array
+          children: nodeWithChildren.children.map(cloneNode),
+        }
+      }
+
+      return { ...node }
+    }
 
     return {
-      content: this.content,
-      nodes: this.syntaxTree.children,
+      ...ast,
+      children: ast.children.map(cloneNode),
     }
   }
 
-  markdownToAst(content: string, loading: boolean = false): SyntaxTree {
-    // const singleDollarTextMath = this.options.mdastOptions?.singleDollarTextMath ?? false
+  parseMarkdown(content: string): MarkdownParserResult {
+    if (!content)
+      return { contents: [], asts: [] }
+    this.update(content)
+    if (!this.asts.length)
+      return { contents: [], asts: [] }
 
+    return {
+      contents: this.contents,
+      asts: this.asts,
+    }
+  }
+
+  markdownToAst(content: string): SyntaxTree {
     const data = fromMarkdown(content, {
       extensions: this.micromarkExtensions,
       mdastExtensions: this.fromMdastExtensions,
     })
 
-    const normal = this.options.postprocess ?? postNormalize
+    const normal = this.options.postNormalize ?? postNormalize
     const treeData = normal(data)
 
     const post = this.options.postprocess ?? postprocess
     const resolved = this.mode === 'streaming' ? post(treeData) : treeData
-
-    if (!loading || this.mode === 'static')
-      return resolved
-
-    const node = findLastLeafNode(resolved.children)
-    if (node)
-      (node as ParsedNode).loading = true
-
     return resolved
   }
 
@@ -115,7 +175,7 @@ export class MarkdownParser {
   }
 
   hasLoadingNode(nodes?: ParsedNode[]): boolean {
-    nodes = nodes || this.syntaxTree?.children || []
+    nodes = nodes || this.asts[this.asts.length - 1]?.children || []
     if (!nodes.length)
       return false
 

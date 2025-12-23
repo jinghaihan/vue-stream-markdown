@@ -40,13 +40,11 @@ const { provideContext } = useContext()
 
 const markdownParser = new MarkdownParser(props)
 
-// const { requestParse, result: processed } = useDirtyParser((content: string) => markdownParser.parseMarkdown(content))
-// watch(() => props.content, content => requestParse(content), { immediate: true })
-
 const processed = computed(() => markdownParser.parseMarkdown(props.content))
 
-const parsedNodes = computed(() => processed.value?.nodes ?? [])
-const processedContent = computed(() => processed.value?.content ?? '')
+const blocks = computed(() => processed.value?.asts ?? [])
+const parsedNodes = computed(() => blocks.value.flatMap(block => block.children))
+const processedContent = computed(() => (processed.value?.contents ?? []).join(''))
 
 const nodeRenderers = computed((): NodeRenderers => ({
   ...NODE_RENDERERS,
@@ -158,12 +156,15 @@ defineExpose({
     class="stream-markdown"
     :class="[isDark ? 'dark' : 'light']"
   >
-    <NodeList
-      v-bind="props"
-      :markdown-parser="markdownParser"
-      :node-renderers="nodeRenderers"
-      :nodes="parsedNodes"
-      :get-container="getContainer"
-    />
+    <template v-for="(block, index) in blocks" :key="index">
+      <NodeList
+        v-bind="props"
+        :markdown-parser="markdownParser"
+        :node-renderers="nodeRenderers"
+        :nodes="block.children"
+        :get-container="getContainer"
+        :node-key="`stream-markdown-block-${index}`"
+      />
+    </template>
   </div>
 </template>

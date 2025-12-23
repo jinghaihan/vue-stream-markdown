@@ -46,6 +46,7 @@ catalogs:
     lint-staged: ^16.2.7
     simple-git-hooks: ^2.13.1
   parser:
+    marked: ^17.0.1
     mdast-util-from-markdown: ^2.0.2
     mdast-util-frontmatter: ^2.0.1
     mdast-util-gfm: ^3.1.0
@@ -60,6 +61,7 @@ catalogs:
   prod:
     htmlparser2: ^10.0.0
     lz-string: ^1.5.0
+    quick-lru: ^7.3.0
   script:
     tsx: ^4.21.0
   style:
