@@ -8,7 +8,6 @@ packages:
   - .
   - playground
   - docs
-
 catalogs:
   build:
     '@vitejs/plugin-vue': ^6.0.3
@@ -25,7 +24,6 @@ catalogs:
     '@nuxtjs/color-mode': ^4.0.0
     happy-dom: ^20.0.11
     nuxt: ^4.2.2
-    treechop: ^0.1.2
   docs:
     vitepress: ^1.6.4
   frontend:
@@ -37,6 +35,10 @@ catalogs:
   icons:
     '@iconify-json/catppuccin': ^1.2.17
     '@iconify-json/lucide': ^1.2.81
+  inline:
+    '@antfu/utils': ^9.3.0
+    quick-lru: ^7.3.0
+    treechop: ^0.1.2
   lint:
     '@antfu/eslint-config': ^6.7.1
     '@nuxt/eslint': ^1.12.1
@@ -61,7 +63,6 @@ catalogs:
   prod:
     htmlparser2: ^10.0.0
     lz-string: ^1.5.0
-    quick-lru: ^7.3.0
   script:
     tsx: ^4.21.0
   style:
@@ -82,7 +83,6 @@ catalogs:
   types:
     '@types/node': ^24.10.4
   utils:
-    '@antfu/utils': ^9.3.0
     '@vueuse/core': ^14.1.0
     '@vueuse/nuxt': ^14.1.0
 onlyBuiltDependencies:

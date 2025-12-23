@@ -71,12 +71,11 @@
   "dependencies": {
     "@floating-ui/dom": "catalog:frontend",
     "@vueuse/core": "catalog:utils",
-    "marked": "catalog:parser",
-    "quick-lru": "catalog:prod"
+    "marked": "catalog:parser"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:lint",
-    "@antfu/utils": "catalog:utils",
+    "@antfu/utils": "catalog:inline",
     "@iconify-json/catppuccin": "catalog:icons",
     "@iconify-json/lucide": "catalog:icons",
     "@nuxt/devtools": "catalog:dev",
@@ -107,9 +106,10 @@
     "micromark-util-types": "catalog:parser",
     "nuxt": "catalog:dev",
     "pncat": "catalog:cli",
+    "quick-lru": "catalog:inline",
     "simple-git-hooks": "catalog:lint",
     "taze": "catalog:cli",
-    "treechop": "catalog:dev",
+    "treechop": "catalog:inline",
     "tsdown": "catalog:build",
     "tsx": "catalog:script",
     "typescript": "catalog:tsc",
