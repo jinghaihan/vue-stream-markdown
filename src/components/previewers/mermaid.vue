@@ -3,7 +3,7 @@ import type { CodeNodeRendererProps, Control, ZoomControlPosition } from '../../
 import { throttle } from '@antfu/utils'
 import { useResizeObserver } from '@vueuse/core'
 import { computed, nextTick, ref, toRefs, watch } from 'vue'
-import { useControls, useMermaid } from '../../composables'
+import { useControls, useDeferredRender, useMermaid } from '../../composables'
 import Button from '../button.vue'
 import ErrorComponent from '../error-component.vue'
 import Spin from '../spin.vue'
@@ -56,6 +56,10 @@ const height = computed(() => {
     return props.containerHeight
 
   return containerHeight.value ? `${containerHeight.value}px` : 'auto'
+})
+
+const { shouldRender } = useDeferredRender({
+  targetRef: containerRef,
 })
 
 const { renderMermaid } = useMermaid({
@@ -118,6 +122,9 @@ function updateHeight() {
 const render = throttle(
   props.throttle,
   async () => {
+    if (!shouldRender.value)
+      return
+
     const { valid, svg: data, error: err } = await renderMermaid(code.value)
     if (valid) {
       svg.value = data
@@ -131,6 +138,12 @@ const render = throttle(
     renderFlag.value = true
   },
 )
+
+function eagerRender() {
+  renderAttempt.value = true
+  renderFlag.value = false
+  render()
+}
 
 const mermaidControls = computed(
   (): Control[] => resolveControls<CodeNodeRendererProps>('mermaid', [], props),
@@ -155,13 +168,18 @@ watch(
 
     // if loading changed from true to false, set `renderFla` to false
     // avoid render error component when svg is not rendered yet
-    if (!curr && prev) {
-      renderAttempt.value = true
-      renderFlag.value = false
-      render()
-    }
+    if (!curr && prev)
+      eagerRender()
   },
   { immediate: true },
+)
+
+watch(
+  shouldRender,
+  (curr, prev) => {
+    if (curr && !prev)
+      eagerRender()
+  },
 )
 
 if (!props.containerHeight) {
