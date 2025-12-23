@@ -280,6 +280,24 @@ Extensions for converting MDAST to markdown.
 
 Micromark extensions for parsing. These are added **in addition to** the default extensions.
 
+### builtin
+
+- **Type:** `{ micromark?: BuiltinPluginControl, from?: BuiltinPluginControl, to?: BuiltinPluginControl }`
+
+Control built-in plugins. Set a plugin key to `false` to disable it, or provide a function to override it.
+
+Available built-in plugins:
+- **micromark**: `gfm`, `math`, `frontmatter`, `cjkFriendlyExtension`, `gfmStrikethroughCjkFriendly`
+- **from**: `gfmFromMarkdown`, `mathFromMarkdown`, `frontmatterFromMarkdown`
+- **to**: `gfmToMarkdown`, `mathToMarkdown`, `frontmatterToMarkdown`
+
+### singleDollarTextMath
+
+- **Type:** `boolean`
+- **Default:** `false`
+
+Enable single dollar sign (`$`) for inline math expressions. When enabled, you can use `$math$` in addition to `$$math$$`.
+
 ### Example
 
 ```vue
@@ -289,16 +307,17 @@ import { gfm } from 'micromark-extension-gfm'
 import { Markdown } from 'vue-stream-markdown'
 
 const mdastOptions = {
+  singleDollarTextMath: true, // Enable single $ for math
+  builtin: {
+    micromark: {
+      gfm: false, // Disable built-in GFM
+    },
+  },
   micromark: [
-    gfm(), // Add GFM support
-    // Add your custom micromark extensions
+    gfm(), // Add custom GFM support
   ],
   from: [
-    gfmFromMarkdown(), // Add GFM from-markdown support
-    // Add your custom from-markdown extensions
-  ],
-  to: [
-    // Add your custom to-markdown extensions
+    gfmFromMarkdown(),
   ],
 }
 </script>

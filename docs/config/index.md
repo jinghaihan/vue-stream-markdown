@@ -89,6 +89,19 @@ Extensions for converting MDAST to markdown.
 
 Micromark extensions for parsing.
 
+#### builtin
+
+- **Type:** `{ micromark?: BuiltinPluginControl, from?: BuiltinPluginControl, to?: BuiltinPluginControl }`
+
+Control built-in plugins. Set a plugin key to `false` to disable it, or provide a function to override it.
+
+#### singleDollarTextMath
+
+- **Type:** `boolean`
+- **Default:** `false`
+
+Enable single dollar sign (`$`) for inline math expressions.
+
 ### normalize
 
 - **Type:** `(content: string) => string`

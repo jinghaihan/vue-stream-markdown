@@ -70,7 +70,7 @@ export default defineNuxtConfig({
 - `isDark` (boolean): Enable dark mode
 - `locale` (string | LocaleConfig): Locale for internationalization, defaults to `'en-US'`
 - `preload` (PreloadConfig): Configure which node renderers to preload for better initial rendering performance
-- `beforeDownload` (DownloadEvent): Callback invoked before download. Return `true` to proceed, `false` to cancel.
+- `beforeDownload` ((event: DownloadEvent) => MaybePromise`<boolean>`): Callback invoked before download. Return `true` to proceed, `false` to cancel.
 
 ### Code Highlighting
 

@@ -41,7 +41,6 @@ export interface MarkdownParserOptions {
 }
 
 export interface MdastOptions {
-  singleDollarTextMath?: boolean
   from?: FromMarkdownExtension[]
   to?: ToMarkdownExtension[]
   micromark?: MicromarkExtension[]
@@ -50,6 +49,7 @@ export interface MdastOptions {
     from?: BuiltinPluginControl<BuiltinFromMdastExtension, FromMarkdownExtension>
     to?: BuiltinPluginControl<BuiltinToMarkdownExtension, ToMarkdownExtension>
   }
+  singleDollarTextMath?: boolean
 }
 
 export interface StreamMarkdownContext {

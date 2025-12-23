@@ -87,7 +87,25 @@ vue-stream-markdown provides built-in support for rendering mathematical express
 
 ## Syntax
 
-vue-stream-markdown uses double dollar signs (`$$`) to delimit mathematical expressions. Unlike traditional LaTeX, single dollar signs (`$`) are **not** used to avoid conflicts with currency symbols in regular text.
+vue-stream-markdown uses double dollar signs (`$$`) to delimit mathematical expressions by default. Single dollar signs (`$`) are disabled by default to avoid conflicts with currency symbols.
+
+You can enable single dollar sign support by setting `singleDollarTextMath: true` in `mdastOptions`:
+
+```vue
+<script setup lang="ts">
+import { Markdown } from 'vue-stream-markdown'
+
+const mdastOptions = {
+  singleDollarTextMath: true,
+}
+</script>
+
+<template>
+  <Markdown :content="content" :mdast-options="mdastOptions" />
+</template>
+```
+
+When enabled, you can use both `$math$` (inline) and `$$math$$` (inline or block).
 
 ### Inline Math
 
@@ -341,7 +359,7 @@ const markdown = `$$\frac{1}{2}$$`
 
 ### Currency vs Math
 
-vue-stream-markdown uses `$$` for math to avoid conflicts with currency:
+By default, vue-stream-markdown uses `$$` for math to avoid conflicts with currency:
 
 ```markdown
 This item costs $5 and that one costs $10. (These are currency symbols)
