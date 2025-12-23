@@ -1,5 +1,5 @@
+import type { StreamingPreprocessOptions } from '../types'
 import { codeBlockPattern, incompleteLinkImageUrlPattern, linkImagePattern } from './pattern'
-
 /**
  * Utility functions for preprocessing markdown content
  */
@@ -161,16 +161,26 @@ export function isInsideUnclosedCodeBlock(content: string): boolean {
 }
 
 /**
- * Check if a position is within a math block (between $ or $$)
+ * Check if a position is within a math block (between $ or $$ delimiters)
+ *
+ * Note: we intentionally ignore single `$` here so that currency values
+ * like `$7,000` do not toggle "math mode" and accidentally suppress
+ * other preprocessors (e.g. strong/emphasis completion) later in the
+ * document. All math-related features in this project use `$$` as the
+ * delimiter (see math/inline-math tests), so this behavior is safe.
  *
  * @param text - The text to check
  * @param position - The position to check
  * @returns True if the position is within a math block
  */
-export function isWithinMathBlock(text: string, position: number): boolean {
-  // Count dollar signs before this position
-  let inInlineMath = false
+export function isWithinMathBlock(
+  text: string,
+  position: number,
+  options?: Pick<StreamingPreprocessOptions, 'singleDollarTextMath'>,
+): boolean {
   let inBlockMath = false
+  let inInlineMath = false
+  const singleDollarEnabled = options?.singleDollarTextMath === true
 
   for (let i = 0; i < text.length && i < position; i += 1) {
     // Skip escaped dollar signs
@@ -179,21 +189,20 @@ export function isWithinMathBlock(text: string, position: number): boolean {
       continue
     }
 
-    if (text[i] === '$') {
-      // Check for block math ($$)
-      if (text[i + 1] === '$') {
-        inBlockMath = !inBlockMath
-        i += 1 // Skip the second $
-        inInlineMath = false // Block math takes precedence
-      }
-      else if (!inBlockMath) {
-        // Only toggle inline math if not in block math
-        inInlineMath = !inInlineMath
-      }
+    // Only treat `$$` as block math delimiters
+    if (text[i] === '$' && text[i + 1] === '$') {
+      inBlockMath = !inBlockMath
+      i += 1 // Skip the second $
+      continue
+    }
+
+    // Treat single `$` as inline math when enabled
+    if (singleDollarEnabled && !inBlockMath && text[i] === '$') {
+      inInlineMath = !inInlineMath
     }
   }
 
-  return inInlineMath || inBlockMath
+  return inBlockMath || inInlineMath
 }
 
 /**
@@ -319,4 +328,90 @@ export function removeUrlsFromText(text: string): string {
   })
 
   return result
+}
+
+/**
+ * Remove math blocks from text (both $$ block math and optionally $ inline math)
+ * This is used to exclude math content from markdown syntax counting
+ *
+ * @param text - The text to process
+ * @param options - Options including singleDollarTextMath
+ * @returns Text with math blocks removed
+ */
+export function removeMathBlocksFromText(
+  text: string,
+  options?: Pick<StreamingPreprocessOptions, 'singleDollarTextMath'>,
+): string {
+  const singleDollarEnabled = options?.singleDollarTextMath === true
+  let result = text
+  let i = 0
+
+  while (i < result.length) {
+    // Skip escaped dollar signs
+    if (result[i] === '\\' && result[i + 1] === '$') {
+      i += 2
+      continue
+    }
+
+    // Check for block math ($$)
+    if (result[i] === '$' && result[i + 1] === '$') {
+      // Find the closing $$ and remove everything in between (including the delimiters)
+      const closingPos = result.indexOf('$$', i + 2)
+      if (closingPos !== -1) {
+        // Remove the entire block math including delimiters
+        result = result.slice(0, i) + result.slice(closingPos + 2)
+        // Don't increment i since we removed content, check the same position again
+        continue
+      }
+      else {
+        // Unclosed block math - remove from here to end
+        result = result.slice(0, i)
+        break
+      }
+    }
+
+    // Check for inline math ($) when enabled
+    if (singleDollarEnabled && result[i] === '$') {
+      // Find the closing $ (not escaped) and remove everything in between (including the delimiters)
+      let closingPos = -1
+      for (let j = i + 1; j < result.length; j++) {
+        if (result[j] === '$' && result[j - 1] !== '\\') {
+          closingPos = j
+          break
+        }
+      }
+      if (closingPos !== -1) {
+        // Remove the entire inline math including delimiters
+        result = result.slice(0, i) + result.slice(closingPos + 1)
+        // Don't increment i since we removed content, check the same position again
+        continue
+      }
+      else {
+        // Unclosed inline math - remove from here to end
+        result = result.slice(0, i)
+        break
+      }
+    }
+
+    i += 1
+  }
+
+  return result
+}
+
+/**
+ * Append a suffix (e.g. closing ** or __) before any trailing whitespace.
+ * This ensures that when users have typed a newline or spaces after their
+ * content, we still close the strong markers immediately after the last
+ * non-whitespace character instead of placing the markers on a new line.
+ *
+ * @param content - The original content
+ * @param suffix - The suffix to append before trailing whitespace
+ * @returns The content with the suffix appended before trailing whitespace
+ */
+export function appendBeforeTrailingWhitespace(content: string, suffix: string): string {
+  const match = content.match(/\s*$/)
+  const trailing = match ? match[0] : ''
+  const withoutTrailing = trailing.length > 0 ? content.slice(0, -trailing.length) : content
+  return `${withoutTrailing}${suffix}${trailing}`
 }

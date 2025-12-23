@@ -3,6 +3,7 @@ export interface TestCase {
   input: string
   expected: string
   integrationExpected?: string
+  preprocessOptions?: { singleDollarTextMath?: boolean }
 }
 
 export type TestCasesByCategory = Record<string, TestCase[]>
@@ -446,6 +447,11 @@ export const strongTestCases: TestCasesByCategory = {
       input: '**bold and *mixed',
       expected: '**bold and *mixed***',
     },
+    {
+      description: 'should complete ** appropriately when there is trailing whitespace',
+      input: `**Contribution\n`,
+      expected: `**Contribution**\n`,
+    },
   ],
 
   'strong-underscore': [
@@ -849,6 +855,12 @@ export const inlineMathTestCases: TestCasesByCategory = {
       input: 'Equation: $$\\int_{a}^{b} f(x) \\, dx = F(b) - F(a',
       expected: 'Equation: $$\\int_{a}^{b} f(x) \\, dx = F(b) - F(a$$',
     },
+    {
+      description: 'should not treat currency single dollar as math (inline) and still complete strong',
+      input: 'The premium plan costs $7,000 and includes **priority support',
+      expected: 'The premium plan costs $7,000 and includes **priority support',
+      integrationExpected: 'The premium plan costs $7,000 and includes **priority support**',
+    },
   ],
 }
 
@@ -923,6 +935,19 @@ export const mathTestCases: TestCasesByCategory = {
       description: 'should complete block math after other content',
       input: 'Some text\n\n$$\nE = mc^2',
       expected: 'Some text\n\n$$\nE = mc^2\n$$',
+    },
+    {
+      description: 'should not treat currency single dollar as math (block) and still complete strong',
+      input: '### Pricing\n\nThe premium plan costs $7,000 and includes **priority support',
+      expected: '### Pricing\n\nThe premium plan costs $7,000 and includes **priority support',
+      integrationExpected: '### Pricing\n\nThe premium plan costs $7,000 and includes **priority support**',
+    },
+    {
+      description: 'should treat single dollar as math when singleDollarTextMath is enabled and ignore ** inside math',
+      input: 'The formula $x = 1 + 2**3$ has **bold',
+      expected: 'The formula $x = 1 + 2**3$ has **bold**',
+      integrationExpected: 'The formula $x = 1 + 2**3$ has **bold**',
+      preprocessOptions: { singleDollarTextMath: true },
     },
   ],
 }

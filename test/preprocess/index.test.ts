@@ -14,7 +14,7 @@ describe('preprocess', () => {
   for (const testCase of getTestCases()) {
     it(testCase.description, () => {
       const expected = testCase.integrationExpected ?? testCase.expected
-      expect(preprocess(testCase.input)).toBe(expected)
+      expect(preprocess(testCase.input, testCase.preprocessOptions)).toBe(expected)
     })
   }
 

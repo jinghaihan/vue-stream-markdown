@@ -204,6 +204,10 @@ export interface UIOptions {
   hideTooltip?: boolean
 }
 
+export interface StreamingPreprocessOptions {
+  singleDollarTextMath?: boolean
+}
+
 export {
   type FromMarkdownExtension,
   type MicromarkExtension,

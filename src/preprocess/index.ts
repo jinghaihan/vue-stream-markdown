@@ -1,3 +1,4 @@
+import type { StreamingPreprocessOptions } from '../types'
 import { flow } from '../utils'
 import { fixCode } from './code'
 import { fixDelete } from './delete'
@@ -25,11 +26,14 @@ export function normalize(content: string): string {
   ])(content)
 }
 
-export function preprocess(content: string): string {
+export function preprocess(
+  content: string,
+  options?: StreamingPreprocessOptions,
+): string {
   const tasks: ((content: string) => string)[] = [
     fixCode,
     fixFootnote,
-    fixStrong,
+    c => fixStrong(c, options),
     fixEmphasis,
     fixDelete,
     fixTaskList,
