@@ -1,5 +1,5 @@
-import { codeBlockPattern, doubleDollarPattern, tripleBacktickPattern } from './pattern'
-import { calculateParagraphOffset, getLastParagraphWithIndex } from './utils'
+import { codeBlockPattern, doubleDollarPattern } from './pattern'
+import { calculateParagraphOffset, getLastParagraphWithIndex, isInsideUnclosedCodeBlock } from './utils'
 
 /**
  * Fix unclosed inline math ($$) syntax in streaming markdown
@@ -36,9 +36,7 @@ export function fixInlineMath(content: string): string {
   }
 
   // Don't process if we're inside a code block (unclosed)
-  const codeBlockMatches = content.match(tripleBacktickPattern)
-  const codeBlockCount = codeBlockMatches ? codeBlockMatches.length : 0
-  if (codeBlockCount % 2 === 1)
+  if (isInsideUnclosedCodeBlock(content))
     return content
 
   // Find the last paragraph (after the last blank line)

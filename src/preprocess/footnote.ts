@@ -6,9 +6,8 @@ import {
   footnoteRefLabelPattern,
   footnoteRefPattern,
   incompleteFootnoteRefPattern,
-  tripleBacktickPattern,
 } from './pattern'
-import { calculateAbsolutePosition, getLastParagraphWithIndex } from './utils'
+import { calculateAbsolutePosition, getLastParagraphWithIndex, isInsideUnclosedCodeBlock } from './utils'
 
 /**
  * Remove incomplete footnote references ([^...]) in streaming markdown
@@ -38,12 +37,7 @@ import { calculateAbsolutePosition, getLastParagraphWithIndex } from './utils'
  */
 export function fixFootnote(content: string): string {
   // Don't process if we're inside a code block
-  // Count code block fences to check if we're inside one
-  const codeBlockMatches = content.match(tripleBacktickPattern)
-  const codeBlockCount = codeBlockMatches ? codeBlockMatches.length : 0
-
-  // If odd number of code block fences, we're inside a code block - don't process footnotes
-  if (codeBlockCount % 2 === 1)
+  if (isInsideUnclosedCodeBlock(content))
     return content
 
   // Get all footnote definitions from the entire content (excluding code blocks)

@@ -1,5 +1,5 @@
-import { codeBlockPattern, doubleTildePattern, tripleBacktickPattern } from './pattern'
-import { getLastParagraphWithIndex } from './utils'
+import { codeBlockPattern, doubleTildePattern } from './pattern'
+import { getLastParagraphWithIndex, isInsideUnclosedCodeBlock } from './utils'
 
 /**
  * Fix unclosed strikethrough (~~) syntax in streaming markdown
@@ -24,9 +24,7 @@ import { getLastParagraphWithIndex } from './utils'
  */
 export function fixDelete(content: string): string {
   // Don't process if we're inside a code block (unclosed)
-  const codeBlockMatches = content.match(tripleBacktickPattern)
-  const codeBlockCount = codeBlockMatches ? codeBlockMatches.length : 0
-  if (codeBlockCount % 2 === 1) {
+  if (isInsideUnclosedCodeBlock(content)) {
     return content
   }
 

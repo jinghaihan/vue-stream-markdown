@@ -26,13 +26,12 @@
  * fixTaskList('> **Note**: Here\'s a quote with tasks:\n\n> -')
  * // Returns: '> **Note**: Here\'s a quote with tasks:\n\n'
  */
-import { incompleteTaskListPattern, quoteIncompleteTaskListPattern, quoteStandaloneDashPattern, quoteTaskListPattern, standaloneDashPattern, taskListPattern, tripleBacktickPattern } from './pattern'
+import { incompleteTaskListPattern, quoteIncompleteTaskListPattern, quoteStandaloneDashPattern, quoteTaskListPattern, standaloneDashPattern, taskListPattern } from './pattern'
+import { isInsideUnclosedCodeBlock } from './utils'
 
 export function fixTaskList(content: string): string {
   // Don't process if we're inside a code block (unclosed)
-  const codeBlockMatches = content.match(tripleBacktickPattern)
-  const codeBlockCount = codeBlockMatches ? codeBlockMatches.length : 0
-  if (codeBlockCount % 2 === 1) {
+  if (isInsideUnclosedCodeBlock(content)) {
     return content
   }
 

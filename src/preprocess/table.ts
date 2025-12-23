@@ -1,5 +1,5 @@
-import { separatorPattern, tableRowPattern, tripleBacktickPattern } from './pattern'
-import { getLastParagraphWithIndex } from './utils'
+import { separatorPattern, tableRowPattern } from './pattern'
+import { getLastParagraphWithIndex, isInsideUnclosedCodeBlock } from './utils'
 
 /**
  * Fix incomplete table syntax in streaming markdown
@@ -29,11 +29,7 @@ import { getLastParagraphWithIndex } from './utils'
  */
 export function fixTable(content: string): string {
   // Don't process if we're inside a code block (unclosed)
-  const codeBlockMatches = content.match(tripleBacktickPattern)
-  const codeBlockCount = codeBlockMatches ? codeBlockMatches.length : 0
-
-  // If odd number of code block fences, we're inside a code block
-  if (codeBlockCount % 2 === 1)
+  if (isInsideUnclosedCodeBlock(content))
     return content
 
   // Find all code block ranges to check if table is inside a closed code block

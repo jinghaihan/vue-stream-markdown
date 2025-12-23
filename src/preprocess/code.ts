@@ -3,9 +3,8 @@ import {
   singleBacktickPattern,
   trailingBackticksPattern,
   trailingWhitespacePattern,
-  tripleBacktickPattern,
 } from './pattern'
-import { calculateParagraphOffset, getLastParagraphWithIndex } from './utils'
+import { calculateParagraphOffset, getLastParagraphWithIndex, isInsideUnclosedCodeBlock, isWithinCodeBlock } from './utils'
 
 /**
  * Fix unclosed code syntax in streaming markdown
@@ -38,9 +37,7 @@ import { calculateParagraphOffset, getLastParagraphWithIndex } from './utils'
  */
 export function fixCode(content: string): string {
   // Check if we're inside a code block before cleaning
-  const codeBlockMatches = content.match(tripleBacktickPattern)
-  const codeBlockCount = codeBlockMatches ? codeBlockMatches.length : 0
-  const isInsideCodeBlock = codeBlockCount % 2 === 1
+  const isInsideCodeBlock = isInsideUnclosedCodeBlock(content)
 
   // First, remove trailing incomplete backtick sequences
   // This prevents showing intermediate states like `, ``, or ``` at the end
@@ -100,11 +97,10 @@ function removeTrailingIncompleteBackticks(content: string): string {
     const count = backticks ? backticks.length : 0
 
     // Check if we're inside a code block
-    const codeBlockMatches = beforeBackticks.match(tripleBacktickPattern)
-    const codeBlockCount = codeBlockMatches ? codeBlockMatches.length : 0
+    const isInCodeBlock = isWithinCodeBlock(beforeBackticks, beforeBackticks.length)
 
     // If odd number of backticks and not in code block, this ` would close inline code, keep it
-    if (count % 2 === 1 && codeBlockCount % 2 === 0)
+    if (count % 2 === 1 && !isInCodeBlock)
       return content // Keep it, it's closing inline code
 
     // Remove the trailing backtick and any trailing spaces on that line
@@ -120,12 +116,12 @@ function removeTrailingIncompleteBackticks(content: string): string {
 
   // For triple backticks ```
   if (backtickSequence.length === 3) {
-    const codeBlockMatches = beforeBackticks.match(tripleBacktickPattern)
-    const codeBlockCount = codeBlockMatches ? codeBlockMatches.length : 0
+    // Check if we're inside a code block before this position
+    const isInCodeBlock = isWithinCodeBlock(beforeBackticks, beforeBackticks.length)
 
-    // If odd number of ``` before this, keep it (it's closing a code block)
-    // If even number, remove it (it's starting a new code block without content)
-    if (codeBlockCount % 2 === 1)
+    // If we're in a code block, keep it (it's closing a code block)
+    // If not, remove it (it's starting a new code block without content)
+    if (isInCodeBlock)
       return content // Keep it, it's closing a code block
 
     // Remove the trailing ``` and any trailing spaces before it
@@ -141,12 +137,8 @@ function removeTrailingIncompleteBackticks(content: string): string {
  * Code blocks can span multiple paragraphs, so we check the entire content
  */
 function fixCodeBlock(content: string): string {
-  // Count code block fences (```)
-  const matches = content.match(tripleBacktickPattern)
-  const count = matches ? matches.length : 0
-
-  // If odd number of ```, we have an unclosed code block
-  if (count % 2 === 1) {
+  // If we have an unclosed code block
+  if (isInsideUnclosedCodeBlock(content)) {
     const lastFenceIndex = content.lastIndexOf('```')
     const afterFence = content.substring(lastFenceIndex + 3)
 
@@ -179,12 +171,7 @@ function fixCodeBlock(content: string): string {
  */
 function fixInlineCode(content: string): string {
   // Don't process inline code if we're inside a code block
-  // Count code block fences to check if we're inside one
-  const codeBlockMatches = content.match(tripleBacktickPattern)
-  const codeBlockCount = codeBlockMatches ? codeBlockMatches.length : 0
-
-  // If odd number of code block fences, we're inside a code block - don't process inline code
-  if (codeBlockCount % 2 === 1)
+  if (isInsideUnclosedCodeBlock(content))
     return content
 
   // Find the last paragraph

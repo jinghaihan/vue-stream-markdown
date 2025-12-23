@@ -1,5 +1,5 @@
-import { codeBlockPattern, doubleAsteriskPattern, doubleUnderscorePattern, singleAsteriskPattern, singleUnderscorePattern, trailingStandaloneDashWithNewlinesPattern, tripleBacktickPattern } from './pattern'
-import { calculateParagraphOffset, getLastParagraphWithIndex } from './utils'
+import { codeBlockPattern, doubleAsteriskPattern, doubleUnderscorePattern, singleAsteriskPattern, singleUnderscorePattern, trailingStandaloneDashWithNewlinesPattern } from './pattern'
+import { calculateParagraphOffset, getLastParagraphWithIndex, isInsideUnclosedCodeBlock } from './utils'
 
 /**
  * Fix unclosed strong (** or __) syntax in streaming markdown
@@ -33,9 +33,7 @@ export function fixStrong(content: string): string {
   }
 
   // Don't process if we're inside a code block (unclosed)
-  const codeBlockMatches = content.match(tripleBacktickPattern)
-  const codeBlockCount = codeBlockMatches ? codeBlockMatches.length : 0
-  if (codeBlockCount % 2 === 1) {
+  if (isInsideUnclosedCodeBlock(content)) {
     return content
   }
 

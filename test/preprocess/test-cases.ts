@@ -540,6 +540,21 @@ export const linkTestCases: TestCasesByCategory = {
       input: 'Text [\n',
       expected: 'Text',
     },
+    {
+      description: 'should ignore link inside code block',
+      input: '```\nconst x = [Google\n```',
+      expected: '```\nconst x = [Google\n```',
+    },
+    {
+      description: 'should ignore incomplete link inside code block',
+      input: '```\nconst url = [Google](https://www.goo\n```',
+      expected: '```\nconst url = [Google](https://www.goo\n```',
+    },
+    {
+      description: 'should process link outside code block',
+      input: '```\ncode\n```\n\nText [Google',
+      expected: '```\ncode\n```\n\nText [Google]()',
+    },
   ],
 
   image: [
@@ -627,6 +642,21 @@ export const linkTestCases: TestCasesByCategory = {
       description: 'should not modify closed image with empty alt',
       input: '![]()',
       expected: '![]()',
+    },
+    {
+      description: 'should ignore image inside code block',
+      input: '```\nconst img = ![alt\n```',
+      expected: '```\nconst img = ![alt\n```',
+    },
+    {
+      description: 'should ignore incomplete image inside code block',
+      input: '```\nconst img = ![mdast](https://image.png\n```',
+      expected: '```\nconst img = ![mdast](https://image.png\n```',
+    },
+    {
+      description: 'should process image outside code block',
+      input: '```\ncode\n```\n\nText ![alt',
+      expected: '```\ncode\n```\n\nText ![alt]()',
     },
   ],
 }

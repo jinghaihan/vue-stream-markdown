@@ -125,3 +125,124 @@ export function calculateParagraphOffset(paragraphStartIndex: number, lines: str
   const beforeParagraph = lines.slice(0, paragraphStartIndex).join('\n')
   return beforeParagraph.length > 0 ? beforeParagraph.length + 1 : 0
 }
+
+/**
+ * Check if a position is within a code block (between ``` markers)
+ *
+ * @param text - The text to check
+ * @param position - The position to check
+ * @returns True if the position is within a code block
+ */
+export function isWithinCodeBlock(text: string, position: number): boolean {
+  let inCodeBlock = false
+
+  for (let i = 0; i < position; i += 1) {
+    // Check for triple backticks
+    if (text[i] === '`' && text[i + 1] === '`' && text[i + 2] === '`') {
+      inCodeBlock = !inCodeBlock
+      i += 2 // Skip the next two backticks
+    }
+  }
+
+  return inCodeBlock
+}
+
+/**
+ * Check if content is inside an unclosed code block
+ * This is equivalent to checking if the end of content is within a code block
+ *
+ * @param content - The content to check
+ * @returns True if content is inside an unclosed code block
+ */
+export function isInsideUnclosedCodeBlock(content: string): boolean {
+  return isWithinCodeBlock(content, content.length)
+}
+
+/**
+ * Check if a position is within a math block (between $ or $$)
+ *
+ * @param text - The text to check
+ * @param position - The position to check
+ * @returns True if the position is within a math block
+ */
+export function isWithinMathBlock(text: string, position: number): boolean {
+  // Count dollar signs before this position
+  let inInlineMath = false
+  let inBlockMath = false
+
+  for (let i = 0; i < text.length && i < position; i += 1) {
+    // Skip escaped dollar signs
+    if (text[i] === '\\' && text[i + 1] === '$') {
+      i += 1 // Skip the next character
+      continue
+    }
+
+    if (text[i] === '$') {
+      // Check for block math ($$)
+      if (text[i + 1] === '$') {
+        inBlockMath = !inBlockMath
+        i += 1 // Skip the second $
+        inInlineMath = false // Block math takes precedence
+      }
+      else if (!inBlockMath) {
+        // Only toggle inline math if not in block math
+        inInlineMath = !inInlineMath
+      }
+    }
+  }
+
+  return inInlineMath || inBlockMath
+}
+
+/**
+ * Helper to check if position is before closing paren on same line
+ *
+ * @param text - The text to check
+ * @param position - The position to check
+ * @returns True if there's a closing paren on the same line after the position
+ */
+function isBeforeClosingParen(text: string, position: number): boolean {
+  for (let j = position; j < text.length; j += 1) {
+    if (text[j] === ')') {
+      return true
+    }
+    if (text[j] === '\n') {
+      return false
+    }
+  }
+  return false
+}
+
+/**
+ * Check if a position is within a link or image URL
+ * Links and images have the format [text](url) or ![alt](url)
+ *
+ * @param text - The text to check
+ * @param position - The position to check
+ * @returns True if the position is within a link or image URL
+ */
+export function isWithinLinkOrImageUrl(
+  text: string,
+  position: number,
+): boolean {
+  // Search backwards from position to find if we're inside a (url) part
+  for (let i = position - 1; i >= 0; i -= 1) {
+    if (text[i] === ')') {
+      return false
+    }
+    if (text[i] === '(') {
+      // Check if there's a ] immediately before the (
+      if (i > 0 && text[i - 1] === ']') {
+        // We're potentially inside a link/image URL
+        // Check if we're before the closing )
+        return isBeforeClosingParen(text, position)
+      }
+      return false
+    }
+    if (text[i] === '\n') {
+      return false
+    }
+  }
+
+  return false
+}

@@ -1,5 +1,5 @@
-import { codeBlockPattern, incompleteBracketPattern, incompleteLinkTextPattern, incompleteUrlPattern, tripleBacktickPattern } from './pattern'
-import { findLastNonEmptyLineIndex, getLastParagraphWithIndex } from './utils'
+import { codeBlockPattern, incompleteBracketPattern, incompleteLinkTextPattern, incompleteUrlPattern } from './pattern'
+import { findLastNonEmptyLineIndex, getLastParagraphWithIndex, isInsideUnclosedCodeBlock } from './utils'
 
 /**
  * Fix unclosed link/image syntax in streaming markdown
@@ -45,9 +45,7 @@ import { findLastNonEmptyLineIndex, getLastParagraphWithIndex } from './utils'
  */
 export function fixLink(content: string): string {
   // Don't process if we're inside a code block (unclosed)
-  const codeBlockMatches = content.match(tripleBacktickPattern)
-  const codeBlockCount = codeBlockMatches ? codeBlockMatches.length : 0
-  if (codeBlockCount % 2 === 1) {
+  if (isInsideUnclosedCodeBlock(content)) {
     return content
   }
 

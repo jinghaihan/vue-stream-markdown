@@ -1,4 +1,4 @@
-import { tripleBacktickPattern } from './pattern'
+import { isInsideUnclosedCodeBlock } from './utils'
 
 /**
  * Fix unclosed block math ($$) syntax in streaming markdown
@@ -24,9 +24,7 @@ import { tripleBacktickPattern } from './pattern'
  */
 export function fixMath(content: string): string {
   // Don't process if we're inside a code block (unclosed)
-  const codeBlockMatches = content.match(tripleBacktickPattern)
-  const codeBlockCount = codeBlockMatches ? codeBlockMatches.length : 0
-  if (codeBlockCount % 2 === 1) {
+  if (isInsideUnclosedCodeBlock(content)) {
     return content
   }
 
