@@ -60,7 +60,9 @@ export class MarkdownParser {
     const data = fromMarkdown(content, {
       extensions: [
         gfm(),
-        math(),
+        math({
+          singleDollarTextMath: false,
+        }),
         frontmatter(),
         cjkFriendlyExtension(),
         gfmStrikethroughCjkFriendly(),
