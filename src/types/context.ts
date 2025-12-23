@@ -8,6 +8,12 @@ import type { Component } from 'vue'
 import type { NodeRenderers, SyntaxTree } from './core'
 import type { DownloadEvent } from './events'
 import type { LocaleConfig } from './locale'
+import type {
+  BuiltinFromMdastExtension,
+  BuiltinMicromarkExtension,
+  BuiltinPluginControl,
+  BuiltinToMarkdownExtension,
+} from './plugins'
 import type { CodeNodeRendererProps, ImageNodeRendererProps, TableNodeRendererProps } from './renderer'
 import type { BuiltinNodeRenderers, ControlTransformer, Icons, MaybePromise } from './shared'
 
@@ -39,6 +45,11 @@ export interface MdastOptions {
   from?: FromMarkdownExtension[]
   to?: ToMarkdownExtension[]
   micromark?: MicromarkExtension[]
+  builtin?: {
+    micromark?: BuiltinPluginControl<BuiltinMicromarkExtension, MicromarkExtension>
+    from?: BuiltinPluginControl<BuiltinFromMdastExtension, FromMarkdownExtension>
+    to?: BuiltinPluginControl<BuiltinToMarkdownExtension, ToMarkdownExtension>
+  }
 }
 
 export interface StreamMarkdownContext {
@@ -191,4 +202,10 @@ export interface UIOptions {
    * @default false
    */
   hideTooltip?: boolean
+}
+
+export {
+  type FromMarkdownExtension,
+  type MicromarkExtension,
+  type ToMarkdownExtension,
 }

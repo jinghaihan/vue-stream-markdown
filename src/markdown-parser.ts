@@ -1,17 +1,14 @@
-import type { MarkdownParserOptions, ParsedNode, SyntaxTree } from './types'
+import type { BuiltinPluginContext, FromMarkdownExtension, MarkdownParserOptions, MicromarkExtension, ParsedNode, SyntaxTree, ToMarkdownExtension } from './types'
 import { fromMarkdown } from 'mdast-util-from-markdown'
-import { frontmatterFromMarkdown, frontmatterToMarkdown } from 'mdast-util-frontmatter'
-import { gfmFromMarkdown, gfmToMarkdown } from 'mdast-util-gfm'
-import { mathFromMarkdown, mathToMarkdown } from 'mdast-util-math'
 import { toMarkdown } from 'mdast-util-to-markdown'
-import { cjkFriendlyExtension } from 'micromark-extension-cjk-friendly'
-import { gfmStrikethroughCjkFriendly } from 'micromark-extension-cjk-friendly-gfm-strikethrough'
-import { frontmatter } from 'micromark-extension-frontmatter'
-import { gfm } from 'micromark-extension-gfm'
-import { math } from 'micromark-extension-math'
+import {
+  BUILTIN_FROM_MDAST_EXTENSIONS,
+  BUILTIN_MICROMARK_EXTENSIONS,
+  BUILTIN_TO_MARKDOWN_EXTENSIONS,
+} from './constants'
 import { postNormalize, postprocess } from './postprocess'
 import { normalize, preprocess } from './preprocess'
-import { findLastLeafNode } from './utils'
+import { findLastLeafNode, resolveBuiltinExtensions } from './utils'
 
 export interface Options extends MarkdownParserOptions {
   mode: 'streaming' | 'static'
@@ -22,11 +19,35 @@ export class MarkdownParser {
   private content: string = ''
   private syntaxTree: SyntaxTree | null = null
 
+  private micromarkExtensions: MicromarkExtension[] = []
+  private fromMdastExtensions: FromMarkdownExtension[] = []
+  private toMdastExtensions: ToMarkdownExtension[] = []
+
   private options: Options
 
   constructor(options: Options) {
     this.mode = options.mode
     this.options = options
+
+    const ctx: BuiltinPluginContext = {
+      mdastOptions: options.mdastOptions,
+    }
+
+    this.micromarkExtensions = resolveBuiltinExtensions(
+      BUILTIN_MICROMARK_EXTENSIONS,
+      ctx,
+      options.mdastOptions?.builtin?.micromark,
+    )
+    this.fromMdastExtensions = resolveBuiltinExtensions(
+      BUILTIN_FROM_MDAST_EXTENSIONS,
+      ctx,
+      options.mdastOptions?.builtin?.from,
+    )
+    this.toMdastExtensions = resolveBuiltinExtensions(
+      BUILTIN_TO_MARKDOWN_EXTENSIONS,
+      ctx,
+      options.mdastOptions?.builtin?.to,
+    )
   }
 
   private update(data: string) {
@@ -57,25 +78,11 @@ export class MarkdownParser {
   }
 
   markdownToAst(content: string, loading: boolean = false): SyntaxTree {
-    const singleDollarTextMath = this.options.mdastOptions?.singleDollarTextMath ?? false
+    // const singleDollarTextMath = this.options.mdastOptions?.singleDollarTextMath ?? false
 
     const data = fromMarkdown(content, {
-      extensions: [
-        gfm(),
-        math({
-          singleDollarTextMath,
-        }),
-        frontmatter(),
-        cjkFriendlyExtension(),
-        gfmStrikethroughCjkFriendly(),
-        ...(this.options.mdastOptions?.micromark ?? []),
-      ],
-      mdastExtensions: [
-        gfmFromMarkdown(),
-        mathFromMarkdown(),
-        frontmatterFromMarkdown(),
-        ...(this.options.mdastOptions?.from ?? []),
-      ],
+      extensions: this.micromarkExtensions,
+      mdastExtensions: this.fromMdastExtensions,
     })
 
     const normal = this.options.postprocess ?? postNormalize
@@ -103,12 +110,7 @@ export class MarkdownParser {
         }
 
     return toMarkdown(data, {
-      extensions: [
-        gfmToMarkdown(),
-        mathToMarkdown(),
-        frontmatterToMarkdown(),
-        ...(this.options.mdastOptions?.to ?? []),
-      ],
+      extensions: this.toMdastExtensions,
     })
   }
 

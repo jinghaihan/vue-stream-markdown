@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CodeOptions, ControlsConfig, MermaidOptions, SelectOption, ShikiOptions, UIOptions } from 'vue-stream-markdown'
+import type { CodeOptions, ControlsConfig, MermaidOptions, PreviewerConfig, SelectOption, ShikiOptions, StreamMarkdownProps, UIOptions } from 'vue-stream-markdown'
 import { throttle } from '@antfu/utils'
 import { useCycleList, useResizeObserver } from '@vueuse/core'
 import * as LZString from 'lz-string'
@@ -8,7 +8,6 @@ import { ChartPie } from './icons'
 import { DEFAULT_MARKDOWN_PATH, getPresetContent } from './markdown'
 import { getContentFromUrl, removeUnclosedGithubTag } from './utils'
 
-const EChartsPreviewer = defineAsyncComponent(() => import('./components/echarts.vue'))
 const HtmlNodeRenderer = defineAsyncComponent(() => import('./components/html.vue'))
 
 const { isDark } = useDark()
@@ -107,6 +106,19 @@ const controlsConfig = computed((): ControlsConfig => {
   }
 })
 
+const previewerConfig: PreviewerConfig = {
+  progressive: {
+    echarts: true,
+  },
+  components: {
+    echarts: defineAsyncComponent(() => import('./components/echarts.vue')),
+  },
+}
+
+const nodeRenderers: StreamMarkdownProps['nodeRenderers'] = {
+  html: HtmlNodeRenderer,
+}
+
 function onEditorChange(data: string) {
   content.value = data
 }
@@ -197,16 +209,6 @@ function resetScrollState() {
   lastScrollTop.value = 0
 }
 
-// const { generateCSS } = useTailwindV3Theme({
-//   styleScope: 'body',
-// })
-// watch(
-//   () => isDark.value,
-//   () => {
-//     nextTick(generateCSS)
-//   },
-// )
-
 watch(() => isTyping.value, () => {
   typedEnable.value = isTyping.value
   if (!isTyping.value)
@@ -222,6 +224,16 @@ useResizeObserver(() => markdownRef.value?.$el, () => {
 onMounted(() => {
   initContent()
 })
+
+// const { generateCSS } = useTailwindV3Theme({
+//   styleScope: 'body',
+// })
+// watch(
+//   () => isDark.value,
+//   () => {
+//     nextTick(generateCSS)
+//   },
+// )
 </script>
 
 <template>
@@ -276,7 +288,11 @@ onMounted(() => {
         <CopyButton :content="copyContent" />
       </ScrollTriggerGroup>
 
-      <div ref="containerRef" class="scrollbar-gutter-stable pr-4 h-full overflow-auto" @scroll="onScroll">
+      <div
+        ref="containerRef"
+        class="scrollbar-gutter-stable pr-4 h-full overflow-auto"
+        @scroll="onScroll"
+      >
         <Markdown
           ref="markdownRef"
           class="flex flex-col gap-3"
@@ -289,17 +305,8 @@ onMounted(() => {
           :mermaid-options="mermaidOptions"
           :ui-options="uiOptions"
           :controls="controlsConfig"
-          :previewers="{
-            progressive: {
-              echarts: true,
-            },
-            components: {
-              echarts: EChartsPreviewer,
-            },
-          }"
-          :node-renderers="{
-            html: HtmlNodeRenderer,
-          }"
+          :previewers="previewerConfig"
+          :node-renderers="nodeRenderers"
           :normalize="normalizeContent"
         />
       </div>

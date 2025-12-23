@@ -4,6 +4,7 @@ import type { ICONS } from '../constants'
 import type { NodeRendererProps } from './renderer'
 
 export type MaybePromise<T> = T | Promise<T>
+export type MaybeArray<T> = T | T[]
 
 export type BuiltinNodeRenderers = keyof typeof NODE_RENDERERS
 export type BuiltinPreviewers = 'mermaid' | 'html'
