@@ -72,6 +72,9 @@ catalogs:
       specifier: ^1.2.81
       version: 1.2.81
   inline:
+    '@antfu/utils':
+      specifier: ^9.3.0
+      version: 9.3.0
     quick-lru:
       specifier: ^7.3.0
       version: 7.3.0
@@ -190,9 +193,6 @@ catalogs:
       specifier: ^24.10.4
       version: 24.10.4
   utils:
-    '@antfu/utils':
-      specifier: ^9.3.0
-      version: 9.3.0
     '@vueuse/core':
       specifier: ^14.1.0
       version: 14.1.0
@@ -230,7 +230,7 @@ importers:
         specifier: catalog:lint
         version: 6.7.1(@unocss/eslint-plugin@66.5.9(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(@vue/compiler-sfc@3.5.25)(eslint-plugin-format@1.1.0(eslint@9.39.2(jiti@2.6.1)))(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.15(@types/node@24.10.4)(happy-dom@20.0.11)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
       '@antfu/utils':
-        specifier: catalog:utils
+        specifier: catalog:inline
         version: 9.3.0
       '@iconify-json/catppuccin':
         specifier: catalog:icons
