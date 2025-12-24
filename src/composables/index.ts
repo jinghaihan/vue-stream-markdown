@@ -1,6 +1,7 @@
 export * from './use-code-options'
 export * from './use-context'
 export * from './use-controls'
+export * from './use-dark-detector'
 export * from './use-deferred-render'
 export * from './use-floating'
 export * from './use-i18n'

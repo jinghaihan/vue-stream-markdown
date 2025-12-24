@@ -1,3 +1,4 @@
+export * from './dom'
 export * from './harden'
 export * from './helper'
 export * from './idle'
