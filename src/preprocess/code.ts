@@ -4,7 +4,12 @@ import {
   trailingBackticksPattern,
   trailingWhitespacePattern,
 } from './pattern'
-import { calculateParagraphOffset, getLastParagraphWithIndex, isInsideUnclosedCodeBlock, isWithinCodeBlock } from './utils'
+import {
+  calculateParagraphOffset,
+  getLastParagraphWithIndex,
+  isInsideUnclosedCodeBlock,
+  isWithinCodeBlock,
+} from './utils'
 
 /**
  * Fix unclosed code syntax in streaming markdown

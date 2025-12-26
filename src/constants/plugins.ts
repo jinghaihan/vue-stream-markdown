@@ -11,7 +11,7 @@ import { math } from 'micromark-extension-math'
 export const BUILTIN_MICROMARK_EXTENSIONS = {
   gfm: () => gfm(),
   math: (ctx: BuiltinPluginContext) => math({
-    singleDollarTextMath: ctx.mdastOptions?.singleDollarTextMath ?? false,
+    singleDollarTextMath: ctx.mdastOptions?.singleDollarTextMath === true,
   }),
   frontmatter: () => frontmatter(),
   cjkFriendlyExtension: () => cjkFriendlyExtension(),

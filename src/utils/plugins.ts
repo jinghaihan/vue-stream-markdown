@@ -13,7 +13,7 @@ export function resolveBuiltinExtensions<
   control?: Partial<Record<Key, false | BuiltinPluginFactory<Ctx, Ext>>>,
   extend?: Ext[],
 ): Ext[] {
-  const result: any[] = []
+  const result: Ext[] = []
 
   for (const key in builtins) {
     const action = control?.[key as unknown as Key]

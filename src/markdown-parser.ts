@@ -1,4 +1,4 @@
-import type { BuiltinPluginContext, FromMarkdownExtension, MarkdownParserOptions, MarkdownParserResult, MicromarkExtension, ParsedNode, SyntaxTree, ToMarkdownExtension } from './types'
+import type { BuiltinPluginContext, FromMarkdownExtension, MarkdownParserOptions, MarkdownParserResult, MicromarkExtension, ParsedNode, PreprocessContext, SyntaxTree, ToMarkdownExtension } from './types'
 import { fromMarkdown } from 'mdast-util-from-markdown'
 import { toMarkdown } from 'mdast-util-to-markdown'
 import QuickLRU from 'quick-lru'
@@ -59,6 +59,12 @@ export class MarkdownParser {
     this.mode = mode
   }
 
+  private getPreprocessContext(): PreprocessContext {
+    return {
+      singleDollarTextMath: this.options.mdastOptions?.singleDollarTextMath ?? false,
+    }
+  }
+
   private update(data: string) {
     const normal = this.options.normalize ?? normalize
     const pre = this.options.preprocess ?? preprocess
@@ -76,7 +82,7 @@ export class MarkdownParser {
       let content = blocks[index]!
       // preprocess the last block
       if (isLastBlock)
-        content = this.mode === 'streaming' ? pre(content) : content
+        content = this.mode === 'streaming' ? pre(content, this.getPreprocessContext()) : content
       contents.push(content)
 
       const loading = blocks[index] !== content

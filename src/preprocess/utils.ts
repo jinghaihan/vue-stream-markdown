@@ -1,8 +1,5 @@
-import type { preprocessContext } from '../types'
+import type { PreprocessContext } from '../types'
 import { codeBlockPattern, incompleteLinkImageUrlPattern, linkImagePattern } from './pattern'
-/**
- * Utility functions for preprocessing markdown content
- */
 
 /**
  * Find the start index of the last paragraph in content
@@ -176,7 +173,7 @@ export function isInsideUnclosedCodeBlock(content: string): boolean {
 export function isWithinMathBlock(
   text: string,
   position: number,
-  options?: Pick<preprocessContext, 'singleDollarTextMath'>,
+  options?: Pick<PreprocessContext, 'singleDollarTextMath'>,
 ): boolean {
   let inBlockMath = false
   let inInlineMath = false
@@ -340,7 +337,7 @@ export function removeUrlsFromText(text: string): string {
  */
 export function removeMathBlocksFromText(
   text: string,
-  options?: Pick<preprocessContext, 'singleDollarTextMath'>,
+  options?: Pick<PreprocessContext, 'singleDollarTextMath'>,
 ): string {
   const singleDollarEnabled = options?.singleDollarTextMath === true
   let result = text

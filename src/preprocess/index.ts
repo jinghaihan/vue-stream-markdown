@@ -1,4 +1,4 @@
-import type { preprocessContext } from '../types'
+import type { PreprocessContext } from '../types'
 import { flow } from '../utils'
 import { fixCode } from './code'
 import { fixDelete } from './delete'
@@ -26,10 +26,7 @@ export function normalize(content: string): string {
   ])(content)
 }
 
-export function preprocess(
-  content: string,
-  options?: preprocessContext,
-): string {
+export function preprocess(content: string, options?: PreprocessContext): string {
   const tasks: ((content: string) => string)[] = [
     fixCode,
     fixFootnote,

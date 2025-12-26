@@ -1,5 +1,20 @@
-import { codeBlockPattern, doubleAsteriskPattern, doubleUnderscorePattern, singleAsteriskPattern, singleUnderscorePattern, trailingStandaloneDashWithNewlinesPattern } from './pattern'
-import { calculateParagraphOffset, getLastParagraphWithIndex, isInsideUnclosedCodeBlock, isWithinHtmlTag, isWithinLinkOrImageUrl, isWithinMathBlock, removeUrlsFromText } from './utils'
+import {
+  codeBlockPattern,
+  doubleAsteriskPattern,
+  doubleUnderscorePattern,
+  singleAsteriskPattern,
+  singleUnderscorePattern,
+  trailingStandaloneDashWithNewlinesPattern,
+} from './pattern'
+import {
+  calculateParagraphOffset,
+  getLastParagraphWithIndex,
+  isInsideUnclosedCodeBlock,
+  isWithinHtmlTag,
+  isWithinLinkOrImageUrl,
+  isWithinMathBlock,
+  removeUrlsFromText,
+} from './utils'
 
 /**
  * Fix unclosed emphasis (* or _) syntax in streaming markdown

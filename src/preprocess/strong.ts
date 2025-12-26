@@ -1,4 +1,4 @@
-import type { preprocessContext } from '../types'
+import type { PreprocessContext } from '../types'
 import {
   codeBlockPattern,
   doubleAsteriskPattern,
@@ -46,7 +46,7 @@ import {
  */
 export function fixStrong(
   content: string,
-  options?: Pick<preprocessContext, 'singleDollarTextMath'>,
+  options?: Pick<PreprocessContext, 'singleDollarTextMath'>,
 ): string {
   // Handle bare single * or _ first
   if (content === '*' || content === '_') {

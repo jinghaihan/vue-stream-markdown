@@ -1,5 +1,13 @@
 import { codeBlockPattern, doubleTildePattern } from './pattern'
-import { calculateParagraphOffset, getLastParagraphWithIndex, isInsideUnclosedCodeBlock, isWithinHtmlTag, isWithinLinkOrImageUrl, isWithinMathBlock, removeUrlsFromText } from './utils'
+import {
+  calculateParagraphOffset,
+  getLastParagraphWithIndex,
+  isInsideUnclosedCodeBlock,
+  isWithinHtmlTag,
+  isWithinLinkOrImageUrl,
+  isWithinMathBlock,
+  removeUrlsFromText,
+} from './utils'
 
 /**
  * Fix unclosed strikethrough (~~) syntax in streaming markdown

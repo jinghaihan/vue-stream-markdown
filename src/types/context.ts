@@ -205,7 +205,7 @@ export interface UIOptions {
   hideTooltip?: boolean
 }
 
-export interface preprocessContext {
+export interface PreprocessContext {
   singleDollarTextMath?: boolean
 }
 

@@ -1,3 +1,13 @@
+import {
+  incompleteTaskListPattern,
+  quoteIncompleteTaskListPattern,
+  quoteStandaloneDashPattern,
+  quoteTaskListPattern,
+  standaloneDashPattern,
+  taskListPattern,
+} from './pattern'
+import { isInsideUnclosedCodeBlock } from './utils'
+
 /**
  * Fix incomplete task list syntax in streaming markdown
  *
@@ -26,9 +36,6 @@
  * fixTaskList('> **Note**: Here\'s a quote with tasks:\n\n> -')
  * // Returns: '> **Note**: Here\'s a quote with tasks:\n\n'
  */
-import { incompleteTaskListPattern, quoteIncompleteTaskListPattern, quoteStandaloneDashPattern, quoteTaskListPattern, standaloneDashPattern, taskListPattern } from './pattern'
-import { isInsideUnclosedCodeBlock } from './utils'
-
 export function fixTaskList(content: string): string {
   // Don't process if we're inside a code block (unclosed)
   if (isInsideUnclosedCodeBlock(content)) {
