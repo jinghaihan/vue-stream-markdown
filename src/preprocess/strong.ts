@@ -1,5 +1,23 @@
-import { codeBlockPattern, doubleAsteriskPattern, doubleUnderscorePattern, singleAsteriskPattern, singleUnderscorePattern, trailingStandaloneDashWithNewlinesPattern } from './pattern'
-import { appendBeforeTrailingWhitespace, calculateParagraphOffset, getLastParagraphWithIndex, isInsideUnclosedCodeBlock, isWithinHtmlTag, isWithinLinkOrImageUrl, isWithinMathBlock, removeMathBlocksFromText, removeUrlsFromText } from './utils'
+import type { preprocessContext } from '../types'
+import {
+  codeBlockPattern,
+  doubleAsteriskPattern,
+  doubleUnderscorePattern,
+  singleAsteriskPattern,
+  singleUnderscorePattern,
+  trailingStandaloneDashWithNewlinesPattern,
+} from './pattern'
+import {
+  appendBeforeTrailingWhitespace,
+  calculateParagraphOffset,
+  getLastParagraphWithIndex,
+  isInsideUnclosedCodeBlock,
+  isWithinHtmlTag,
+  isWithinLinkOrImageUrl,
+  isWithinMathBlock,
+  removeMathBlocksFromText,
+  removeUrlsFromText,
+} from './utils'
 
 /**
  * Fix unclosed strong (** or __) syntax in streaming markdown
@@ -28,7 +46,7 @@ import { appendBeforeTrailingWhitespace, calculateParagraphOffset, getLastParagr
  */
 export function fixStrong(
   content: string,
-  options?: Pick<import('../types').StreamingPreprocessOptions, 'singleDollarTextMath'>,
+  options?: Pick<preprocessContext, 'singleDollarTextMath'>,
 ): string {
   // Handle bare single * or _ first
   if (content === '*' || content === '_') {

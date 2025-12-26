@@ -1,4 +1,4 @@
-import type { StreamingPreprocessOptions } from '../types'
+import type { preprocessContext } from '../types'
 import { codeBlockPattern, incompleteLinkImageUrlPattern, linkImagePattern } from './pattern'
 /**
  * Utility functions for preprocessing markdown content
@@ -176,7 +176,7 @@ export function isInsideUnclosedCodeBlock(content: string): boolean {
 export function isWithinMathBlock(
   text: string,
   position: number,
-  options?: Pick<StreamingPreprocessOptions, 'singleDollarTextMath'>,
+  options?: Pick<preprocessContext, 'singleDollarTextMath'>,
 ): boolean {
   let inBlockMath = false
   let inInlineMath = false
@@ -340,7 +340,7 @@ export function removeUrlsFromText(text: string): string {
  */
 export function removeMathBlocksFromText(
   text: string,
-  options?: Pick<StreamingPreprocessOptions, 'singleDollarTextMath'>,
+  options?: Pick<preprocessContext, 'singleDollarTextMath'>,
 ): string {
   const singleDollarEnabled = options?.singleDollarTextMath === true
   let result = text

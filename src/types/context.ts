@@ -204,7 +204,7 @@ export interface UIOptions {
   hideTooltip?: boolean
 }
 
-export interface StreamingPreprocessOptions {
+export interface preprocessContext {
   singleDollarTextMath?: boolean
 }
 
