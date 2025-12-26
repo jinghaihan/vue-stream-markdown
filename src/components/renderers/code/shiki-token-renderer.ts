@@ -1,7 +1,6 @@
-import type { TokensResult } from 'shiki'
+import type { getTokenStyleObject, TokensResult } from 'shiki'
 import type { PropType } from 'vue'
-import { getTokenStyleObject } from 'shiki'
-import { defineComponent, h, renderList } from 'vue'
+import { defineComponent, h, renderList, shallowRef } from 'vue'
 
 export default defineComponent({
   name: 'ShikiTokensRenderer',
@@ -15,6 +14,12 @@ export default defineComponent({
     if (!props.tokens)
       return null
 
+    const getTokenStyleObjectRef = shallowRef<typeof getTokenStyleObject | null>(null)
+    ;(async () => {
+      const { getTokenStyleObject } = await import('shiki')
+      getTokenStyleObjectRef.value = getTokenStyleObject
+    })()
+
     return () => {
       if (!props.tokens?.tokens)
         return null
@@ -27,9 +32,10 @@ export default defineComponent({
             props.tokens.themeName,
           ],
           'data-language': props.tokens.grammarState?.lang,
-          'style': {
-            counterReset: 'line',
-          },
+          'data-bg': props.tokens.bg,
+          'data-fg': props.tokens.fg,
+          // background color most time looks not good, so we don't set it
+          'style': `counter-reset: line; color: ${props.tokens.fg};`,
         },
         h(
           'code',
@@ -45,7 +51,7 @@ export default defineComponent({
                 'span',
                 {
                   key: tokenIndex,
-                  style: token.htmlStyle || getTokenStyleObject(token),
+                  style: token.htmlStyle || (getTokenStyleObjectRef.value?.(token) ?? {}),
                 },
                 token.content,
               )),

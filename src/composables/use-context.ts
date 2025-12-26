@@ -12,7 +12,6 @@ interface Context {
   enableAnimate?: MaybeRef<boolean | undefined>
   parsedNodes?: MaybeRef<ParsedNode[]>
   getContainer?: () => HTMLElement | undefined
-  getOverlayContainer?: () => Element | null
   beforeDownload?: StreamMarkdownProps['beforeDownload']
   onCopied?: (content: string) => void
 }
@@ -53,9 +52,6 @@ export function useContext() {
     parsedNodes,
     get getContainer() {
       return context.getContainer || (() => undefined)
-    },
-    get getOverlayContainer() {
-      return context.getOverlayContainer || (() => null)
     },
     get beforeDownload() {
       return context.beforeDownload || (() => true)

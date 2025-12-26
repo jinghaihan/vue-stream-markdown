@@ -39,19 +39,17 @@ export function useShiki(options?: UseShikiOptions) {
   })
   const codeToTokenOptions = computed(() => unref(options?.shikiOptions)?.codeToTokenOptions ?? {})
 
-  const isDark = computed(() => unref(options?.isDark) ?? false)
-
   async function getThemes() {
     const { bundledThemesInfo } = await import('shiki')
     return [lightTheme.value, darkTheme.value].filter(theme => bundledThemesInfo.find(t => t.id === theme))
   }
 
-  async function getTheme() {
+  async function getDualTheme() {
     const { bundledThemesInfo } = await import('shiki')
-    const theme = bundledThemesInfo.find(t => t.id === (isDark.value ? darkTheme.value : lightTheme.value))
-    if (!theme)
-      return isDark.value ? DEFAULT_DARK_THEME : DEFAULT_LIGHT_THEME
-    return theme.id
+    return {
+      light: bundledThemesInfo.find(t => t.id === lightTheme.value)?.id ?? DEFAULT_LIGHT_THEME,
+      dark: bundledThemesInfo.find(t => t.id === darkTheme.value)?.id ?? DEFAULT_DARK_THEME,
+    }
   }
 
   async function getLanguage() {
@@ -94,7 +92,7 @@ export function useShiki(options?: UseShikiOptions) {
     createHighlighterPromise = (async () => {
       const { createHighlighter } = await import('shiki')
       return createHighlighter({
-        themes: [await getTheme()],
+        themes: await getThemes(),
         langs: langs.value,
         langAlias: langAlias.value,
       })
@@ -108,7 +106,7 @@ export function useShiki(options?: UseShikiOptions) {
   async function codeToTokens(code: string): Promise<TokensResult> {
     const highlighter = await getHighlighter()
     return highlighter.codeToTokens(code, {
-      theme: await getTheme(),
+      themes: await getDualTheme(),
       lang: await getLanguage(),
       ...codeToTokenOptions.value,
     })

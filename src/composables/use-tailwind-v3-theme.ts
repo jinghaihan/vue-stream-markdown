@@ -1,7 +1,7 @@
 import type { MaybeRef, MaybeRefOrGetter } from 'vue'
 import { useStyleTag } from '@vueuse/core'
 import { computed, onBeforeUnmount, toValue, unref, watchEffect } from 'vue'
-import { SHADCN_SCHEMAS } from '../constants'
+import { OVERLAY_CONTAINER_ID, SHADCN_SCHEMAS } from '../constants'
 import { isClient } from '../utils'
 
 const reg = /^(?:hsl|rgb|oklch|lab|lch)\(/
@@ -20,7 +20,7 @@ export function useTailwindV3Theme(options: UseTailwindV3ThemeOptions) {
   const styleScope = computed(() => {
     const scope = unref(options.styleScope)
     if (!scope)
-      return ['.stream-markdown', '.stream-markdown-overlay']
+      return ['.stream-markdown', `.${OVERLAY_CONTAINER_ID}`]
     return Array.isArray(scope) ? scope : [scope]
   })
 

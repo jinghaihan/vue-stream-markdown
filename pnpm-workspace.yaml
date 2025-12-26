@@ -1,21 +1,14 @@
-catalogMode: prefer
-
-shellEmulator: true
-
-trustPolicy: no-downgrade
-
 packages:
   - .
   - playground
   - docs
-
 catalogs:
   build:
     '@vitejs/plugin-vue': ^6.0.3
-    tsdown: ^0.18.0
+    tsdown: ^0.18.2
     unplugin-icons: ^22.5.0
-    unplugin-lightningcss: ^0.4.3
-    vite: ^7.2.7
+    unplugin-lightningcss: ^0.4.4
+    vite: ^7.3.0
   cli:
     bumpp: ^10.3.2
     pncat: ^0.7.7
@@ -25,20 +18,23 @@ catalogs:
     '@nuxtjs/color-mode': ^4.0.0
     happy-dom: ^20.0.11
     nuxt: ^4.2.2
-    treechop: ^0.1.2
   docs:
     vitepress: ^1.6.4
   frontend:
     '@floating-ui/dom': ^1.7.4
     '@monaco-editor/loader': ^1.7.0
     echarts: ^6.0.0
-    vue: ^3.5.25
+    vue: ^3.5.26
     vue-json-pretty: ^2.6.0
   icons:
     '@iconify-json/catppuccin': ^1.2.17
-    '@iconify-json/lucide': ^1.2.81
+    '@iconify-json/lucide': ^1.2.82
+  inline:
+    '@antfu/utils': ^9.3.0
+    quick-lru: ^7.3.0
+    treechop: ^0.1.2
   lint:
-    '@antfu/eslint-config': ^6.7.1
+    '@antfu/eslint-config': ^6.7.3
     '@nuxt/eslint': ^1.12.1
     '@unocss/eslint-plugin': 66.5.9
     eslint: ^9.39.2
@@ -46,6 +42,7 @@ catalogs:
     lint-staged: ^16.2.7
     simple-git-hooks: ^2.13.1
   parser:
+    marked: ^17.0.1
     mdast-util-from-markdown: ^2.0.2
     mdast-util-frontmatter: ^2.0.1
     mdast-util-gfm: ^3.1.0
@@ -71,16 +68,15 @@ catalogs:
   syntax:
     '@shikijs/monaco': ^3.20.0
   test:
-    '@vitest/coverage-v8': ^4.0.15
+    '@vitest/coverage-v8': ^4.0.16
     '@vue/test-utils': ^2.4.6
-    vitest: ^4.0.15
+    vitest: ^4.0.16
   tsc:
     typescript: ^5.9.3
-    vue-tsc: ^3.1.8
+    vue-tsc: ^3.2.1
   types:
-    '@types/node': ^24.10.4
+    '@types/node': ^25.0.3
   utils:
-    '@antfu/utils': ^9.3.0
     '@vueuse/core': ^14.1.0
     '@vueuse/nuxt': ^14.1.0
 onlyBuiltDependencies:

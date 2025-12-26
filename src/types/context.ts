@@ -12,7 +12,7 @@ import type {
   BuiltinFromMdastExtension,
   BuiltinMicromarkExtension,
   BuiltinPluginControl,
-  BuiltinToMarkdownExtension,
+  BuiltinToMdastExtension,
 } from './plugins'
 import type { CodeNodeRendererProps, ImageNodeRendererProps, TableNodeRendererProps } from './renderer'
 import type { BuiltinNodeRenderers, ControlTransformer, Icons, MaybePromise } from './shared'
@@ -35,9 +35,10 @@ export interface PreloadConfig {
 export interface MarkdownParserOptions {
   mdastOptions?: MdastOptions
   normalize?: (content: string) => string
-  postNormalize?: (data: SyntaxTree) => SyntaxTree
   preprocess?: (content: string) => string
+  postNormalize?: (data: SyntaxTree) => SyntaxTree
   postprocess?: (data: SyntaxTree) => SyntaxTree
+  parseMarkdownIntoBlocks?: (content: string) => string[]
 }
 
 export interface MdastOptions {
@@ -47,7 +48,7 @@ export interface MdastOptions {
   builtin?: {
     micromark?: BuiltinPluginControl<BuiltinMicromarkExtension, MicromarkExtension>
     from?: BuiltinPluginControl<BuiltinFromMdastExtension, FromMarkdownExtension>
-    to?: BuiltinPluginControl<BuiltinToMarkdownExtension, ToMarkdownExtension>
+    to?: BuiltinPluginControl<BuiltinToMdastExtension, ToMarkdownExtension>
   }
   singleDollarTextMath?: boolean
 }

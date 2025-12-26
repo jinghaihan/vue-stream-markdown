@@ -10,7 +10,6 @@ import { getContentFromUrl, removeUnclosedGithubTag } from './utils'
 
 const HtmlNodeRenderer = defineAsyncComponent(() => import('./components/html.vue'))
 
-const { isDark } = useDark()
 const userConfig = useUserConfig()
 
 const markdownRef = ref()
@@ -299,7 +298,6 @@ onMounted(() => {
           :mode="mode"
           :content="markdownContent"
           :locale="locale"
-          :is-dark="isDark"
           :shiki-options="shikiOptions"
           :code-options="codeOptions"
           :mermaid-options="mermaidOptions"

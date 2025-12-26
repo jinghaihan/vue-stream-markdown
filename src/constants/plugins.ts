@@ -24,7 +24,7 @@ export const BUILTIN_FROM_MDAST_EXTENSIONS = {
   frontmatterFromMarkdown: () => frontmatterFromMarkdown(),
 } as const
 
-export const BUILTIN_TO_MARKDOWN_EXTENSIONS = {
+export const BUILTIN_TO_MDAST_EXTENSIONS = {
   gfmToMarkdown: () => gfmToMarkdown(),
   mathToMarkdown: () => mathToMarkdown(),
   frontmatterToMarkdown: () => frontmatterToMarkdown(),

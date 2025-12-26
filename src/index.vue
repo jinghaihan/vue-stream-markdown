@@ -3,7 +3,7 @@ import type { BuiltinNodeRenderers, Icons, NodeRenderers, StreamMarkdownProps } 
 import { computed, onBeforeUnmount, onMounted, ref, toRefs, watch } from 'vue'
 import NodeList from './components/node-list.vue'
 import { NODE_RENDERERS } from './components/renderers'
-import { useContext, useKatex, useMermaid, useShiki } from './composables'
+import { useContext, useDarkDetector, useKatex, useLocaleDetector, useMermaid, useShiki } from './composables'
 import { ICONS, PRELOAD_NODE_RENDERER } from './constants'
 import { loadLocaleMessages } from './locales'
 import { MarkdownParser } from './markdown-parser'
@@ -16,9 +16,8 @@ const props = withDefaults(defineProps<StreamMarkdownProps>(), {
   icons: () => ({}),
   controls: true,
   previewers: true,
-  isDark: false,
+  isDark: undefined,
   enableAnimate: undefined,
-  locale: 'en-US',
 })
 
 const emits = defineEmits<{
@@ -27,26 +26,36 @@ const emits = defineEmits<{
 
 const {
   mode,
+  isDark: darkProp,
+  locale: localeProp,
   shikiOptions,
   mermaidOptions,
   uiOptions,
-  isDark,
   enableAnimate,
 } = toRefs(props)
 
-const containerRef = ref<HTMLDivElement>()
-
 const { provideContext } = useContext()
+
+const { isDark, stop: stopDarkModeObserver } = useDarkDetector(darkProp)
+const { locale } = useLocaleDetector(localeProp)
+
+const { preload: preloadShiki, dispose: disposeShiki } = useShiki({
+  shikiOptions,
+})
+const { preload: preloadMermaid, dispose: disposeMermaid } = useMermaid({
+  mermaidOptions,
+})
+const { preload: preloadKatex, dispose: disposeKatex } = useKatex()
+
+const containerRef = ref<HTMLDivElement>()
 
 const markdownParser = new MarkdownParser(props)
 
-// const { requestParse, result: processed } = useDirtyParser((content: string) => markdownParser.parseMarkdown(content))
-// watch(() => props.content, content => requestParse(content), { immediate: true })
-
 const processed = computed(() => markdownParser.parseMarkdown(props.content))
 
-const parsedNodes = computed(() => processed.value?.nodes ?? [])
-const processedContent = computed(() => processed.value?.content ?? '')
+const blocks = computed(() => processed.value?.asts ?? [])
+const parsedNodes = computed(() => blocks.value.flatMap(block => block.children))
+const processedContent = computed(() => (processed.value?.contents ?? []).join(''))
 
 const nodeRenderers = computed((): NodeRenderers => ({
   ...NODE_RENDERERS,
@@ -68,41 +77,7 @@ function getContainer(): HTMLElement | undefined {
   return containerRef.value
 }
 
-function getOverlayContainer(): Element | null {
-  return document.querySelector('#stream-markdown-overlay')
-}
-
-const { preload: preloadShiki, dispose: disposeShiki } = useShiki({
-  shikiOptions,
-})
-const { preload: preloadMermaid, dispose: disposeMermaid } = useMermaid({
-  mermaidOptions,
-})
-const { preload: preloadKatex, dispose: disposeKatex } = useKatex()
-
-function ensureOverlayContainer() {
-  const overlayContainer = getOverlayContainer()
-  if (!overlayContainer) {
-    const div = document.createElement('div')
-    div.id = 'stream-markdown-overlay'
-    div.classList.add('stream-markdown-overlay')
-    div.classList.add(isDark.value ? 'dark' : 'light')
-    document.body.appendChild(div)
-  }
-}
-
-function updateOverlayContainerTheme() {
-  const overlayContainer = getOverlayContainer()
-  if (!overlayContainer)
-    return
-
-  overlayContainer.classList.toggle('dark', isDark.value)
-  overlayContainer.classList.toggle('light', !isDark.value)
-}
-
 async function bootstrap() {
-  ensureOverlayContainer()
-
   const tasks = [
     preloadShiki(), // init shiki highlighter
     preloadMermaid(), // init mermaid instance
@@ -111,7 +86,7 @@ async function bootstrap() {
   ]
 
   if (props.locale !== 'en-US')
-    tasks.push(loadLocaleMessages(props.locale))
+    tasks.push(loadLocaleMessages(locale.value))
 
   if (preloadNodeRenderers.value.length)
     tasks.push(preloadAsyncComponents(nodeRenderers.value, preloadNodeRenderers.value))
@@ -121,8 +96,7 @@ async function bootstrap() {
 
 onMounted(bootstrap)
 
-watch(() => props.locale, () => loadLocaleMessages(props.locale))
-watch(() => props.isDark, () => updateOverlayContainerTheme())
+watch(locale, () => loadLocaleMessages(locale.value))
 
 provideContext({
   mode,
@@ -132,7 +106,6 @@ provideContext({
   enableAnimate,
   parsedNodes,
   getContainer,
-  getOverlayContainer,
   beforeDownload: props.beforeDownload,
   onCopied: (content: string) => {
     emits('copied', content)
@@ -143,6 +116,7 @@ onBeforeUnmount(() => {
   disposeShiki()
   disposeMermaid()
   disposeKatex()
+  stopDarkModeObserver()
 })
 
 defineExpose({
@@ -158,12 +132,16 @@ defineExpose({
     class="stream-markdown"
     :class="[isDark ? 'dark' : 'light']"
   >
-    <NodeList
-      v-bind="props"
-      :markdown-parser="markdownParser"
-      :node-renderers="nodeRenderers"
-      :nodes="parsedNodes"
-      :get-container="getContainer"
-    />
+    <template v-for="(block, index) in blocks" :key="index">
+      <NodeList
+        v-bind="props"
+        :markdown-parser="markdownParser"
+        :node-renderers="nodeRenderers"
+        :nodes="block.children"
+        :get-container="getContainer"
+        :node-key="`stream-markdown-block-${index}`"
+        :is-dark="isDark"
+      />
+    </template>
   </div>
 </template>

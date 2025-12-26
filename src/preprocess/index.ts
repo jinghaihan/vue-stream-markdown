@@ -11,7 +11,7 @@ import { crlfPattern } from './pattern'
 import { fixStrong } from './strong'
 import { fixTable } from './table'
 import { fixTaskList } from './task-list'
-import { preprocessLaTeX } from './vendored'
+import { parseMarkdownIntoBlocks, preprocessLaTeX } from './vendored'
 
 export * from './pattern'
 
@@ -56,6 +56,7 @@ export {
   fixStrong,
   fixTable,
   fixTaskList,
+  parseMarkdownIntoBlocks,
   preprocessLaTeX,
   proprocessContent,
 }

@@ -1,3 +1,5 @@
+export const OVERLAY_CONTAINER_ID = 'stream-markdown-overlay'
+
 export const SHADCN_SCHEMAS = [
   'background',
   'foreground',

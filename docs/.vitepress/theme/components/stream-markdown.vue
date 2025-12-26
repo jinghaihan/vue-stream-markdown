@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Component } from 'vue'
 import IconButton from '@shared/components/icon-button.vue'
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
 import { useData } from 'vitepress'
@@ -65,6 +66,10 @@ const name = computed(
     : 'Start Typing',
 )
 
+const icon = computed(
+  (): Component => mode.value === 'streaming' ? CirclePause : CirclePlay,
+)
+
 function toggle() {
   if (mode.value === 'streaming') {
     cleanup()
@@ -125,7 +130,7 @@ function cleanup() {
       <IconButton
         v-if="playable"
         :name="name"
-        :icon="mode === 'static' ? CirclePlay : CirclePause"
+        :icon="icon"
         :button-class="['rounded-full', 'bg-background', 'p-1']"
         @click="() => toggle()"
       />

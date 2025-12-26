@@ -17,6 +17,11 @@
   color: var(--foreground);
 }
 
+:is(.stream-markdown, .stream-markdown-overlay).dark :is(.shiki, .shiki span) {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+}
+
 :is(.stream-markdown, .stream-markdown-overlay) * {
   box-sizing: border-box;
   border: 0 solid;

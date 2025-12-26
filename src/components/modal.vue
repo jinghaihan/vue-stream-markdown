@@ -2,8 +2,7 @@
 import type { CSSProperties } from 'vue'
 import { createReusableTemplate, useEventListener } from '@vueuse/core'
 import { computed, useSlots } from 'vue'
-import { useContext } from '../composables'
-import { isClient } from '../utils'
+import { getOverlayContainer, isClient } from '../utils'
 
 const props = withDefaults(defineProps<{
   title?: string
@@ -22,8 +21,6 @@ const slots = useSlots()
 const open = defineModel<boolean>('open', { required: false, default: false })
 
 const [DefineTemplate, ReuseTemplate] = createReusableTemplate()
-
-const { getOverlayContainer } = useContext()
 
 const modalStyle = computed(() => ({
   ...props.modalStyle,

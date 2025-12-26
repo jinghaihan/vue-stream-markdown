@@ -1,8 +1,8 @@
 {
   "name": "vue-stream-markdown",
   "type": "module",
-  "version": "0.3.1",
-  "packageManager": "pnpm@10.25.0",
+  "version": "0.3.2",
+  "packageManager": "pnpm@10.26.2",
   "description": "Streaming markdown output, Useful for text streams like LLM outputs.",
   "author": "jinghaihan",
   "license": "MIT",
@@ -70,11 +70,12 @@
   },
   "dependencies": {
     "@floating-ui/dom": "catalog:frontend",
-    "@vueuse/core": "catalog:utils"
+    "@vueuse/core": "catalog:utils",
+    "marked": "catalog:parser"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:lint",
-    "@antfu/utils": "catalog:utils",
+    "@antfu/utils": "catalog:inline",
     "@iconify-json/catppuccin": "catalog:icons",
     "@iconify-json/lucide": "catalog:icons",
     "@nuxt/devtools": "catalog:dev",
@@ -105,9 +106,10 @@
     "micromark-util-types": "catalog:parser",
     "nuxt": "catalog:dev",
     "pncat": "catalog:cli",
+    "quick-lru": "catalog:inline",
     "simple-git-hooks": "catalog:lint",
     "taze": "catalog:cli",
-    "treechop": "catalog:dev",
+    "treechop": "catalog:inline",
     "tsdown": "catalog:build",
     "tsx": "catalog:script",
     "typescript": "catalog:tsc",
@@ -118,6 +120,9 @@
     "vitepress": "catalog:docs",
     "vitest": "catalog:test",
     "vue-tsc": "catalog:tsc"
+  },
+  "resolutions": {
+    "vue": "catalog:frontend"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged"

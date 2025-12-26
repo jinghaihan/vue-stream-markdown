@@ -1,6 +1,6 @@
 # Parser Configuration
 
-The parser configuration allows you to customize the markdown parsing process through four main functions: `normalize`, `preprocess`, `postNormalize`, and `postprocess`. These functions work together to handle content normalization, syntax completion, and AST post-processing.
+The parser configuration allows you to customize the markdown parsing process through five main functions: `normalize`, `preprocess`, `postNormalize`, `postprocess`, and `parseMarkdownIntoBlocks`. These functions work together to handle content normalization, syntax completion, AST post-processing, and performance optimization.
 
 ## normalize
 
@@ -199,9 +199,36 @@ function postprocess(ast: SyntaxTree): SyntaxTree {
 </template>
 ```
 
+## parseMarkdownIntoBlocks
+
+- **Type:** `(content: string) => string[]`
+- **Default:** Built-in parseMarkdownIntoBlocks function (ported from [streamdown](https://github.com/vercel/streamdown))
+
+Splits markdown content into blocks for performance optimization. This reduces the content length for AST parsing, improving parser performance especially for large documents. In streaming mode, only the last block needs to be re-parsed as new content arrives.
+
+### Customization
+
+You can provide a custom function to control how content is split:
+
+```vue
+<script setup lang="ts">
+import { Markdown } from 'vue-stream-markdown'
+
+function parseMarkdownIntoBlocks(content: string): string[] {
+  return content.split('\n\n')
+}
+</script>
+
+<template>
+  <Markdown :content="content" :parse-markdown-into-blocks="parseMarkdownIntoBlocks" />
+</template>
+```
+
+The default function intelligently splits content at block boundaries while preserving semantic integrity (keeps footnotes together, merges HTML blocks, etc.).
+
 ## Complete Example
 
-Here's a complete example showing how to use all four functions together:
+Here's a complete example showing how to use all five functions together:
 
 ```vue
 <script setup lang="ts">
@@ -210,6 +237,7 @@ import {
   flow,
   Markdown,
   normalize,
+  parseMarkdownIntoBlocks,
   postNormalize,
   postprocess,
   preprocess
@@ -217,6 +245,7 @@ import {
 
 const customNormalize = flow([normalize])
 const customPreprocess = flow([preprocess])
+const customParseMarkdownIntoBlocks = parseMarkdownIntoBlocks
 function customPostNormalize(ast: SyntaxTree): SyntaxTree {
   return postNormalize(ast)
 }
@@ -230,6 +259,7 @@ function customPostprocess(ast: SyntaxTree): SyntaxTree {
     :content="content"
     :normalize="customNormalize"
     :preprocess="customPreprocess"
+    :parse-markdown-into-blocks="customParseMarkdownIntoBlocks"
     :post-normalize="customPostNormalize"
     :postprocess="customPostprocess"
   />
