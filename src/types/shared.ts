@@ -20,7 +20,7 @@ export type Icons = Record<IconName, Component>
 
 export interface SelectOption {
   label: string
-  value: string
+  value: string | number
   icon?: string
 }
 

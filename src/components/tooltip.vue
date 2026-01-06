@@ -80,7 +80,7 @@ defineExpose({ show, hide })
   color: var(--popover-foreground);
   border: 1px solid var(--border);
   border-radius: 0.5rem;
-  z-index: 110;
+  z-index: 10000;
 }
 
 :is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='tooltip-overlay'] {

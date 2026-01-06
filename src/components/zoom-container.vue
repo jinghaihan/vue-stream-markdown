@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CSSProperties } from 'vue'
-import type { Control, ZoomControlPosition } from '../types'
+import type { Control, SelectOption, ZoomControlPosition } from '../types'
 import { computed, ref } from 'vue'
 import { useI18n, useZoom } from '../composables'
 import Button from './button.vue'
@@ -30,6 +30,7 @@ const {
   zoomIn,
   zoomOut,
   resetZoom,
+  setZoom,
   startDrag,
   onDrag,
   stopDrag,
@@ -110,10 +111,17 @@ const controls = computed((): Control[] => [
   },
   {
     ...controlButtonProps.value,
-    key: 'resetZoom',
+    key: 'updateZoom',
     variant: 'text',
     name: zoomPercent.value,
-    onClick: resetZoom,
+    options: [200, 150, 100, 75, 50].map(value => ({ label: `${value}%`, value })),
+    onClick: (_event: MouseEvent, item?: SelectOption) => {
+      const value = item?.value || 100
+      if (value === 100)
+        resetZoom()
+      else
+        setZoom(Number(value) / 100)
+    },
   },
 ])
 

@@ -136,7 +136,7 @@ function onEditorChange(data: string) {
 async function changePresetContent(item: SelectOption) {
   terminateTypeWriting()
 
-  const data = await getPresetContent(item.value)
+  const data = await getPresetContent(String(item.value))
   content.value = data
   monacoRef.value?.setValue(data)
 

@@ -38,7 +38,7 @@ catalogs:
     '@nuxt/eslint': ^1.12.1
     '@unocss/eslint-plugin': 66.5.9
     eslint: ^9.39.2
-    eslint-plugin-format: ^1.1.0
+    eslint-plugin-format: ^1.2.0
     lint-staged: ^16.2.7
     simple-git-hooks: ^2.13.1
   parser:
@@ -60,11 +60,11 @@ catalogs:
   script:
     tsx: ^4.21.0
   style:
-    '@unocss/nuxt': ^66.5.10
-    '@unocss/reset': ^66.5.10
+    '@unocss/nuxt': ^66.5.12
+    '@unocss/reset': ^66.5.12
     clsx: ^2.1.1
     tailwind-merge: ^3.4.0
-    unocss: ^66.5.10
+    unocss: ^66.5.12
   syntax:
     '@shikijs/monaco': ^3.20.0
   test:
@@ -73,7 +73,7 @@ catalogs:
     vitest: ^4.0.16
   tsc:
     typescript: ^5.9.3
-    vue-tsc: ^3.2.1
+    vue-tsc: ^3.2.2
   types:
     '@types/node': ^25.0.3
   utils:
