@@ -19,6 +19,8 @@ import { getContentFromUrl, removeUnclosedGithubTag } from './utils'
 
 const HtmlNodeRenderer = defineAsyncComponent(() => import('./components/html.vue'))
 
+const { cssVariables } = useTailwindV3Theme({})
+
 const userConfig = useUserConfig()
 
 const markdownRef = ref()
@@ -232,8 +234,6 @@ useResizeObserver(() => markdownRef.value?.$el, () => {
 onMounted(() => {
   initContent()
 })
-
-const { cssVariables } = useTailwindV3Theme({})
 </script>
 
 <template>

@@ -3,7 +3,15 @@ import type { BuiltinNodeRenderers, Icons, NodeRenderers, StreamMarkdownProps } 
 import { computed, onBeforeUnmount, onMounted, ref, toRefs, watch } from 'vue'
 import NodeList from './components/node-list.vue'
 import { NODE_RENDERERS } from './components/renderers'
-import { useContext, useDarkDetector, useKatex, useLocaleDetector, useMermaid, useShiki, useTailwindV3Theme } from './composables'
+import {
+  useContext,
+  useDarkDetector,
+  useKatex,
+  useLocaleDetector,
+  useMermaid,
+  useShiki,
+  useTailwindV3Theme,
+} from './composables'
 import { ICONS, PRELOAD_NODE_RENDERER } from './constants'
 import { loadLocaleMessages } from './locales'
 import { MarkdownParser } from './markdown-parser'
