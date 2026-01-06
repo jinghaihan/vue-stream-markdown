@@ -1,70 +1,59 @@
-import type { MaybeRef, MaybeRefOrGetter } from 'vue'
-import { useStyleTag } from '@vueuse/core'
-import { computed, onBeforeUnmount, toValue, unref, watchEffect } from 'vue'
-import { OVERLAY_CONTAINER_ID, SHADCN_SCHEMAS } from '../constants'
+import { useMutationObserver } from '@vueuse/core'
+import { computed, ref, watchEffect } from 'vue'
+import { SHADCN_SCHEMAS } from '../constants'
 import { isClient } from '../utils'
 
 const reg = /^(?:hsl|rgb|oklch|lab|lch)\(/
 
 interface UseTailwindV3ThemeOptions {
-  element?: MaybeRefOrGetter<HTMLElement | undefined>
-  styleScope?: MaybeRef<string | string[]>
+  element?: () => HTMLElement | undefined
 }
 
 export function useTailwindV3Theme(options: UseTailwindV3ThemeOptions) {
-  const { id, css, load, unload, isLoaded } = useStyleTag('', {
-    id: 'stream-markdown-tailwind-v3-theme',
-    immediate: false,
-  })
-
-  const styleScope = computed(() => {
-    const scope = unref(options.styleScope)
-    if (!scope)
-      return ['.stream-markdown', `.${OVERLAY_CONTAINER_ID}`]
-    return Array.isArray(scope) ? scope : [scope]
-  })
-
-  const element = computed((): Element | undefined => {
-    const el = toValue(options.element)
-    return el || (isClient() ? document.body : undefined)
+  const cssVariables = ref<Record<string, string>>({})
+  const element = computed((): HTMLElement | undefined => {
+    if (!isClient())
+      return
+    const el = typeof options.element === 'function' ? options.element() : null
+    return el || document.body
   })
 
   function generateCSS() {
-    if (!element.value || !isClient())
+    if (!isClient() || !element.value)
       return
 
     const computedStyle = window.getComputedStyle(element.value)
-    const cssVariables: string[] = []
+    const variables: Record<string, string> = {}
 
     for (const schema of SHADCN_SCHEMAS) {
       const name = `--${schema}`
       const value = computedStyle.getPropertyValue(name).trim()
 
       if (value && !reg.test(value))
-        cssVariables.push(`  ${name}: hsl(${value});`)
+        variables[name] = `hsl(${value})`
     }
 
-    if (cssVariables.length > 0) {
-      css.value = styleScope.value.map(scope => `${scope} {\n${cssVariables.join('\n')}\n}`).join('\n')
-      load()
-    }
-    else {
-      css.value = ''
-      unload()
-    }
+    if (Object.keys(variables).length > 0)
+      cssVariables.value = variables
+    else
+      cssVariables.value = {}
   }
 
   watchEffect(generateCSS)
-
-  onBeforeUnmount(unload)
+  const { stop } = useMutationObserver(
+    () => element.value ? [element.value, document.documentElement] : [],
+    generateCSS,
+    {
+      attributes: true,
+      attributeFilter: ['style', 'class'],
+      subtree: false,
+    },
+  )
 
   return {
     element,
-    id,
-    css,
-    load,
-    unload,
-    isLoaded,
+    cssVariables,
     generateCSS,
+    stop,
   }
 }

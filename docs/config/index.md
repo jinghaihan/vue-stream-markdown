@@ -29,6 +29,15 @@ Rendering mode. `'static'` renders the entire content at once, while `'streaming
 
 Whether to enable the typewriter animation effect when nodes are rendered. When set to `undefined` (default), the animation is automatically enabled in `'streaming'` mode and disabled in `'static'` mode. When explicitly set to `true` or `false`, it will override the default behavior based on the mode.
 
+### themeElement
+
+- **Type:** `() => HTMLElement | undefined`
+- **Default:** `() => document.body`
+
+Function to get the element that contains shadcn CSS variables. The library will read CSS variables (e.g., `--background`, `--foreground`, `--primary`, etc.) from the computed styles of this element.
+
+When using Tailwind v3, the library will automatically adapt based on the CSS variables defined on this element. The function is called reactively, so you can return different elements based on your application's state.
+
 ### content
 
 - **Type:** `string`

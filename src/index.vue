@@ -3,7 +3,15 @@ import type { BuiltinNodeRenderers, Icons, NodeRenderers, StreamMarkdownProps } 
 import { computed, onBeforeUnmount, onMounted, ref, toRefs, watch } from 'vue'
 import NodeList from './components/node-list.vue'
 import { NODE_RENDERERS } from './components/renderers'
-import { useContext, useDarkDetector, useKatex, useLocaleDetector, useMermaid, useShiki } from './composables'
+import {
+  useContext,
+  useDarkDetector,
+  useKatex,
+  useLocaleDetector,
+  useMermaid,
+  useShiki,
+  useTailwindV3Theme,
+} from './composables'
 import { ICONS, PRELOAD_NODE_RENDERER } from './constants'
 import { loadLocaleMessages } from './locales'
 import { MarkdownParser } from './markdown-parser'
@@ -37,7 +45,8 @@ const {
 
 const { provideContext } = useContext()
 
-const { isDark, stop: stopDarkModeObserver } = useDarkDetector(darkProp)
+const { cssVariables, stop: stopTailwindV3ThemeObserver } = useTailwindV3Theme({ element: props.themeElement })
+const { isDark, stop: stopDarkModeObserver } = useDarkDetector(darkProp, cssVariables)
 const { locale } = useLocaleDetector(localeProp)
 
 const { preload: preloadShiki, dispose: disposeShiki } = useShiki({
@@ -117,6 +126,8 @@ onBeforeUnmount(() => {
   disposeShiki()
   disposeMermaid()
   disposeKatex()
+
+  stopTailwindV3ThemeObserver()
   stopDarkModeObserver()
 })
 
@@ -132,6 +143,7 @@ defineExpose({
     ref="containerRef"
     class="stream-markdown"
     :class="[isDark ? 'dark' : 'light']"
+    :style="cssVariables"
   >
     <template v-for="(block, index) in blocks" :key="index">
       <NodeList

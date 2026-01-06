@@ -17,7 +17,7 @@ import type {
 import type { CodeNodeRendererProps, ImageNodeRendererProps, TableNodeRendererProps } from './renderer'
 import type { BuiltinNodeRenderers, ControlTransformer, Icons, MaybePromise } from './shared'
 
-export interface StreamMarkdownProps extends StreamMarkdownContext, MarkdownParserOptions {
+export interface StreamMarkdownProps extends StreamMarkdownContext, StreamMarkdownHooks, MarkdownParserOptions {
   mode?: 'static' | 'streaming'
   content?: string
   nodeRenderers?: NodeRenderers
@@ -25,7 +25,7 @@ export interface StreamMarkdownProps extends StreamMarkdownContext, MarkdownPars
   preload?: PreloadConfig
   locale?: string | LocaleConfig
   enableAnimate?: boolean
-  beforeDownload?: (event: DownloadEvent) => MaybePromise<boolean>
+  themeElement?: () => HTMLElement | undefined
 }
 
 export interface PreloadConfig {
@@ -64,6 +64,10 @@ export interface StreamMarkdownContext {
   imageOptions?: ImageOptions
   uiOptions?: UIOptions
   isDark?: boolean
+}
+
+export interface StreamMarkdownHooks {
+  beforeDownload?: (event: DownloadEvent) => MaybePromise<boolean>
 }
 
 export type TableControlsConfig

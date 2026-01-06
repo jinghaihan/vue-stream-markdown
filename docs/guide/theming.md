@@ -135,44 +135,9 @@ You can override these variables scoped to `.stream-markdown`. The library autom
 }
 ```
 
-### Using with Tailwind CSS v3
+### Tailwind v3 Integration
 
-If you're using Tailwind CSS v3 with HSL color values (e.g., `0 0% 100%` instead of `hsl(0 0% 100%)`), you can use the `useTailwindV3Theme` composable to automatically convert these values to the proper HSL format:
-
-```vue
-<script setup lang="ts">
-import { nextTick, ref, watch } from 'vue'
-import { Markdown, useTailwindV3Theme } from 'vue-stream-markdown'
-
-const isDark = ref(false)
-
-// Configure Tailwind v3 theme adapter
-const { generateCSS } = useTailwindV3Theme({
-  styleScope: ['.stream-markdown', '.stream-markdown-overlay'],
-  element: document.body, // Optional, defaults to document.body
-})
-
-// Regenerate CSS when theme changes
-watch(() => isDark.value, () => {
-  nextTick(generateCSS)
-})
-</script>
-```
-
-In your CSS, define variables with HSL values without the `hsl()` wrapper:
-
-```css
-:root {
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
-  --primary: 221.2 83.2% 53.3%;
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --border: 214.3 31.8% 91.4%;
-}
-```
-
-The `useTailwindV3Theme` composable will automatically detect these values and convert them to `hsl()` format for vue-stream-markdown to use.
+When using Tailwind v3 with shadcn/ui, you can configure the `themeElement` prop to specify which element the library should read CSS variables from. By default, it reads from `document.body`, but you can customize it to read from any element in your application.
 
 ## Best Practices
 
