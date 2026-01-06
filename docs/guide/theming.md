@@ -135,6 +135,10 @@ You can override these variables scoped to `.stream-markdown`. The library autom
 }
 ```
 
+### Tailwind v3 Integration
+
+When using Tailwind v3 with shadcn/ui, you can configure the `themeElement` prop to specify which element the library should read CSS variables from. By default, it reads from `document.body`, but you can customize it to read from any element in your application.
+
 ## Best Practices
 
 - **Use CSS Variables for Colors**: Prefer overriding CSS variables over direct element styling for consistency
