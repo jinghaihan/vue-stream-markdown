@@ -290,7 +290,6 @@ watch(
     :data-collapsed="collapsed"
     :class="{
       'code-loading': props.node.loading,
-      'dark': props.isDark,
     }"
   >
     <header data-stream-markdown="code-block-header">

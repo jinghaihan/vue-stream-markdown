@@ -1,9 +1,18 @@
 <script setup lang="ts">
-import type { CodeOptions, ControlsConfig, MermaidOptions, PreviewerConfig, SelectOption, ShikiOptions, StreamMarkdownProps, UIOptions } from 'vue-stream-markdown'
+import type {
+  CodeOptions,
+  ControlsConfig,
+  MermaidOptions,
+  PreviewerConfig,
+  SelectOption,
+  ShikiOptions,
+  StreamMarkdownProps,
+  UIOptions,
+} from 'vue-stream-markdown'
 import { throttle } from '@antfu/utils'
 import { useCycleList, useResizeObserver } from '@vueuse/core'
 import * as LZString from 'lz-string'
-import { Markdown, normalize, SUPPORT_LANGUAGES } from 'vue-stream-markdown'
+import { Markdown, normalize, SUPPORT_LANGUAGES, useTailwindV3Theme } from 'vue-stream-markdown'
 import { ChartPie } from './icons'
 import { DEFAULT_MARKDOWN_PATH, getPresetContent } from './markdown'
 import { getContentFromUrl, removeUnclosedGithubTag } from './utils'
@@ -224,15 +233,7 @@ onMounted(() => {
   initContent()
 })
 
-// const { generateCSS } = useTailwindV3Theme({
-//   styleScope: 'body',
-// })
-// watch(
-//   () => isDark.value,
-//   () => {
-//     nextTick(generateCSS)
-//   },
-// )
+const { cssVariables } = useTailwindV3Theme({})
 </script>
 
 <template>
@@ -242,6 +243,7 @@ onMounted(() => {
     v-model:show-ast-result="userConfig.showAstResult"
     :stop="stopTypeWriting"
     class="vue-stream-markdown"
+    :style="cssVariables"
   >
     <template #actions>
       <div class="flex flex-col gap-2 items-center md:flex-row md:gap-4">

@@ -4,7 +4,7 @@ import { computed, onMounted, ref, unref, watch } from 'vue'
 import { OVERLAY_CONTAINER_ID } from '../constants'
 import { getOverlayContainer } from '../utils'
 
-export function useDarkDetector(darkProp: MaybeRef<boolean | undefined>) {
+export function useDarkDetector(darkProp: MaybeRef<boolean | undefined>, cssVariables: MaybeRef<Record<string, string>>) {
   const target = ref<HTMLElement | null>()
 
   const isDarkProvided = computed(() => typeof unref(darkProp) === 'boolean')
@@ -33,6 +33,9 @@ export function useDarkDetector(darkProp: MaybeRef<boolean | undefined>) {
 
     overlayContainer.classList.toggle('dark', isDark.value)
     overlayContainer.classList.toggle('light', !isDark.value)
+    Object.entries(cssVariables.value).forEach(([key, value]) => {
+      overlayContainer.style.setProperty(key, value)
+    })
   }
 
   const { stop } = useMutationObserver(
@@ -41,10 +44,11 @@ export function useDarkDetector(darkProp: MaybeRef<boolean | undefined>) {
     {
       attributes: true,
       attributeFilter: ['class'],
+      subtree: false,
     },
   )
 
-  watch(isDark, () => updateOverlayContainerTheme())
+  watch(() => [isDark.value, cssVariables.value], () => updateOverlayContainerTheme())
 
   watch(isDarkProvided, () => {
     if (isDarkProvided.value)
