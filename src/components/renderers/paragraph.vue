@@ -13,8 +13,11 @@ const props = withDefaults(defineProps<ParagraphNodeRendererProps>(), {})
 
 <style>
 :is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='paragraph'] {
-  margin-bottom: 1rem;
   vertical-align: middle;
   transition: height var(--default-transition-duration) ease;
+}
+
+:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='paragraph']:not(:last-child) {
+  margin-bottom: 1rem;
 }
 </style>
