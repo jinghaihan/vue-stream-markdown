@@ -1,6 +1,6 @@
 import type { CdnOptions } from '../types'
-import { KATEX_VERSION, MERMAID_VERSION, SHIKI_VERSION } from 'src/constants/modules'
-import { isSupportESM } from '../utils'
+import { KATEX_VERSION, MERMAID_VERSION, SHIKI_VERSION } from '../constants'
+import { isSupportESM, trailingSlash } from '../utils'
 
 interface UseCdnLoaderOptions {
   cdnOptions?: CdnOptions
@@ -18,9 +18,17 @@ export function useCdnLoader(options?: UseCdnLoaderOptions) {
   const { cdnOptions } = options ?? {}
 
   const customGenerate = !!cdnOptions?.generateUrl
-  const baseUrl = cdnOptions?.baseUrl ?? ''
+  const baseUrl = cdnOptions?.baseUrl
+    ? trailingSlash(cdnOptions.baseUrl)
+    : ''
+
+  const shikiEnabled = cdnOptions?.shiki !== false
+  const katexEnabled = cdnOptions?.katex !== false
+  const mermaidEnabled = cdnOptions?.mermaid !== false
 
   function getCdnShikiUrl(): string | undefined {
+    if (!shikiEnabled)
+      return
     if (!isSupportESM())
       return
     return customGenerate
@@ -31,6 +39,8 @@ export function useCdnLoader(options?: UseCdnLoaderOptions) {
   }
 
   function getCdnKatexCssUrl(): string | undefined {
+    if (!katexEnabled)
+      return
     if (customGenerate)
       return cdnOptions?.generateUrl?.('katex', KATEX_VERSION)
     return baseUrl ? `${baseUrl}/katex@${KATEX_VERSION}/dist/katex.min.css` : undefined
@@ -53,6 +63,8 @@ export function useCdnLoader(options?: UseCdnLoaderOptions) {
   }
 
   function getCdnMermaidUrl(): string | undefined {
+    if (!mermaidEnabled)
+      return
     return customGenerate
       ? cdnOptions?.generateUrl?.('mermaid', MERMAID_VERSION)
       : baseUrl

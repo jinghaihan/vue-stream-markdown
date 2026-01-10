@@ -1,6 +1,7 @@
 export * from './code'
 export * from './harden'
 export * from './icons'
+export * from './module'
 export * from './plugins'
 export * from './preload'
 export * from './theme'

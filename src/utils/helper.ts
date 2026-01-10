@@ -4,6 +4,10 @@ export function flow<T>(fns: Array<(arg: T) => T>): (arg: T) => T {
   return (input: T) => fns.reduce((acc, fn) => fn(acc), input)
 }
 
+export function trailingSlash(url: string): string {
+  return url?.endsWith('/') ? url : `${url}/`
+}
+
 export function save(filename: string, content: string | Blob, mimeType: string) {
   const blob = typeof content === 'string' ? new Blob([content], { type: mimeType }) : content
   const url = URL.createObjectURL(blob)

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type {
+  CdnOptions,
   CodeOptions,
   ControlsConfig,
   MermaidOptions,
@@ -130,6 +131,11 @@ const previewerConfig: PreviewerConfig = {
       hydrate: hydrateOnVisible(),
     }),
   },
+}
+
+const cdnOptions: CdnOptions = {
+  baseUrl: 'https://cdn.jsdelivr.net/npm/',
+  shiki: false,
 }
 
 const nodeRenderers: StreamMarkdownProps['nodeRenderers'] = {
@@ -306,14 +312,15 @@ onMounted(() => {
           class="my-4 flex flex-col gap-3"
           :mode="mode"
           :content="markdownContent"
+          :controls="controlsConfig"
+          :previewers="previewerConfig"
+          :node-renderers="nodeRenderers"
           :locale="locale"
           :shiki-options="shikiOptions"
           :code-options="codeOptions"
           :mermaid-options="mermaidOptions"
           :ui-options="uiOptions"
-          :controls="controlsConfig"
-          :previewers="previewerConfig"
-          :node-renderers="nodeRenderers"
+          :cdn-options="cdnOptions"
           :normalize="normalizeContent"
         />
       </div>
