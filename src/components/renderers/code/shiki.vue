@@ -20,7 +20,7 @@ const { showLineNumbers } = useCodeOptions({
   language: lang,
 })
 
-const { codeToTokens } = useShiki({
+const { getShiki, codeToTokens } = useShiki({
   lang,
   shikiOptions,
   isDark,
@@ -63,6 +63,7 @@ watch(
         data-stream-markdown="code"
         :data-show-line-numbers="showLineNumbers"
         :tokens="tokens"
+        :get-shiki="getShiki"
       />
     </div>
 

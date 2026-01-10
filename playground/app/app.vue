@@ -115,7 +115,6 @@ const uiOptions = computed((): UIOptions => {
 
 const cdnOptions: CdnOptions = {
   baseUrl: 'https://cdn.jsdelivr.net/npm/',
-  shiki: false,
 }
 
 const controlsConfig = computed((): ControlsConfig => {
@@ -304,7 +303,10 @@ onMounted(() => {
 
       <div
         ref="containerRef"
-        class="scrollbar-gutter-stable pr-4 h-full overflow-x-hidden overflow-y-auto"
+        class="pr-4 h-full overflow-x-hidden overflow-y-auto"
+        :style="{
+          scrollbarGutter: 'stable',
+        }"
         @scroll="onScroll"
       >
         <Markdown
@@ -331,9 +333,3 @@ onMounted(() => {
     </template>
   </Layout>
 </template>
-
-<style>
-.scrollbar-gutter-stable {
-  scrollbar-gutter: stable;
-}
-</style>

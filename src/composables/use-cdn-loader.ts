@@ -7,7 +7,8 @@ interface UseCdnLoaderOptions {
 }
 
 let katexCssLoaded = false
-let mermaidLoaded = false
+let shikiModule: typeof import('shiki') | null = null
+let mermaidModule: typeof import('mermaid') | null = null
 
 function dynamicImport<T>(url: string): Promise<T> {
   // eslint-disable-next-line no-new-func
@@ -36,6 +37,20 @@ export function useCdnLoader(options?: UseCdnLoaderOptions) {
       : baseUrl
         ? `${baseUrl}/shiki@${SHIKI_VERSION}/+esm`
         : undefined
+  }
+
+  async function loadCdnShiki(): Promise<typeof import('shiki') | undefined> {
+    if (shikiModule)
+      return shikiModule
+
+    const url = getCdnShikiUrl()
+    if (!url)
+      return
+
+    const module = await dynamicImport<typeof import('shiki')>(url)
+    shikiModule = module
+
+    return module
   }
 
   function getCdnKatexCssUrl(): string | undefined {
@@ -75,21 +90,22 @@ export function useCdnLoader(options?: UseCdnLoaderOptions) {
   }
 
   async function loadCdnMermaid(): Promise<typeof import('mermaid') | undefined> {
-    if (mermaidLoaded)
-      return
+    if (mermaidModule)
+      return mermaidModule
 
     const url = getCdnMermaidUrl()
     if (!url)
       return
 
     const module = await dynamicImport<typeof import('mermaid')>(url)
-    mermaidLoaded = true
+    mermaidModule = module
 
     return module
   }
 
   return {
     getCdnShikiUrl,
+    loadCdnShiki,
     getCdnKatexCssUrl,
     loadCdnKatexCss,
     getCdnMermaidUrl,

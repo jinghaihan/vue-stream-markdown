@@ -9,6 +9,10 @@ export default defineComponent({
       type: Object as PropType<TokensResult>,
       required: false,
     },
+    getShiki: {
+      type: Function as PropType<() => Promise<typeof import('shiki')>>,
+      required: true,
+    },
   },
   setup(props) {
     if (!props.tokens)
@@ -16,7 +20,7 @@ export default defineComponent({
 
     const getTokenStyleObjectRef = shallowRef<typeof getTokenStyleObject | null>(null);
     (async () => {
-      const { getTokenStyleObject } = await import('shiki')
+      const { getTokenStyleObject } = await props.getShiki()
       getTokenStyleObjectRef.value = getTokenStyleObject
     })()
 
