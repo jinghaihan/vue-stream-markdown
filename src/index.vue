@@ -25,8 +25,8 @@ const props = withDefaults(defineProps<StreamMarkdownProps>(), {
   icons: () => ({}),
   controls: true,
   previewers: true,
-  isDark: undefined,
   enableAnimate: undefined,
+  isDark: undefined,
 })
 
 const emits = defineEmits<{
@@ -51,11 +51,15 @@ const { locale } = useLocaleDetector(localeProp)
 
 const { preload: preloadShiki, dispose: disposeShiki } = useShiki({
   shikiOptions,
+  cdnOptions: props.cdnOptions,
 })
 const { preload: preloadMermaid, dispose: disposeMermaid } = useMermaid({
   mermaidOptions,
+  cdnOptions: props.cdnOptions,
 })
-const { preload: preloadKatex, dispose: disposeKatex } = useKatex()
+const { preload: preloadKatex, dispose: disposeKatex } = useKatex({
+  cdnOptions: props.cdnOptions,
+})
 
 const containerRef = ref<HTMLDivElement>()
 

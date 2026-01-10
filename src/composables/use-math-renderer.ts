@@ -1,5 +1,5 @@
 import type { MaybeRef } from 'vue'
-import type { InlineMathNode, KatexOptions, MathNode } from '../types'
+import type { CdnOptions, InlineMathNode, KatexOptions, MathNode } from '../types'
 import { throttle } from '@antfu/utils'
 import { computed, ref, unref, watch } from 'vue'
 import { useKatex } from './use-katex'
@@ -7,11 +7,14 @@ import { useKatex } from './use-katex'
 interface UseMathRendererOptions {
   node: MaybeRef<InlineMathNode | MathNode>
   katexOptions?: MaybeRef<KatexOptions | undefined>
+  cdnOptions?: CdnOptions
   throttle?: MaybeRef<number>
 }
 
 export function useMathRenderer(options: UseMathRendererOptions) {
-  const { installed, render: renderKatex } = useKatex()
+  const { installed, render: renderKatex } = useKatex({
+    cdnOptions: options.cdnOptions,
+  })
 
   const renderFlag = ref<boolean>(false)
   const renderingCode = ref<string>('')

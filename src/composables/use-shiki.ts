@@ -6,14 +6,15 @@ import type {
   TokensResult,
 } from 'shiki'
 import type { MaybeRef } from 'vue'
-import type { ShikiOptions } from '../types'
+import type { CdnOptions, ShikiOptions } from '../types'
 import { computed, ref, unref } from 'vue'
 import { DEFAULT_DARK_THEME, DEFAULT_LIGHT_THEME, LANGUAGE_ALIAS } from '../constants'
-import { hasShiki, isClient } from '../utils'
+import { hasShikiModule, isClient } from '../utils'
 
 interface UseShikiOptions {
   lang?: MaybeRef<string>
   shikiOptions?: MaybeRef<ShikiOptions | undefined>
+  cdnOptions?: CdnOptions
   isDark?: MaybeRef<boolean>
 }
 
@@ -116,7 +117,7 @@ export function useShiki(options?: UseShikiOptions) {
     if (highlighter)
       return
 
-    installed.value = await hasShiki()
+    installed.value = await hasShikiModule()
     if (installed.value)
       await getHighlighter()
   }
@@ -132,7 +133,7 @@ export function useShiki(options?: UseShikiOptions) {
         installed.value = true
         return
       }
-      installed.value = await hasShiki()
+      installed.value = await hasShikiModule()
     })()
   }
 

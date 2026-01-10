@@ -15,6 +15,7 @@ const { html, error, errorMessage } = useMathRenderer({
   node,
   katexOptions,
   throttle,
+  cdnOptions: props.cdnOptions,
 })
 
 const Error = computed(() => katexOptions.value?.errorComponent ?? ErrorComponent)

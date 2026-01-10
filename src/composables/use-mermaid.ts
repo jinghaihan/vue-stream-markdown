@@ -1,12 +1,14 @@
 import type { Mermaid, MermaidConfig } from 'mermaid'
 import type { MaybeRef } from 'vue'
-import type { MermaidOptions } from '../types'
+import type { CdnOptions, MermaidOptions } from '../types'
 import { randomStr } from '@antfu/utils'
 import { computed, ref, unref } from 'vue'
-import { hasMermaid, isClient, save, svgToPngBlob } from '../utils'
+import { hasMermaidModule, isClient, save, svgToPngBlob } from '../utils'
+import { useCdnLoader } from './use-cdn-loader'
 
 interface UseMermaidOptions {
   mermaidOptions?: MaybeRef<MermaidOptions | undefined>
+  cdnOptions?: CdnOptions
   isDark?: MaybeRef<boolean>
 }
 
@@ -14,6 +16,10 @@ let mermaid: Mermaid | null = null
 
 export function useMermaid(options?: UseMermaidOptions) {
   const installed = ref<boolean>(false)
+
+  const { getCdnMermaidUrl, loadCdnMermaid } = useCdnLoader({
+    cdnOptions: options?.cdnOptions,
+  })
 
   const mermaidConfig = computed((): MermaidConfig => unref(options?.mermaidOptions)?.config ?? {})
   const mermaidTheme = computed(() => unref(options?.mermaidOptions)?.theme ?? ['neutral', 'dark'])
@@ -29,7 +35,7 @@ export function useMermaid(options?: UseMermaidOptions) {
     if (mermaid)
       return mermaid
 
-    const { default: module } = await import('mermaid')
+    const { default: module } = await loadCdnMermaid() ?? await import('mermaid')
     module.initialize({
       startOnLoad: false,
       securityLevel: 'loose',
@@ -109,6 +115,10 @@ export function useMermaid(options?: UseMermaidOptions) {
     catch (error) {
       onError?.(error as Error)
     }
+  }
+
+  async function hasMermaid(): Promise<boolean> {
+    return getCdnMermaidUrl() ? true : await hasMermaidModule()
   }
 
   async function preload() {

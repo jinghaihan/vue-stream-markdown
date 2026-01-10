@@ -63,6 +63,7 @@ export interface StreamMarkdownContext {
   codeOptions?: CodeOptions
   imageOptions?: ImageOptions
   uiOptions?: UIOptions
+  cdnOptions?: CdnOptions
   isDark?: boolean
 }
 
@@ -207,6 +208,11 @@ export interface UIOptions {
    * @default false
    */
   hideTooltip?: boolean
+}
+
+export interface CdnOptions {
+  baseUrl?: string
+  generateUrl?: (module: 'katex' | 'mermaid' | 'shiki', version: string) => string
 }
 
 export interface PreprocessContext {

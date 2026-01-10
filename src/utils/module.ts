@@ -1,4 +1,4 @@
-export async function hasShiki() {
+export async function hasShikiModule() {
   try {
     await import('shiki')
     return true
@@ -8,7 +8,7 @@ export async function hasShiki() {
   }
 }
 
-export async function hasMermaid() {
+export async function hasMermaidModule() {
   try {
     await import('mermaid')
     return true
@@ -18,7 +18,7 @@ export async function hasMermaid() {
   }
 }
 
-export async function hasKatex() {
+export async function hasKatexModule() {
   try {
     await import('katex')
     return true
