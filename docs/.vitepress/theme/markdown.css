@@ -12,3 +12,11 @@
 .vp-doc .stream-markdown code {
   padding: 0;
 }
+
+.vp-doc .stream-markdown div[class*='language-'] {
+  margin: 0 !important;
+}
+
+.vp-doc .stream-markdown div[class*='language-'] pre {
+  padding: 1rem;
+}
