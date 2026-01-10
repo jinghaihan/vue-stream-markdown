@@ -1,3 +1,5 @@
+let supportESM = false
+
 export function isClient(): boolean {
   return typeof window !== 'undefined'
 }
@@ -9,6 +11,9 @@ export function isServer(): boolean {
 export function isSupportESM(): boolean {
   if (isServer())
     return false
+  if (supportESM)
+    return true
   const script = document.createElement('script')
-  return 'noModule' in script
+  supportESM = 'noModule' in script
+  return supportESM
 }

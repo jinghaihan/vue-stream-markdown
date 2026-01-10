@@ -13,15 +13,23 @@ let existingKatex: boolean = false
 export function useKatex(options: UseKatexOptions) {
   const { cdnOptions } = options ?? {}
 
-  const { loadCdnKatexCss } = useCdnLoader({ cdnOptions })
+  const { getCdnKatexUrl, loadCdnKatex, loadCdnKatexCss } = useCdnLoader({ cdnOptions })
 
   const installed = ref<boolean>(false)
+
+  async function getKatex(): Promise<typeof import('katex')> {
+    return await loadCdnKatex() ?? await import('katex')
+  }
+
+  async function hasKatex(): Promise<boolean> {
+    return getCdnKatexUrl() ? true : await hasKatexModule()
+  }
 
   async function render(code: string, options: KatexOptions = {}): Promise<{
     html?: string
     error?: string
   }> {
-    const { renderToString } = await import('katex')
+    const { renderToString } = await getKatex()
     try {
       const html = renderToString(code, {
         output: 'html',
@@ -39,7 +47,7 @@ export function useKatex(options: UseKatexOptions) {
     if (!isClient())
       return
 
-    if (await hasKatexModule()) {
+    if (await hasKatex()) {
       // Because `katex.min.css` is not included in the bundle, you need to import it manually.
       // If using CDN, will automatically import the CSS file.
       loadCdnKatexCss()
@@ -57,7 +65,7 @@ export function useKatex(options: UseKatexOptions) {
         return
       }
 
-      installed.value = await hasKatexModule()
+      installed.value = await hasKatex()
       existingKatex = installed.value
     })()
   }

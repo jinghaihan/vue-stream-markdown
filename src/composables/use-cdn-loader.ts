@@ -9,6 +9,7 @@ interface UseCdnLoaderOptions {
 let katexCssLoaded = false
 let shikiModule: typeof import('shiki') | null = null
 let mermaidModule: typeof import('mermaid') | null = null
+let katexModule: typeof import('katex') | null = null
 
 function dynamicImport<T>(url: string): Promise<T> {
   // eslint-disable-next-line no-new-func
@@ -30,13 +31,14 @@ export function useCdnLoader(options?: UseCdnLoaderOptions) {
   function getCdnShikiUrl(): string | undefined {
     if (!shikiEnabled)
       return
+    if (!baseUrl && !customGenerate)
+      return
     if (!isSupportESM())
       return
+
     return customGenerate
       ? cdnOptions?.generateUrl?.('shiki', SHIKI_VERSION)
-      : baseUrl
-        ? `${baseUrl}/shiki@${SHIKI_VERSION}/+esm`
-        : undefined
+      : `${baseUrl}/shiki@${SHIKI_VERSION}/+esm`
   }
 
   async function loadCdnShiki(): Promise<typeof import('shiki') | undefined> {
@@ -53,12 +55,67 @@ export function useCdnLoader(options?: UseCdnLoaderOptions) {
     return module
   }
 
-  function getCdnKatexCssUrl(): string | undefined {
+  function getCdnMermaidUrl(): string | undefined {
+    if (!mermaidEnabled)
+      return
+    if (!baseUrl && !customGenerate)
+      return
+    return customGenerate
+      ? cdnOptions?.generateUrl?.('mermaid', MERMAID_VERSION)
+      : isSupportESM()
+        ? `${baseUrl}/mermaid@${MERMAID_VERSION}/+esm`
+        : `${baseUrl}/mermaid@${MERMAID_VERSION}/dist/mermaid.min.js`
+  }
+
+  async function loadCdnMermaid(): Promise<typeof import('mermaid') | undefined> {
+    if (mermaidModule)
+      return mermaidModule
+
+    const url = getCdnMermaidUrl()
+    if (!url)
+      return
+
+    const module = await dynamicImport<typeof import('mermaid')>(url)
+    mermaidModule = (isSupportESM() ? module : window.mermaid) ?? null
+
+    return module
+  }
+
+  function getCdnKatexUrl(): string | undefined {
     if (!katexEnabled)
+      return
+    if (!baseUrl && !customGenerate)
       return
     if (customGenerate)
       return cdnOptions?.generateUrl?.('katex', KATEX_VERSION)
-    return baseUrl ? `${baseUrl}/katex@${KATEX_VERSION}/dist/katex.min.css` : undefined
+    return isSupportESM()
+      ? `${baseUrl}/katex@${KATEX_VERSION}/+esm`
+      : `${baseUrl}/katex@${KATEX_VERSION}/dist/katex.min.js`
+  }
+
+  async function loadCdnKatex(): Promise<typeof import('katex') | undefined> {
+    if (katexModule)
+      return katexModule
+
+    const url = getCdnKatexUrl()
+    if (!url)
+      return
+
+    const module = await dynamicImport<typeof import('katex')>(url)
+    katexModule = (isSupportESM() ? module : window.katex) ?? null
+
+    return module
+  }
+
+  function getCdnKatexCssUrl(): string | undefined {
+    if (!katexEnabled)
+      return
+    if (!baseUrl && !customGenerate)
+      return
+    if (customGenerate)
+      return cdnOptions?.generateUrl?.('katex', KATEX_VERSION)
+
+    return `${baseUrl}/katex@${KATEX_VERSION}/dist/katex.min.css`
   }
 
   function loadCdnKatexCss() {
@@ -77,38 +134,14 @@ export function useCdnLoader(options?: UseCdnLoaderOptions) {
     katexCssLoaded = true
   }
 
-  function getCdnMermaidUrl(): string | undefined {
-    if (!mermaidEnabled)
-      return
-    return customGenerate
-      ? cdnOptions?.generateUrl?.('mermaid', MERMAID_VERSION)
-      : baseUrl
-        ? isSupportESM()
-          ? `${baseUrl}/mermaid@${MERMAID_VERSION}/+esm`
-          : `${baseUrl}/mermaid@${MERMAID_VERSION}/dist/mermaid.min.js`
-        : undefined
-  }
-
-  async function loadCdnMermaid(): Promise<typeof import('mermaid') | undefined> {
-    if (mermaidModule)
-      return mermaidModule
-
-    const url = getCdnMermaidUrl()
-    if (!url)
-      return
-
-    const module = await dynamicImport<typeof import('mermaid')>(url)
-    mermaidModule = (isSupportESM() ? module : window.mermaid) ?? null
-
-    return module
-  }
-
   return {
     getCdnShikiUrl,
     loadCdnShiki,
-    getCdnKatexCssUrl,
-    loadCdnKatexCss,
     getCdnMermaidUrl,
     loadCdnMermaid,
+    getCdnKatexUrl,
+    loadCdnKatex,
+    getCdnKatexCssUrl,
+    loadCdnKatexCss,
   }
 }

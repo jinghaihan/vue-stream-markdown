@@ -45,6 +45,10 @@ export function useMermaid(options?: UseMermaidOptions) {
     return mermaid
   }
 
+  async function hasMermaid(): Promise<boolean> {
+    return getCdnMermaidUrl() ? true : await hasMermaidModule()
+  }
+
   function wrapThemeCode(code: string) {
     if (code.startsWith('%%{'))
       return code
@@ -115,10 +119,6 @@ export function useMermaid(options?: UseMermaidOptions) {
     catch (error) {
       onError?.(error as Error)
     }
-  }
-
-  async function hasMermaid(): Promise<boolean> {
-    return getCdnMermaidUrl() ? true : await hasMermaidModule()
   }
 
   async function preload() {

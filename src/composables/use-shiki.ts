@@ -43,9 +43,13 @@ export function useShiki(options?: UseShikiOptions) {
   })
   const codeToTokenOptions = computed(() => unref(options?.shikiOptions)?.codeToTokenOptions ?? {})
 
-  async function getShiki() {
+  async function getShiki(): Promise<typeof import('shiki')> {
     const module = await loadCdnShiki() ?? await import('shiki')
     return module
+  }
+
+  async function hasShiki(): Promise<boolean> {
+    return getCdnShikiUrl() ? true : await hasShikiModule()
   }
 
   async function getThemes() {
@@ -119,10 +123,6 @@ export function useShiki(options?: UseShikiOptions) {
       lang: await getLanguage(),
       ...codeToTokenOptions.value,
     })
-  }
-
-  async function hasShiki() {
-    return getCdnShikiUrl() ? true : await hasShikiModule()
   }
 
   async function preload() {
