@@ -25,8 +25,11 @@ export function useCdnLoader(options?: UseCdnLoaderOptions) {
     : ''
 
   const shikiEnabled = cdnOptions?.shiki !== false
-  const katexEnabled = cdnOptions?.katex !== false
   const mermaidEnabled = cdnOptions?.mermaid !== false
+  const katexEnabled = cdnOptions?.katex !== false
+
+  const mermaidStrategy = cdnOptions?.mermaid === 'umd' ? 'umd' : 'esm'
+  const katexStrategy = cdnOptions?.katex === 'umd' ? 'umd' : 'esm'
 
   function getCdnShikiUrl(): string | undefined {
     if (!shikiEnabled)
@@ -60,11 +63,16 @@ export function useCdnLoader(options?: UseCdnLoaderOptions) {
       return
     if (!baseUrl && !customGenerate)
       return
-    return customGenerate
-      ? cdnOptions?.generateUrl?.('mermaid', MERMAID_VERSION)
-      : isSupportESM()
-        ? `${baseUrl}/mermaid@${MERMAID_VERSION}/+esm`
-        : `${baseUrl}/mermaid@${MERMAID_VERSION}/dist/mermaid.min.js`
+    if (customGenerate)
+      return cdnOptions?.generateUrl?.('mermaid', MERMAID_VERSION)
+
+    const umd = `${baseUrl}/mermaid@${MERMAID_VERSION}/dist/mermaid.min.js`
+    if (mermaidStrategy === 'umd')
+      return umd
+
+    return isSupportESM()
+      ? `${baseUrl}/mermaid@${MERMAID_VERSION}/+esm`
+      : umd
   }
 
   async function loadCdnMermaid(): Promise<typeof import('mermaid') | undefined> {
@@ -88,9 +96,14 @@ export function useCdnLoader(options?: UseCdnLoaderOptions) {
       return
     if (customGenerate)
       return cdnOptions?.generateUrl?.('katex', KATEX_VERSION)
+
+    const umd = `${baseUrl}/katex@${KATEX_VERSION}/dist/katex.min.js`
+    if (katexStrategy === 'umd')
+      return umd
+
     return isSupportESM()
       ? `${baseUrl}/katex@${KATEX_VERSION}/+esm`
-      : `${baseUrl}/katex@${KATEX_VERSION}/dist/katex.min.js`
+      : umd
   }
 
   async function loadCdnKatex(): Promise<typeof import('katex') | undefined> {

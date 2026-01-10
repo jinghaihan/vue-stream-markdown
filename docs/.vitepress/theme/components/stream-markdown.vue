@@ -126,6 +126,7 @@ function cleanup() {
       :code-options="codeOptions"
       :cdn-options="{
         baseUrl: 'https://cdn.jsdelivr.net/npm/',
+        mermaid: 'umd',
       }"
     />
 

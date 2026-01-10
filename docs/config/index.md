@@ -369,17 +369,17 @@ Whether to load Shiki from CDN. Requires ESM support.
 
 #### mermaid
 
-- **Type:** `boolean`
-- **Default:** `true`
+- **Type:** `'esm' | 'umd' | false`
+- **Default:** `true` (same as `'esm'`)
 
-Whether to load Mermaid from CDN.
+Choose CDN format: `'esm'` (default, auto-fallback to UMD), `'umd'`, or `false` to disable.
 
 #### katex
 
-- **Type:** `boolean`
-- **Default:** `true`
+- **Type:** `'esm' | 'umd' | false`
+- **Default:** `true` (same as `'esm'`)
 
-Whether to load KaTeX CSS from CDN.
+Choose CDN format: `'esm'` (default, auto-fallback to UMD), `'umd'`, or `false` to disable.
 
 ### hardenOptions
 

@@ -115,6 +115,7 @@ const uiOptions = computed((): UIOptions => {
 
 const cdnOptions: CdnOptions = {
   baseUrl: 'https://cdn.jsdelivr.net/npm/',
+  mermaid: 'umd',
 }
 
 const controlsConfig = computed((): ControlsConfig => {

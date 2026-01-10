@@ -420,8 +420,8 @@ interface CdnOptions {
   baseUrl?: string
   generateUrl?: (module: 'katex' | 'mermaid' | 'shiki', version: string) => string
   shiki?: boolean
-  mermaid?: boolean
-  katex?: boolean
+  mermaid?: 'esm' | 'umd' | false
+  katex?: 'esm' | 'umd' | false
 }
 ```
 
@@ -441,6 +441,7 @@ import { Markdown } from 'vue-stream-markdown'
 
 const cdnOptions: CdnOptions = {
   baseUrl: 'https://cdn.jsdelivr.net/npm/',
+  mermaid: 'umd',
 }
 </script>
 
@@ -484,17 +485,17 @@ Whether to load Shiki from CDN. When set to `false`, Shiki will be loaded from l
 
 ### mermaid
 
-- **Type:** `boolean | undefined`
-- **Default:** `true`
+- **Type:** `'esm' | 'umd' | false | undefined`
+- **Default:** `true` (same as `'esm'`)
 
-Whether to load Mermaid from CDN. When set to `false`, Mermaid will be loaded from local node_modules. Requires ESM support for modern browsers, falls back to UMD bundle for older browsers.
+Choose CDN format for Mermaid. `'esm'` (default) or `undefined`/`true` uses ESM with UMD fallback, `'umd'` forces UMD, `false` disables CDN.
 
 ### katex
 
-- **Type:** `boolean | undefined`
-- **Default:** `true`
+- **Type:** `'esm' | 'umd' | false | undefined`
+- **Default:** `true` (same as `'esm'`)
 
-Whether to load KaTeX CSS from CDN. When enabled, KaTeX CSS will be automatically loaded from CDN, so manual import is not needed. Requires ESM support for modern browsers, falls back to UMD bundle for older browsers.
+Choose CDN format for KaTeX. `'esm'` (default) or `undefined`/`true` uses ESM with UMD fallback, `'umd'` forces UMD, `false` disables CDN.
 
 ## Notes
 

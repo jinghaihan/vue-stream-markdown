@@ -214,8 +214,8 @@ export interface CdnOptions {
   baseUrl?: string
   generateUrl?: (module: 'katex' | 'mermaid' | 'shiki', version: string) => string
   shiki?: boolean
-  mermaid?: boolean
-  katex?: boolean
+  mermaid?: 'esm' | 'umd' | false
+  katex?: 'esm' | 'umd' | false
 }
 
 export interface PreprocessContext {
