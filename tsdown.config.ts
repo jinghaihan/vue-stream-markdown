@@ -4,16 +4,17 @@ import Icons from 'unplugin-icons/vite'
 
 export default defineConfig({
   entry: ['./src/index'],
-  target: 'chrome89',
   platform: 'neutral',
-  css: {
-    splitting: false,
-    fileName: 'index.css',
-  },
   inputOptions: {
     resolve: {
       mainFields: ['module', 'main'],
     },
+  },
+  external: ['shiki', 'mermaid', 'katex'],
+  target: 'chrome89',
+  css: {
+    splitting: false,
+    fileName: 'index.css',
   },
   dts: {
     vue: true,

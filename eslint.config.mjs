@@ -11,6 +11,7 @@ export default antfu({
     'playground/app/markdown/**/code-blocks.md',
   ],
   rules: {
+    'pnpm/json-enforce-catalog': 'off',
     'pnpm/yaml-enforce-settings': 'off',
   },
 }).append(nuxt())

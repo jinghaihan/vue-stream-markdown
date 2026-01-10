@@ -1,6 +1,7 @@
 import { defineConfig, mergeCatalogRules } from 'pncat'
 
 export default defineConfig({
+  exclude: ['shiki', 'mermaid', 'katex'],
   catalogRules: mergeCatalogRules([
     {
       name: 'docs',
