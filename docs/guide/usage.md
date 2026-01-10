@@ -23,6 +23,8 @@ pnpm add mermaid
 pnpm add katex
 ```
 
+> **Note:** If you enable CDN configuration, you don't need to install locally as they will be loaded from CDN.
+
 ## Basic Usage
 
 By default, the component runs in `streaming` mode, which is optimized for progressive content updates. You can also use `static` mode for complete markdown content:
@@ -86,6 +88,10 @@ export default defineNuxtConfig({
 ### LaTeX Math
 
 - `katexOptions` (KatexOptions): Configuration for KaTeX math rendering
+
+### CDN Configuration
+
+- `cdnOptions` (CdnOptions): Configure CDN loading for external libraries (Shiki, Mermaid, KaTeX) to reduce bundle size. See [External Options](/config/external-options#cdn-configuration) for detailed documentation.
 
 ### Controls
 

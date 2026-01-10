@@ -408,3 +408,96 @@ const katexOptions: KatexOptions = {
 - [KaTeX Supported Functions](https://katex.org/docs/supported.html) - Complete list of supported functions
 - [KaTeX Support Table](https://katex.org/docs/support_table.html) - Feature compatibility
 - [KaTeX GitHub](https://github.com/KaTeX/KaTeX) - Source code and issues
+
+## CDN Configuration
+
+Configure CDN loading for external libraries to reduce bundle size and improve loading performance. When CDN is enabled, libraries are loaded from CDN instead of local node_modules.
+
+### Interface
+
+```typescript
+interface CdnOptions {
+  baseUrl?: string
+  generateUrl?: (module: 'katex' | 'mermaid' | 'shiki', version: string) => string
+  shiki?: boolean
+  mermaid?: boolean
+  katex?: boolean
+}
+```
+
+### baseUrl
+
+- **Type:** `string | undefined`
+- **Default:** `undefined`
+
+Base URL for the CDN. When provided, libraries will be loaded using jsdelivr format: `${baseUrl}/module@version/+esm` for ESM modules or `${baseUrl}/module@version/dist/module.min.js` for UMD bundles.
+
+**Example:**
+
+```vue
+<script setup lang="ts">
+import type { CdnOptions } from 'vue-stream-markdown'
+import { Markdown } from 'vue-stream-markdown'
+
+const cdnOptions: CdnOptions = {
+  baseUrl: 'https://cdn.jsdelivr.net/npm/',
+}
+</script>
+
+<template>
+  <Markdown :content="content" :cdn-options="cdnOptions" />
+</template>
+```
+
+### generateUrl
+
+- **Type:** `(module: 'katex' | 'mermaid' | 'shiki', version: string) => string | undefined`
+- **Default:** `undefined`
+
+Custom function to generate CDN URLs for each module. This allows you to use custom CDN providers or URL patterns.
+
+**Example:**
+
+```vue
+<script setup lang="ts">
+import type { CdnOptions } from 'vue-stream-markdown'
+import { Markdown } from 'vue-stream-markdown'
+
+const cdnOptions: CdnOptions = {
+  generateUrl: (module, version) => {
+    return `https://cdn.example.com/${module}@${version}/index.esm.mjs`
+  },
+}
+</script>
+
+<template>
+  <Markdown :content="content" :cdn-options="cdnOptions" />
+</template>
+```
+
+### shiki
+
+- **Type:** `boolean | undefined`
+- **Default:** `true`
+
+Whether to load Shiki from CDN. When set to `false`, Shiki will be loaded from local node_modules. Requires ESM support in the browser.
+
+### mermaid
+
+- **Type:** `boolean | undefined`
+- **Default:** `true`
+
+Whether to load Mermaid from CDN. When set to `false`, Mermaid will be loaded from local node_modules. Requires ESM support for modern browsers, falls back to UMD bundle for older browsers.
+
+### katex
+
+- **Type:** `boolean | undefined`
+- **Default:** `true`
+
+Whether to load KaTeX CSS from CDN. When set to `false`, KaTeX CSS will not be loaded from CDN. Requires ESM support for modern browsers, falls back to UMD bundle for older browsers.
+
+## Notes
+
+- CDN configuration is optional. By default, libraries are loaded from local node_modules.
+- When CDN is enabled, you don't need to install them as peer dependencies.
+- Require ESM support to load from CDN. The library automatically detects ESM support and falls back to local imports if needed.

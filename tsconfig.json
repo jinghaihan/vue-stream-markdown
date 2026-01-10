@@ -31,7 +31,12 @@
     "src",
     "docs",
     "docs/.**/**/*.ts",
-    "docs/.**/**/*.vue"
+    "docs/.**/**/*.vue",
+    "shims.d.ts"
   ],
-  "exclude": ["node_modules", "dist", "playground"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "playground"
+  ]
 }

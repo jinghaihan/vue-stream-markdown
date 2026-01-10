@@ -342,6 +342,45 @@ KaTeX configuration object.
 
 Custom component to display when KaTeX rendering fails.
 
+### cdnOptions
+
+- **Type:** `CdnOptions`
+
+Configuration for loading external libraries (Shiki, Mermaid, KaTeX) from CDN instead of local node_modules.
+
+#### baseUrl
+
+- **Type:** `string`
+
+Base URL for the CDN. When provided, libraries will be loaded from CDN using jsdelivr format.
+
+#### generateUrl
+
+- **Type:** `(module: 'katex' | 'mermaid' | 'shiki', version: string) => string`
+
+Custom function to generate CDN URLs for each module.
+
+#### shiki
+
+- **Type:** `boolean`
+- **Default:** `true`
+
+Whether to load Shiki from CDN. Requires ESM support.
+
+#### mermaid
+
+- **Type:** `boolean`
+- **Default:** `true`
+
+Whether to load Mermaid from CDN.
+
+#### katex
+
+- **Type:** `boolean`
+- **Default:** `true`
+
+Whether to load KaTeX CSS from CDN.
+
 ### hardenOptions
 
 - **Type:** `HardenOptions`

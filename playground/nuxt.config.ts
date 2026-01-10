@@ -42,6 +42,9 @@ export default defineNuxtConfig({
           'vue-stream-markdown': ['../src/'],
         },
       },
+      include: [
+        '../../shims.d.ts',
+      ],
     },
   },
   eslint: {

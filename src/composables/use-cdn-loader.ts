@@ -98,7 +98,7 @@ export function useCdnLoader(options?: UseCdnLoaderOptions) {
       return
 
     const module = await dynamicImport<typeof import('mermaid')>(url)
-    mermaidModule = module
+    mermaidModule = (isSupportESM() ? module : window.mermaid) ?? null
 
     return module
   }
