@@ -19,10 +19,10 @@ function dynamicImport<T>(url: string): Promise<T> {
 export function useCdnLoader(options?: UseCdnLoaderOptions) {
   const { cdnOptions } = options ?? {}
 
-  const customGenerate = !!cdnOptions?.generateUrl
   const baseUrl = cdnOptions?.baseUrl
     ? trailingSlash(cdnOptions.baseUrl)
     : ''
+  const customGetter = !!cdnOptions?.getUrl
 
   const shikiEnabled = cdnOptions?.shiki !== false
   const mermaidEnabled = cdnOptions?.mermaid !== false
@@ -34,14 +34,18 @@ export function useCdnLoader(options?: UseCdnLoaderOptions) {
   function getCdnShikiUrl(): string | undefined {
     if (!shikiEnabled)
       return
-    if (!baseUrl && !customGenerate)
+    if (!baseUrl && !customGetter)
       return
     if (!isSupportESM())
       return
 
-    return customGenerate
-      ? cdnOptions?.generateUrl?.('shiki', SHIKI_VERSION)
-      : `${baseUrl}/shiki@${SHIKI_VERSION}/+esm`
+    if (customGetter) {
+      const url = cdnOptions?.getUrl?.('shiki', SHIKI_VERSION)
+      if (url)
+        return url
+    }
+
+    return `${baseUrl}/shiki@${SHIKI_VERSION}/+esm`
   }
 
   async function loadCdnShiki(): Promise<typeof import('shiki') | undefined> {
@@ -61,10 +65,13 @@ export function useCdnLoader(options?: UseCdnLoaderOptions) {
   function getCdnMermaidUrl(): string | undefined {
     if (!mermaidEnabled)
       return
-    if (!baseUrl && !customGenerate)
+    if (!baseUrl && !customGetter)
       return
-    if (customGenerate)
-      return cdnOptions?.generateUrl?.('mermaid', MERMAID_VERSION)
+    if (customGetter) {
+      const url = cdnOptions?.getUrl?.('mermaid', MERMAID_VERSION)
+      if (url)
+        return url
+    }
 
     const umd = `${baseUrl}/mermaid@${MERMAID_VERSION}/dist/mermaid.min.js`
     if (mermaidStrategy === 'umd')
@@ -92,10 +99,13 @@ export function useCdnLoader(options?: UseCdnLoaderOptions) {
   function getCdnKatexUrl(): string | undefined {
     if (!katexEnabled)
       return
-    if (!baseUrl && !customGenerate)
+    if (!baseUrl && !customGetter)
       return
-    if (customGenerate)
-      return cdnOptions?.generateUrl?.('katex', KATEX_VERSION)
+    if (customGetter) {
+      const url = cdnOptions?.getUrl?.('katex', KATEX_VERSION)
+      if (url)
+        return url
+    }
 
     const umd = `${baseUrl}/katex@${KATEX_VERSION}/dist/katex.min.js`
     if (katexStrategy === 'umd')
@@ -123,10 +133,13 @@ export function useCdnLoader(options?: UseCdnLoaderOptions) {
   function getCdnKatexCssUrl(): string | undefined {
     if (!katexEnabled)
       return
-    if (!baseUrl && !customGenerate)
+    if (!baseUrl && !customGetter)
       return
-    if (customGenerate)
-      return cdnOptions?.generateUrl?.('katex', KATEX_VERSION)
+    if (customGetter) {
+      const url = cdnOptions?.getUrl?.('katex-css', KATEX_VERSION)
+      if (url)
+        return url
+    }
 
     return `${baseUrl}/katex@${KATEX_VERSION}/dist/katex.min.css`
   }

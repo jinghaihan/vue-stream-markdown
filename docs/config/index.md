@@ -354,9 +354,9 @@ Configuration for loading external libraries (Shiki, Mermaid, KaTeX) from CDN in
 
 Base URL for the CDN. When provided, libraries will be loaded from CDN using jsdelivr format.
 
-#### generateUrl
+#### getUrl
 
-- **Type:** `(module: 'katex' | 'mermaid' | 'shiki', version: string) => string`
+- **Type:** `(module: 'shiki' | 'mermaid' | 'katex' | 'katex-css', version: string) => string`
 
 Custom function to generate CDN URLs for each module.
 

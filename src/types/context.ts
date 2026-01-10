@@ -212,7 +212,7 @@ export interface UIOptions {
 
 export interface CdnOptions {
   baseUrl?: string
-  generateUrl?: (module: 'katex' | 'mermaid' | 'shiki', version: string) => string
+  getUrl?: (module: 'shiki' | 'mermaid' | 'katex' | 'katex-css', version: string) => string
   shiki?: boolean
   mermaid?: 'esm' | 'umd' | false
   katex?: 'esm' | 'umd' | false

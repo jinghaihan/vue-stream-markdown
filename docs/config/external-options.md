@@ -418,7 +418,7 @@ Configure CDN loading for external libraries to reduce bundle size and improve l
 ```typescript
 interface CdnOptions {
   baseUrl?: string
-  generateUrl?: (module: 'katex' | 'mermaid' | 'shiki', version: string) => string
+  getUrl?: (module: 'shiki' | 'mermaid' | 'katex' | 'katex-css', version: string) => string
   shiki?: boolean
   mermaid?: 'esm' | 'umd' | false
   katex?: 'esm' | 'umd' | false
@@ -450,9 +450,9 @@ const cdnOptions: CdnOptions = {
 </template>
 ```
 
-### generateUrl
+### getUrl
 
-- **Type:** `(module: 'katex' | 'mermaid' | 'shiki', version: string) => string | undefined`
+- **Type:** `(module: 'shiki' | 'mermaid' | 'katex' | 'katex-css', version: string) => string | undefined`
 - **Default:** `undefined`
 
 Custom function to generate CDN URLs for each module. This allows you to use custom CDN providers or URL patterns.
@@ -465,7 +465,7 @@ import type { CdnOptions } from 'vue-stream-markdown'
 import { Markdown } from 'vue-stream-markdown'
 
 const cdnOptions: CdnOptions = {
-  generateUrl: (module, version) => {
+  getUrl: (module, version) => {
     return `https://cdn.example.com/${module}@${version}/index.esm.mjs`
   },
 }
