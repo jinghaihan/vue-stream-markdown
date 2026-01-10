@@ -39,7 +39,7 @@ pnpm add vue-stream-markdown
 
 > [!IMPORTANT]
 > 🚧 **vue-stream-markdown** is currently in active feature development.
-> From version `0.4.0` onwards, you need to manually include `katex.min.css`.
+> From version `0.4.0` onwards, you need to manually include `katex.min.css`. If CDN is enabled, it will be automatically loaded.
 
 For detailed usage and API documentation, please refer to the [Documentation](https://docs-vue-stream-markdown.netlify.app/).
 
@@ -47,6 +47,7 @@ For detailed usage and API documentation, please refer to the [Documentation](ht
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Markdown } from 'vue-stream-markdown'
+// If CDN is enabled, you don't need to manually import katex.min.css
 import 'katex/dist/katex.min.css'
 import 'vue-stream-markdown/index.css'
 // If you don't have shadcn CSS variables globally, import the theme

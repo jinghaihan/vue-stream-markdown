@@ -33,6 +33,7 @@ By default, the component runs in `streaming` mode, which is optimized for progr
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Markdown } from 'vue-stream-markdown'
+// If CDN is enabled, you don't need to manually import katex.min.css
 import 'katex/dist/katex.min.css'
 import 'vue-stream-markdown/index.css'
 // If you don't have shadcn CSS variables globally, import the theme
@@ -57,6 +58,7 @@ This component library supports server-side rendering. When using with Nuxt.js, 
 ```ts
 export default defineNuxtConfig({
   css: [
+    // If CDN is enabled, you can omit katex.min.css
     'katex/dist/katex.min.css',
     'vue-stream-markdown/index.css',
     // If you don't have shadcn CSS variables globally, import the theme

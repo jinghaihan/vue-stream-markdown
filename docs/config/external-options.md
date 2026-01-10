@@ -494,7 +494,7 @@ Whether to load Mermaid from CDN. When set to `false`, Mermaid will be loaded fr
 - **Type:** `boolean | undefined`
 - **Default:** `true`
 
-Whether to load KaTeX CSS from CDN. When set to `false`, KaTeX CSS will not be loaded from CDN. Requires ESM support for modern browsers, falls back to UMD bundle for older browsers.
+Whether to load KaTeX CSS from CDN. When enabled, KaTeX CSS will be automatically loaded from CDN, so manual import is not needed. Requires ESM support for modern browsers, falls back to UMD bundle for older browsers.
 
 ## Notes
 

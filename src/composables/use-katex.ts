@@ -48,8 +48,8 @@ export function useKatex(options: UseKatexOptions) {
       return
 
     if (await hasKatex()) {
-      // Because `katex.min.css` is not included in the bundle, you need to import it manually.
-      // If using CDN, will automatically import the CSS file.
+      // Because `katex.min.css` is not included in the bundle, you need to import it manually when not using CDN.
+      // If using CDN, the CSS file will be automatically loaded.
       loadCdnKatexCss()
     }
   }

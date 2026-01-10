@@ -81,8 +81,6 @@ The library includes a default theme based on the shadcn/ui `blue` theme using `
 ```vue
 <script setup lang="ts">
 import { Markdown } from 'vue-stream-markdown'
-import 'katex/dist/katex.min.css'
-import 'vue-stream-markdown/index.css'
 import 'vue-stream-markdown/theme.css'
 </script>
 ```
