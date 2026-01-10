@@ -42,44 +42,49 @@ function getAlign(index: number) {
 </template>
 
 <style>
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='table'] {
-  width: 100%;
-  border-collapse: collapse;
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  overflow: hidden;
-}
+:is(.stream-markdown, .stream-markdown-overlay) {
+  & [data-stream-markdown='table'] {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    overflow: hidden;
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='table-header'] {
-  position: relative;
-  background-color: color-mix(in oklab, var(--muted) 80%, transparent);
-}
+    & tr {
+      border-bottom: 1px solid var(--border);
+    }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='table-body'] {
-  position: relative;
-  border-color: var(--border);
-  border-block-width: 1px;
-  font-weight: 600;
-  background-color: color-mix(in oklab, var(--muted) 40%, transparent);
-}
+    & p {
+      margin: 0;
+    }
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='table'] tr {
-  border-bottom: 1px solid var(--border);
-}
+  & [data-stream-markdown='table-header'] {
+    position: relative;
+    background-color: color-mix(in oklab, var(--muted) 80%, transparent);
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='table'] p {
-  margin: 0;
-}
+    & th {
+      white-space: nowrap;
+      padding-inline: 1rem;
+      padding-block: 0.5rem;
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+    }
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='table-header'] th {
-  white-space: nowrap;
-}
+  & [data-stream-markdown='table-body'] {
+    position: relative;
+    border-color: var(--border);
+    border-block-width: 1px;
+    font-weight: 600;
+    background-color: color-mix(in oklab, var(--muted) 40%, transparent);
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='table-header'] th,
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='table-body'] td {
-  padding-inline: 1rem;
-  padding-block: 0.5rem;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
+    & td {
+      padding-inline: 1rem;
+      padding-block: 0.5rem;
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+    }
+  }
 }
 </style>

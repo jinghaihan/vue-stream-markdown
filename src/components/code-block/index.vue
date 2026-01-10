@@ -380,77 +380,79 @@ watch(
 </template>
 
 <style>
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='actions'] {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
+:is(.stream-markdown, .stream-markdown-overlay) {
+  & [data-stream-markdown='actions'] {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='code-block'] {
-  margin-block: 1rem;
-  border-radius: 0.75rem;
-  border: 1px solid var(--border);
-  overflow: clip;
-}
+  & [data-stream-markdown='code-block'] {
+    margin-block: 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border);
+    overflow: clip;
 
-:is(.stream-markdown, .stream-markdown-overlay)
-  [data-stream-markdown='code-block'][data-collapsed='true']
-  [data-stream-markdown='code-block-header'] {
-  border-bottom: none;
-}
+    &[data-collapsed='true'] [data-stream-markdown='code-block-header'] {
+      border-bottom: none;
+    }
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='code-block-header'] {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-inline: 1rem;
-  padding-block: 0.375rem;
-  border-bottom: 1px solid var(--border);
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  background-color: color-mix(in oklab, var(--muted) 80%, transparent);
-  color: var(--muted-foreground);
-}
+  & [data-stream-markdown='code-block-header'] {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-inline: 1rem;
+    padding-block: 0.375rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    background-color: color-mix(in oklab, var(--muted) 80%, transparent);
+    color: var(--muted-foreground);
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='code-block-content'] {
-  overflow: auto;
-}
+    & > :first-child {
+      flex: 1;
+    }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='code-block-header'] > :first-child {
-  flex: 1;
-}
+    & > :last-child {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+    }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='code-block-header'] > :last-child {
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-}
+    & > :nth-child(2) {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='code-block-header'] > :nth-child(2) {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-}
+  & [data-stream-markdown='code-block-content'] {
+    overflow: auto;
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='language-title'] {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
+  & [data-stream-markdown='language-title'] {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='language-name'] {
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  text-transform: lowercase;
+  & [data-stream-markdown='language-name'] {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    text-transform: lowercase;
+  }
 }
 
 @media (max-width: 1024px) {
-  :is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='code-block-header'] {
-    padding-inline: 0.75rem;
+  :is(.stream-markdown, .stream-markdown-overlay) {
+    & [data-stream-markdown='code-block-header'] {
+      padding-inline: 0.75rem;
+    }
   }
 }
 </style>

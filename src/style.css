@@ -15,46 +15,46 @@
 
   font-family: var(--font-sans);
   color: var(--foreground);
-}
 
-:is(.stream-markdown, .stream-markdown-overlay) .shiki,
-:is(.stream-markdown, .stream-markdown-overlay) .shiki span {
-  color: var(--shiki-light) !important;
-  background-color: var(--shiki-light-bg) !important;
-}
+  & * {
+    box-sizing: border-box;
+    border: 0 solid;
+    margin: 0;
+    padding: 0;
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) * {
-  box-sizing: border-box;
-  border: 0 solid;
-  margin: 0;
-  padding: 0;
-}
+  & .shiki,
+  & .shiki span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) > *:first-child {
-  margin-top: 0 !important;
-}
+  & > *:first-child {
+    margin-top: 0 !important;
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) > *:last-child {
-  margin-bottom: 0 !important;
-}
+  & > *:last-child {
+    margin-bottom: 0 !important;
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
+  & ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) ::-webkit-scrollbar-track {
-  background: transparent;
-}
+  & ::-webkit-scrollbar-track {
+    background: transparent;
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) ::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 3px;
-}
+  & ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
 
-:is(.stream-markdown, .stream-markdown-overlay) ::-webkit-scrollbar-thumb:hover {
-  background: var(--border);
-  opacity: 0.5;
+    &:hover {
+      background: var(--border);
+      opacity: 0.5;
+    }
+  }
 }
 
 .stream-markdown-typewriter-enter-from {

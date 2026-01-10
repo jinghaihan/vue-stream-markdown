@@ -146,24 +146,26 @@ function getNodes(cell: unknown) {
 </template>
 
 <style>
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='table-wrapper'] {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-block: 1rem;
-}
+:is(.stream-markdown, .stream-markdown-overlay) {
+  & [data-stream-markdown='table-wrapper'] {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-block: 1rem;
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='table-controls'] {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: end;
-  gap: 0.25rem;
-}
+  & [data-stream-markdown='table-controls'] {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    gap: 0.25rem;
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='table-inner-wrapper'] {
-  width: 100%;
-  overflow-x: auto;
+  & [data-stream-markdown='table-inner-wrapper'] {
+    width: 100%;
+    overflow-x: auto;
+  }
 }
 </style>

@@ -41,41 +41,39 @@ const component = computed(() => {
 </template>
 
 <style>
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='code'],
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='code'] code {
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
-}
+:is(.stream-markdown, .stream-markdown-overlay) {
+  & [data-stream-markdown='code'],
+  & [data-stream-markdown='code'] code {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='code'] [data-stream-markdown='code-line'] {
-  display: block;
-  position: relative;
-  font-size: 0.875rem;
-  min-height: 1rem;
-}
+  & [data-stream-markdown='code'] {
+    padding: 1rem;
 
-:is(.stream-markdown, .stream-markdown-overlay)
-  [data-stream-markdown='code']
-  [data-stream-markdown='code-line']::before {
-  display: inline-block;
-  width: 1rem;
-  margin-right: 1rem;
-  font-size: 13px;
-  text-align: right;
-  color: color-mix(in oklab, var(--muted-foreground) 50%, transparent);
-  font-family: var(--font-mono);
-  content: counter(line);
-  counter-increment: line;
-  user-select: none;
-}
+    & [data-stream-markdown='code-line'] {
+      display: block;
+      position: relative;
+      font-size: 0.875rem;
+      min-height: 1rem;
 
-:is(.stream-markdown, .stream-markdown-overlay)
-  [data-stream-markdown='code'][data-show-line-numbers='false']
-  [data-stream-markdown='code-line']::before {
-  display: none;
-}
+      &::before {
+        display: inline-block;
+        width: 1rem;
+        margin-right: 1rem;
+        font-size: 13px;
+        text-align: right;
+        color: color-mix(in oklab, var(--muted-foreground) 50%, transparent);
+        font-family: var(--font-mono);
+        content: counter(line);
+        counter-increment: line;
+        user-select: none;
+      }
+    }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='code'] {
-  padding: 1rem;
+    &[data-show-line-numbers='false'] [data-stream-markdown='code-line']::before {
+      display: none;
+    }
+  }
 }
 </style>

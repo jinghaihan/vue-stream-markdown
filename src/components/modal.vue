@@ -71,42 +71,44 @@ useEventListener(document, 'keyup', (event) => {
 </template>
 
 <style>
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='modal'] {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--background);
-}
+:is(.stream-markdown, .stream-markdown-overlay) {
+  & [data-stream-markdown='modal'] {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--background);
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='modal-header'] {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-  padding-inline: 1rem;
-  padding-block: 0.5rem;
-}
+  & [data-stream-markdown='modal-header'] {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    padding-inline: 1rem;
+    padding-block: 0.5rem;
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='modal-body'] {
-  flex: 1 1 0%;
-  overflow: auto;
-}
+    & > :first-child {
+      flex: 1;
+    }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='modal-header'] > :first-child {
-  flex: 1;
-}
+    & > :last-child {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+    }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='modal-header'] > :last-child {
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-}
+    & > :nth-child(2) {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='modal-header'] > :nth-child(2) {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  & [data-stream-markdown='modal-body'] {
+    flex: 1 1 0%;
+    overflow: auto;
+  }
 }
 </style>

@@ -12,17 +12,19 @@ const props = withDefaults(defineProps<BlockquoteNodeRendererProps>(), {})
 </template>
 
 <style>
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='blockquote'] {
-  position: relative;
-  margin-inline: 0;
-  margin-block: 1rem;
-  padding-left: 1rem;
-  border-left: 4px solid color-mix(in oklab, var(--muted-foreground) 30%, transparent);
-  font-style: italic;
-  color: var(--muted-foreground);
-}
+:is(.stream-markdown, .stream-markdown-overlay) {
+  & [data-stream-markdown='blockquote'] {
+    position: relative;
+    margin-inline: 0;
+    margin-block: 1rem;
+    padding-left: 1rem;
+    border-left: 4px solid color-mix(in oklab, var(--muted-foreground) 30%, transparent);
+    font-style: italic;
+    color: var(--muted-foreground);
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='blockquote'] p {
-  margin-bottom: 0;
+    & p {
+      margin-bottom: 0;
+    }
+  }
 }
 </style>

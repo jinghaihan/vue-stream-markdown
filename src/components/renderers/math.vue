@@ -33,8 +33,10 @@ const Error = computed(() => katexOptions.value?.errorComponent ?? ErrorComponen
 </template>
 
 <style>
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='math'] {
-  text-align: center;
-  margin-block: 1rem;
+:is(.stream-markdown, .stream-markdown-overlay) {
+  & [data-stream-markdown='math'] {
+    text-align: center;
+    margin-block: 1rem;
+  }
 }
 </style>

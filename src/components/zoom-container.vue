@@ -222,40 +222,44 @@ function onTouchEnd(event: TouchEvent) {
 </template>
 
 <style>
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='zoom-container'] {
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-}
+:is(.stream-markdown, .stream-markdown-overlay) {
+  & [data-stream-markdown='zoom-container'] {
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='zoom-inner'] {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  width: 100%;
-}
+  & [data-stream-markdown='zoom-inner'] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='zoom-transform-container'] {
-  width: 100%;
-  flex-shrink: 0;
-}
+  & [data-stream-markdown='zoom-transform-container'] {
+    width: 100%;
+    flex-shrink: 0;
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='zoom-controls'] {
-  position: absolute;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem;
-  border-radius: 0.75rem;
-  border: 1px solid var(--border);
-  background-color: var(--background);
+  & [data-stream-markdown='zoom-controls'] {
+    position: absolute;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border);
+    background-color: var(--background);
+  }
 }
 
 @media (max-width: 1024px) {
-  :is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='zoom-controls'] {
-    gap: 0;
+  :is(.stream-markdown, .stream-markdown-overlay) {
+    & [data-stream-markdown='zoom-controls'] {
+      gap: 0;
+    }
   }
 }
 </style>

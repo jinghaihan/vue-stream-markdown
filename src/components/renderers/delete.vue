@@ -12,7 +12,9 @@ const props = withDefaults(defineProps<DeleteNodeRendererProps>(), {})
 </template>
 
 <style>
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='delete'] {
-  text-decoration: line-through;
+:is(.stream-markdown, .stream-markdown-overlay) {
+  & [data-stream-markdown='delete'] {
+    text-decoration: line-through;
+  }
 }
 </style>

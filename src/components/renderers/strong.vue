@@ -12,7 +12,9 @@ const props = withDefaults(defineProps<StrongNodeRendererProps>(), {})
 </template>
 
 <style>
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='strong'] {
-  font-weight: 600;
+:is(.stream-markdown, .stream-markdown-overlay) {
+  & [data-stream-markdown='strong'] {
+    font-weight: 600;
+  }
 }
 </style>

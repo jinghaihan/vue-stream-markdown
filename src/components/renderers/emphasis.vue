@@ -12,7 +12,9 @@ const props = withDefaults(defineProps<EmphasisNodeRendererProps>(), {})
 </template>
 
 <style>
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='emphasis'] {
-  font-style: italic;
+:is(.stream-markdown, .stream-markdown-overlay) {
+  & [data-stream-markdown='emphasis'] {
+    font-style: italic;
+  }
 }
 </style>

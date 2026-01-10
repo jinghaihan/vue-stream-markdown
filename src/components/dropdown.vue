@@ -57,7 +57,9 @@ function handleClick(event: MouseEvent, item: SelectOption) {
 </template>
 
 <style>
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='dropdown-overlay'] {
-  padding: 0.25rem;
+:is(.stream-markdown, .stream-markdown-overlay) {
+  & [data-stream-markdown='dropdown-overlay'] {
+    padding: 0.25rem;
+  }
 }
 </style>

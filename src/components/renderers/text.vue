@@ -9,8 +9,10 @@ withDefaults(defineProps<TextNodeRendererProps>(), {})
 </template>
 
 <style>
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='text'] {
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
+:is(.stream-markdown, .stream-markdown-overlay) {
+  & [data-stream-markdown='text'] {
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+  }
 }
 </style>

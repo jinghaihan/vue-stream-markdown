@@ -102,24 +102,26 @@ function onDropdownClick(event: MouseEvent, item: SelectOption) {
 </template>
 
 <style>
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='button'] {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
-  padding: 0.5rem;
-  cursor: pointer;
-  border: none;
-  border-radius: 0.375rem;
-  font-size: 0.75rem;
-  line-height: 1rem;
-  background-color: transparent;
-  color: var(--muted-foreground);
-  transition-duration: var(--default-transition-duration);
-}
+:is(.stream-markdown, .stream-markdown-overlay) {
+  & [data-stream-markdown='button'] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    border: none;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    background-color: transparent;
+    color: var(--muted-foreground);
+    transition-duration: var(--default-transition-duration);
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='button']:hover {
-  color: var(--foreground);
-  background-color: var(--accent);
+    &:hover {
+      color: var(--foreground);
+      background-color: var(--accent);
+    }
+  }
 }
 </style>

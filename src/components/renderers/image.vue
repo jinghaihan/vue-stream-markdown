@@ -146,45 +146,47 @@ function handleMouseLeave() {
 </template>
 
 <style>
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='image'] {
-  display: block;
-  height: auto;
-  max-width: 100%;
-  border-radius: 0.5rem;
-  object-fit: contain;
-  cursor: pointer;
-}
+:is(.stream-markdown, .stream-markdown-overlay) {
+  & [data-stream-markdown='image'] {
+    display: block;
+    height: auto;
+    max-width: 100%;
+    border-radius: 0.5rem;
+    object-fit: contain;
+    cursor: pointer;
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='image-figure'] {
-  display: inline-block;
-}
+  & [data-stream-markdown='image-figure'] {
+    display: inline-block;
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='image-wrapper'] {
-  position: relative;
-  text-align: center;
-}
+  & [data-stream-markdown='image-wrapper'] {
+    position: relative;
+    text-align: center;
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='image-caption'] {
-  text-align: center;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  font-style: italic;
-}
+  & [data-stream-markdown='image-caption'] {
+    text-align: center;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-style: italic;
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='image-mask'] {
-  opacity: 0;
-  position: absolute;
-  inset: 0;
-  border-radius: 0.5rem;
-  background-color: rgb(0 0 0 / 0.1);
-  pointer-events: none;
-  transition: opacity var(--default-transition-duration) ease;
-}
+  & [data-stream-markdown='image-mask'] {
+    opacity: 0;
+    position: absolute;
+    inset: 0;
+    border-radius: 0.5rem;
+    background-color: rgb(0 0 0 / 0.1);
+    pointer-events: none;
+    transition: opacity var(--default-transition-duration) ease;
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='image-download-button'] {
-  pointer-events: all;
-  position: absolute;
-  bottom: 0.5rem;
-  right: 0.5rem;
+  & [data-stream-markdown='image-download-button'] {
+    pointer-events: all;
+    position: absolute;
+    bottom: 0.5rem;
+    right: 0.5rem;
+  }
 }
 </style>

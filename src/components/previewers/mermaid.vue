@@ -229,19 +229,19 @@ if (!props.containerHeight) {
 </template>
 
 <style>
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='mermaid-previewer'] {
-  text-align: center;
-}
+:is(.stream-markdown, .stream-markdown-overlay) {
+  & [data-stream-markdown='mermaid-previewer'] {
+    text-align: center;
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='mermaid'] {
-  display: flex;
-  justify-content: center;
-  user-select: none;
-}
+    & [data-stream-markdown='error-component'] {
+      padding: 1rem;
+    }
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay)
-  [data-stream-markdown='mermaid-previewer']
-  [data-stream-markdown='error-component'] {
-  padding: 1rem;
+  & [data-stream-markdown='mermaid'] {
+    display: flex;
+    justify-content: center;
+    user-select: none;
+  }
 }
 </style>

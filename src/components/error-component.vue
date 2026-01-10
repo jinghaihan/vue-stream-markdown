@@ -62,26 +62,28 @@ const isHarden = computed(() => props.variant?.startsWith?.('harden-'))
 </template>
 
 <style>
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='error-component'] {
-  display: inline-block;
-  color: var(--muted-foreground);
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-}
+:is(.stream-markdown, .stream-markdown-overlay) {
+  & [data-stream-markdown='error-component'] {
+    display: inline-block;
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='error-component'] span {
-  flex: 1;
-  min-width: 0;
-  word-break: break-word;
-  overflow-wrap: break-word;
-}
+    & span {
+      flex: 1;
+      min-width: 0;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+  }
 
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='error-component-icon'] {
-  display: inline-flex;
-  align-items: center;
-  line-height: 1;
-  vertical-align: text-bottom;
-  margin-right: 0.5rem;
+  & [data-stream-markdown='error-component-icon'] {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+    vertical-align: text-bottom;
+    margin-right: 0.5rem;
+  }
 }
 </style>

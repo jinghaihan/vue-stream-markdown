@@ -9,9 +9,11 @@ withDefaults(defineProps<ThematicBreakNodeRendererProps>(), {})
 </template>
 
 <style>
-:is(.stream-markdown, .stream-markdown-overlay) [data-stream-markdown='thematic-break'] {
-  margin-top: 1.5rem;
-  margin-bottom: 1.5rem;
-  border-top: 1px solid var(--border);
+:is(.stream-markdown, .stream-markdown-overlay) {
+  & [data-stream-markdown='thematic-break'] {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
 }
 </style>
