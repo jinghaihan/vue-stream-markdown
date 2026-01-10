@@ -9,5 +9,6 @@ export function isServer(): boolean {
 export function isSupportESM(): boolean {
   if (isServer())
     return false
-  return 'noModule' in HTMLScriptElement.prototype === false
+  const script = document.createElement('script')
+  return 'noModule' in script
 }

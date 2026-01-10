@@ -14,8 +14,8 @@ export default defineComponent({
     if (!props.tokens)
       return null
 
-    const getTokenStyleObjectRef = shallowRef<typeof getTokenStyleObject | null>(null)
-    ;(async () => {
+    const getTokenStyleObjectRef = shallowRef<typeof getTokenStyleObject | null>(null);
+    (async () => {
       const { getTokenStyleObject } = await import('shiki')
       getTokenStyleObjectRef.value = getTokenStyleObject
     })()

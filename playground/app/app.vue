@@ -113,6 +113,11 @@ const uiOptions = computed((): UIOptions => {
   }
 })
 
+const cdnOptions: CdnOptions = {
+  baseUrl: 'https://cdn.jsdelivr.net/npm/',
+  shiki: false,
+}
+
 const controlsConfig = computed((): ControlsConfig => {
   return {
     mermaid: {
@@ -131,11 +136,6 @@ const previewerConfig: PreviewerConfig = {
       hydrate: hydrateOnVisible(),
     }),
   },
-}
-
-const cdnOptions: CdnOptions = {
-  baseUrl: 'https://cdn.jsdelivr.net/npm/',
-  shiki: false,
 }
 
 const nodeRenderers: StreamMarkdownProps['nodeRenderers'] = {
