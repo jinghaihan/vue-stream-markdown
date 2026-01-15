@@ -252,6 +252,42 @@ export const deleteTestCases: TestCasesByCategory = {
       input: 'Text ~~strike~~ and [link](https://example.com/page~value) ~~more',
       expected: 'Text ~~strike~~ and [link](https://example.com/page~value) ~~more~~',
     },
+    {
+      description: 'should not process ~~ inside unclosed code block',
+      input: '```js\nconst x = ~~value',
+      expected: '```js\nconst x = ~~value',
+      integrationExpected: '```js\nconst x = ~~value\n```',
+    },
+    {
+      description: 'should skip ~~ inside inline code fence in paragraph',
+      input: 'Text ```~~inside~~``` and ~~outside',
+      expected: 'Text ```~~inside~~``` and ~~outside~~',
+    },
+    {
+      description: 'should handle toggled code fences in paragraph',
+      input: '```a``` text ```b ~~``` more ~~strike',
+      expected: '```a``` text ```b ~~``` more ~~strike~~',
+    },
+    {
+      description: 'should not modify when ~~ only in URL',
+      input: 'Check [link](http://a.com/~~path~~)',
+      expected: 'Check [link](http://a.com/~~path~~)',
+    },
+    {
+      description: 'should ignore ~~ in HTML attributes',
+      input: '<span title="~~tip~~">~~text',
+      expected: '<span title="~~tip~~">~~text~~',
+    },
+    {
+      description: 'should handle ~~ in third paragraph',
+      input: 'P1\n\nP2\n\nP3 ~~text',
+      expected: 'P1\n\nP2\n\nP3 ~~text~~',
+    },
+    {
+      description: 'should not complete ~~ when paragraph starts with closing fence',
+      input: '```js\nconst x = 1\n\n```\nText ~~strike',
+      expected: '```js\nconst x = 1\n\n```\nText ~~strike',
+    },
   ],
 }
 
