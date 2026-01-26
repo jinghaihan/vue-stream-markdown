@@ -14,6 +14,7 @@ export default defineConfig({
   outputOptions: {
     minify: true,
   },
+  inlineOnly: false,
   external: ['shiki', 'mermaid', 'katex'],
   css: {
     splitting: false,
