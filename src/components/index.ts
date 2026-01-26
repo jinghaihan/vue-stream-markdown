@@ -19,3 +19,5 @@ export const UI = {
   Tooltip: defineAsyncComponent(() => import('./tooltip.vue')),
   ZoomContainer: defineAsyncComponent(() => import('./zoom-container.vue')),
 } as const
+
+export const NodeList = UI.NodeList
