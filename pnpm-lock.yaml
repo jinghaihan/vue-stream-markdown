@@ -201,6 +201,9 @@ importers:
 
   .:
     dependencies:
+      '@antfu/utils':
+        specifier: catalog:inline
+        version: 9.3.0
       '@floating-ui/dom':
         specifier: catalog:frontend
         version: 1.7.4
@@ -210,6 +213,45 @@ importers:
       marked:
         specifier: catalog:parser
         version: 17.0.1
+      mdast-util-from-markdown:
+        specifier: catalog:parser
+        version: 2.0.2
+      mdast-util-frontmatter:
+        specifier: catalog:parser
+        version: 2.0.1
+      mdast-util-gfm:
+        specifier: catalog:parser
+        version: 3.1.0
+      mdast-util-math:
+        specifier: catalog:parser
+        version: 3.0.0
+      mdast-util-to-markdown:
+        specifier: catalog:parser
+        version: 2.1.2
+      micromark-extension-cjk-friendly:
+        specifier: catalog:parser
+        version: 2.0.0(micromark-util-types@2.0.2)(micromark@4.0.2)
+      micromark-extension-cjk-friendly-gfm-strikethrough:
+        specifier: catalog:parser
+        version: 2.0.0(micromark-util-types@2.0.2)(micromark@4.0.2)
+      micromark-extension-frontmatter:
+        specifier: catalog:parser
+        version: 2.0.0
+      micromark-extension-gfm:
+        specifier: catalog:parser
+        version: 3.0.0
+      micromark-extension-math:
+        specifier: catalog:parser
+        version: 3.1.0
+      micromark-util-types:
+        specifier: catalog:parser
+        version: 2.0.2
+      quick-lru:
+        specifier: catalog:inline
+        version: 7.3.0
+      treechop:
+        specifier: catalog:inline
+        version: 0.1.2
       vue:
         specifier: ^3.5.27
         version: 3.5.27(typescript@5.9.3)
@@ -217,9 +259,6 @@ importers:
       '@antfu/eslint-config':
         specifier: catalog:lint
         version: 7.2.0(@unocss/eslint-plugin@66.5.9(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(@vue/compiler-sfc@3.5.27)(eslint-plugin-format@1.3.1(eslint@9.39.2(jiti@2.6.1)))(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.18(@types/node@25.0.10)(happy-dom@20.0.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
-      '@antfu/utils':
-        specifier: catalog:inline
-        version: 9.3.0
       '@iconify-json/catppuccin':
         specifier: catalog:icons
         version: 1.2.17
@@ -271,51 +310,15 @@ importers:
       lint-staged:
         specifier: catalog:lint
         version: 16.2.7
-      mdast-util-from-markdown:
-        specifier: catalog:parser
-        version: 2.0.2
-      mdast-util-frontmatter:
-        specifier: catalog:parser
-        version: 2.0.1
-      mdast-util-gfm:
-        specifier: catalog:parser
-        version: 3.1.0
-      mdast-util-math:
-        specifier: catalog:parser
-        version: 3.0.0
-      mdast-util-to-markdown:
-        specifier: catalog:parser
-        version: 2.1.2
       mermaid:
         specifier: ^11.12.2
         version: 11.12.2
-      micromark-extension-cjk-friendly:
-        specifier: catalog:parser
-        version: 2.0.0(micromark-util-types@2.0.2)(micromark@4.0.2)
-      micromark-extension-cjk-friendly-gfm-strikethrough:
-        specifier: catalog:parser
-        version: 2.0.0(micromark-util-types@2.0.2)(micromark@4.0.2)
-      micromark-extension-frontmatter:
-        specifier: catalog:parser
-        version: 2.0.0
-      micromark-extension-gfm:
-        specifier: catalog:parser
-        version: 3.0.0
-      micromark-extension-math:
-        specifier: catalog:parser
-        version: 3.1.0
-      micromark-util-types:
-        specifier: catalog:parser
-        version: 2.0.2
       nuxt:
         specifier: catalog:dev
         version: 4.3.0(@parcel/watcher@2.5.1)(@types/node@25.0.10)(@vue/compiler-sfc@3.5.27)(cac@6.7.14)(db0@0.3.4)(eslint@9.39.2(jiti@2.6.1))(ioredis@5.9.2)(lightningcss@1.31.1)(magicast@0.5.1)(optionator@0.9.4)(rolldown@1.0.0-rc.1)(rollup@4.56.0)(terser@5.44.1)(tsx@4.21.0)(typescript@5.9.3)(vite@7.3.1(@types/node@25.0.10)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(vue-tsc@3.2.3(typescript@5.9.3))(yaml@2.8.2)
       pncat:
         specifier: catalog:cli
         version: 0.7.8
-      quick-lru:
-        specifier: catalog:inline
-        version: 7.3.0
       shiki:
         specifier: ^3.21.0
         version: 3.21.0
@@ -325,9 +328,6 @@ importers:
       taze:
         specifier: catalog:cli
         version: 19.9.2
-      treechop:
-        specifier: catalog:inline
-        version: 0.1.2
       tsdown:
         specifier: catalog:build
         version: 0.20.1(synckit@0.11.11)(typescript@5.9.3)(unplugin-lightningcss@0.4.5)(vue-tsc@3.2.3(typescript@5.9.3))
@@ -2632,9 +2632,6 @@ packages:
 
   '@types/node@25.0.10':
     resolution: {integrity: sha512-zWW5KPngR/yvakJgGOmZ5vTBemDoSqF3AcV/LrO5u5wTWyEAVVh+IT39G4gtyAkh3CtTZs8aX/yRM82OfzHJRg==}
-
-  '@types/node@25.0.6':
-    resolution: {integrity: sha512-NNu0sjyNxpoiW3YuVFfNz7mxSQ+S4X2G28uqg2s+CzoqoQjLPsWSbsFFyztIAqt2vb8kfEAsJNepMGPTxFDx3Q==}
 
   '@types/parse-path@7.1.0':
     resolution: {integrity: sha512-EULJ8LApcVEPbrfND0cRQqutIOdiIgJ1Mgrhpy755r14xMohPTEpkV/k28SJvuOs9bHRFW8x+KeDAEPiGQPB9Q==}
@@ -9498,10 +9495,6 @@ snapshots:
     dependencies:
       undici-types: 7.16.0
 
-  '@types/node@25.0.6':
-    dependencies:
-      undici-types: 7.16.0
-
   '@types/parse-path@7.1.0':
     dependencies:
       parse-path: 7.1.0
@@ -12181,7 +12174,7 @@ snapshots:
 
   jest-worker@27.5.1:
     dependencies:
-      '@types/node': 25.0.6
+      '@types/node': 25.0.10
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
