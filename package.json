@@ -71,7 +71,6 @@
     }
   },
   "dependencies": {
-    "@antfu/utils": "catalog:inline",
     "@floating-ui/dom": "catalog:frontend",
     "@vueuse/core": "catalog:utils",
     "marked": "catalog:parser",
@@ -85,12 +84,11 @@
     "micromark-extension-frontmatter": "catalog:parser",
     "micromark-extension-gfm": "catalog:parser",
     "micromark-extension-math": "catalog:parser",
-    "micromark-util-types": "catalog:parser",
-    "quick-lru": "catalog:inline",
-    "treechop": "catalog:inline"
+    "micromark-util-types": "catalog:parser"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:lint",
+    "@antfu/utils": "catalog:inline",
     "@iconify-json/catppuccin": "catalog:icons",
     "@iconify-json/lucide": "catalog:icons",
     "@nuxt/devtools": "catalog:dev",
@@ -111,9 +109,11 @@
     "mermaid": "^11.12.2",
     "nuxt": "catalog:dev",
     "pncat": "catalog:cli",
+    "quick-lru": "catalog:inline",
     "shiki": "^3.21.0",
     "simple-git-hooks": "catalog:lint",
     "taze": "catalog:cli",
+    "treechop": "catalog:inline",
     "tsdown": "catalog:build",
     "tsx": "catalog:script",
     "typescript": "catalog:tsc",
