@@ -18,12 +18,17 @@ export function useDarkDetector(darkProp: MaybeRef<boolean | undefined>, cssVari
   function ensureOverlayContainer() {
     const overlayContainer = getOverlayContainer()
     if (!overlayContainer) {
-      const div = document.createElement('div')
-      div.id = OVERLAY_CONTAINER_ID
-      div.classList.add(OVERLAY_CONTAINER_ID)
-      div.classList.add(isDark.value ? 'dark' : 'light')
-      document.body.appendChild(div)
+      createOverlayContainer()
+      updateOverlayContainerTheme()
     }
+  }
+
+  function createOverlayContainer() {
+    const div = document.createElement('div')
+    div.id = OVERLAY_CONTAINER_ID
+    div.classList.add(OVERLAY_CONTAINER_ID)
+    div.classList.add(isDark.value ? 'dark' : 'light')
+    document.body.appendChild(div)
   }
 
   function updateOverlayContainerTheme() {
