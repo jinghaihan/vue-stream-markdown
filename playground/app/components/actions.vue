@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { StreamMarkdownProps } from 'vue-stream-markdown'
 import type { Action } from '../types'
 import { useClipboard } from '@vueuse/core'
 import * as LZString from 'lz-string'
@@ -54,6 +55,8 @@ const shikiLightTheme = defineModel<string>('shikiLightTheme', { required: false
 const shikiDarkTheme = defineModel<string>('shikiDarkTheme', { required: false, default: 'github-dark' })
 const mermaidLightTheme = defineModel<string>('mermaidLightTheme', { required: false, default: 'neutral' })
 const mermaidDarkTheme = defineModel<string>('mermaidDarkTheme', { required: false, default: 'dark' })
+
+const caret = defineModel<StreamMarkdownProps['caret']>('caret', { required: false, default: 'block' })
 
 function wrapAction(action: Omit<Action, 'key'>): Action | null {
   if (action.visible && !action.visible?.())
@@ -166,6 +169,7 @@ const actions = computed((): Action[] => {
     <SettingsPopover
       v-model:auto-scroll="autoScroll"
       v-model:static-mode="staticMode"
+      v-model:caret="caret"
       v-model:typing-index="typingIndex"
       v-model:typed-step="typedStep"
       v-model:typed-delay="typedDelay"

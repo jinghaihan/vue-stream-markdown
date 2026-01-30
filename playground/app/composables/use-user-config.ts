@@ -13,6 +13,7 @@ export function useUserConfig() {
     shikiDarkTheme: 'github-dark',
     mermaidLightTheme: 'neutral',
     mermaidDarkTheme: 'dark',
+    caret: 'block',
   }))
 
   watch(

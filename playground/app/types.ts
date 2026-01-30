@@ -1,6 +1,7 @@
 import type loader from '@monaco-editor/loader'
 import type { BuiltinTheme } from 'shiki'
 import type { Component } from 'vue'
+import type { StreamMarkdownProps } from 'vue-stream-markdown'
 
 export type Monaco = Awaited<ReturnType<typeof loader.init>>
 export type Editor = Awaited<ReturnType<Monaco['editor']['create']>>
@@ -17,6 +18,7 @@ export interface UserConfig {
   shikiDarkTheme: BuiltinTheme
   mermaidLightTheme: string
   mermaidDarkTheme: string
+  caret: StreamMarkdownProps['caret']
 }
 
 export interface IconButtonProps {

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type { SelectOption } from 'vue-stream-markdown'
+import type { SelectOption, StreamMarkdownProps } from 'vue-stream-markdown'
 import { bundledThemesInfo } from 'shiki'
+import { CARETS } from 'vue-stream-markdown'
 import { Settings } from '../icons'
 
 const props = withDefaults(defineProps<{
@@ -18,6 +19,8 @@ const shikiLightTheme = defineModel<string>('shikiLightTheme', { required: false
 const shikiDarkTheme = defineModel<string>('shikiDarkTheme', { required: false, default: 'github-dark' })
 const mermaidLightTheme = defineModel<string>('mermaidLightTheme', { required: false, default: 'neutral' })
 const mermaidDarkTheme = defineModel<string>('mermaidDarkTheme', { required: false, default: 'dark' })
+
+const caret = defineModel<StreamMarkdownProps['caret']>('caret', { required: false, default: 'block' })
 
 const BLOCK_CLASSES = [
   'h-10',
@@ -63,6 +66,11 @@ const MERMAID_THEMES: SelectOption[] = [
   { label: 'Forest', value: 'forest' },
   { label: 'Neutral', value: 'neutral' },
   { label: 'Base', value: 'base' },
+]
+
+const CARETS_OPTIONS: SelectOption[] = [
+  { label: 'None', value: '' },
+  ...Object.entries(CARETS).map(([key, value]) => ({ label: value, value: key })),
 ]
 
 function onTypingIndexChange() {
@@ -174,6 +182,20 @@ watch(() => staticMode.value, () => {
             v-model:value="mermaidDarkTheme"
             :class="CONTROL_CLASSES"
             :options="MERMAID_THEMES"
+          />
+        </div>
+
+        <hr :class="DIVIDER_CLASSES">
+        <h3 :class="BLOCK_TITLE_CLASSES">
+          Caret
+        </h3>
+
+        <div :class="BLOCK_CLASSES">
+          <Label :class="LABEL_CLASSES">Caret</Label>
+          <Select
+            v-model:value="caret"
+            :class="CONTROL_CLASSES"
+            :options="CARETS_OPTIONS"
           />
         </div>
       </div>

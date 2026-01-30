@@ -142,6 +142,8 @@ const nodeRenderers: StreamMarkdownProps['nodeRenderers'] = {
   html: HtmlNodeRenderer,
 }
 
+const caret = computed(() => userConfig.value.caret ? userConfig.value.caret : undefined)
+
 function onEditorChange(data: string) {
   content.value = data
 }
@@ -277,6 +279,7 @@ onMounted(() => {
         v-model:shiki-dark-theme="userConfig.shikiDarkTheme"
         v-model:mermaid-light-theme="userConfig.mermaidLightTheme"
         v-model:mermaid-dark-theme="userConfig.mermaidDarkTheme"
+        v-model:caret="userConfig.caret"
         :content="content"
         :prev-step="prevStep"
         :next-step="nextStep"
@@ -312,8 +315,8 @@ onMounted(() => {
       >
         <Markdown
           ref="markdownRef"
-          caret="block"
           :mode="mode"
+          :caret="caret"
           :content="markdownContent"
           :controls="controlsConfig"
           :previewers="previewerConfig"
