@@ -8,7 +8,7 @@ import type {
 import type { MaybeRef } from 'vue'
 import type { CdnOptions, ShikiOptions } from '../types'
 import { computed, ref, unref } from 'vue'
-import { DEFAULT_DARK_THEME, DEFAULT_LIGHT_THEME, LANGUAGE_ALIAS } from '../constants'
+import { DEFAULT_SHIKI_DARK_THEME, DEFAULT_SHIKI_LIGHT_THEME, LANGUAGE_ALIAS } from '../constants'
 import { hasShikiModule, isClient } from '../utils'
 import { useCdnLoader } from './use-cdn-loader'
 
@@ -29,9 +29,9 @@ export function useShiki(options?: UseShikiOptions) {
 
   const lang = computed(() => unref(options?.lang) ?? 'plaintext')
 
-  const shikiTheme = computed(() => unref(options?.shikiOptions)?.theme ?? [DEFAULT_LIGHT_THEME, DEFAULT_DARK_THEME])
-  const lightTheme = computed(() => shikiTheme.value[0] ?? DEFAULT_LIGHT_THEME)
-  const darkTheme = computed(() => shikiTheme.value[1] ?? DEFAULT_DARK_THEME)
+  const shikiTheme = computed(() => unref(options?.shikiOptions)?.theme ?? [DEFAULT_SHIKI_LIGHT_THEME, DEFAULT_SHIKI_DARK_THEME])
+  const lightTheme = computed(() => shikiTheme.value[0] ?? DEFAULT_SHIKI_LIGHT_THEME)
+  const darkTheme = computed(() => shikiTheme.value[1] ?? DEFAULT_SHIKI_DARK_THEME)
 
   const langs = computed(() => unref(options?.shikiOptions)?.langs ?? [])
   const langAlias = computed(() => {
@@ -60,8 +60,8 @@ export function useShiki(options?: UseShikiOptions) {
   async function getDualTheme() {
     const { bundledThemesInfo } = await getShiki()
     return {
-      light: bundledThemesInfo.find(t => t.id === lightTheme.value)?.id ?? DEFAULT_LIGHT_THEME,
-      dark: bundledThemesInfo.find(t => t.id === darkTheme.value)?.id ?? DEFAULT_DARK_THEME,
+      light: bundledThemesInfo.find(t => t.id === lightTheme.value)?.id ?? DEFAULT_SHIKI_LIGHT_THEME,
+      dark: bundledThemesInfo.find(t => t.id === darkTheme.value)?.id ?? DEFAULT_SHIKI_DARK_THEME,
     }
   }
 

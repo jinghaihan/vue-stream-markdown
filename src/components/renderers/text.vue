@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { TextNodeRendererProps } from '../../types'
 import { computed } from 'vue'
-import { useContext } from '../../composables'
+import Caret from '../caret.vue'
 
 defineOptions({
   inheritAttrs: false,
@@ -9,15 +9,13 @@ defineOptions({
 
 const props = withDefaults(defineProps<TextNodeRendererProps>(), {})
 
-const { caret, enableAnimate } = useContext()
-
 const loading = computed(() => props.node.loading)
 </script>
 
 <template>
   <span data-stream-markdown="text">
     {{ node.value }}
-    <span v-if="enableAnimate && loading" data-stream-markdown="caret">{{ caret }}</span>
+    <Caret v-if=" loading" />
   </span>
 </template>
 

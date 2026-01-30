@@ -2,8 +2,8 @@ import type { BuiltinLanguage, SpecialLanguage } from 'shiki'
 import type { Component } from 'vue'
 import { defineAsyncComponent } from 'vue'
 
-export const DEFAULT_LIGHT_THEME = 'github-light'
-export const DEFAULT_DARK_THEME = 'github-dark'
+export const DEFAULT_SHIKI_LIGHT_THEME = 'github-light'
+export const DEFAULT_SHIKI_DARK_THEME = 'github-dark'
 
 /// keep-sorted
 export const LANGUAGE_ALIAS: Record<string, BuiltinLanguage> = {}

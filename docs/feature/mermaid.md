@@ -248,11 +248,56 @@ Visualize Git workflows:
 
 <StreamMarkdown :content="gitGraph" />
 
+## Renderers
+
+::: tip Try it out
+Visit the [Playground](https://play-vue-stream-markdown.netlify.app/) to compare vanilla vs beautiful renderer effects.
+:::
+
+vue-stream-markdown supports two Mermaid rendering engines:
+
+### Vanilla Renderer (Default)
+
+The standard Mermaid.js renderer that supports all diagram types including flowcharts, sequence diagrams, state diagrams, class diagrams, ER diagrams, pie charts, Gantt charts, git graphs, and more.
+
+### Beautiful Renderer
+
+A beautiful-mermaid integration that creates more aesthetically pleasing diagrams with Shiki theme integration. The beautiful renderer provides:
+
+- Enhanced visual styling with modern design
+- Automatic theme synchronization with Shiki syntax highlighting
+- Smooth gradients and refined typography
+- Support for common diagram types
+- **Automatic fallback** to vanilla renderer for unsupported diagram types
+
+**Supported Diagram Types:**
+
+The beautiful renderer currently supports a limited set of diagram types. For the complete and up-to-date list of supported diagrams, please refer to the [beautiful-mermaid documentation](https://github.com/lukilabs/beautiful-mermaid).
+
 ## Configuration
+
+### Choosing a Renderer
+
+Select the renderer using the `renderer` property in `mermaidOptions`:
+
+```vue
+<script setup lang="ts">
+import type { MermaidOptions } from 'vue-stream-markdown'
+import { Markdown } from 'vue-stream-markdown'
+
+const mermaidOptions: MermaidOptions = {
+  renderer: 'beautiful', // or 'vanilla' (default)
+}
+</script>
+
+<template>
+  <Markdown :mermaid-options="mermaidOptions" />
+</template>
+```
 
 ### Theme Customization
 
-Customize the Mermaid theme using the `mermaidOptions` prop. vue-stream-markdown supports dual themes for light and dark modes:
+Customize the Mermaid theme using the `mermaidOptions` prop. vue-stream-markdown supports dual themes for light and dark modes.
 
 ```vue
 <script setup lang="ts">
@@ -281,9 +326,32 @@ const mermaidOptions: MermaidOptions = {
 
 The `theme` property accepts an array of two theme names: `[lightTheme, darkTheme]`. vue-stream-markdown will automatically switch between themes based on the current color mode.
 
-### Available Themes
+### Beautiful Renderer Themes
 
-Mermaid includes several built-in themes:
+```vue
+<script setup lang="ts">
+import type { MermaidOptions } from 'vue-stream-markdown'
+import { Markdown } from 'vue-stream-markdown'
+
+const mermaidOptions: MermaidOptions = {
+  renderer: 'beautiful',
+  beautifulTheme: ['github-light', 'github-dark'],
+  beautifulConfig: {
+    padding: 12,
+  },
+}
+</script>
+
+<template>
+  <Markdown :mermaid-options="mermaidOptions" />
+</template>
+```
+
+**Theme Fallback:**
+
+If theme not found in `beautiful-mermaid`'s built-ins, falls back to `shiki` themes. This means any `shiki` theme works for diagrams.
+
+### Available Themes
 
 - `default` - Classic Mermaid theme
 - `dark` - Dark mode optimized
@@ -291,7 +359,7 @@ Mermaid includes several built-in themes:
 - `neutral` - Minimal styling
 - `base` - Clean, modern style
 
-Example with dual themes:
+**Example:**
 
 ```vue
 <script setup lang="ts">

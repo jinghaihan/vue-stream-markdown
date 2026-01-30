@@ -136,10 +136,40 @@ Configure Mermaid diagram rendering. Mermaid is used to render flowcharts, seque
 
 ```typescript
 interface MermaidOptions {
+  renderer?: 'vanilla' | 'beautiful'
   theme?: [string, string]
   config?: MermaidConfig
+  beautifulTheme?: [string, string]
+  beautifulConfig?: BeautifulMermaidConfig
   errorComponent?: Component
 }
+```
+
+### renderer
+
+- **Type:** `'vanilla' | 'beautiful'`
+- **Default:** `'vanilla'`
+
+Select the Mermaid rendering engine.
+
+- `vanilla` - Standard Mermaid.js renderer (default). Supports all diagram types.
+- `beautiful` - Beautiful-mermaid renderer with enhanced styling and Shiki theme integration. Supports a limited set of common diagram types. Automatically falls back to vanilla renderer for unsupported diagram types. See [beautiful-mermaid documentation](https://github.com/lukilabs/beautiful-mermaid) for the complete list of supported diagrams.
+
+**Example:**
+
+```vue
+<script setup lang="ts">
+import type { MermaidOptions } from 'vue-stream-markdown'
+import { Markdown } from 'vue-stream-markdown'
+
+const mermaidOptions: MermaidOptions = {
+  renderer: 'beautiful',
+}
+</script>
+
+<template>
+  <Markdown :content="content" :mermaid-options="mermaidOptions" />
+</template>
 ```
 
 ### theme
@@ -230,6 +260,64 @@ const mermaidOptions: MermaidOptions = {
 - And more...
 
 See the [Mermaid configuration documentation](https://mermaid.js.org/config/theming.html) for a complete list of configuration options.
+
+### beautifulTheme
+
+- **Type:** `[string, string]`
+- **Default:** `['github-light', 'github-dark']`
+
+Specifies the theme pair for the beautiful renderer in light and dark modes. The first element is the light theme, and the second is the dark theme. This option only applies when `renderer` is set to `'beautiful'`.
+
+If theme not found in `beautiful-mermaid`'s built-ins, falls back to `shiki` themes.
+
+**Example:**
+
+```vue
+<script setup lang="ts">
+import type { MermaidOptions } from 'vue-stream-markdown'
+import { Markdown } from 'vue-stream-markdown'
+
+const mermaidOptions: MermaidOptions = {
+  renderer: 'beautiful',
+  beautifulTheme: ['vitesse-light', 'vitesse-dark'],
+}
+</script>
+
+<template>
+  <Markdown :content="content" :mermaid-options="mermaidOptions" />
+</template>
+```
+
+**Note:** When `beautifulTheme` is not specified, the beautiful renderer will automatically use colors from your Shiki theme if available, ensuring consistent theming across code blocks and diagrams.
+
+### beautifulConfig
+
+- **Type:** `BeautifulMermaidConfig`
+- **Default:** `{ padding: 8 }`
+
+Configuration object for the beautiful renderer that allows you to customize diagram rendering and styling. This option only applies when `renderer` is set to `'beautiful'`.
+
+**Example:**
+
+```vue
+<script setup lang="ts">
+import type { MermaidOptions } from 'vue-stream-markdown'
+import { Markdown } from 'vue-stream-markdown'
+
+const mermaidOptions: MermaidOptions = {
+  renderer: 'beautiful',
+  beautifulConfig: {
+    padding: 12,
+  },
+}
+</script>
+
+<template>
+  <Markdown :content="content" :mermaid-options="mermaidOptions" />
+</template>
+```
+
+See the [beautiful-mermaid documentation](https://github.com/notable-next/beautiful-mermaid) for available configuration options.
 
 ### errorComponent
 
@@ -418,9 +506,10 @@ Configure CDN loading for external libraries to reduce bundle size and improve l
 ```typescript
 interface CdnOptions {
   baseUrl?: string
-  getUrl?: (module: 'shiki' | 'mermaid' | 'katex' | 'katex-css', version: string) => string
+  getUrl?: (module: 'shiki' | 'mermaid' | 'katex' | 'katex-css' | 'beautiful-mermaid', version: string) => string
   shiki?: boolean
   mermaid?: 'esm' | 'umd' | false
+  beautifulMermaid?: 'esm' | 'umd' | false
   katex?: 'esm' | 'umd' | false
 }
 ```
@@ -489,6 +578,31 @@ Whether to load Shiki from CDN. When set to `false`, Shiki will be loaded from l
 - **Default:** `true` (same as `'esm'`)
 
 Choose CDN format for Mermaid. `'esm'` (default) or `undefined`/`true` uses ESM with UMD fallback, `'umd'` forces UMD, `false` disables CDN.
+
+### beautifulMermaid
+
+- **Type:** `'esm' | 'umd' | false | undefined`
+- **Default:** `true` (same as `'esm'`)
+
+Choose CDN format for beautiful-mermaid when using the beautiful renderer. `'esm'` (default) or `undefined`/`true` uses ESM with UMD fallback, `'umd'` forces UMD, `false` disables CDN.
+
+**Example:**
+
+```vue
+<script setup lang="ts">
+import type { CdnOptions } from 'vue-stream-markdown'
+import { Markdown } from 'vue-stream-markdown'
+
+const cdnOptions: CdnOptions = {
+  baseUrl: 'https://cdn.jsdelivr.net/npm/',
+  beautifulMermaid: 'esm',
+}
+</script>
+
+<template>
+  <Markdown :content="content" :cdn-options="cdnOptions" />
+</template>
+```
 
 ### katex
 

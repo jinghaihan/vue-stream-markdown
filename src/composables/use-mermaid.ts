@@ -1,109 +1,55 @@
-import type { Mermaid, MermaidConfig } from 'mermaid'
 import type { MaybeRef } from 'vue'
-import type { CdnOptions, MermaidOptions } from '../types'
-import { randomStr } from '@antfu/utils'
-import { computed, ref, unref } from 'vue'
-import { hasMermaidModule, isClient, save, svgToPngBlob } from '../utils'
-import { useCdnLoader } from './use-cdn-loader'
+import type { CdnOptions, MermaidOptions, ShikiOptions } from '../types'
+import { ref } from 'vue'
+import { isClient } from '../utils'
+import { createMermaidRenderer } from './mermaid-renderers'
 
 interface UseMermaidOptions {
   mermaidOptions?: MaybeRef<MermaidOptions | undefined>
   cdnOptions?: CdnOptions
+  shikiOptions?: MaybeRef<ShikiOptions | undefined>
   isDark?: MaybeRef<boolean>
 }
 
-let mermaid: Mermaid | null = null
-
 export function useMermaid(options?: UseMermaidOptions) {
-  const installed = ref<boolean>(false)
-
-  const { getCdnMermaidUrl, loadCdnMermaid } = useCdnLoader({
-    cdnOptions: options?.cdnOptions,
-  })
-
-  const mermaidConfig = computed((): MermaidConfig => unref(options?.mermaidOptions)?.config ?? {})
-  const mermaidTheme = computed(() => unref(options?.mermaidOptions)?.theme ?? ['neutral', 'dark'])
-
-  const isDark = computed(() => unref(options?.isDark) ?? false)
-  const lightTheme = computed(() => mermaidTheme.value[0] ?? 'neutral')
-  const darkTheme = computed(() => mermaidTheme.value[1] ?? 'dark')
-  const theme = computed(() => isDark.value ? darkTheme.value : lightTheme.value)
-
-  const chart = ref<string>('')
-
-  async function getMermaid() {
-    if (mermaid)
-      return mermaid
-
-    const { default: module } = await loadCdnMermaid() ?? await import('mermaid')
-    module.initialize({
-      startOnLoad: false,
-      securityLevel: 'loose',
-      ...mermaidConfig.value,
-    })
-    mermaid = module
-    return mermaid
-  }
+  const renderer = createMermaidRenderer(
+    options?.mermaidOptions,
+    options?.cdnOptions,
+    options?.shikiOptions,
+    options?.isDark,
+  )
 
   async function hasMermaid(): Promise<boolean> {
-    return getCdnMermaidUrl() ? true : await hasMermaidModule()
-  }
-
-  function wrapThemeCode(code: string) {
-    if (code.startsWith('%%{'))
-      return code
-    const themeCode = `%%{init: {"theme": "${theme.value}"}}%%\n`
-    return `${themeCode}${code}`
-  }
-
-  async function parseMermaid(code: string): Promise<{ valid: boolean, error?: string }> {
     try {
-      const mermaid = await getMermaid()
-      chart.value = wrapThemeCode(code)
-      await mermaid.parse(chart.value)
-      return { valid: true }
+      await renderer.load()
+      return true
     }
-    catch (error) {
-      return {
-        valid: false,
-        error: error instanceof Error ? error.message : String(error),
-      }
+    catch {
+      return false
     }
   }
 
-  async function renderMermaid(code: string): Promise<{ svg?: string, error?: string, valid: boolean }> {
-    const { valid, error } = await parseMermaid(code)
-    if (!valid || !isClient())
-      return { error, valid: false }
+  async function parseMermaid(code: string) {
+    return renderer.parse(code)
+  }
 
-    const id = `mermaid-${randomStr()}`
-    try {
-      const mermaid = await getMermaid()
-      const result = await mermaid.render(id, wrapThemeCode(code))
-      return { svg: result.svg, valid: true }
-    }
-    catch (error) {
-      const element = document.getElementById(`d${id}`)
-      if (element)
-        element.remove()
-      return {
-        valid: false,
-        error: error instanceof Error ? error.message : String(error),
-      }
-    }
+  async function renderMermaid(code: string) {
+    return renderer.render(code)
   }
 
   async function saveMermaid(
     format: 'svg' | 'png',
-    code: string = chart.value,
+    code: string,
     onError?: (error: Error) => void,
   ) {
     try {
-      const { svg } = await renderMermaid(code)
+      const { svg } = await renderer.render(code)
       if (!svg) {
         onError?.(new Error('SVG not found. Please wait for the diagram to render.'))
         return
       }
+
+      const { save, svgToPngBlob } = await import('../utils')
 
       if (format === 'svg') {
         const mimeType = 'image/svg+xml'
@@ -122,31 +68,29 @@ export function useMermaid(options?: UseMermaidOptions) {
   }
 
   async function preload() {
-    if (mermaid)
+    if (renderer.isLoaded())
       return
 
-    installed.value = await hasMermaid()
-    if (installed.value)
-      await getMermaid()
+    await hasMermaid()
+    if (!renderer.isLoaded())
+      await renderer.load()
   }
 
   function dispose() {
-    chart.value = ''
+    // Renderer cleanup if needed
   }
+
+  const installed = ref<boolean>(false)
 
   if (isClient()) {
     (async () => {
-      if (mermaid) {
-        installed.value = true
-        return
-      }
       installed.value = await hasMermaid()
     })()
   }
 
   return {
     installed,
-    getMermaid,
+    getMermaid: () => renderer.load(),
     parseMermaid,
     renderMermaid,
     saveMermaid,

@@ -103,7 +103,15 @@ const codeOptions = computed((): CodeOptions => {
 
 const mermaidOptions = computed((): MermaidOptions => {
   return {
-    theme: [userConfig.value.mermaidLightTheme, userConfig.value.mermaidDarkTheme],
+    renderer: userConfig.value.mermaidRenderer,
+    theme: [
+      userConfig.value.mermaidLightTheme,
+      userConfig.value.mermaidDarkTheme,
+    ],
+    beautifulTheme: [
+      userConfig.value.mermaidBeautifulLightTheme,
+      userConfig.value.mermaidBeautifulDarkTheme,
+    ],
   }
 })
 
@@ -277,8 +285,11 @@ onMounted(() => {
         v-model:show-ast-result="userConfig.showAstResult"
         v-model:shiki-light-theme="userConfig.shikiLightTheme"
         v-model:shiki-dark-theme="userConfig.shikiDarkTheme"
+        v-model:mermaid-renderer="userConfig.mermaidRenderer"
         v-model:mermaid-light-theme="userConfig.mermaidLightTheme"
         v-model:mermaid-dark-theme="userConfig.mermaidDarkTheme"
+        v-model:mermaid-beautiful-light-theme="userConfig.mermaidBeautifulLightTheme"
+        v-model:mermaid-beautiful-dark-theme="userConfig.mermaidBeautifulDarkTheme"
         v-model:caret="userConfig.caret"
         :content="content"
         :prev-step="prevStep"
@@ -307,7 +318,7 @@ onMounted(() => {
 
       <div
         ref="containerRef"
-        class="py-4 pr-4 h-full overflow-x-hidden overflow-y-auto"
+        class="pr-4 h-full overflow-x-hidden overflow-y-auto"
         :style="{
           scrollbarGutter: 'stable',
         }"
@@ -315,6 +326,7 @@ onMounted(() => {
       >
         <Markdown
           ref="markdownRef"
+          class="my-4"
           :mode="mode"
           :caret="caret"
           :content="markdownContent"

@@ -7,13 +7,13 @@ export * from './renderers'
 export const UI = {
   Alert: defineAsyncComponent(() => import('./alert.vue')),
   Button: defineAsyncComponent(() => import('./button.vue')),
+  Caret: defineAsyncComponent(() => import('./caret.vue')),
   CodeBlock: defineAsyncComponent(() => import('./code-block/index.vue')),
   Dropdown: defineAsyncComponent(() => import('./dropdown.vue')),
   ErrorComponent: defineAsyncComponent(() => import('./error-component.vue')),
   Icon: defineAsyncComponent(() => import('./icon.vue')),
   Image: defineAsyncComponent(() => import('./image.vue')),
   Modal: defineAsyncComponent(() => import('./modal.vue')),
-  NodeList: defineAsyncComponent(() => import('./node-list.vue')),
   Segmented: defineAsyncComponent(() => import('./segmented.vue')),
   Spin: defineAsyncComponent(() => import('./spin.vue')),
   Table: defineAsyncComponent(() => import('./table.vue')),
@@ -21,4 +21,4 @@ export const UI = {
   ZoomContainer: defineAsyncComponent(() => import('./zoom-container.vue')),
 } as const
 
-export const NodeList = UI.NodeList
+export const NodeList = defineAsyncComponent(() => import('./node-list.vue'))

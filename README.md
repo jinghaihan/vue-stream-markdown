@@ -28,7 +28,7 @@ pnpm add vue-stream-markdown
 
 - **Streaming-optimized rendering** - Incomplete node completion with loading states for images, tables, and code blocks to prevent visual jitter
 - **Incremental rendering** - Leverages [Shiki](https://shiki.style/)'s `codeToTokens` API for token-level updates, reducing DOM recreation overhead
-- **Progressive Mermaid rendering** - Throttled, streaming-friendly diagram rendering with loading states
+- **Progressive Mermaid rendering** - Throttled, streaming-friendly diagram rendering with loading states, supporting both vanilla Mermaid.js and beautiful-mermaid renderers with automatic fallback for unsupported diagram types
 - **Streaming LaTeX rendering** - Progressive math equation rendering with KaTeX support
 - **Interactive controls** - Copy and download buttons for images, tables, and code blocks
 - **Fully customizable** - Replace any AST node with your own Vue components
@@ -72,6 +72,7 @@ This project also uses and benefits from:
 - [mdast](https://github.com/syntax-tree/mdast) - Markdown Abstract Syntax Tree format
 - [Shiki](https://shiki.style/) - Beautiful syntax highlighting
 - [Mermaid](https://mermaid.js.org/) - Diagramming and charting tool
+- [beautiful-mermaid](https://github.com/notable-next/beautiful-mermaid) - Beautiful Mermaid diagram renderer with Shiki integration
 - [KaTeX](https://katex.org/) - Fast math typesetting library for the web
 - [Remend](https://github.com/vercel/streamdown/tree/main/packages/remend) - This project implements similar functionality inspired by remend for intelligently parsing and completing incomplete Markdown blocks.
 
