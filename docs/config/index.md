@@ -29,6 +29,19 @@ Rendering mode. `'static'` renders the entire content at once, while `'streaming
 
 Whether to enable the typewriter animation effect when nodes are rendered. When set to `undefined` (default), the animation is automatically enabled in `'streaming'` mode and disabled in `'static'` mode. When explicitly set to `true` or `false`, it will override the default behavior based on the mode.
 
+### caret
+
+- **Type:** `'block' | 'circle' | undefined`
+- **Default:** `undefined`
+
+Caret style to display at the end of streaming content. The caret provides a visual indicator that content is actively being generated.
+
+- `'block'` - Displays a block cursor (▋) similar to a terminal cursor
+- `'circle'` - Displays a circle cursor (●) for a subtler indicator
+- `undefined` - No caret is displayed
+
+The caret only appears when `mode="streaming"` and automatically hides when content completes streaming. For more details, see the [Carets](/feature/carets) documentation.
+
 ### themeElement
 
 - **Type:** `() => HTMLElement | undefined`
