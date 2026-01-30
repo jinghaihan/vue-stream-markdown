@@ -31,7 +31,7 @@ pnpm add vue-stream-markdown
 - **Progressive Mermaid rendering** - Throttled, streaming-friendly diagram rendering with loading states, supporting both vanilla Mermaid.js and beautiful-mermaid renderers with automatic fallback for unsupported diagram types
 - **Streaming LaTeX rendering** - Progressive math equation rendering with KaTeX support
 - **Interactive controls** - Copy and download buttons for images, tables, and code blocks
-- **Fully customizable** - Replace any AST node with your own Vue components
+- **Fully customizable** - Replace any AST node or UI component with your own Vue components
 - **Theme-aware scoped styles** - Scoped styles under `.stream-markdown` with semantic `data-stream-markdown` attributes, following [shadcn/ui](https://ui.shadcn.com/) design system
 - **Beautiful built-in typography** - No atomic CSS required (Tailwind/UnoCSS), self-contained styles
 - **Content hardening & security** - Built-in protection against malicious Markdown with URL validation and protocol blocking
