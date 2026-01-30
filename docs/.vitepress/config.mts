@@ -20,6 +20,7 @@ const Features: DefaultTheme.NavItemWithLink[] = [
   { text: 'HTML Node Rendering', link: '/feature/html-rendering' },
   { text: 'Mathematics', link: '/feature/mathematics' },
   { text: 'Mermaid Diagrams', link: '/feature/mermaid' },
+  { text: 'Link Safety', link: '/feature/link-safety' },
   { text: 'Security', link: '/feature/security' },
   { text: 'Unterminated Block Parsing', link: '/feature/termination' },
   { text: 'Typography', link: '/feature/typography' },

@@ -8,6 +8,10 @@ import Button from '../button.vue'
 import ErrorComponent from '../error-component.vue'
 import NodeList from '../node-list.vue'
 
+defineOptions({
+  inheritAttrs: false,
+})
+
 const props = withDefaults(defineProps<LinkNodeRendererProps>(), {})
 
 const { linkOptions, hardenOptions } = toRefs(props)
