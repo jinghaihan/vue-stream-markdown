@@ -1,3 +1,5 @@
+import type { RenderOptions as BeautifulMermaidConfig, ThemeName } from 'beautiful-mermaid'
+
 export const BEAUTIFUL_MERMAID_SUPPORTED_TYPES = [
   'flowchart',
   'sequence',
@@ -5,3 +7,11 @@ export const BEAUTIFUL_MERMAID_SUPPORTED_TYPES = [
   'state',
   'er',
 ] as const
+
+export const DEFAULT_MERMAID_THEME = ['neutral', 'dark'] as const
+
+export const PRESET_BEAUTIFUL_MERMAID_CONFIG: BeautifulMermaidConfig = {
+  padding: 16,
+}
+
+export const DEFAULT_BEAUTIFUL_MERMAID_THEME: [ThemeName, ThemeName] = ['default', 'zinc-dark']

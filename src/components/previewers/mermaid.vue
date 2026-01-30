@@ -242,6 +242,11 @@ if (!props.containerHeight) {
     display: flex;
     justify-content: center;
     user-select: none;
+
+    /* mermaid use transparent background */
+    > svg {
+      background: transparent !important;
+    }
   }
 }
 </style>

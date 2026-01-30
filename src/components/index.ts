@@ -13,7 +13,6 @@ export const UI = {
   Icon: defineAsyncComponent(() => import('./icon.vue')),
   Image: defineAsyncComponent(() => import('./image.vue')),
   Modal: defineAsyncComponent(() => import('./modal.vue')),
-  NodeList: defineAsyncComponent(() => import('./node-list.vue')),
   Segmented: defineAsyncComponent(() => import('./segmented.vue')),
   Spin: defineAsyncComponent(() => import('./spin.vue')),
   Table: defineAsyncComponent(() => import('./table.vue')),
@@ -21,4 +20,4 @@ export const UI = {
   ZoomContainer: defineAsyncComponent(() => import('./zoom-container.vue')),
 } as const
 
-export const NodeList = UI.NodeList
+export const NodeList = defineAsyncComponent(() => import('./node-list.vue'))
