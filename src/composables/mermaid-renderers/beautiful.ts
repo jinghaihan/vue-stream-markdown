@@ -59,6 +59,13 @@ export class BeautifulMermaidRenderer extends MermaidRenderer {
     return isDark ? dark : light
   }
 
+  private get mergedOptions() {
+    return {
+      ...PRESET_BEAUTIFUL_MERMAID_CONFIG,
+      ...(this.options.beautifulConfig ?? {}),
+    }
+  }
+
   private async getShikiColors() {
     try {
       const { getHighlighter } = useShiki({
@@ -73,7 +80,7 @@ export class BeautifulMermaidRenderer extends MermaidRenderer {
 
       return {
         ...colors,
-        ...PRESET_BEAUTIFUL_MERMAID_CONFIG,
+        ...this.mergedOptions,
       }
     }
     catch {
@@ -84,11 +91,11 @@ export class BeautifulMermaidRenderer extends MermaidRenderer {
   async getRenderOptions() {
     const options = this.beautifulMermaid?.THEMES[this.currentTheme]
     if (!options)
-      return await this.getShikiColors() ?? PRESET_BEAUTIFUL_MERMAID_CONFIG
+      return await this.getShikiColors() ?? this.mergedOptions
 
     return {
       ...options,
-      ...PRESET_BEAUTIFUL_MERMAID_CONFIG,
+      ...this.mergedOptions,
     }
   }
 

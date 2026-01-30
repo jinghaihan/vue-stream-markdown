@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { SelectOption, StreamMarkdownProps } from 'vue-stream-markdown'
+import { THEMES } from 'beautiful-mermaid'
 import { bundledThemesInfo } from 'shiki'
 import { CARETS } from 'vue-stream-markdown'
 import { Settings } from '../icons'
@@ -17,8 +18,12 @@ const typedDelay = defineModel<number>('typedDelay', { required: false, default:
 
 const shikiLightTheme = defineModel<string>('shikiLightTheme', { required: false, default: 'github-light' })
 const shikiDarkTheme = defineModel<string>('shikiDarkTheme', { required: false, default: 'github-dark' })
+
+const mermaidRenderer = defineModel<string>('mermaidRenderer', { required: false, default: 'vanilla' })
 const mermaidLightTheme = defineModel<string>('mermaidLightTheme', { required: false, default: 'neutral' })
 const mermaidDarkTheme = defineModel<string>('mermaidDarkTheme', { required: false, default: 'dark' })
+const mermaidBeautifulLightTheme = defineModel<string>('mermaidBeautifulLightTheme', { required: false, default: 'default' })
+const mermaidBeautifulDarkTheme = defineModel<string>('mermaidBeautifulDarkTheme', { required: false, default: 'zinc-dark' })
 
 const caret = defineModel<StreamMarkdownProps['caret']>('caret', { required: false, default: 'block' })
 
@@ -60,12 +65,25 @@ const SHIKI_THEMES: SelectOption[] = bundledThemesInfo.map(theme => ({
   value: theme.id,
 }))
 
+const MERMAID_RENDERERS: SelectOption[] = [
+  { label: 'Official Mermaid', value: 'vanilla' },
+  { label: 'Beautiful Mermaid', value: 'beautiful' },
+]
+
 const MERMAID_THEMES: SelectOption[] = [
   { label: 'Default', value: 'default' },
   { label: 'Dark', value: 'dark' },
   { label: 'Forest', value: 'forest' },
   { label: 'Neutral', value: 'neutral' },
   { label: 'Base', value: 'base' },
+]
+
+const MERMAID_BEAUTIFUL_THEMES: SelectOption[] = [
+  { label: 'Default', value: 'default' },
+  ...Object.keys(THEMES).map(key => ({
+    label: key.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
+    value: key,
+  })),
 ]
 
 const CARETS_OPTIONS: SelectOption[] = [
@@ -168,6 +186,15 @@ watch(() => staticMode.value, () => {
         </h3>
 
         <div :class="BLOCK_CLASSES">
+          <Label :class="LABEL_CLASSES">Renderer</Label>
+          <Select
+            v-model:value="mermaidRenderer"
+            :class="CONTROL_CLASSES"
+            :options="MERMAID_RENDERERS"
+          />
+        </div>
+
+        <div :class="BLOCK_CLASSES">
           <Label :class="LABEL_CLASSES">Light Theme</Label>
           <Select
             v-model:value="mermaidLightTheme"
@@ -182,6 +209,24 @@ watch(() => staticMode.value, () => {
             v-model:value="mermaidDarkTheme"
             :class="CONTROL_CLASSES"
             :options="MERMAID_THEMES"
+          />
+        </div>
+
+        <div :class="BLOCK_CLASSES">
+          <Label :class="LABEL_CLASSES">Beautiful Light Theme</Label>
+          <Select
+            v-model:value="mermaidBeautifulLightTheme"
+            :class="CONTROL_CLASSES"
+            :options="MERMAID_BEAUTIFUL_THEMES"
+          />
+        </div>
+
+        <div :class="BLOCK_CLASSES">
+          <Label :class="LABEL_CLASSES">Beautiful Dark Theme</Label>
+          <Select
+            v-model:value="mermaidBeautifulDarkTheme"
+            :class="CONTROL_CLASSES"
+            :options="MERMAID_BEAUTIFUL_THEMES"
           />
         </div>
 

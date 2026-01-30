@@ -53,8 +53,12 @@ const showAstResult = defineModel<boolean>('showAstResult', { required: false, d
 
 const shikiLightTheme = defineModel<string>('shikiLightTheme', { required: false, default: 'github-light' })
 const shikiDarkTheme = defineModel<string>('shikiDarkTheme', { required: false, default: 'github-dark' })
+
+const mermaidRenderer = defineModel<string>('mermaidRenderer', { required: false, default: 'vanilla' })
 const mermaidLightTheme = defineModel<string>('mermaidLightTheme', { required: false, default: 'neutral' })
 const mermaidDarkTheme = defineModel<string>('mermaidDarkTheme', { required: false, default: 'dark' })
+const mermaidBeautifulLightTheme = defineModel<string>('mermaidBeautifulLightTheme', { required: false, default: 'default' })
+const mermaidBeautifulDarkTheme = defineModel<string>('mermaidBeautifulDarkTheme', { required: false, default: 'zinc-dark' })
 
 const caret = defineModel<StreamMarkdownProps['caret']>('caret', { required: false, default: 'block' })
 
@@ -175,8 +179,11 @@ const actions = computed((): Action[] => {
       v-model:typed-delay="typedDelay"
       v-model:shiki-light-theme="shikiLightTheme"
       v-model:shiki-dark-theme="shikiDarkTheme"
+      v-model:mermaid-renderer="mermaidRenderer"
       v-model:mermaid-light-theme="mermaidLightTheme"
       v-model:mermaid-dark-theme="mermaidDarkTheme"
+      v-model:mermaid-beautiful-light-theme="mermaidBeautifulLightTheme"
+      v-model:mermaid-beautiful-dark-theme="mermaidBeautifulDarkTheme"
       :to-step="toStep"
     />
 

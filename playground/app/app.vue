@@ -103,7 +103,9 @@ const codeOptions = computed((): CodeOptions => {
 
 const mermaidOptions = computed((): MermaidOptions => {
   return {
+    renderer: userConfig.value.mermaidRenderer,
     theme: [userConfig.value.mermaidLightTheme, userConfig.value.mermaidDarkTheme],
+    beautifulTheme: [userConfig.value.mermaidBeautifulDarkTheme, userConfig.value.mermaidBeautifulDarkTheme],
   }
 })
 
@@ -277,8 +279,11 @@ onMounted(() => {
         v-model:show-ast-result="userConfig.showAstResult"
         v-model:shiki-light-theme="userConfig.shikiLightTheme"
         v-model:shiki-dark-theme="userConfig.shikiDarkTheme"
+        v-model:mermaid-renderer="userConfig.mermaidRenderer"
         v-model:mermaid-light-theme="userConfig.mermaidLightTheme"
         v-model:mermaid-dark-theme="userConfig.mermaidDarkTheme"
+        v-model:mermaid-beautiful-light-theme="userConfig.mermaidBeautifulLightTheme"
+        v-model:mermaid-beautiful-dark-theme="userConfig.mermaidBeautifulDarkTheme"
         v-model:caret="userConfig.caret"
         :content="content"
         :prev-step="prevStep"

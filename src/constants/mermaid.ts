@@ -11,7 +11,7 @@ export const BEAUTIFUL_MERMAID_SUPPORTED_TYPES = [
 export const DEFAULT_MERMAID_THEME = ['neutral', 'dark'] as const
 
 export const PRESET_BEAUTIFUL_MERMAID_CONFIG: BeautifulMermaidConfig = {
-  padding: 16,
+  padding: 8,
 }
 
 export const DEFAULT_BEAUTIFUL_MERMAID_THEME: [ThemeName, ThemeName] = ['default', 'zinc-dark']

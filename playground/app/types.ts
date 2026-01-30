@@ -16,8 +16,11 @@ export interface UserConfig {
   showAstResult: boolean
   shikiLightTheme: BuiltinTheme
   shikiDarkTheme: BuiltinTheme
+  mermaidRenderer: 'vanilla' | 'beautiful'
   mermaidLightTheme: string
   mermaidDarkTheme: string
+  mermaidBeautifulLightTheme: string
+  mermaidBeautifulDarkTheme: string
   caret: StreamMarkdownProps['caret']
 }
 
