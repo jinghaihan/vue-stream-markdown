@@ -1,15 +1,9 @@
 <script setup lang="ts">
-import type { Component, CSSProperties } from 'vue'
+import type { UIIconProps } from '../types'
 import { computed } from 'vue'
 import { useContext } from '../composables'
 
-const props = withDefaults(defineProps<{
-  icon: string | Component
-  width?: number
-  height?: number
-  class?: string | string[] | Record<string, unknown>
-  style?: CSSProperties
-}>(), {
+const props = withDefaults(defineProps<UIIconProps>(), {
   width: 14,
   height: 14,
 })

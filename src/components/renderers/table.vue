@@ -10,16 +10,14 @@ import {
   tableDataToMarkdown,
   tableDataToTSV,
 } from '../../utils'
-import Button from '../button.vue'
 import NodeList from '../node-list.vue'
-import Spin from '../spin.vue'
-import Table from '../table.vue'
 
 const props = withDefaults(defineProps<TableNodeRendererProps>(), {})
 
+const { beforeDownload, onCopied, uiComponents: UI } = useContext()
+
 const { t } = useI18n()
 
-const { beforeDownload, onCopied } = useContext()
 const { copy, copied } = useClipboard({
   legacy: true,
 })
@@ -122,7 +120,8 @@ function getNodes(cell: unknown) {
 <template>
   <div data-stream-markdown="table-wrapper">
     <div data-stream-markdown="table-controls">
-      <Button
+      <component
+        :is="UI.Button"
         v-for="item in controls"
         v-bind="item"
         :key="item.key"
@@ -131,17 +130,17 @@ function getNodes(cell: unknown) {
     </div>
 
     <div data-stream-markdown="table-inner-wrapper">
-      <Table ref="tableRef" :headers="headerCells" :rows="bodyRows" :get-align="getAlign">
+      <component :is="UI.Table" ref="tableRef" :headers="headerCells" :rows="bodyRows" :get-align="getAlign">
         <template #header-cell="{ cell }">
           <NodeList v-bind="props" :parent-node="node" :nodes="getNodes(cell)" :deep="deep + 1" />
         </template>
         <template #body-cell="{ cell }">
           <NodeList v-bind="props" :parent-node="node" :nodes="getNodes(cell)" :deep="deep + 1" />
         </template>
-      </Table>
+      </component>
     </div>
 
-    <Spin v-if="loading" />
+    <component :is="UI.Spin" v-if="loading" />
   </div>
 </template>
 

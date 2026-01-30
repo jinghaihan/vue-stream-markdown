@@ -4,7 +4,7 @@ import { useKatexCdn } from './modules/use-katex-cdn'
 import { useMermaidCdn } from './modules/use-mermaid-cdn'
 import { useShikiCdn } from './modules/use-shiki-cdn'
 
-export interface UseCdnLoaderOptions {
+interface UseCdnLoaderOptions {
   cdnOptions?: CdnOptions
 }
 

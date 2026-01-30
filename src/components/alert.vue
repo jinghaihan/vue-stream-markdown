@@ -1,19 +1,11 @@
 <script setup lang="ts">
+import type { UIAlertProps } from '../types'
 import { createReusableTemplate, useEventListener } from '@vueuse/core'
 import { computed } from 'vue'
-import { useI18n } from '../composables'
+import { useContext, useI18n } from '../composables'
 import { getOverlayContainer, isClient } from '../utils'
-import Button from './button.vue'
-import Icon from './icon.vue'
 
-const props = withDefaults(defineProps<{
-  icon?: string
-  title?: string
-  description?: string
-  zIndex?: number
-  confirmText?: string
-  cancelText?: string
-}>(), {
+const props = withDefaults(defineProps<UIAlertProps>(), {
   zIndex: 9999,
   icon: 'error',
 })
@@ -22,6 +14,8 @@ const emits = defineEmits<{
   (e: 'confirm'): void
   (e: 'cancel'): void
 }>()
+
+const { uiComponents: UI } = useContext()
 
 const { t } = useI18n()
 
@@ -64,13 +58,14 @@ useEventListener(document, 'keyup', (event) => {
     >
       <header data-stream-markdown="alert-header">
         <div data-stream-markdown="alert-title">
-          <Icon :icon="icon" :height="20" :width="20" />
+          <component :is="UI.Icon" :icon="icon" :height="20" :width="20" />
           {{ title }}
         </div>
         <div data-stream-markdown="alert-description">
           {{ description }}
         </div>
-        <Button
+        <component
+          :is="UI.Button"
           data-stream-markdown="alert-close-button"
           icon="x"
           :name="t('button.cancel')"
@@ -88,20 +83,22 @@ useEventListener(document, 'keyup', (event) => {
       <!-- Footer: Actions -->
       <div data-stream-markdown="alert-footer">
         <slot name="footer">
-          <Button
+          <component
+            :is="UI.Button"
             :name="t('button.cancel')"
             type="button"
             @click="handleCancel"
           >
             {{ cancelLabel }}
-          </Button>
-          <Button
+          </component>
+          <component
+            :is="UI.Button"
             :name="t('button.confirm')"
             type="button"
             @click="handleConfirm"
           >
             {{ confirmLabel }}
-          </Button>
+          </component>
         </slot>
       </div>
     </div>

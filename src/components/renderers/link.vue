@@ -2,10 +2,7 @@
 import type { LinkNodeRendererProps } from '../../types'
 import { useClipboard } from '@vueuse/core'
 import { computed, ref, toRefs } from 'vue'
-import { useI18n, useSanitizers } from '../../composables'
-import Alert from '../alert.vue'
-import Button from '../button.vue'
-import ErrorComponent from '../error-component.vue'
+import { useContext, useI18n, useSanitizers } from '../../composables'
 import NodeList from '../node-list.vue'
 
 defineOptions({
@@ -13,6 +10,8 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<LinkNodeRendererProps>(), {})
+
+const { uiComponents: UI } = useContext()
 
 const { linkOptions, hardenOptions } = toRefs(props)
 const { t } = useI18n()
@@ -36,7 +35,7 @@ const { transformedUrl, isHardenUrl } = useSanitizers({
   loading,
 })
 
-const Error = computed(() => hardenOptions.value?.errorComponent ?? ErrorComponent)
+const Error = computed(() => hardenOptions.value?.errorComponent ?? UI.value.ErrorComponent)
 
 const safetyCheck = computed(() => linkOptions.value?.safetyCheck ?? true)
 
@@ -99,7 +98,8 @@ function handleClose() {
     <NodeList v-bind="props" :parent-node="node" :nodes="node.children" :deep="deep + 1" />
   </component>
 
-  <Alert
+  <component
+    :is="UI.Alert"
     v-model:open="open"
     :title="t('link.title')"
     :description="`${t('link.description')}`"
@@ -108,7 +108,8 @@ function handleClose() {
   >
     <code data-stream-markdown="link-url">{{ transformedUrl }}</code>
     <template #footer>
-      <Button
+      <component
+        :is="UI.Button"
         variant="text"
         :name="copied ? t('button.copied') : t('link.copy')"
         :icon="copied ? 'check' : 'copy'"
@@ -116,7 +117,8 @@ function handleClose() {
         :icon-width="16"
         @click="handleCopy"
       />
-      <Button
+      <component
+        :is="UI.Button"
         data-stream-markdown="open-link-button"
         variant="text"
         :name="t('link.open')"
@@ -126,7 +128,7 @@ function handleClose() {
         @click="handleConfirm"
       />
     </template>
-  </Alert>
+  </component>
 </template>
 
 <style>

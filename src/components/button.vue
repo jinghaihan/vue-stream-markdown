@@ -1,16 +1,14 @@
 <script setup lang="ts">
-import type { ButtonProps, SelectOption } from '../types'
+import type { SelectOption, UIButtonProps } from '../types'
 import { createReusableTemplate } from '@vueuse/core'
 import { computed } from 'vue'
-import Dropdown from './dropdown.vue'
-import Icon from './icon.vue'
-import Tooltip from './tooltip.vue'
+import { useContext } from '../composables'
 
 defineOptions({
   inheritAttrs: false,
 })
 
-const props = withDefaults(defineProps<ButtonProps>(), {
+const props = withDefaults(defineProps<UIButtonProps>(), {
   variant: 'icon',
   buttonStyle: () => ({}),
   iconWidth: 14,
@@ -22,6 +20,8 @@ const props = withDefaults(defineProps<ButtonProps>(), {
 const emits = defineEmits<{
   (e: 'click', event: MouseEvent, item?: SelectOption): void
 }>()
+
+const { uiComponents: UI } = useContext()
 
 const [DefineTemplate, ReuseTemplate] = createReusableTemplate()
 
@@ -41,7 +41,8 @@ function onDropdownClick(event: MouseEvent, item: SelectOption) {
 
 <template>
   <DefineTemplate>
-    <Icon
+    <component
+      :is="UI.Icon"
       v-if="icon"
       :icon="icon"
       :width="iconWidth"
@@ -53,7 +54,7 @@ function onDropdownClick(event: MouseEvent, item: SelectOption) {
 
   <component
     v-bind="$attrs"
-    :is="isDropdown ? Dropdown : Tooltip"
+    :is="isDropdown ? UI.Dropdown : UI.Tooltip"
     v-if="variant === 'icon'"
     :content="isDropdown ? undefined : name"
     :title="name"
@@ -86,7 +87,7 @@ function onDropdownClick(event: MouseEvent, item: SelectOption) {
     {{ name }}
   </button>
 
-  <Dropdown v-else v-bind="$attrs" :title="name" :options="options" @click="onDropdownClick">
+  <component :is="UI.Dropdown" v-else v-bind="$attrs" :title="name" :options="options" @click="onDropdownClick">
     <button
       data-stream-markdown="button"
       type="button"
@@ -98,7 +99,7 @@ function onDropdownClick(event: MouseEvent, item: SelectOption) {
 
       {{ name }}
     </button>
-  </Dropdown>
+  </component>
 </template>
 
 <style>

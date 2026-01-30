@@ -1,29 +1,23 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
+import type { UIErrorComponentProps, UIErrorVariant } from '../types'
 import { computed } from 'vue'
 import { useContext, useI18n } from '../composables'
-import Icon from './icon.vue'
 
 defineOptions({
   inheritAttrs: false,
 })
 
-const props = withDefaults(defineProps<{
-  variant?: ErrorVariant
-  showIcon?: boolean
-  icon?: string | Component
-  message?: string
-}>(), {
+const props = withDefaults(defineProps<UIErrorComponentProps>(), {
   variant: 'vanilla',
   showIcon: true,
 })
 
-type ErrorVariant = 'vanilla' | 'image' | 'mermaid' | 'katex' | 'harden-image' | 'harden-link'
+const { icons, uiComponents: UI } = useContext()
 
 const { t } = useI18n()
-const { icons } = useContext()
 
-const messages = computed((): Record<ErrorVariant, string> => ({
+const messages = computed((): Record<UIErrorVariant, string> => ({
   'vanilla': t('error.vanilla'),
   'image': t('error.image'),
   'mermaid': t('error.mermaid'),
@@ -53,7 +47,7 @@ const isHarden = computed(() => props.variant?.startsWith?.('harden-'))
 <template>
   <span data-stream-markdown="error-component">
     <div v-if="showIcon" data-stream-markdown="error-component-icon">
-      <Icon v-if="typeof icon === 'string'" :icon="icon" />
+      <component :is="UI.Icon" v-if="typeof icon === 'string'" :icon="icon" />
       <component :is="icon" v-else />
     </div>
     <slot v-if="isHarden" />

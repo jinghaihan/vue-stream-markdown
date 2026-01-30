@@ -2,14 +2,15 @@
 import type { Component } from 'vue'
 import type { CodeNodeRendererProps } from '../../../types'
 import { computed, defineAsyncComponent } from 'vue'
-import { useShiki } from '../../../composables'
-import CodeBlock from '../../code-block/index.vue'
+import { useContext, useShiki } from '../../../composables'
 
 const props = withDefaults(defineProps<CodeNodeRendererProps & {
   showHeader?: boolean
 }>(), {
   showHeader: true,
 })
+
+const { uiComponents: UI } = useContext()
 
 const languageClass = computed(() => `language-${props.node.lang}`)
 
@@ -28,9 +29,9 @@ const component = computed(() => {
 </script>
 
 <template>
-  <CodeBlock v-if="showHeader" v-bind="props">
+  <component :is="UI.CodeBlock" v-if="showHeader" v-bind="props">
     <component :is="component" v-bind="props" :class="[languageClass]" />
-  </CodeBlock>
+  </component>
 
   <component
     :is="component"

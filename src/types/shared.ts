@@ -1,7 +1,8 @@
-import type { Component, CSSProperties } from 'vue'
+import type { Component } from 'vue'
 import type { NODE_RENDERERS, UI } from '../components'
 import type { ICONS } from '../constants'
 import type { NodeRendererProps } from './renderer'
+import type { SelectOption, UIButtonProps } from './ui'
 
 export type MaybePromise<T> = T | Promise<T>
 export type MaybeArray<T> = T | T[]
@@ -9,6 +10,8 @@ export type MaybeArray<T> = T | T[]
 export type BuiltinNodeRenderers = keyof typeof NODE_RENDERERS
 export type BuiltinPreviewers = 'mermaid' | 'html'
 export type BuiltinUIComponents = keyof typeof UI
+
+export type UIComponents = typeof UI
 
 export type OptionalIconName = 'flipVertical' | 'rotateRight' | 'arrowRight'
 
@@ -18,26 +21,7 @@ export type Icons = Record<IconName, Component>
   & Partial<Record<OptionalIconName, Component>>
   & Record<string, Component>
 
-export interface SelectOption {
-  label: string
-  value: string | number
-  icon?: string
-}
-
-export interface ButtonProps {
-  variant?: 'icon' | 'text'
-  name: string
-  buttonClass?: string | string[] | Record<string, unknown>
-  buttonStyle?: CSSProperties
-  icon?: string | Component
-  iconWidth?: number
-  iconHeight?: number
-  iconClass?: string | string[] | Record<string, unknown>
-  iconStyle?: CSSProperties
-  options?: SelectOption[]
-}
-
-export interface Control extends ButtonProps {
+export interface Control extends UIButtonProps {
   key: string
   visible?: () => boolean
   onClick: (event: MouseEvent, item?: SelectOption) => void

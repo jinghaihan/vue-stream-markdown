@@ -1,9 +1,7 @@
 <script setup lang="ts">
-const props = withDefaults(defineProps<{
-  getAlign?: (index: number) => 'left' | 'center' | 'right'
-  headers?: unknown[]
-  rows?: Array<{ children: unknown[] }>
-}>(), {})
+import type { UITableProps } from '../types'
+
+const props = withDefaults(defineProps<UITableProps>(), {})
 
 function getAlign(index: number) {
   return props.getAlign?.(index) || 'left'

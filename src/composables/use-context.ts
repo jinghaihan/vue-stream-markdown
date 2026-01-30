@@ -1,6 +1,7 @@
 import type { MaybeRef } from 'vue'
-import type { Icons, ParsedNode, StreamMarkdownProps, UIOptions } from '../types'
+import type { Icons, ParsedNode, StreamMarkdownProps, UIComponents, UIOptions } from '../types'
 import { computed, inject, provide, unref } from 'vue'
+import { UI as DEFAULT_UI } from '../components'
 import { CARETS } from '../constants'
 
 const CONTEXT_KEY = Symbol('stream-markdown-context')
@@ -10,6 +11,7 @@ interface Context {
   isDark?: MaybeRef<boolean>
   uiOptions?: MaybeRef<UIOptions | undefined>
   icons?: MaybeRef<Icons>
+  uiComponents?: MaybeRef<UIComponents>
   enableAnimate?: MaybeRef<boolean>
   enableCaret?: MaybeRef<boolean>
   caret?: MaybeRef<StreamMarkdownProps['caret']>
@@ -24,6 +26,8 @@ export function useContext() {
 
   const mode = computed(() => unref(context.mode) ?? 'streaming')
   const icons = computed((): Partial<Icons> => unref(context.icons) ?? {})
+
+  const uiComponents = computed((): UIComponents => unref(context.uiComponents) ?? DEFAULT_UI)
 
   const uiOptions = computed(() => unref(context.uiOptions) ?? {})
   const hideTooltip = computed(() => uiOptions.value.hideTooltip ?? false)
@@ -60,6 +64,7 @@ export function useContext() {
     mode,
     hideTooltip,
     icons,
+    uiComponents,
     isDark,
     enableAnimate,
     enableCaret,

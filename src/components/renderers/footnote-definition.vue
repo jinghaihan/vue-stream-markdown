@@ -2,13 +2,13 @@
 import type { FootnoteDefinitionNodeRendererProps } from '../../types'
 import { computed } from 'vue'
 import { useContext, useI18n } from '../../composables'
-import Button from '../button.vue'
 import NodeList from '../node-list.vue'
 
 const props = withDefaults(defineProps<FootnoteDefinitionNodeRendererProps>(), {})
 
+const { getContainer, uiComponents: UI } = useContext()
+
 const { t } = useI18n()
-const { getContainer } = useContext()
 
 const id = computed(() => props.node.identifier)
 const label = computed(() => props.node.label ?? id.value)
@@ -28,7 +28,8 @@ function scrollToReference() {
   <a :id="`footnote-definition-${id}`" data-stream-markdown="footnote-definition">
     <span data-stream-markdown="footnote-definition-label">{{ title }}</span>
     <NodeList v-bind="props" :parent-node="node" :nodes="node.children" />
-    <Button
+    <component
+      :is="UI.Button"
       data-stream-markdown="footnote-definition-button"
       :name="t('button.back')"
       icon="cornerDownLeft"
