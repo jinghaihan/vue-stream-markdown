@@ -64,6 +64,7 @@ export interface StreamMarkdownContext {
   hardenOptions?: HardenOptions
   codeOptions?: CodeOptions
   imageOptions?: ImageOptions
+  linkOptions?: LinkOptions
   uiOptions?: UIOptions
   cdnOptions?: CdnOptions
   isDark?: boolean
@@ -168,6 +169,11 @@ export interface ImageOptions {
   fallback?: string
   caption?: boolean
   errorComponent?: Component
+}
+
+export interface LinkOptions {
+  safetyCheck?: boolean
+  isTrusted?: (url: string) => Promise<boolean> | boolean
 }
 
 export interface CodeOptions {

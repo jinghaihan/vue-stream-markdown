@@ -7,6 +7,7 @@
     "source": "代码",
     "collapse": "折叠",
     "copy": "复制",
+    "copied": "已复制",
     "download": "下载",
     "minimize": "最小化",
     "maximize": "最大化",
@@ -16,7 +17,9 @@
     "rotateRight": "右转",
     "previous": "上个",
     "next": "下个",
-    "back": "返回"
+    "back": "返回",
+    "confirm": "确认",
+    "cancel": "取消"
   },
   "error": {
     "vanilla": "错误",
@@ -24,5 +27,11 @@
     "mermaid": "Mermaid 渲染失败",
     "katex": "Katex 渲染失败",
     "harden": "已拦截"
+  },
+  "link": {
+    "title": "打开外部链接？",
+    "description": "你即将访问外部网站",
+    "copy": "复制链接",
+    "open": "打开链接"
   }
 }

@@ -5,6 +5,7 @@ export * from './renderers'
 
 /// keep-sorted
 export const UI = {
+  Alert: defineAsyncComponent(() => import('./alert.vue')),
   Button: defineAsyncComponent(() => import('./button.vue')),
   CodeBlock: defineAsyncComponent(() => import('./code-block/index.vue')),
   Dropdown: defineAsyncComponent(() => import('./dropdown.vue')),

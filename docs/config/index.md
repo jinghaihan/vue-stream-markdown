@@ -9,6 +9,7 @@ StreamMarkdown provides comprehensive configuration options to customize the mar
 - [Controls](/config/controls) - Configure interactive controls for tables, code blocks, images, and mermaid diagrams.
 - [Previewers](/config/previewers) - Configure preview components for any programming language in code blocks.
 - [Security](/config/security) - Configure security options for sanitizing links and images.
+- [Link Safety](/feature/link-safety) - Configure link safety confirmation modal for external links.
 - [External Options](/config/external-options) - Configure external libraries including Shiki, Mermaid, and KaTeX.
 - [Custom Renderers](/config/node-renderers) - Configure custom node renderers.
 - [I18n](/config/i18n) - Configure internationalization settings.
@@ -499,6 +500,25 @@ Whether to display image captions.
 - **Type:** `Component`
 
 Custom component to display when image loading fails.
+
+### linkOptions
+
+- **Type:** `LinkOptions`
+
+Configuration for link safety confirmation modal.
+
+#### safetyCheck
+
+- **Type:** `boolean`
+- **Default:** `true`
+
+Enable link interception and confirmation modal before opening external links.
+
+#### isTrusted
+
+- **Type:** `(url: string) => boolean | Promise<boolean>`
+
+Optional callback to determine if a URL is trusted. Return `true` to open the link directly without showing the confirmation modal, or `false` to show the modal. Supports both synchronous and asynchronous checks.
 
 ### uiOptions
 
