@@ -121,6 +121,7 @@ async function bootstrap() {
 
 onMounted(bootstrap)
 
+watch(mode, () => markdownParser.updateMode(mode.value))
 watch(locale, () => loadLocaleMessages(locale.value))
 
 provideContext({
