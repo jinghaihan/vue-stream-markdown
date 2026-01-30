@@ -1,3 +1,8 @@
+---
+title: Introduction
+description: Learn about vue-stream-markdown, a Vue 3 component library designed for streaming Markdown rendering, especially optimized for AI model outputs.
+---
+
 # Introduction
 
 **vue-stream-markdown** is a Vue 3 component library designed for streaming Markdown rendering, especially optimized for AI model outputs. This project is inspired by [streamdown](https://streamdown.ai/) and extends its capabilities with more aggressive optimizations for streaming scenarios.

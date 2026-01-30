@@ -1,3 +1,8 @@
+---
+title: HTML Node Rendering
+description: Security considerations and implementation guidelines for custom HTML node rendering with proper filtering.
+---
+
 # HTML Node Rendering
 
 In streaming markdown rendering scenarios, HTML nodes present unique security challenges. This document explains the security considerations and how to implement custom HTML node rendering with proper filtering.

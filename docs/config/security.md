@@ -1,3 +1,8 @@
+---
+title: Security Configuration
+description: Configure URL sanitization and validation for links and images to protect against malicious content.
+---
+
 # Security
 
 The security configuration allows you to control URL sanitization and validation for links and images in Markdown content. This helps protect against malicious content, especially when rendering user-generated or AI-generated Markdown.

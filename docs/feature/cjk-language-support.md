@@ -1,3 +1,8 @@
+---
+title: CJK Language Support
+description: Built-in support for Chinese, Japanese, and Korean languages with proper handling of emphasis markers and ideographic punctuation.
+---
+
 <script setup>
 const bold = `
 Japanese: **日本語の文章（括弧付き）。**この文が後に続いても大丈夫です。

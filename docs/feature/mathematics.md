@@ -1,3 +1,8 @@
+---
+title: Mathematics
+description: Built-in support for rendering mathematical expressions using LaTeX syntax powered by KaTeX.
+---
+
 <script setup>
 const inlineMath = `The quadratic formula is $$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$ for solving equations.`
 

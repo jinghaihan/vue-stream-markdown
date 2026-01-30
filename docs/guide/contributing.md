@@ -1,3 +1,8 @@
+---
+title: Contributing
+description: Guidelines for reporting issues and contributing to the vue-stream-markdown project effectively.
+---
+
 # Contributing
 
 Thank you for your interest in contributing to **vue-stream-markdown**! This guide will help you report issues effectively and contribute to the project.

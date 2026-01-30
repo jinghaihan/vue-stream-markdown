@@ -1,3 +1,8 @@
+---
+title: Security
+description: Security features for protecting against malicious content including URL sanitization and validation.
+---
+
 # Security
 
 vue-stream-markdown is built with security as a top priority. When rendering user-generated or AI-generated Markdown content, it's crucial to protect against malicious content, especially when dealing with content that might have been subject to prompt injection attacks.

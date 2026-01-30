@@ -1,3 +1,8 @@
+---
+title: Display Options
+description: Configure display settings for code blocks, images, and themes including language indicators, line numbers, and captions.
+---
+
 <script setup>
 const codeExample = `
 \`\`\`typescript

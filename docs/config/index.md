@@ -1,3 +1,8 @@
+---
+title: Configuration Overview
+description: Comprehensive configuration options to customize the markdown rendering experience, including parser, display, controls, previewers, security, and more.
+---
+
 # Configuration Overview
 
 ## Configuration

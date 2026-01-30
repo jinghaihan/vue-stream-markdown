@@ -1,3 +1,8 @@
+---
+title: Previewers
+description: Configure preview components for code blocks, enabling live HTML and Mermaid diagram rendering.
+---
+
 <script setup>
 const htmlExample = `
 \`\`\`html

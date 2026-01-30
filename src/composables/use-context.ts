@@ -37,7 +37,9 @@ export function useContext() {
   })
 
   const enableCaret = computed(() => unref(context.enableCaret))
-  const caret = computed(() => CARETS[unref(context.caret) ?? 'block'])
+  const caret = computed(() => unref(context.caret)
+    ? CARETS[unref(context.caret) as keyof typeof CARETS]
+    : undefined)
 
   const parsedNodes = computed(() => unref(context.parsedNodes) ?? [])
 

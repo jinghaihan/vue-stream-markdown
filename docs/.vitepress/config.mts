@@ -158,8 +158,8 @@ export default defineConfig({
 
   markdown: {
     theme: {
-      light: 'kanagawa-lotus',
-      dark: 'kanagawa-dragon',
+      light: 'github-light',
+      dark: 'github-dark',
     },
   },
 

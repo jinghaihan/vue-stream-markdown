@@ -1,3 +1,8 @@
+---
+title: GitHub Flavored Markdown
+description: Full support for GFM including tables, task lists, strikethrough, and autolinks.
+---
+
 <script setup lang="ts">
 const table = `
 | Feature | Supported | Notes |

@@ -1,3 +1,8 @@
+---
+title: External Options
+description: Configure external libraries including Shiki for syntax highlighting, Mermaid for diagrams, and KaTeX for math rendering.
+---
+
 # External Options
 
 vue-stream-markdown integrates with several external libraries for enhanced functionality. This document covers the configuration options for Shiki (syntax highlighting), Mermaid (diagrams), and KaTeX (mathematics rendering).

@@ -1,3 +1,8 @@
+---
+title: Parser Configuration
+description: Configure markdown parsing options including normalize, preprocess, postprocess, and mdast extensions.
+---
+
 # Parser Configuration
 
 The parser configuration allows you to customize the markdown parsing process through five main functions: `normalize`, `preprocess`, `postNormalize`, `postprocess`, and `parseMarkdownIntoBlocks`. These functions work together to handle content normalization, syntax completion, AST post-processing, and performance optimization.

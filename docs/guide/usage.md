@@ -1,3 +1,8 @@
+---
+title: Usage
+description: Installation instructions, basic usage examples, and overview of all available configuration options for vue-stream-markdown.
+---
+
 # Usage
 
 This guide covers installation instructions, basic usage examples, and provides an overview of all available configuration options. For detailed configuration documentation, see the quick links section below.

@@ -1,3 +1,8 @@
+---
+title: Code Blocks
+description: Beautiful, interactive code blocks with syntax highlighting powered by Shiki, supporting 200+ programming languages.
+---
+
 <script setup>
 const typescript = `
 \`\`\`typescript

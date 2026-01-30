@@ -1,3 +1,8 @@
+---
+title: Mermaid Diagrams
+description: Built-in support for Mermaid diagrams including flowcharts, sequence diagrams, state diagrams, and more.
+---
+
 <script setup>
 const basicFlowchart = `
 \`\`\`mermaid

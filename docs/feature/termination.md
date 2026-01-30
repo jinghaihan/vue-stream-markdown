@@ -1,3 +1,8 @@
+---
+title: Enhanced Unterminated Block Parsing
+description: Powerful unterminated block parsing capabilities for handling incomplete markdown during streaming.
+---
+
 <script setup>
 const incompleteFootnote = `> "Knowledge is power—but digital knowledge is acceleration."[^1]`
 const completeFootnote = `> "Knowledge is power—but digital knowledge is acceleration."[^1]

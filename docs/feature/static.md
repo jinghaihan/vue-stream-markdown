@@ -1,3 +1,8 @@
+---
+title: Static Mode
+description: Static mode for rendering pre-generated markdown content like blog posts and documentation.
+---
+
 # Static Mode
 
 Static mode is designed for rendering pre-generated markdown content, such as blog posts, documentation, or other static pages where content is already complete.

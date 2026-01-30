@@ -110,7 +110,7 @@ function cleanup() {
 <template>
   <div
     ref="containerRef"
-    class="group min-h-4 relative"
+    class="group mt-4 min-h-4 relative"
     :style="{
       minHeight: minHeight ? `${minHeight}px` : undefined,
     }"
@@ -121,7 +121,7 @@ function cleanup() {
       :content="markdownContent"
       :is-dark="isDark"
       :shiki-options="{
-        theme: ['kanagawa-lotus', 'kanagawa-dragon'],
+        theme: ['github-light', 'github-dark'],
       }"
       :code-options="codeOptions"
     />

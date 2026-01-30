@@ -1,3 +1,8 @@
+---
+title: Controls
+description: Configure interactive controls for tables, code blocks, images, and Mermaid diagrams including copy, download, and zoom.
+---
+
 <script setup>
 const tableExample = `
 | Name | Age | City |

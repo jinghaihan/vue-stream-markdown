@@ -1,3 +1,8 @@
+---
+title: Theming
+description: Learn how to customize the appearance of vue-stream-markdown components using CSS variables and data attributes.
+---
+
 # Theming
 
 Learn how to customize the appearance of vue-stream-markdown components.

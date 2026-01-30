@@ -1,3 +1,8 @@
+---
+title: Typography
+description: Beautiful, built-in typography styles for all standard Markdown elements with responsive design.
+---
+
 <script setup>
 const headings = `# Heading 1
 ## Heading 2

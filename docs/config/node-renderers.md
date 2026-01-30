@@ -1,3 +1,8 @@
+---
+title: Custom Node Renderers
+description: Customize how different types of markdown nodes are rendered by overriding default renderers or adding custom ones.
+---
+
 # Custom Node Renderers
 
 Node renderers allow you to customize how different types of markdown nodes are rendered. You can override the default renderers or add custom renderers for specific node types.

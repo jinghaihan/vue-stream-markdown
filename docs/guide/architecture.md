@@ -1,3 +1,8 @@
+---
+title: Architecture
+description: Overview of key dependencies and libraries including mdast, Shiki, Mermaid, and KaTeX that power vue-stream-markdown.
+---
+
 # Architecture
 
 This document serves to acknowledge and document the key dependencies and libraries that have been instrumental in building **vue-stream-markdown**. Special thanks to the teams and maintainers behind these projects for their excellent work and contributions to the open-source community.

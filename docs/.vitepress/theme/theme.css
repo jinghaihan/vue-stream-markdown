@@ -1,0 +1,150 @@
+:root {
+  --vp-font-family-base: 'Geist', 'Geist Fallback';
+  --vp-font-family-mono: 'Geist Mono', 'Geist Mono Fallback';
+
+  /* Accent color for links and highlights */
+  --vp-accent-color: oklch(0.488 0.243 264.376);
+  --vp-accent-hover: oklch(0.43 0.22 264.376);
+
+  --vp-c-bg: oklch(1 0 0);
+  --vp-c-bg-soft: oklch(0.97 0 0);
+  --vp-c-bg-elv: oklch(0.97 0 0);
+  --vp-c-bg-alt: oklch(0.985 0 0);
+
+  --vp-c-text-1: oklch(0.145 0 0);
+  --vp-c-text-2: oklch(0.556 0 0);
+  --vp-c-text-3: oklch(0.708 0 0);
+  --vp-c-text-4: oklch(0.922 0 0);
+
+  --vp-c-brand-1: oklch(0.205 0 0);
+  --vp-c-brand-2: oklch(0.16 0 0);
+  --vp-c-brand-3: oklch(0.26 0 0);
+
+  --vp-c-border: oklch(0.922 0 0);
+  --vp-c-divider: oklch(0.922 0 0);
+
+  --vp-c-gutter: oklch(0.922 0 0);
+
+  --vp-c-neutral-1: oklch(0.145 0 0);
+  --vp-c-neutral-2: oklch(0.205 0 0);
+  --vp-c-neutral-3: oklch(0.269 0 0);
+
+  --vp-c-tip-1: oklch(0.205 0 0);
+  --vp-c-tip-2: oklch(0.16 0 0);
+  --vp-c-tip-3: oklch(0.26 0 0);
+
+  --vp-c-warning-1: oklch(0.698 0.177 84.429);
+  --vp-c-warning-2: oklch(0.6 0.15 84.429);
+  --vp-c-warning-3: oklch(0.8 0.18 84.429);
+
+  --vp-c-danger-1: oklch(0.577 0.245 27.325);
+  --vp-c-danger-2: oklch(0.5 0.2 27.325);
+  --vp-c-danger-3: oklch(0.7 0.25 27.325);
+
+  --vp-c-success-1: oklch(0.546 0.245 262.881);
+  --vp-c-success-2: oklch(0.48 0.2 262.881);
+  --vp-c-success-3: oklch(0.65 0.25 262.881);
+
+  --vp-button-brand-bg: var(--vp-accent-color);
+  --vp-button-brand-hover-bg: var(--vp-accent-hover);
+  --vp-button-brand-active-bg: var(--vp-accent-hover);
+}
+
+.dark {
+  --vp-c-bg: oklch(0.145 0 0);
+  --vp-c-bg-soft: oklch(0.269 0 0);
+  --vp-c-bg-elv: oklch(0.205 0 0);
+  --vp-c-bg-alt: oklch(0.205 0 0);
+
+  --vp-c-text-1: oklch(0.985 0 0);
+  --vp-c-text-2: oklch(0.708 0 0);
+  --vp-c-text-3: oklch(0.556 0 0);
+  --vp-c-text-4: oklch(0.35 0 0);
+
+  --vp-c-brand-1: oklch(0.922 0 0);
+  --vp-c-brand-2: oklch(0.88 0 0);
+  --vp-c-brand-3: oklch(0.96 0 0);
+
+  --vp-c-border: oklch(1 0 0 / 10%);
+  --vp-c-divider: oklch(1 0 0 / 10%);
+
+  --vp-c-gutter: oklch(1 0 0 / 10%);
+
+  --vp-c-neutral-1: oklch(0.985 0 0);
+  --vp-c-neutral-2: oklch(0.708 0 0);
+  --vp-c-neutral-3: oklch(0.556 0 0);
+
+  --vp-c-tip-1: oklch(0.922 0 0);
+  --vp-c-tip-2: oklch(0.88 0 0);
+  --vp-c-tip-3: oklch(0.96 0 0);
+
+  --vp-c-warning-1: oklch(0.698 0.177 84.429);
+  --vp-c-warning-2: oklch(0.6 0.15 84.429);
+  --vp-c-warning-3: oklch(0.8 0.18 84.429);
+
+  --vp-c-danger-1: oklch(0.704 0.191 22.216);
+  --vp-c-danger-2: oklch(0.6 0.16 22.216);
+  --vp-c-danger-3: oklch(0.8 0.2 22.216);
+
+  --vp-c-success-1: oklch(0.546 0.245 262.881);
+  --vp-c-success-2: oklch(0.48 0.2 262.881);
+  --vp-c-success-3: oklch(0.65 0.25 262.881);
+}
+
+.VPNav {
+  border-bottom: 1px solid var(--vp-c-gutter);
+}
+
+.VPNavBar .title {
+  border-bottom: none;
+}
+
+.VPNav,
+.VPNavBar .wrapper,
+.VPNavBar .content,
+.VPNavBar .content-body {
+  background-color: var(--vp-sidebar-bg-color) !important;
+}
+
+.VPNavBar .divider .divider-line {
+  background-color: transparent !important;
+}
+
+.VPNavBar #local-search {
+  border-radius: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .VPNavBar #local-search {
+    border: 1px solid var(--vp-c-gutter);
+  }
+}
+
+.VPSidebar {
+  background-color: var(--vp-c-bg) !important;
+}
+
+.vp-doc a {
+  color: var(--vp-accent-color);
+}
+
+.vp-doc a:hover {
+  color: var(--vp-accent-hover);
+}
+
+/* dark/light radial transition */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root),
+.dark::view-transition-new(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root),
+.dark::view-transition-old(root) {
+  z-index: 9999;
+}

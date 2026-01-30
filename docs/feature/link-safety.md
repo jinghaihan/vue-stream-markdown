@@ -1,3 +1,8 @@
+---
+title: Link Safety
+description: Configurable confirmation modal for external links to protect users from malicious URLs in AI-generated content.
+---
+
 # Link Safety
 
 vue-stream-markdown includes a configurable confirmation modal for external links to protect users from malicious URLs. When rendering AI-generated or user-generated content, links can pose security risks. The link safety feature adds a confirmation modal before opening external links, similar to ChatGPT's implementation.

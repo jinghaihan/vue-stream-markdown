@@ -1,3 +1,8 @@
+---
+title: Performance
+description: Performance optimizations including incremental rendering, token-level updates, and block-based parsing for efficient streaming.
+---
+
 <script setup>
 const scriptTag = '<' + 'script setup lang="ts">'
 const scriptCloseTag = '<' + '/script>'

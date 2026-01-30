@@ -1,3 +1,8 @@
+---
+title: Carets
+description: Built-in caret (cursor) indicators that display at the end of streaming content to show active generation.
+---
+
 <script setup>
 const blockCaret = `
 Streaming content with **block caret**
