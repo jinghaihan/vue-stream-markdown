@@ -41,7 +41,7 @@ const {
   shikiOptions,
   mermaidOptions,
   uiOptions,
-  enableAnimate,
+  caret,
 } = toRefs(props)
 
 const { provideContext } = useContext()
@@ -67,6 +67,14 @@ const { preload: preloadKatex, dispose: disposeKatex } = useKatex({
 const containerRef = ref<HTMLDivElement>()
 
 const markdownParser = new MarkdownParser(props)
+
+const enableAnimate = computed(() => {
+  if (typeof props.enableAnimate === 'boolean')
+    return props.enableAnimate
+  return mode.value === 'streaming'
+})
+
+const enableCaret = computed(() => !!props.caret && enableAnimate.value)
 
 const processed = computed(() => markdownParser.parseMarkdown(props.content))
 
@@ -121,6 +129,8 @@ provideContext({
   uiOptions,
   isDark,
   enableAnimate,
+  enableCaret,
+  caret,
   parsedNodes,
   getContainer,
   beforeDownload: props.beforeDownload,

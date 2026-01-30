@@ -1,6 +1,7 @@
 import type { MaybeRef } from 'vue'
 import type { Icons, ParsedNode, StreamMarkdownProps, UIOptions } from '../types'
 import { computed, inject, provide, unref } from 'vue'
+import { CARETS } from '../constants'
 
 const CONTEXT_KEY = Symbol('stream-markdown-context')
 
@@ -9,7 +10,9 @@ interface Context {
   isDark?: MaybeRef<boolean>
   uiOptions?: MaybeRef<UIOptions | undefined>
   icons?: MaybeRef<Icons>
-  enableAnimate?: MaybeRef<boolean | undefined>
+  enableAnimate?: MaybeRef<boolean>
+  enableCaret?: MaybeRef<boolean>
+  caret?: MaybeRef<StreamMarkdownProps['caret']>
   parsedNodes?: MaybeRef<ParsedNode[]>
   getContainer?: () => HTMLElement | undefined
   beforeDownload?: StreamMarkdownProps['beforeDownload']
@@ -26,7 +29,15 @@ export function useContext() {
   const hideTooltip = computed(() => uiOptions.value.hideTooltip ?? false)
 
   const isDark = computed(() => unref(context.isDark) ?? false)
-  const enableAnimate = computed(() => unref(context.enableAnimate))
+  const enableAnimate = computed(() => {
+    const enable = unref(context.enableAnimate)
+    if (typeof enable === 'boolean')
+      return enable
+    return mode.value === 'streaming'
+  })
+
+  const enableCaret = computed(() => unref(context.enableCaret))
+  const caret = computed(() => CARETS[unref(context.caret) ?? 'block'])
 
   const parsedNodes = computed(() => unref(context.parsedNodes) ?? [])
 
@@ -49,6 +60,8 @@ export function useContext() {
     icons,
     isDark,
     enableAnimate,
+    enableCaret,
+    caret,
     parsedNodes,
     get getContainer() {
       return context.getContainer || (() => undefined)

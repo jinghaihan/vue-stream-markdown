@@ -5,6 +5,7 @@ import type { MermaidConfig } from 'mermaid'
 import type { Extension as MicromarkExtension } from 'micromark-util-types'
 import type { BuiltinTheme, BundledLanguage, BundledTheme, CodeToTokensOptions } from 'shiki'
 import type { Component } from 'vue'
+import type { CARETS } from '../constants'
 import type { NodeRenderers, SyntaxTree } from './core'
 import type { DownloadEvent } from './events'
 import type { LocaleConfig } from './locale'
@@ -25,6 +26,7 @@ export interface StreamMarkdownProps extends StreamMarkdownContext, StreamMarkdo
   preload?: PreloadConfig
   locale?: string | LocaleConfig
   enableAnimate?: boolean
+  caret?: keyof typeof CARETS
   themeElement?: () => HTMLElement | undefined
 }
 

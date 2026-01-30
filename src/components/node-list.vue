@@ -14,13 +14,7 @@ const props = withDefaults(defineProps<NodeRendererListProps>(), {
   blockIndex: 0,
 })
 
-const { mode, enableAnimate } = useContext()
-
-const enableTransition = computed(() => {
-  if (typeof enableAnimate.value === 'boolean')
-    return enableAnimate.value
-  return mode.value === 'streaming'
-})
+const { enableAnimate } = useContext()
 
 const prevBlock = computed(() => {
   const find = (index: number) => {
@@ -79,7 +73,7 @@ function getNodeKey(node: ParsedNode, index: number) {
 <template>
   <template v-for="(item, index) in nodes" :key="item.key">
     <Transition
-      v-if="enableTransition && !excludeTransition.includes(item.node.type)"
+      v-if="enableAnimate && !excludeTransition.includes(item.node.type)"
       name="stream-markdown-typewriter"
       appear
     >
