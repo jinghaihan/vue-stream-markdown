@@ -7,6 +7,7 @@ export interface LocaleConfig {
     source: string
     collapse: string
     copy: string
+    copied: string
     download: string
     minimize: string
     maximize: string
@@ -17,6 +18,8 @@ export interface LocaleConfig {
     previous: string
     next: string
     back: string
+    confirm: string
+    cancel: string
   }
   error: {
     vanilla: string
@@ -24,5 +27,11 @@ export interface LocaleConfig {
     mermaid: string
     katex: string
     harden: string
+  }
+  link: {
+    title: string
+    description: string
+    copy: string
+    open: string
   }
 }

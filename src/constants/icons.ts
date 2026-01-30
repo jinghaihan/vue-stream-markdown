@@ -10,6 +10,7 @@ export const ICONS = {
   cornerDownLeft: defineAsyncComponent(() => import('~icons/lucide/corner-down-left')),
   download: defineAsyncComponent(() => import('~icons/lucide/download')),
   error: defineAsyncComponent(() => import('~icons/lucide/circle-alert')),
+  externalLink: defineAsyncComponent(() => import('~icons/lucide/external-link')),
   flipHorizontal: defineAsyncComponent(() => import('~icons/lucide/flip-horizontal')),
   image: defineAsyncComponent(() => import('~icons/lucide/image')),
   link: defineAsyncComponent(() => import('~icons/lucide/link')),
@@ -18,6 +19,7 @@ export const ICONS = {
   minimize: defineAsyncComponent(() => import('~icons/lucide/minimize')),
   preview: defineAsyncComponent(() => import('~icons/lucide/eye')),
   rotateLeft: defineAsyncComponent(() => import('~icons/lucide/rotate-ccw-square')),
+  x: defineAsyncComponent(() => import('~icons/lucide/x')),
   zoomIn: defineAsyncComponent(() => import('~icons/lucide/zoomIn')),
   zoomOut: defineAsyncComponent(() => import('~icons/lucide/zoomOut')),
 } as const
