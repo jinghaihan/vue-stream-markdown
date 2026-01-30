@@ -28,7 +28,7 @@ pnpm add vue-stream-markdown
 
 - **Streaming-optimized rendering** - Incomplete node completion with loading states for images, tables, and code blocks to prevent visual jitter
 - **Incremental rendering** - Leverages [Shiki](https://shiki.style/)'s `codeToTokens` API for token-level updates, reducing DOM recreation overhead
-- **Progressive Mermaid rendering** - Throttled, streaming-friendly diagram rendering with loading states, supporting both vanilla Mermaid.js and beautiful-mermaid renderers
+- **Progressive Mermaid rendering** - Throttled, streaming-friendly diagram rendering with loading states, supporting both vanilla Mermaid.js and beautiful-mermaid renderers with automatic fallback for unsupported diagram types
 - **Streaming LaTeX rendering** - Progressive math equation rendering with KaTeX support
 - **Interactive controls** - Copy and download buttons for images, tables, and code blocks
 - **Fully customizable** - Replace any AST node with your own Vue components

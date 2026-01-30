@@ -268,6 +268,7 @@ A beautiful-mermaid integration that creates more aesthetically pleasing diagram
 - Automatic theme synchronization with Shiki syntax highlighting
 - Smooth gradients and refined typography
 - Support for common diagram types
+- **Automatic fallback** to vanilla renderer for unsupported diagram types
 
 **Supported Diagram Types:**
 

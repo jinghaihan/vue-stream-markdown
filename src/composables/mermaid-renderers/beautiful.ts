@@ -3,21 +3,17 @@ import type { CdnOptions, MermaidOptions, ShikiOptions } from '../../types'
 import type { MermaidParseResult, MermaidRenderResult } from './types'
 import { unref } from 'vue'
 import { DEFAULT_SHIKI_DARK_THEME, DEFAULT_SHIKI_LIGHT_THEME } from '../../constants'
-import { DEFAULT_BEAUTIFUL_MERMAID_THEME, PRESET_BEAUTIFUL_MERMAID_CONFIG } from '../../constants/mermaid'
+import {
+  BEAUTIFUL_MERMAID_SUPPORTED_PATTERNS,
+  DEFAULT_BEAUTIFUL_MERMAID_THEME,
+  PRESET_BEAUTIFUL_MERMAID_CONFIG,
+} from '../../constants/mermaid'
 import { useCdnLoader } from '../use-cdn-loader'
 import { useShiki } from '../use-shiki'
 import { MermaidRenderer } from './types'
+import { VanillaMermaidRenderer } from './vanilla'
 
-const BEAUTIFUL_DIAGRAM_PREFIXES = [
-  'flowchart',
-  'graph',
-  'stateDiagram',
-  'sequence',
-  'classDiagram',
-  'erDiagram',
-] as const
-
-const DIAGRAM_TYPE_PATTERN = new RegExp(`^(${BEAUTIFUL_DIAGRAM_PREFIXES.join('|')})`)
+const DIAGRAM_TYPE_PATTERN = new RegExp(`^(${BEAUTIFUL_MERMAID_SUPPORTED_PATTERNS.join('|')})`)
 
 function extractDiagramType(code: string): string {
   const lines = code.trim().split('\n')
@@ -31,11 +27,18 @@ function extractDiagramType(code: string): string {
   return 'unknown'
 }
 
+function mightBeSupported(diagramType: string): boolean {
+  return BEAUTIFUL_MERMAID_SUPPORTED_PATTERNS.some(pattern =>
+    diagramType.startsWith(pattern),
+  )
+}
+
 export class BeautifulMermaidRenderer extends MermaidRenderer {
   private cdnOptions?: MaybeRef<CdnOptions | undefined>
   private shikiOptions?: MaybeRef<ShikiOptions | undefined>
   private isDark: MaybeRef<boolean>
   private beautifulMermaid: typeof import('beautiful-mermaid') | null = null
+  private vanillaRenderer: VanillaMermaidRenderer | null = null
 
   constructor(
     options: MaybeRef<MermaidOptions | undefined>,
@@ -47,6 +50,17 @@ export class BeautifulMermaidRenderer extends MermaidRenderer {
     this.cdnOptions = cdnOptions
     this.shikiOptions = shikiOptions
     this.isDark = isDark ?? false
+  }
+
+  private getVanillaRenderer(): VanillaMermaidRenderer {
+    if (!this.vanillaRenderer) {
+      this.vanillaRenderer = new VanillaMermaidRenderer(
+        this.options,
+        this.cdnOptions,
+        this.isDark,
+      )
+    }
+    return this.vanillaRenderer
   }
 
   private get currentTheme(): string {
@@ -111,21 +125,17 @@ export class BeautifulMermaidRenderer extends MermaidRenderer {
   }
 
   isSupported(diagramType: string): boolean {
-    return BEAUTIFUL_DIAGRAM_PREFIXES.some(prefix => diagramType.startsWith(prefix))
+    return mightBeSupported(diagramType)
   }
 
   async parse(code: string): Promise<MermaidParseResult> {
+    const diagramType = extractDiagramType(code)
+
+    if (!mightBeSupported(diagramType))
+      return this.getVanillaRenderer().parse(code)
+
     try {
       await this.ensureLoaded()
-
-      const diagramType = extractDiagramType(code)
-      if (!this.isSupported(diagramType)) {
-        return {
-          valid: false,
-          error: `Diagram type "${diagramType}" is not supported by beautiful-mermaid`,
-        }
-      }
-
       return { valid: true }
     }
     catch (error) {
@@ -134,9 +144,10 @@ export class BeautifulMermaidRenderer extends MermaidRenderer {
   }
 
   async render(code: string): Promise<MermaidRenderResult> {
-    const parseResult = await this.parse(code)
-    if (!parseResult.valid)
-      return { error: parseResult.error, valid: false }
+    const diagramType = extractDiagramType(code)
+
+    if (!mightBeSupported(diagramType))
+      return this.getVanillaRenderer().render(code)
 
     try {
       await this.ensureLoaded()

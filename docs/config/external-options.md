@@ -153,7 +153,7 @@ interface MermaidOptions {
 Select the Mermaid rendering engine.
 
 - `vanilla` - Standard Mermaid.js renderer (default). Supports all diagram types.
-- `beautiful` - Beautiful-mermaid renderer with enhanced styling and Shiki theme integration. Supports a limited set of common diagram types. See [beautiful-mermaid documentation](https://github.com/lukilabs/beautiful-mermaid) for the complete list of supported diagrams.
+- `beautiful` - Beautiful-mermaid renderer with enhanced styling and Shiki theme integration. Supports a limited set of common diagram types. Automatically falls back to vanilla renderer for unsupported diagram types. See [beautiful-mermaid documentation](https://github.com/lukilabs/beautiful-mermaid) for the complete list of supported diagrams.
 
 **Example:**
 
