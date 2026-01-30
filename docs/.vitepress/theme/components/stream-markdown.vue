@@ -7,6 +7,7 @@ import { computed, ref, useAttrs } from 'vue'
 import { Markdown } from 'vue-stream-markdown'
 import CirclePause from '~icons/lucide/circle-pause'
 import CirclePlay from '~icons/lucide/circle-play'
+import SwatchBook from '~icons/lucide/swatch-book'
 
 const props = withDefaults(defineProps<{
   mode?: 'streaming' | 'static'
@@ -105,6 +106,12 @@ function cleanup() {
   mode.value = 'static'
   minHeight.value = undefined
 }
+
+const isMermaid = computed(() => props.content.includes('```mermaid'))
+const mermaidRenderer = ref<'vanilla' | 'beautiful'>('vanilla')
+function toggleMermaidRenderer() {
+  mermaidRenderer.value = mermaidRenderer.value === 'vanilla' ? 'beautiful' : 'vanilla'
+}
 </script>
 
 <template>
@@ -117,22 +124,33 @@ function cleanup() {
   >
     <Markdown
       v-bind="$attrs"
+      locale="en-US"
       :mode="mode"
       :content="markdownContent"
       :is-dark="isDark"
       :shiki-options="{
         theme: ['github-light', 'github-dark'],
       }"
+      :mermaid-options="{
+        renderer: mermaidRenderer,
+      }"
       :code-options="codeOptions"
     />
 
-    <div class="opacity-0 duration-300 absolute z-10 group-hover:opacity-100 hover:opacity-100 -left-4 -top-4">
+    <div class="opacity-0 flex gap-1 duration-300 absolute z-10 group-hover:opacity-100 hover:opacity-100 -left-4 -top-4">
       <IconButton
         v-if="playable"
         :name="name"
         :icon="icon"
         :button-class="['rounded-full', 'bg-background', 'p-1']"
         @click="() => toggle()"
+      />
+      <IconButton
+        v-if="isMermaid"
+        name="Change Renderer"
+        :icon="SwatchBook"
+        :button-class="['rounded-full', 'bg-background', 'p-1']"
+        @click="() => toggleMermaidRenderer()"
       />
     </div>
   </div>

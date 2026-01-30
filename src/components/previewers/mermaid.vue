@@ -45,7 +45,7 @@ const containerRef = ref<HTMLDivElement>()
 
 const code = computed(() => props.node.value.trim())
 const nodeLoading = computed(() => !!props.node.loading)
-const loading = computed(() => nodeLoading.value || !renderFlag.value)
+const loading = computed(() => !svg.value && (nodeLoading.value || !renderFlag.value))
 
 const Error = computed(() => mermaidOptions.value?.errorComponent ?? ErrorComponent)
 
