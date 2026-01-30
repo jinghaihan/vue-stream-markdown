@@ -22,7 +22,7 @@ const props = withDefaults(defineProps<CodeNodeRendererProps & {
   immediateRender: false,
 })
 
-const { controls, mermaidOptions, isDark } = toRefs(props)
+const { controls, mermaidOptions, shikiOptions, isDark } = toRefs(props)
 
 const { isControlEnabled, getControlValue, resolveControls } = useControls({
   controls,
@@ -67,6 +67,7 @@ const { shouldRender } = useDeferredRender({
 
 const { renderMermaid } = useMermaid({
   mermaidOptions,
+  shikiOptions,
   isDark,
 })
 

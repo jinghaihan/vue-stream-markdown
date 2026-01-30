@@ -1,5 +1,5 @@
 import type { MaybeRef } from 'vue'
-import type { CdnOptions, MermaidOptions } from '../../types'
+import type { CdnOptions, MermaidOptions, ShikiOptions } from '../../types'
 import type { MermaidRenderer } from './types'
 import { BeautifulMermaidRenderer } from './beautiful'
 import { VanillaMermaidRenderer } from './vanilla'
@@ -11,9 +11,10 @@ export { VanillaMermaidRenderer } from './vanilla'
 export function createMermaidRenderer(
   options: MermaidOptions,
   cdnOptions?: CdnOptions,
+  shikiOptions?: ShikiOptions,
   isDark?: MaybeRef<boolean>,
 ): MermaidRenderer {
   return options.renderer === 'beautiful'
-    ? new BeautifulMermaidRenderer(options, cdnOptions, isDark)
+    ? new BeautifulMermaidRenderer(options, cdnOptions, shikiOptions, isDark)
     : new VanillaMermaidRenderer(options, cdnOptions, isDark)
 }

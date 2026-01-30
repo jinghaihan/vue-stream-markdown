@@ -1,5 +1,5 @@
 import type { MaybeRef } from 'vue'
-import type { CdnOptions, MermaidOptions } from '../types'
+import type { CdnOptions, MermaidOptions, ShikiOptions } from '../types'
 import { ref, unref } from 'vue'
 import { isClient } from '../utils'
 import { createMermaidRenderer } from './mermaid-renderers'
@@ -7,6 +7,7 @@ import { createMermaidRenderer } from './mermaid-renderers'
 interface UseMermaidOptions {
   mermaidOptions?: MaybeRef<MermaidOptions | undefined>
   cdnOptions?: CdnOptions
+  shikiOptions?: MaybeRef<ShikiOptions | undefined>
   isDark?: MaybeRef<boolean>
 }
 
@@ -14,6 +15,7 @@ export function useMermaid(options?: UseMermaidOptions) {
   const renderer = createMermaidRenderer(
     unref(options?.mermaidOptions) ?? {},
     options?.cdnOptions,
+    unref(options?.shikiOptions) ?? {},
     options?.isDark,
   )
 

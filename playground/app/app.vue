@@ -103,7 +103,6 @@ const codeOptions = computed((): CodeOptions => {
 
 const mermaidOptions = computed((): MermaidOptions => {
   return {
-    renderer: 'beautiful',
     theme: [userConfig.value.mermaidLightTheme, userConfig.value.mermaidDarkTheme],
   }
 })
