@@ -196,6 +196,9 @@ useEventListener(document, 'keyup', (event) => {
       background-color: var(--primary);
       color: var(--primary-foreground);
     }
+    & > button:nth-last-child(1):hover {
+      background-color: color-mix(in oklch, var(--primary) 90%, transparent);
+    }
   }
 }
 </style>
