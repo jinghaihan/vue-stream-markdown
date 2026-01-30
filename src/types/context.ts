@@ -222,9 +222,11 @@ export interface UIOptions {
   hideTooltip?: boolean
 }
 
+export type CdnModule = 'shiki' | 'mermaid' | 'beautiful-mermaid' | 'katex' | 'katex-css'
+
 export interface CdnOptions {
   baseUrl?: string
-  getUrl?: (module: 'shiki' | 'mermaid' | 'katex' | 'katex-css', version: string) => string
+  getUrl?: (module: CdnModule, version: string) => string
   shiki?: boolean
   mermaid?: 'esm' | 'umd' | false
   beautifulMermaid?: 'esm' | 'umd' | false

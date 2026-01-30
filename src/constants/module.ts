@@ -10,4 +10,6 @@ export const KATEX_VERSION = cleanupVersion(devDependencies.katex)
 
 export const MERMAID_VERSION = cleanupVersion(devDependencies.mermaid)
 
+export const BEAUTIFUL_MERMAID_VERSION = cleanupVersion(devDependencies['beautiful-mermaid'])
+
 export const SHIKI_VERSION = cleanupVersion(devDependencies.shiki)
