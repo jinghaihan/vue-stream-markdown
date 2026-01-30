@@ -1,3 +1,4 @@
+import type { RenderOptions as BeautifulMermaidConfig } from 'beautiful-mermaid'
 import type { KatexOptions as KatexConfig } from 'katex'
 import type { Extension as FromMarkdownExtension } from 'mdast-util-from-markdown'
 import type { Options as ToMarkdownExtension } from 'mdast-util-to-markdown'
@@ -155,8 +156,11 @@ export interface ShikiOptions {
 }
 
 export interface MermaidOptions {
+  renderer?: 'vanilla' | 'beautiful'
   theme?: [string, string]
   config?: MermaidConfig
+  beautifulTheme?: [string, string]
+  beautifulConfig?: BeautifulMermaidConfig
   errorComponent?: Component
 }
 
@@ -223,6 +227,7 @@ export interface CdnOptions {
   getUrl?: (module: 'shiki' | 'mermaid' | 'katex' | 'katex-css', version: string) => string
   shiki?: boolean
   mermaid?: 'esm' | 'umd' | false
+  beautifulMermaid?: 'esm' | 'umd' | false
   katex?: 'esm' | 'umd' | false
 }
 

@@ -15,7 +15,12 @@ export default defineConfig({
     minify: true,
   },
   inlineOnly: false,
-  external: ['shiki', 'mermaid', 'katex'],
+  external: [
+    'shiki',
+    'mermaid',
+    'beautiful-mermaid',
+    'katex',
+  ],
   css: {
     splitting: false,
     fileName: 'index.css',

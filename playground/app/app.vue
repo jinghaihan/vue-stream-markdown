@@ -307,7 +307,7 @@ onMounted(() => {
 
       <div
         ref="containerRef"
-        class="py-4 pr-4 h-full overflow-x-hidden overflow-y-auto"
+        class="pr-4 h-full overflow-x-hidden overflow-y-auto"
         :style="{
           scrollbarGutter: 'stable',
         }"
@@ -315,6 +315,7 @@ onMounted(() => {
       >
         <Markdown
           ref="markdownRef"
+          class="my-4"
           :mode="mode"
           :caret="caret"
           :content="markdownContent"

@@ -18,6 +18,16 @@ export async function hasMermaidModule() {
   }
 }
 
+export async function hasBeautifulMermaidModule() {
+  try {
+    await import('beautiful-mermaid')
+    return true
+  }
+  catch {
+    return false
+  }
+}
+
 export async function hasKatexModule() {
   try {
     await import('katex')
