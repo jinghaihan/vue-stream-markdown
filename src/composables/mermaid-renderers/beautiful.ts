@@ -17,12 +17,14 @@ const BEAUTIFUL_DIAGRAM_PREFIXES = [
   'erDiagram',
 ] as const
 
+const DIAGRAM_TYPE_PATTERN = new RegExp(`^(${BEAUTIFUL_DIAGRAM_PREFIXES.join('|')})`)
+
 function extractDiagramType(code: string): string {
   const lines = code.trim().split('\n')
   for (const line of lines) {
     const trimmed = line.trim()
     if (trimmed && !trimmed.startsWith('%%')) {
-      const match = trimmed.match(/^(flowchart|graph|stateDiagram|sequence|classDiagram|erDiagram)/)
+      const match = trimmed.match(DIAGRAM_TYPE_PATTERN)
       return match?.[1] ?? 'unknown'
     }
   }
@@ -30,39 +32,40 @@ function extractDiagramType(code: string): string {
 }
 
 export class BeautifulMermaidRenderer extends MermaidRenderer {
-  private cdnOptions?: CdnOptions
-  private shikiOptions?: ShikiOptions
-  private isDarkRef: MaybeRef<boolean>
+  private cdnOptions?: MaybeRef<CdnOptions | undefined>
+  private shikiOptions?: MaybeRef<ShikiOptions | undefined>
+  private isDark: MaybeRef<boolean>
   private beautifulMermaid: typeof import('beautiful-mermaid') | null = null
 
   constructor(
-    options: MermaidOptions,
-    cdnOptions?: CdnOptions,
-    shikiOptions?: ShikiOptions,
+    options: MaybeRef<MermaidOptions | undefined>,
+    cdnOptions?: MaybeRef<CdnOptions | undefined>,
+    shikiOptions?: MaybeRef<ShikiOptions | undefined>,
     isDark?: MaybeRef<boolean>,
   ) {
     super(options)
     this.cdnOptions = cdnOptions
     this.shikiOptions = shikiOptions
-    this.isDarkRef = isDark ?? false
+    this.isDark = isDark ?? false
   }
 
   private get currentTheme(): string {
-    const isDark = unref(this.isDarkRef)
-    const [light, dark] = this.options.beautifulTheme ?? DEFAULT_BEAUTIFUL_MERMAID_THEME
-    return isDark ? dark : light
+    const resolvedOptions = unref(this.options)
+    const [light, dark] = resolvedOptions?.beautifulTheme ?? DEFAULT_BEAUTIFUL_MERMAID_THEME
+    return unref(this.isDark) ? dark : light
   }
 
   private get currentShikiTheme(): string {
-    const isDark = unref(this.isDarkRef)
-    const [light, dark] = this.shikiOptions?.theme ?? [DEFAULT_SHIKI_LIGHT_THEME, DEFAULT_SHIKI_DARK_THEME]
-    return isDark ? dark : light
+    const resolvedShikiOptions = unref(this.shikiOptions)
+    const [light, dark] = resolvedShikiOptions?.theme ?? [DEFAULT_SHIKI_LIGHT_THEME, DEFAULT_SHIKI_DARK_THEME]
+    return unref(this.isDark) ? dark : light
   }
 
   private get mergedOptions() {
+    const resolvedOptions = unref(this.options)
     return {
       ...PRESET_BEAUTIFUL_MERMAID_CONFIG,
-      ...(this.options.beautifulConfig ?? {}),
+      ...(resolvedOptions?.beautifulConfig ?? {}),
     }
   }
 
@@ -70,18 +73,14 @@ export class BeautifulMermaidRenderer extends MermaidRenderer {
     try {
       const { getHighlighter } = useShiki({
         shikiOptions: this.shikiOptions,
-        cdnOptions: this.cdnOptions,
-        isDark: this.isDarkRef,
+        cdnOptions: unref(this.cdnOptions),
+        isDark: this.isDark,
       })
       const highlighter = await getHighlighter()
-
       const shikiTheme = highlighter.getTheme(this.currentShikiTheme)
       const colors = this.beautifulMermaid?.fromShikiTheme(shikiTheme)
 
-      return {
-        ...colors,
-        ...this.mergedOptions,
-      }
+      return colors ? { ...colors, ...this.mergedOptions } : null
     }
     catch {
       return null
@@ -104,7 +103,7 @@ export class BeautifulMermaidRenderer extends MermaidRenderer {
       return
 
     const { loadCdnBeautifulMermaid } = useCdnLoader({
-      cdnOptions: this.cdnOptions,
+      cdnOptions: unref(this.cdnOptions),
     })
 
     const module = await loadCdnBeautifulMermaid() ?? await import('beautiful-mermaid')

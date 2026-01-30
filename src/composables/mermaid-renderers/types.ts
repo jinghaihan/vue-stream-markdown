@@ -1,3 +1,4 @@
+import type { MaybeRef } from 'vue'
 import type { MermaidOptions } from '../../types'
 
 export interface MermaidRenderResult {
@@ -12,16 +13,16 @@ export interface MermaidParseResult {
 }
 
 export abstract class MermaidRenderer {
-  protected options: MermaidOptions
-  protected loaded = false
+  protected options: MaybeRef<MermaidOptions | undefined>
+  public loaded = false
 
-  constructor(options: MermaidOptions) {
+  constructor(options: MaybeRef<MermaidOptions | undefined>) {
     this.options = options
   }
 
   abstract load(): Promise<void>
   abstract isSupported(diagramType: string): boolean
-  abstract render(code: string, theme?: string): Promise<MermaidRenderResult>
+  abstract render(code: string): Promise<MermaidRenderResult>
   abstract parse(code: string): Promise<MermaidParseResult>
 
   isLoaded(): boolean {

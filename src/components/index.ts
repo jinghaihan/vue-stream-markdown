@@ -7,6 +7,7 @@ export * from './renderers'
 export const UI = {
   Alert: defineAsyncComponent(() => import('./alert.vue')),
   Button: defineAsyncComponent(() => import('./button.vue')),
+  Caret: defineAsyncComponent(() => import('./caret.vue')),
   CodeBlock: defineAsyncComponent(() => import('./code-block/index.vue')),
   Dropdown: defineAsyncComponent(() => import('./dropdown.vue')),
   ErrorComponent: defineAsyncComponent(() => import('./error-component.vue')),

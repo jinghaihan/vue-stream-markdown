@@ -13,8 +13,8 @@ const DEFAULT_USER_CONFIG: UserConfig = {
   mermaidRenderer: 'vanilla',
   mermaidLightTheme: 'neutral',
   mermaidDarkTheme: 'dark',
-  mermaidBeautifulLightTheme: 'default',
-  mermaidBeautifulDarkTheme: 'zinc-dark',
+  mermaidBeautifulLightTheme: 'github-light',
+  mermaidBeautifulDarkTheme: 'github-dark',
   caret: 'block',
 }
 

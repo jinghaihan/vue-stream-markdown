@@ -104,8 +104,14 @@ const codeOptions = computed((): CodeOptions => {
 const mermaidOptions = computed((): MermaidOptions => {
   return {
     renderer: userConfig.value.mermaidRenderer,
-    theme: [userConfig.value.mermaidLightTheme, userConfig.value.mermaidDarkTheme],
-    beautifulTheme: [userConfig.value.mermaidBeautifulDarkTheme, userConfig.value.mermaidBeautifulDarkTheme],
+    theme: [
+      userConfig.value.mermaidLightTheme,
+      userConfig.value.mermaidDarkTheme,
+    ],
+    beautifulTheme: [
+      userConfig.value.mermaidBeautifulLightTheme,
+      userConfig.value.mermaidBeautifulDarkTheme,
+    ],
   }
 })
 

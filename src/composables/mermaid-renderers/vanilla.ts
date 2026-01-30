@@ -10,24 +10,24 @@ import { useCdnLoader } from '../use-cdn-loader'
 import { MermaidRenderer } from './types'
 
 export class VanillaMermaidRenderer extends MermaidRenderer {
-  private cdnOptions?: CdnOptions
-  private isDarkRef: MaybeRef<boolean>
+  private cdnOptions?: MaybeRef<CdnOptions | undefined>
+  private isDark: MaybeRef<boolean>
   private mermaid: Mermaid | null = null
 
   constructor(
-    options: MermaidOptions,
-    cdnOptions?: CdnOptions,
+    options: MaybeRef<MermaidOptions | undefined>,
+    cdnOptions?: MaybeRef<CdnOptions | undefined>,
     isDark?: MaybeRef<boolean>,
   ) {
     super(options)
     this.cdnOptions = cdnOptions
-    this.isDarkRef = isDark ?? false
+    this.isDark = isDark ?? false
   }
 
   private get currentTheme(): string {
-    const isDark = unref(this.isDarkRef)
-    const [light, dark] = this.options.theme ?? DEFAULT_MERMAID_THEME
-    return isDark ? dark : light
+    const resolvedOptions = unref(this.options)
+    const [light, dark] = resolvedOptions?.theme ?? DEFAULT_MERMAID_THEME
+    return unref(this.isDark) ? dark : light
   }
 
   private wrapThemeCode(code: string): string {
@@ -36,17 +36,12 @@ export class VanillaMermaidRenderer extends MermaidRenderer {
     return `%%{init: {"theme": "${this.currentTheme}"}}%%\n${code}`
   }
 
-  private cleanupErrorElement(id: string): void {
-    const element = document.getElementById(`d${id}`)
-    element?.remove()
-  }
-
   async load(): Promise<void> {
     if (this.mermaid)
       return
 
     const { getCdnMermaidUrl, loadCdnMermaid } = useCdnLoader({
-      cdnOptions: this.cdnOptions,
+      cdnOptions: unref(this.cdnOptions),
     })
 
     const hasCdn = getCdnMermaidUrl() ? true : await hasMermaidModule()
@@ -58,7 +53,7 @@ export class VanillaMermaidRenderer extends MermaidRenderer {
     module.initialize({
       startOnLoad: false,
       securityLevel: 'loose',
-      ...this.options.config,
+      ...(unref(this.options)?.config ?? {}),
     })
 
     this.mermaid = module
@@ -90,7 +85,7 @@ export class VanillaMermaidRenderer extends MermaidRenderer {
       return { svg: result.svg, valid: true }
     }
     catch (error) {
-      this.cleanupErrorElement(id)
+      document.getElementById(`d${id}`)?.remove()
       return { valid: false, error: this.toError(error) }
     }
   }

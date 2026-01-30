@@ -14,4 +14,4 @@ export const PRESET_BEAUTIFUL_MERMAID_CONFIG: BeautifulMermaidConfig = {
   padding: 8,
 }
 
-export const DEFAULT_BEAUTIFUL_MERMAID_THEME: [ThemeName, ThemeName] = ['default', 'zinc-dark']
+export const DEFAULT_BEAUTIFUL_MERMAID_THEME: [ThemeName, ThemeName] = ['github-light', 'github-dark'] as const
