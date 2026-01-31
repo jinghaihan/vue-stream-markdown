@@ -11,7 +11,9 @@ export type BuiltinNodeRenderers = keyof typeof NODE_RENDERERS
 export type BuiltinPreviewers = 'mermaid' | 'html'
 export type BuiltinUIComponents = keyof typeof UI
 
-export type UIComponents = typeof UI
+export type UIComponentName = keyof typeof UI
+
+export type UIComponents = Record<UIComponentName, Component>
 
 export type OptionalIconName = 'flipVertical' | 'rotateRight' | 'arrowRight'
 
