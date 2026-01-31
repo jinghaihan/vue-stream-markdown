@@ -1,5 +1,6 @@
 import type { DefaultTheme, Plugin } from 'vitepress'
 import { defineConfig } from 'vitepress'
+import LLMsTxt from 'vitepress-plugin-llms'
 import { version } from '../../package.json'
 import { alias, getPlugins } from '../../shared'
 
@@ -164,8 +165,13 @@ export default defineConfig({
     },
   },
 
+  sitemap: {
+    hostname: 'https://docs-vue-stream-markdown.netlify.app',
+  },
+
   vite: {
-    plugins: [...getPlugins<Plugin>()],
+    // @ts-expect-error vitepress-plugin-llms type is broken
+    plugins: [LLMsTxt(), ...getPlugins<Plugin>()],
     resolve: { alias },
   },
 })

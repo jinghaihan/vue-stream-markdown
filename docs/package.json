@@ -9,5 +9,8 @@
   },
   "dependencies": {
     "vue": "catalog:frontend"
+  },
+  "devDependencies": {
+    "vitepress-plugin-llms": "catalog:docs"
   }
 }

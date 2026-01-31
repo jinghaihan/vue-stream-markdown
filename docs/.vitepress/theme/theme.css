@@ -116,7 +116,7 @@
 
 @media (min-width: 768px) {
   .VPNavBar #local-search {
-    border: 1px solid var(--vp-c-gutter);
+    border: 1px solid var(--vp-input-border-color);
   }
 }
 

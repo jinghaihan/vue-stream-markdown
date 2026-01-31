@@ -19,6 +19,7 @@ catalogs:
     nuxt: ^4.3.0
   docs:
     vitepress: ^1.6.4
+    vitepress-plugin-llms: ^1.10.0
   frontend:
     '@floating-ui/dom': ^1.7.5
     '@monaco-editor/loader': ^1.7.0

@@ -43,16 +43,16 @@ function goToDocs() {
         </p>
 
         <div class="px-4 flex flex-col gap-4 w-full items-center justify-center sm:flex-row">
-          <div class="border border-border rounded-md bg-muted flex gap-2 w-full items-center sm:max-w-xl">
-            <span class="text-muted-foreground font-mono pl-3">$</span>
+          <div class="px-4 border border-border rounded-md bg-muted flex gap-2 h-10 w-full items-center sm:max-w-xl">
+            <span class="text-muted-foreground font-mono">$</span>
             <input
               type="text"
               :value="installCommand"
               readonly
-              class="text-sm font-mono px-2 py-2 bg-transparent flex-1 focus:outline-none"
+              class="text-sm font-mono p-2 bg-transparent flex-1"
             >
             <button
-              class="text-muted-foreground px-3 py-2 rounded-r-md flex gap-2 transition-colors items-center hover:text-accent-foreground hover:bg-accent"
+              class="text-muted-foreground transition-colors hover:text-accent-foreground hover:bg-accent"
               @click="() => copy(installCommand)"
             >
               <component :is="copied ? Check : Copy" class="h-4 w-4" />
@@ -60,7 +60,7 @@ function goToDocs() {
           </div>
 
           <button
-            class="text-secondary-foreground font-medium px-4 py-2 rounded-md bg-secondary flex gap-2 whitespace-nowrap transition-opacity items-center hover:opacity-90"
+            class="text-foreground font-semibold px-4 border border-border rounded-md border-solid bg-muted h-10 whitespace-nowrap transition-opacity hover:opacity-90"
             @click="goToDocs"
           >
             Read the docs
