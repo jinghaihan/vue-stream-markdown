@@ -5,23 +5,27 @@ description: Replace built-in UI components with your own implementations
 
 # Custom UI Components
 
-Replace any built-in UI component with your custom implementation.
+Sometimes you want to customize UI elements to maintain consistency with your application's design system. `vue-stream-markdown` provides the ability to replace any built-in UI component with your own implementation, giving you full control over the look and feel of your markdown content.
 
-## Basic Usage
+## Example
+
+Customize the Button component:
 
 ```vue
 <script setup lang="ts">
 import type { UIButtonProps } from 'vue-stream-markdown'
 
-const MyButton = defineComponent({
-  props: {
-    name: String,
-    variant: String,
-  },
-  setup(props: UIButtonProps) {
-    // your implementation
-  }
-})
+const props = defineProps<UIButtonProps>()
+</script>
+
+<template>
+  <button>{{ props.name }}</button>
+</template>
+```
+
+```vue
+<script setup lang="ts">
+import MyButton from './Button.vue'
 </script>
 
 <template>
@@ -50,49 +54,3 @@ const MyButton = defineComponent({
 | Table | `UITableProps` | Table component |
 | Tooltip | `UITooltipProps` | Tooltip component |
 | ZoomContainer | `UIZoomContainerProps` | Zoom wrapper |
-
-## Props Types
-
-```ts
-import type {
-  UIAlertProps,
-  UIButtonProps,
-  UIDropdownProps,
-  UIErrorComponentProps,
-  UIIconProps,
-  UIImageProps,
-  UIModalProps,
-  UISegmentedProps,
-  UITableProps,
-  UITooltipProps,
-  UIZoomContainerProps,
-} from 'vue-stream-markdown'
-```
-
-## Example: Custom Button
-
-```vue
-<script setup lang="ts">
-import type { UIButtonProps } from 'vue-stream-markdown'
-
-const props = defineProps<UIButtonProps>()
-</script>
-
-<template>
-  <button
-    class="my-btn" :class="[props.variant]"
-  >
-    {{ props.name }}
-  </button>
-</template>
-
-<style scoped>
-.my-btn {
-  padding: 8px 16px;
-  border-radius: 4px;
-}
-.my-btn.icon {
-  padding: 8px;
-}
-</style>
-```
