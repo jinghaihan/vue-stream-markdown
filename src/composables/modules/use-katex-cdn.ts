@@ -6,7 +6,7 @@ import { dynamicImport, getModuleFromImport, getModuleStrategy, isModuleEnabled 
 let katexModule: typeof import('katex') | null = null
 let katexCssLoaded = false
 
-export interface UseKatexCdnOptions {
+interface UseKatexCdnOptions {
   cdnOptions?: CdnOptions
 }
 

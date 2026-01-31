@@ -1,17 +1,10 @@
 <script setup lang="ts">
-import type { CSSProperties } from 'vue'
+import type { UIModalProps } from '../types'
 import { createReusableTemplate, useEventListener } from '@vueuse/core'
 import { computed, useSlots } from 'vue'
 import { getOverlayContainer, isClient } from '../utils'
 
-const props = withDefaults(defineProps<{
-  title?: string
-  zIndex?: number
-  modalStyle?: CSSProperties
-  headerStyle?: CSSProperties
-  transition?: string
-  close?: () => void
-}>(), {
+const props = withDefaults(defineProps<UIModalProps>(), {
   zIndex: 9999,
   transition: 'stream-markdown-modal',
 })

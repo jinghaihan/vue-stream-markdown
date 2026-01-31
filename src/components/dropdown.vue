@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import type { SelectOption } from '../types'
-import { ref } from 'vue'
-import Button from './button.vue'
-import Tooltip from './tooltip.vue'
+import type { SelectOption, UIDropdownProps } from '../types'
+import { ref, toRefs } from 'vue'
+import { useContext } from '../composables'
 
-withDefaults(defineProps<{
-  title?: string
-  options?: SelectOption[]
-}>(), {
+const props = withDefaults(defineProps<UIDropdownProps>(), {
   options: () => [],
 })
 
@@ -15,7 +11,11 @@ const emits = defineEmits<{
   (e: 'click', event: MouseEvent, item: SelectOption): void
 }>()
 
-const tooltipRef = ref<InstanceType<typeof Tooltip>>()
+const { uiComponents: UI } = useContext()
+
+const { options } = toRefs(props)
+
+const tooltipRef = ref()
 
 const BUTTON_STYLE = {
   minWidth: '120px',
@@ -33,7 +33,8 @@ function handleClick(event: MouseEvent, item: SelectOption) {
 </script>
 
 <template>
-  <Tooltip
+  <component
+    :is="UI.Tooltip"
     ref="tooltipRef"
     trigger="click"
     placement="bottom-end"
@@ -41,7 +42,8 @@ function handleClick(event: MouseEvent, item: SelectOption) {
   >
     <template #content>
       <div data-stream-markdown="dropdown-overlay">
-        <Button
+        <component
+          :is="UI.Button"
           v-for="option in options"
           :key="option.value"
           :name="option.label"
@@ -53,7 +55,7 @@ function handleClick(event: MouseEvent, item: SelectOption) {
       </div>
     </template>
     <slot />
-  </Tooltip>
+  </component>
 </template>
 
 <style>

@@ -11,7 +11,6 @@ import {
   LANGUAGE_ICONS,
 } from '../../constants'
 import { save } from '../../utils'
-import Modal from '../modal.vue'
 import { CODE_PREVIEWERS } from '../previewers'
 import Actions from './actions.vue'
 import LanguageTitle from './language-title.vue'
@@ -23,9 +22,18 @@ defineOptions({
 
 const props = withDefaults(defineProps<CodeNodeRendererProps>(), {})
 
+const { uiComponents: UI } = useContext()
+
 const CodeNode = defineAsyncComponent(() => import('../renderers/code/index.vue'))
 
-const { controls, previewers, codeOptions } = toRefs(props)
+const {
+  controls,
+  previewers,
+  codeOptions,
+  mermaidOptions,
+  shikiOptions,
+  isDark,
+} = toRefs(props)
 
 const [DefineTemplate, ReuseTemplate] = createReusableTemplate()
 
@@ -34,14 +42,17 @@ const { t } = useI18n()
 const { isControlEnabled, getControlValue, resolveControls } = useControls({
   controls,
 })
-const { installed: hasMermaid } = useMermaid()
 
 const { icons: commonIcons, beforeDownload, onCopied } = useContext()
 const { copy, copied } = useClipboard({
   legacy: true,
 })
 
-const { saveMermaid } = useMermaid()
+const { installed: hasMermaid, saveMermaid } = useMermaid({
+  mermaidOptions,
+  shikiOptions,
+  isDark,
+})
 
 const collapsed = ref<boolean>(false)
 const fullscreen = ref<boolean>(false)
@@ -331,7 +342,8 @@ watch(
       </main>
     </main>
 
-    <Modal
+    <component
+      :is="UI.Modal"
       v-model:open="fullscreen"
       :header-style="{
         backgroundColor: 'color-mix(in oklab, var(--muted) 80%, transparent)',
@@ -375,7 +387,7 @@ watch(
         v-bind="props"
         :show-header="false"
       />
-    </Modal>
+    </component>
   </div>
 </template>
 

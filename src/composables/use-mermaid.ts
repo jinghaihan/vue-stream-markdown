@@ -1,7 +1,7 @@
 import type { MaybeRef } from 'vue'
 import type { CdnOptions, MermaidOptions, ShikiOptions } from '../types'
 import { ref } from 'vue'
-import { isClient } from '../utils'
+import { isClient, save, svgToPngBlob } from '../utils'
 import { createMermaidRenderer } from './mermaid-renderers'
 
 interface UseMermaidOptions {
@@ -48,8 +48,6 @@ export function useMermaid(options?: UseMermaidOptions) {
         onError?.(new Error('SVG not found. Please wait for the diagram to render.'))
         return
       }
-
-      const { save, svgToPngBlob } = await import('../utils')
 
       if (format === 'svg') {
         const mimeType = 'image/svg+xml'

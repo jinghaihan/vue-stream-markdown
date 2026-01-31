@@ -16,6 +16,7 @@ const Features: DefaultTheme.NavItemWithLink[] = [
   { text: 'Carets', link: '/feature/carets' },
   { text: 'CJK Language Support', link: '/feature/cjk-language-support' },
   { text: 'Code Blocks', link: '/feature/code-blocks' },
+  { text: 'Custom UI Components', link: '/feature/custom-ui-components' },
   { text: 'Github Flavored Markdown', link: '/feature/gfm' },
   { text: 'HTML Node Rendering', link: '/feature/html-rendering' },
   { text: 'Mathematics', link: '/feature/mathematics' },

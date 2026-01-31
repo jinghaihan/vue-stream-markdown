@@ -1,23 +1,17 @@
 <script setup lang="ts">
-import type { CSSProperties } from 'vue'
-import type { Control, SelectOption, ZoomControlPosition } from '../types'
+import type { Control, SelectOption, UIZoomContainerProps } from '../types'
 import { computed, ref } from 'vue'
-import { useI18n, useZoom } from '../composables'
-import Button from './button.vue'
+import { useContext, useI18n, useZoom } from '../composables'
 
-const props = withDefaults(defineProps<{
-  interactive?: boolean
-  showControl?: boolean
-  controlSize?: 'vanilla' | 'large'
-  position?: ZoomControlPosition
-  containerStyle?: CSSProperties
-}>(), {
+const props = withDefaults(defineProps<UIZoomContainerProps>(), {
   interactive: true,
   showControl: true,
   controlSize: 'vanilla',
   position: 'bottom-right',
   containerStyle: () => ({}),
 })
+
+const { uiComponents: UI } = useContext()
 
 const containerRef = ref<HTMLElement>()
 
@@ -197,7 +191,8 @@ function onTouchEnd(event: TouchEvent) {
   >
     <div v-if="showControl && interactive" data-stream-markdown="zoom-controls" :style="controlsPosition" @click.stop>
       <slot name="controls" v-bind="controlButtonProps" />
-      <Button
+      <component
+        :is="UI.Button"
         v-for="item in controls"
         v-bind="item"
         :key="item.key"

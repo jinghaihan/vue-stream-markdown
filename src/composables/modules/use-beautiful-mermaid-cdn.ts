@@ -5,7 +5,7 @@ import { dynamicImport, getModuleFromImport, getModuleStrategy, isModuleEnabled 
 
 let beautifulMermaidModule: typeof import('beautiful-mermaid') | null = null
 
-export interface UseBeautifulMermaidCdnOptions {
+interface UseBeautifulMermaidCdnOptions {
   cdnOptions?: CdnOptions
 }
 

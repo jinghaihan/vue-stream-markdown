@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { BuiltinNodeRenderers, Icons, NodeRenderers, StreamMarkdownProps } from './types'
+import type { BuiltinNodeRenderers, Icons, NodeRenderers, StreamMarkdownProps, UIComponents } from './types'
 import { computed, onBeforeUnmount, onMounted, ref, toRefs, watch } from 'vue'
+import { NODE_RENDERERS, UI } from './components'
 import NodeList from './components/node-list.vue'
-import { NODE_RENDERERS } from './components/renderers'
 import {
   useContext,
   useDarkDetector,
@@ -98,6 +98,11 @@ const icons = computed((): Icons => ({
   ...props.icons,
 }))
 
+const uiComponents = computed((): UIComponents => ({
+  ...UI,
+  ...props.components,
+}))
+
 function getContainer(): HTMLElement | undefined {
   return containerRef.value
 }
@@ -108,6 +113,7 @@ async function bootstrap() {
     preloadMermaid(),
     preloadKatex(),
     preloadAsyncComponents(icons.value),
+    preloadAsyncComponents(uiComponents.value),
   ]
 
   if (props.locale !== 'en-US')
@@ -127,6 +133,7 @@ watch(locale, () => loadLocaleMessages(locale.value))
 provideContext({
   mode,
   icons,
+  uiComponents,
   uiOptions,
   isDark,
   enableAnimate,

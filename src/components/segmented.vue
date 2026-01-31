@@ -1,12 +1,8 @@
 <script setup lang="ts">
-import type { CSSProperties } from 'vue'
-import type { SelectOption } from '../types'
-import Button from './button.vue'
+import type { SelectOption, UISegmentedProps } from '../types'
+import { useContext } from '../composables'
 
-const props = withDefaults(defineProps<{
-  options?: SelectOption[]
-  buttonStyle?: CSSProperties
-}>(), {
+const props = withDefaults(defineProps<UISegmentedProps>(), {
   options: () => [],
   buttonStyle: () => ({}),
 })
@@ -14,6 +10,8 @@ const props = withDefaults(defineProps<{
 const emits = defineEmits<{
   (e: 'change', value: string): void
 }>()
+
+const { uiComponents: UI } = useContext()
 
 const modelValue = defineModel<string>('value', { required: false, default: '' })
 
@@ -40,7 +38,8 @@ function onClick(item: SelectOption) {
 
 <template>
   <div data-stream-markdown="segmented">
-    <Button
+    <component
+      :is="UI.Button"
       v-for="item in options"
       :key="item.value"
       variant="text"

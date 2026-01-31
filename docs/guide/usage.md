@@ -108,6 +108,19 @@ export default defineNuxtConfig({
 
 - `previewers` (boolean | PreviewerConfig): Enable or configure previewers for any programming language. By default, HTML and Mermaid have built-in previewers. You can add custom previewers for any language.
 
+### Custom UI Components
+
+- `components` (UIComponents): Replace built-in UI components with custom implementations
+
+```vue
+<Markdown
+  :components="{ Button: MyButton }"
+  :content="content"
+/>
+```
+
+See [Custom UI Components](/feature/custom-ui-components)
+
 ## Quick Links
 
 For detailed configuration options, see the corresponding sections in the [Config](/config/) documentation:
@@ -119,3 +132,4 @@ For detailed configuration options, see the corresponding sections in the [Confi
 - [Security](/config/security) - Security and hardening options (affects URL validation and protocol blocking)
 - [Custom Renderers](/config/node-renderers) - Replace default renderers with custom components (affects how each AST node type is rendered)
 - [Internationalization](/config/i18n) - Locale and translation configuration (affects all text content in the component)
+- [Custom UI Components](/feature/custom-ui-components) - Replace built-in UI components with custom implementations

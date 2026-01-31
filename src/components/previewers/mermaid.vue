@@ -3,11 +3,7 @@ import type { CodeNodeRendererProps, Control, ZoomControlPosition } from '../../
 import { throttle } from '@antfu/utils'
 import { useResizeObserver } from '@vueuse/core'
 import { computed, nextTick, ref, toRefs, watch } from 'vue'
-import { useControls, useDeferredRender, useMermaid } from '../../composables'
-import Button from '../button.vue'
-import ErrorComponent from '../error-component.vue'
-import Spin from '../spin.vue'
-import ZoomContainer from '../zoom-container.vue'
+import { useContext, useControls, useDeferredRender, useMermaid } from '../../composables'
 
 const props = withDefaults(defineProps<CodeNodeRendererProps & {
   interactive?: boolean
@@ -21,6 +17,8 @@ const props = withDefaults(defineProps<CodeNodeRendererProps & {
   minHeight: 60,
   immediateRender: false,
 })
+
+const { uiComponents: UI } = useContext()
 
 const { controls, mermaidOptions, shikiOptions, isDark } = toRefs(props)
 
@@ -47,7 +45,7 @@ const code = computed(() => props.node.value.trim())
 const nodeLoading = computed(() => !!props.node.loading)
 const loading = computed(() => !svg.value && (nodeLoading.value || !renderFlag.value))
 
-const Error = computed(() => mermaidOptions.value?.errorComponent ?? ErrorComponent)
+const Error = computed(() => mermaidOptions.value?.errorComponent ?? UI.value.ErrorComponent)
 
 const containerHeight = ref<number>(0)
 const height = computed(() => {
@@ -203,7 +201,7 @@ if (!props.containerHeight) {
     }"
   >
     <template v-if="!svg">
-      <Spin v-if="loading" size="large" />
+      <component :is="UI.Spin" v-if="loading" size="large" />
       <component
         :is="Error"
         v-else
@@ -214,9 +212,10 @@ if (!props.containerHeight) {
       />
     </template>
 
-    <ZoomContainer :show-control="showControl" :position="controlPosition" :interactive="interactive">
+    <component :is="UI.ZoomContainer" :show-control="showControl" :position="controlPosition" :interactive="interactive">
       <template #controls="buttonProps">
-        <Button
+        <component
+          :is="UI.Button"
           v-for="item in mermaidControls"
           v-bind="{ ...buttonProps, ...item }"
           :key="item.key"
@@ -225,7 +224,7 @@ if (!props.containerHeight) {
       </template>
 
       <div data-stream-markdown="mermaid" v-html="svg" />
-    </ZoomContainer>
+    </component>
   </div>
 </template>
 

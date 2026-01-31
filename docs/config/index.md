@@ -81,6 +81,14 @@ Configuration for preloading node renderers to improve initial rendering perform
 
 List of node renderer types to preload. If not specified, a default list of lightweight renderers is preloaded. Preloading happens after merging custom renderers, ensuring the preloaded components match your final configuration.
 
+### components
+
+- **Type:** `Partial<UIComponents>`
+
+Custom UI components to replace built-in implementations.
+
+See [Custom UI Components](/feature/custom-ui-components)
+
 ### icons
 
 - **Type:** `Partial<Icons>`

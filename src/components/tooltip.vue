@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Placement } from '@floating-ui/dom'
+import type { UITooltipProps } from '../types'
 import { toRefs } from 'vue'
 import { useContext, useFloating } from '../composables'
 import { getOverlayContainer } from '../utils'
@@ -8,12 +8,7 @@ defineOptions({
   inheritAttrs: false,
 })
 
-const props = withDefaults(defineProps<{
-  content?: string
-  trigger?: 'hover' | 'click'
-  placement?: Placement
-  delay?: number | [number, number]
-}>(), {
+const props = withDefaults(defineProps<UITooltipProps>(), {
   trigger: 'hover',
   placement: 'top',
   delay: () => [100, 100],

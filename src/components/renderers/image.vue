@@ -3,18 +3,15 @@ import type { ImageNodeRendererProps } from '../../types'
 import { computed, ref, toRefs } from 'vue'
 import { useContext, useControls, useI18n, useSanitizers } from '../../composables'
 import { saveImage } from '../../utils'
-import Button from '../button.vue'
-import ErrorComponent from '../error-component.vue'
-import Image from '../image.vue'
-import Spin from '../spin.vue'
 
 const props = withDefaults(defineProps<ImageNodeRendererProps>(), {})
+
+const { beforeDownload, uiComponents: UI } = useContext()
 
 const { t } = useI18n()
 
 const { controls, hardenOptions } = toRefs(props)
 
-const { beforeDownload } = useContext()
 const { isControlEnabled } = useControls({
   controls,
 })
@@ -50,8 +47,8 @@ const showCaption = computed((): boolean =>
 )
 
 const Error = computed(() => isHardenUrl.value
-  ? (hardenOptions.value?.errorComponent ?? ErrorComponent)
-  : (props.imageOptions?.errorComponent ?? ErrorComponent))
+  ? (hardenOptions.value?.errorComponent ?? UI.value.ErrorComponent)
+  : (props.imageOptions?.errorComponent ?? UI.value.ErrorComponent))
 
 function handleLoaded() {
   imageLoaded.value = true
@@ -98,7 +95,8 @@ function handleMouseLeave() {
   >
     <div data-stream-markdown="image-wrapper">
       <div v-if="!isHardenUrl" ref="maskRef" data-stream-markdown="image-mask">
-        <Button
+        <component
+          :is="UI.Button"
           v-if="!isLoading && enableDownload"
           data-stream-markdown="image-download-button"
           icon="download"
@@ -113,9 +111,10 @@ function handleMouseLeave() {
         />
       </div>
 
-      <Spin v-if="(isLoading || !imageLoaded) && !isHardenUrl" />
+      <component :is="UI.Spin" v-if="(isLoading || !imageLoaded) && !isHardenUrl" />
 
-      <Image
+      <component
+        :is="UI.Image"
         v-if="!isLoading && !isHardenUrl && typeof transformedUrl === 'string'"
         :key="transformedUrl"
         :src="transformedUrl"

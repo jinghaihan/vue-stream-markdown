@@ -5,7 +5,7 @@ import { dynamicImport, isModuleEnabled } from './_utils'
 
 let shikiModule: typeof import('shiki') | null = null
 
-export interface UseShikiCdnOptions {
+interface UseShikiCdnOptions {
   cdnOptions?: CdnOptions
 }
 

@@ -17,13 +17,14 @@ import type {
   BuiltinToMdastExtension,
 } from './plugins'
 import type { CodeNodeRendererProps, ImageNodeRendererProps, TableNodeRendererProps } from './renderer'
-import type { BuiltinNodeRenderers, ControlTransformer, Icons, MaybePromise } from './shared'
+import type { BuiltinNodeRenderers, ControlTransformer, Icons, MaybePromise, UIComponents } from './shared'
 
 export interface StreamMarkdownProps extends StreamMarkdownContext, StreamMarkdownHooks, MarkdownParserOptions {
   mode?: 'static' | 'streaming'
   content?: string
   nodeRenderers?: NodeRenderers
   icons?: Partial<Icons>
+  components?: Partial<UIComponents>
   preload?: PreloadConfig
   locale?: string | LocaleConfig
   enableAnimate?: boolean

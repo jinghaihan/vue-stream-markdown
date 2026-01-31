@@ -1,24 +1,11 @@
 <script setup lang="ts">
-import type { Control, ControlsConfig, ImageNode, ImageNodeRendererProps, ParsedNode } from '../types'
+import type { Control, ImageNode, ImageNodeRendererProps, ParsedNode, UIImageProps } from '../types'
 import { useCycleList } from '@vueuse/core'
 import { treeFlatFilter } from 'treechop'
 import { computed, ref, toRefs, watch } from 'vue'
 import { useContext, useControls, useI18n, useMediumZoom } from '../composables'
-import Button from './button.vue'
-import Modal from './modal.vue'
-import ZoomContainer from './zoom-container.vue'
 
-const props = withDefaults(defineProps<{
-  src?: string
-  alt?: string
-  title?: string
-  preview?: boolean
-  margin?: number
-  controls?: ControlsConfig
-  transformHardenUrl?: (url: string) => string | null
-  nodeProps: ImageNodeRendererProps
-  handleDownload?: (url: string) => Promise<void>
-}>(), {
+const props = withDefaults(defineProps<UIImageProps>(), {
   preview: true,
   margin: 16,
   controls: true,
@@ -29,12 +16,13 @@ const emits = defineEmits<{
   (e: 'error', event: Event): void
 }>()
 
-const { margin, controls } = toRefs(props)
+const { icons, parsedNodes, uiComponents: UI } = useContext()
+
+const { margin, controls: controlsConfig } = toRefs(props)
 
 const { t } = useI18n()
-const { icons, parsedNodes } = useContext()
 const { isControlEnabled, getControlValue, resolveControls } = useControls({
-  controls,
+  controls: controlsConfig,
 })
 
 const imageNodes = computed(
@@ -224,7 +212,8 @@ watch(open, (data) => {
     @click="handleOpen"
   >
 
-  <Modal
+  <component
+    :is="UI.Modal"
     v-model:open="open"
     transition=""
     :modal-style="{
@@ -232,7 +221,8 @@ watch(open, (data) => {
     }"
     :close="handleClose"
   >
-    <ZoomContainer
+    <component
+      :is="UI.ZoomContainer"
       control-size="large"
       :position="controlPosition"
       :container-style="{
@@ -243,7 +233,8 @@ watch(open, (data) => {
       @click="handleClose"
     >
       <template #controls="buttonProps">
-        <Button
+        <component
+          :is="UI.Button"
           v-for="item in zoomControls"
           v-bind="{ ...buttonProps, ...item }"
           :key="item.key"
@@ -258,6 +249,6 @@ watch(open, (data) => {
         :title="title"
         :style="imageStyle"
       >
-    </ZoomContainer>
-  </Modal>
+    </component>
+  </component>
 </template>

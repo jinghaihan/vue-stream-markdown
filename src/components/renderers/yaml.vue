@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { YamlNodeRendererProps } from '../../types'
 import { computed } from 'vue'
-import Table from '../table.vue'
+import { useContext } from '../../composables'
 
 const props = withDefaults(defineProps<YamlNodeRendererProps>(), {})
+
+const { uiComponents: UI } = useContext()
 
 const reg = /\s*:\s*/
 const data = computed(
@@ -19,14 +21,14 @@ const rows = computed(() => [{ children: data.value.map(line => line[1]) }])
 
 <template>
   <div data-stream-markdown="yaml">
-    <Table :headers="headers" :rows="rows">
+    <component :is="UI.Table" :headers="headers" :rows="rows">
       <template #header-cell="{ cell }">
         {{ cell }}
       </template>
       <template #body-cell="{ cell }">
         {{ cell }}
       </template>
-    </Table>
+    </component>
   </div>
 </template>
 
