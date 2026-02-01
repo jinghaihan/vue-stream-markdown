@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { UIAlertProps } from '../types'
 import { createReusableTemplate, useEventListener } from '@vueuse/core'
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useContext, useI18n } from '../composables'
 import { getOverlayContainer, isClient } from '../utils'
 
@@ -42,9 +42,13 @@ function handleCancel() {
   open.value = false
 }
 
-useEventListener(document, 'keyup', (event) => {
-  if (event.key === 'Escape' || event.key === 'Esc')
-    handleCancel()
+// onMounted will only be called in the client side so it guarantees the DOM APIs are available, and this works
+// properly in SSR. As per https://vueuse.org/core/useEventListener
+onMounted(() => {
+  useEventListener(document, 'keyup', (event) => {
+    if (event.key === 'Escape' || event.key === 'Esc')
+      handleCancel()
+  })
 })
 </script>
 
