@@ -8,7 +8,7 @@ import {
   shift,
 } from '@floating-ui/dom'
 import { useEventListener } from '@vueuse/core'
-import { computed, ref, unref, watch, watchEffect } from 'vue'
+import { computed, onMounted, ref, unref, watch, watchEffect } from 'vue'
 import { isClient } from '../utils'
 
 interface UseFloatingOptions {
@@ -203,7 +203,11 @@ export function useFloating(options: UseFloatingOptions) {
     }
   }
 
-  useEventListener(document, 'click', handleClickOutside)
+  // onMounted will only be called in the client side so it guarantees the DOM APIs are available, and this works
+  // properly in SSR. As per https://vueuse.org/core/useEventListener
+  onMounted(() => {
+    useEventListener(document, 'click', handleClickOutside)
+  })
 
   return {
     referenceEl,

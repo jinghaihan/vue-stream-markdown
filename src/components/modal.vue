@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { UIModalProps } from '../types'
 import { createReusableTemplate, useEventListener } from '@vueuse/core'
-import { computed, useSlots } from 'vue'
+import { computed, onMounted, useSlots } from 'vue'
 import { getOverlayContainer, isClient } from '../utils'
 
 const props = withDefaults(defineProps<UIModalProps>(), {
@@ -27,13 +27,17 @@ const container = computed(() => {
   return getOverlayContainer() || document.body
 })
 
-useEventListener(document, 'keyup', (event) => {
-  if (event.key === 'Escape' || event.key === 'Esc') {
-    if (props.close)
-      props.close()
-    else
-      open.value = false
-  }
+// onMounted will only be called in the client side so it guarantees the DOM APIs are available, and this works
+// properly in SSR. As per https://vueuse.org/core/useEventListener
+onMounted(() => {
+  useEventListener(document, 'keyup', (event) => {
+    if (event.key === 'Escape' || event.key === 'Esc') {
+      if (props.close)
+        props.close()
+      else
+        open.value = false
+    }
+  })
 })
 </script>
 
