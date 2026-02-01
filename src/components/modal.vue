@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { UIModalProps } from '../types'
 import { createReusableTemplate, useEventListener } from '@vueuse/core'
-import { computed, useSlots } from 'vue'
+import { computed, onMounted, useSlots } from 'vue'
 import { getOverlayContainer, isClient } from '../utils'
 
 const props = withDefaults(defineProps<UIModalProps>(), {
@@ -27,13 +27,15 @@ const container = computed(() => {
   return getOverlayContainer() || document.body
 })
 
-useEventListener(document, 'keyup', (event) => {
-  if (event.key === 'Escape' || event.key === 'Esc') {
-    if (props.close)
-      props.close()
-    else
-      open.value = false
-  }
+onMounted(() => {
+  useEventListener(document, 'keyup', (event) => {
+    if (event.key === 'Escape' || event.key === 'Esc') {
+      if (props.close)
+        props.close()
+      else
+        open.value = false
+    }
+  })
 })
 </script>
 
