@@ -27,8 +27,6 @@ const container = computed(() => {
   return getOverlayContainer() || document.body
 })
 
-// onMounted will only be called in the client side so it guarantees the DOM APIs are available, and this works
-// properly in SSR. As per https://vueuse.org/core/useEventListener
 onMounted(() => {
   useEventListener(document, 'keyup', (event) => {
     if (event.key === 'Escape' || event.key === 'Esc') {
