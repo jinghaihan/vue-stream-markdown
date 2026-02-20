@@ -10,6 +10,7 @@ vue-stream-markdown is built with security as a top priority. When rendering use
 ## Why Security Matters
 
 Markdown can contain:
+
 - **Links to malicious sites** - Phishing or malware distribution
 - **External images** - Privacy tracking or CSRF attacks
 - **HTML content** - XSS vulnerabilities
@@ -112,6 +113,7 @@ With the above configuration:
 ```
 
 Results in:
+
 - Safe link: Works normally
 - Unsafe link: Renders as [blocked]
 
@@ -147,6 +149,7 @@ allowDataImages: false
 ```
 
 This prevents embedding arbitrary image data in Markdown, which could be used for:
+
 - Tracking pixels
 - Large embedded files
 - Malicious payloads

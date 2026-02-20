@@ -38,19 +38,19 @@ import MyButton from './Button.vue'
 
 ## Available Components
 
-| Component | Props Type | Description |
-|-----------|-----------|-------------|
-| Alert | `UIAlertProps` | Alert modal component |
-| Button | `UIButtonProps` | Button component |
-| Caret | - | Cursor/caret indicator |
-| CodeBlock | `CodeNodeRendererProps` | Code block wrapper |
-| Dropdown | `UIDropdownProps` | Dropdown menu |
-| ErrorComponent | `UIErrorComponentProps` | Error display |
-| Icon | `UIIconProps` | Icon component |
-| Image | `UIImageProps` | Image with zoom |
-| Modal | `UIModalProps` | Modal dialog |
-| Segmented | `UISegmentedProps` | Segmented control |
-| Spin | - | Loading spinner |
-| Table | `UITableProps` | Table component |
-| Tooltip | `UITooltipProps` | Tooltip component |
-| ZoomContainer | `UIZoomContainerProps` | Zoom wrapper |
+| Component      | Props Type              | Description            |
+| -------------- | ----------------------- | ---------------------- |
+| Alert          | `UIAlertProps`          | Alert modal component  |
+| Button         | `UIButtonProps`         | Button component       |
+| Caret          | -                       | Cursor/caret indicator |
+| CodeBlock      | `CodeNodeRendererProps` | Code block wrapper     |
+| Dropdown       | `UIDropdownProps`       | Dropdown menu          |
+| ErrorComponent | `UIErrorComponentProps` | Error display          |
+| Icon           | `UIIconProps`           | Icon component         |
+| Image          | `UIImageProps`          | Image with zoom        |
+| Modal          | `UIModalProps`          | Modal dialog           |
+| Segmented      | `UISegmentedProps`      | Segmented control      |
+| Spin           | -                       | Loading spinner        |
+| Table          | `UITableProps`          | Table component        |
+| Tooltip        | `UITooltipProps`        | Tooltip component      |
+| ZoomContainer  | `UIZoomContainerProps`  | Zoom wrapper           |

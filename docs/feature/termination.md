@@ -41,6 +41,7 @@ vue-stream-markdown extends the remend-inspired functionality with enhanced hand
 vue-stream-markdown removes incomplete footnote references (`[^label]`) that don't have corresponding definitions (`[^label]:`). This prevents broken footnote references from appearing during streaming, especially when the definition hasn't arrived yet.
 
 **Incomplete footnote reference (removed):**
+
 ```markdown
 > "Knowledge is power—but digital knowledge is acceleration."[^1]
 ```
@@ -48,6 +49,7 @@ vue-stream-markdown removes incomplete footnote references (`[^label]`) that don
 <StreamMarkdown mode="streaming" :content="incompleteFootnote" />
 
 **Complete footnote (kept):**
+
 ```markdown
 > "Knowledge is power—but digital knowledge is acceleration."[^1]
 
@@ -68,6 +70,7 @@ vue-stream-markdown removes incomplete footnote references (`[^label]`) that don
 Unlike the original remend approach which extracts link text and displays it as plain text, vue-stream-markdown completes the link syntax while intelligently disabling click interactions:
 
 **Incomplete link (loading state):**
+
 ```markdown
 [Click here to visit
 ```
@@ -75,6 +78,7 @@ Unlike the original remend approach which extracts link text and displays it as 
 <StreamMarkdown mode="streaming" :content="incompleteLink" />
 
 **Complete link:**
+
 ```markdown
 [Click here](https://example.com)
 ```
@@ -93,6 +97,7 @@ Unlike the original remend approach which extracts link text and displays it as 
 While the original remend approach removes incomplete images entirely, vue-stream-markdown completes the image syntax and adds a loading state:
 
 **Incomplete image (loading state):**
+
 ```markdown
 ![Placeholder](https://placehold.co/600x40
 ```
@@ -100,6 +105,7 @@ While the original remend approach removes incomplete images entirely, vue-strea
 <StreamMarkdown mode="streaming" :content="incompleteImage" />
 
 **Complete image:**
+
 ```markdown
 ![Placeholder](https://placehold.co/600x400)
 ```
@@ -117,6 +123,7 @@ While the original remend approach removes incomplete images entirely, vue-strea
 vue-stream-markdown proactively completes table syntax and provides a loading state, ensuring smooth rendering even when the table structure is incomplete:
 
 **Incomplete table:**
+
 ```markdown
 | Name | Age | City |
 | John | 25 | New
@@ -125,11 +132,12 @@ vue-stream-markdown proactively completes table syntax and provides a loading st
 <StreamMarkdown mode="streaming" :content="incompleteTable" />
 
 **Complete table:**
+
 ```markdown
-| Name | Age | City |
-| --- | --- | --- |
-| John | 25 | New York |
-| Jane | 30 | San Francisco |
+| Name | Age | City          |
+| ---- | --- | ------------- |
+| John | 25  | New York      |
+| Jane | 30  | San Francisco |
 ```
 
 <StreamMarkdown :content="completeTable" />
@@ -146,6 +154,7 @@ vue-stream-markdown proactively completes table syntax and provides a loading st
 The original remend approach doesn't handle inline KaTeX with single `$` as they're likely currency symbols. vue-stream-markdown attempts to complete inline math syntax, providing better support for mathematical expressions in streaming content:
 
 **Incomplete inline math (partial rendering):**
+
 ```markdown
 The quadratic formula is $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a$
 ```
@@ -153,6 +162,7 @@ The quadratic formula is $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a$
 <StreamMarkdown mode="streaming" :content="incompleteInlineMath" />
 
 **Complete inline math:**
+
 ```markdown
 The quadratic formula is $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
 ```
@@ -171,9 +181,10 @@ The quadratic formula is $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
 For syntax characters like `` ` ``, `*`, `_` that often indicate the start of a syntax block, vue-stream-markdown attempts to trim them when they appear at the end of content, reducing visual artifacts during streaming:
 
 **Example:**
-```markdown
+
+````markdown
 Here is some text with a trailing ```
-```
+````
 
 Result:
 

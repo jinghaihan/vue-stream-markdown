@@ -65,18 +65,24 @@ vue-stream-markdown comes with beautiful, built-in typography styles powered by 
 
 vue-stream-markdown supports all six levels of Markdown headings with responsive sizing and proper spacing:
 
-````markdown
+```markdown
 # Heading 1
+
 ## Heading 2
+
 ### Heading 3
+
 #### Heading 4
+
 ##### Heading 5
+
 ###### Heading 6
-````
+```
 
 <StreamMarkdown :content="headings" />
 
 Headings automatically include:
+
 - Responsive font sizes that scale appropriately
 - Proper font weights (semibold by default)
 - Optimal line heights for readability
@@ -88,11 +94,11 @@ Headings automatically include:
 
 Use standard Markdown syntax for emphasis:
 
-````markdown
-**Bold text** or __also bold__
-*Italic text* or _also italic_
-***Bold and italic***
-````
+```markdown
+**Bold text** or **also bold**
+_Italic text_ or _also italic_
+**_Bold and italic_**
+```
 
 <StreamMarkdown :content="boldItalic" />
 
@@ -100,9 +106,9 @@ Use standard Markdown syntax for emphasis:
 
 GitHub Flavored Markdown strikethrough is fully supported:
 
-````markdown
+```markdown
 ~~Crossed out text~~
-````
+```
 
 <StreamMarkdown :content="strikethrough" />
 
@@ -110,13 +116,14 @@ GitHub Flavored Markdown strikethrough is fully supported:
 
 Inline code is styled with a subtle background and monospace font:
 
-````markdown
+```markdown
 Use the `vue-stream-markdown` component in your app.
-````
+```
 
 <StreamMarkdown :content="inlineCode" />
 
 Inline code is styled with:
+
 - Monospace font family
 - Subtle background color
 - Rounded corners
@@ -126,13 +133,14 @@ Inline code is styled with:
 
 Links are styled with underlines and appropriate colors:
 
-````markdown
+```markdown
 [Visit our website](https://example.com)
-````
+```
 
 <StreamMarkdown :content="links" />
 
 Features include:
+
 - Distinct styling for regular links
 - Proper hover and focus states
 - Accessible color contrast
@@ -142,29 +150,30 @@ Features include:
 
 ### Unordered Lists
 
-````markdown
+```markdown
 - First item
 - Second item
   - Nested item
   - Another nested item
 - Third item
-````
+```
 
 <StreamMarkdown :content="unorderedList" />
 
 ### Ordered Lists
 
-````markdown
+```markdown
 1. First step
 2. Second step
    1. Sub-step A
    2. Sub-step B
 3. Third step
-````
+```
 
 <StreamMarkdown :content="orderedList" />
 
 Lists include:
+
 - Proper indentation for nested levels
 - Consistent spacing between items
 - Clear visual hierarchy
@@ -174,14 +183,15 @@ Lists include:
 
 Blockquotes are styled with a left border and subtle background:
 
-````markdown
+```markdown
 > "The development of full artificial intelligence could spell the end of the human race."
 > — Stephen Hawking
-````
+```
 
 <StreamMarkdown :content="blockquote" />
 
 Features:
+
 - Left accent border
 - Subtle background color
 - Proper padding and margin
@@ -207,13 +217,14 @@ See the [Code Blocks](/feature/code-blocks) documentation for detailed configura
 
 Images are responsive and properly contained:
 
-````markdown
+```markdown
 ![Alt text](https://placehold.co/600x400)
-````
+```
 
 <StreamMarkdown :content="image" />
 
 Features:
+
 - Responsive sizing
 - Proper aspect ratio preservation
 - Loading states
@@ -223,13 +234,13 @@ Features:
 
 Tables are fully styled with borders and hover states:
 
-````markdown
-| Feature | Supported |
-|---------|-----------|
-| Markdown | ✓ |
-| Streaming | ✓ |
-| Math | ✓ |
-````
+```markdown
+| Feature   | Supported |
+| --------- | --------- |
+| Markdown  | ✓         |
+| Streaming | ✓         |
+| Math      | ✓         |
+```
 
 <StreamMarkdown :content="table" />
 
@@ -239,9 +250,9 @@ See the [GitHub Flavored Markdown](/feature/gfm) documentation for more table fe
 
 Create visual separators:
 
-````markdown
+```markdown
 ---
-````
+```
 
 <StreamMarkdown :content="horizontalRule" />
 
@@ -249,15 +260,16 @@ Create visual separators:
 
 Paragraphs receive proper spacing and line height for optimal readability:
 
-````markdown
+```markdown
 This is a paragraph with normal text flow. It automatically wraps and includes proper spacing between adjacent paragraphs.
 
 This is a second paragraph with appropriate margin top spacing.
-````
+```
 
 <StreamMarkdown :content="paragraphs" />
 
 Paragraphs include:
+
 - Proper spacing between adjacent paragraphs
 - Optimal line height for readability
 - Automatic text wrapping

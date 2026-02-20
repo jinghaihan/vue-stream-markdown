@@ -7,20 +7,20 @@
 Create formatted tables with alignment options:
 
 ```markdown
-| Feature | Supported | Notes |
-|---------|-----------|-------|
-| Tables | ✅ | Full support |
-| Task Lists | ✅ | Interactive |
-| Strikethrough | ✅ | ~~Like this~~ |
+| Feature       | Supported | Notes         |
+| ------------- | --------- | ------------- |
+| Tables        | ✅        | Full support  |
+| Task Lists    | ✅        | Interactive   |
+| Strikethrough | ✅        | ~~Like this~~ |
 ```
 
 Renders as:
 
-| Feature | Supported | Notes |
-|---------|-----------|-------|
-| Tables | ✅ | Full support |
-| Task Lists | ✅ | Interactive |
-| Strikethrough | ✅ | ~~Like this~~ |
+| Feature       | Supported | Notes         |
+| ------------- | --------- | ------------- |
+| Tables        | ✅        | Full support  |
+| Task Lists    | ✅        | Interactive   |
+| Strikethrough | ✅        | ~~Like this~~ |
 
 ### Column Alignment
 
@@ -28,19 +28,20 @@ Control text alignment using colons in the separator row:
 
 ```markdown
 | Left | Center | Right |
-|:-----|:------:|------:|
-| A | B | C |
-| 1 | 2 | 3 |
+| :--- | :----: | ----: |
+| A    |   B    |     C |
+| 1    |   2    |     3 |
 ```
 
 Result:
 
 | Left | Center | Right |
-|:-----|:------:|------:|
-| A | B | C |
-| 1 | 2 | 3 |
+| :--- | :----: | ----: |
+| A    |   B    |     C |
+| 1    |   2    |     3 |
 
 **Alignment Syntax:**
+
 - `:---` - Left-aligned (default)
 - `:---:` - Center-aligned
 - `---:` - Right-aligned
@@ -48,6 +49,7 @@ Result:
 ### Table Features
 
 Streamdown enhances tables with:
+
 - **Responsive scrolling** - Tables scroll horizontally on narrow screens
 - **Download button** - Export tables as CSV or JSON
 - **Hover states** - Row highlighting for better readability
@@ -57,11 +59,11 @@ Streamdown enhances tables with:
 
 Tables support inline formatting:
 
-| Name | Description | Status |
-|------|-------------|--------|
-| **Streamdown** | A `react-markdown` replacement | ✅ Active |
-| *Feature X* | Under development | 🚧 WIP |
-| ~~Old Package~~ | Deprecated | ❌ Removed |
+| Name            | Description                    | Status     |
+| --------------- | ------------------------------ | ---------- |
+| **Streamdown**  | A `react-markdown` replacement | ✅ Active  |
+| _Feature X_     | Under development              | 🚧 WIP     |
+| ~~Old Package~~ | Deprecated                     | ❌ Removed |
 
 ## Task Lists
 
@@ -75,6 +77,7 @@ Create interactive todo lists:
 ```
 
 Renders as:
+
 - [x] Setup project structure
 - [x] Install dependencies
 - [ ] Write documentation
@@ -103,11 +106,13 @@ Task lists can be nested:
 Task lists work in various contexts:
 
 ## Shopping List
+
 - [ ] Milk
 - [ ] Eggs
 - [x] Bread
 
 > **Note**: Here's a quote with tasks:
+>
 > - [x] Complete quote formatting
 > - [ ] Add more examples
 
@@ -157,6 +162,7 @@ Check out github.com/vercel/streamdown
 ### URL Protocols
 
 Autolinks work with common protocols:
+
 - `http://` and `https://`
 - `ftp://`
 - `mailto:`

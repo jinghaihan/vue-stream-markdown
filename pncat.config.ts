@@ -9,14 +9,18 @@ export default defineConfig({
   ],
   catalogRules: mergeCatalogRules([
     {
-      name: 'docs',
-      match: [/vitepress/],
+      name: 'parser',
+      match: [/marked/, /mdast/, /micromark/],
       priority: 0,
     },
     {
-      name: 'inline',
+      name: 'inlined',
       match: ['@antfu/utils', /quick-lru/, /treechop/],
       priority: 0,
+    },
+    {
+      name: 'frontend',
+      match: [/floating-ui/],
     },
   ]),
   postRun: 'eslint --fix "**/package.json" "**/pnpm-workspace.yaml"',

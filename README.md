@@ -77,6 +77,7 @@ This project also uses and benefits from:
 - [Remend](https://github.com/vercel/streamdown/tree/main/packages/remend) - This project implements similar functionality inspired by remend for intelligently parsing and completing incomplete Markdown blocks.
 
 ### Code Sources
+
 - [markstream-vue](https://github.com/Simon-He95/markstream-vue) - The original inspiration for learning AST-based custom markdown rendering, and the source of the animation implementation used in this project
 - [ast-explorer](https://github.com/sxzz/ast-explorer) - Learned AST knowledge from this project, and the playground layout inspiration and AST syntax tree filtering code are derived from it
 - [medium-zoom](https://github.com/francoischalifour/medium-zoom) - Inspired the custom image zoom implementation

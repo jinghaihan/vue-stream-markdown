@@ -290,6 +290,7 @@ Position of the zoom control button.
 Configuration for preview components. Set to `false` to disable all previewers, or configure specific previewer types for any programming language.
 
 The `PreviewerConfig` is an object that can contain:
+
 - `placement?: 'left' | 'center' | 'right' | 'auto'` - Position of the preview component relative to the code block (default: `'auto'`)
 - `components?: Record<string, Component>` - Object containing language-specific previewer configurations
   - For `html` and `mermaid`: `boolean` (to enable/disable default previewers) or `Component` (to provide a custom previewer component)

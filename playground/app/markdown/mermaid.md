@@ -30,6 +30,7 @@ graph TD
 ```
 
 **Node Shapes:**
+
 - `[text]` - Rectangle
 - `(text)` - Rounded rectangle
 - `{text}` - Rhombus (decision)
@@ -37,6 +38,7 @@ graph TD
 - `[[text]]` - Subroutine shape
 
 **Direction:**
+
 - `graph TD` - Top to bottom
 - `graph LR` - Left to right
 - `graph BT` - Bottom to top
@@ -62,6 +64,7 @@ sequenceDiagram
 ```
 
 **Arrow Types:**
+
 - `->` - Solid line
 - `-->` - Dotted line
 - `->>` - Solid arrow

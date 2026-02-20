@@ -9,11 +9,13 @@ Modern AI models have revolutionized how we interact with technology. From **lan
 ## Key Features
 
 ### Benefits
+
 - Natural language understanding
 - Multi-modal processing
 - Real-time inference
 
 ### Requirements
+
 1. GPU acceleration
 2. Model weights
 3. API access
@@ -36,11 +38,11 @@ GFM extends standard Markdown with powerful features. Here's a comprehensive dem
 
 ## Tables
 
-| Feature | Standard MD | GFM |
-|---------|------------|-----|
-| Tables | ❌ | ✅ |
-| Task Lists | ❌ | ✅ |
-| Strikethrough | ❌ | ✅ |
+| Feature       | Standard MD | GFM |
+| ------------- | ----------- | --- |
+| Tables        | ❌          | ✅  |
+| Task Lists    | ❌          | ✅  |
+| Strikethrough | ❌          | ✅  |
 
 ## Task Lists
 
@@ -187,7 +189,7 @@ sequenceDiagram
 
 **This is a very long bold text that keeps going and going without a clear end, so you can see how unterminated bold blocks are handled by the renderer.**
 
-*Here is an equally lengthy italicized sentence that stretches on and on, never quite reaching a conclusion, so you can observe how unterminated italic blocks behave in a streaming Markdown context, particularly when the content is verbose.*
+_Here is an equally lengthy italicized sentence that stretches on and on, never quite reaching a conclusion, so you can observe how unterminated italic blocks behave in a streaming Markdown context, particularly when the content is verbose._
 
 `This is a long inline code block that should be unterminated and continues for quite a while, including some code-like content such as const foo = "bar"; and more, to see how the parser deals with it when the code block is not properly closed`
 

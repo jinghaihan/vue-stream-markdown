@@ -74,6 +74,7 @@ Code blocks receive special optimization through Shiki's `codeToTokens` API, ena
 > 💡 **Tip**: Click the "Start Typing" button above and open the browser console to observe the incremental rendering behavior in real-time.
 
 This approach ensures that:
+
 - Only new or changed tokens are processed, not the entire code block
 - Existing tokens remain in the DOM, reducing DOM operations
 - Code blocks update smoothly as content streams in

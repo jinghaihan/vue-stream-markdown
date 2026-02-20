@@ -2,83 +2,79 @@ packages:
   - .
   - playground
   - docs
+overrides:
+  vue: catalog:frontend
 catalogs:
   build:
-    '@vitejs/plugin-vue': ^6.0.3
-    tsdown: ^0.20.1
+    '@vitejs/plugin-vue': ^6.0.4
+    tsdown: ^0.20.3
     unplugin-icons: ^23.0.1
     unplugin-lightningcss: ^0.4.5
     vite: ^7.3.1
-  cli:
-    bumpp: ^10.4.0
-    pncat: ^0.8.0
-    taze: ^19.9.2
   dev:
-    '@nuxt/devtools': ^3.1.1
+    '@nuxt/devtools': ^3.2.1
     '@nuxtjs/color-mode': ^4.0.0
-    nuxt: ^4.3.0
+    bumpp: ^10.4.1
+    nuxt: ^4.3.1
+    pncat: ^0.10.2
+    simple-git-hooks: ^2.13.1
+    taze: ^19.9.2
+    tsx: ^4.21.0
+    typescript: ^5.9.3
   docs:
     vitepress: ^1.6.4
-    vitepress-plugin-llms: ^1.10.0
+    vitepress-plugin-llms: ^1.11.0
   frontend:
     '@floating-ui/dom': ^1.7.5
-    '@monaco-editor/loader': ^1.7.0
-    echarts: ^6.0.0
-    vue: ^3.5.27
+    '@unocss/nuxt': ^66.6.0
+    '@unocss/reset': ^66.6.0
+    '@vueuse/core': ^14.2.1
+    '@vueuse/nuxt': ^14.2.1
+    unocss: ^66.6.0
+    vue: ^3.5.28
     vue-json-pretty: ^2.6.0
   icons:
     '@iconify-json/catppuccin': ^1.2.17
-    '@iconify-json/lucide': ^1.2.87
-  inline:
+    '@iconify-json/lucide': ^1.2.92
+  inlined:
     '@antfu/utils': ^9.3.0
     quick-lru: ^7.3.0
     treechop: ^0.1.2
   lint:
-    '@antfu/eslint-config': ^7.2.0
-    '@nuxt/eslint': ^1.13.0
+    '@nuxt/eslint': ^1.15.1
+    '@octohash/eslint-config': ^0.2.3
     '@unocss/eslint-plugin': 66.5.9
-    eslint: ^9.39.2
-    eslint-plugin-format: ^1.3.1
+    eslint: ^9.39.3
+    eslint-plugin-format: ^1.4.0
     lint-staged: ^16.2.7
-    simple-git-hooks: ^2.13.1
+    vue-tsc: ^3.2.4
   parser:
-    marked: ^17.0.1
+    marked: ^17.0.3
     mdast-util-from-markdown: ^2.0.2
     mdast-util-frontmatter: ^2.0.1
     mdast-util-gfm: ^3.1.0
     mdast-util-math: ^3.0.0
     mdast-util-to-markdown: ^2.1.2
-    micromark-extension-cjk-friendly: ^2.0.0
-    micromark-extension-cjk-friendly-gfm-strikethrough: ^2.0.0
+    micromark-extension-cjk-friendly: ^2.0.1
+    micromark-extension-cjk-friendly-gfm-strikethrough: ^2.0.1
     micromark-extension-frontmatter: ^2.0.0
     micromark-extension-gfm: ^3.0.0
     micromark-extension-math: ^3.1.0
     micromark-util-types: ^2.0.2
   prod:
+    '@monaco-editor/loader': ^1.7.0
+    '@shikijs/monaco': ^3.22.0
+    clsx: ^2.1.1
+    echarts: ^6.0.0
     htmlparser2: ^10.1.0
     lz-string: ^1.5.0
-  script:
-    tsx: ^4.21.0
-  style:
-    '@unocss/nuxt': ^66.6.0
-    '@unocss/reset': ^66.6.0
-    clsx: ^2.1.1
-    tailwind-merge: ^3.4.0
-    unocss: ^66.6.0
-  syntax:
-    '@shikijs/monaco': ^3.22.0
+    tailwind-merge: ^3.5.0
   test:
     '@vitest/coverage-v8': ^4.0.18
     '@vue/test-utils': ^2.4.6
     vitest: ^4.0.18
-  tsc:
-    typescript: ^5.9.3
-    vue-tsc: ^3.2.4
   types:
-    '@types/node': ^25.1.0
-  utils:
-    '@vueuse/core': ^14.1.0
-    '@vueuse/nuxt': ^14.1.0
+    '@types/node': ^25.3.0
 onlyBuiltDependencies:
   - esbuild
   - simple-git-hooks

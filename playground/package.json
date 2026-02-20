@@ -13,16 +13,16 @@
     "typecheck": "nuxt typecheck"
   },
   "dependencies": {
-    "@monaco-editor/loader": "catalog:frontend",
-    "@shikijs/monaco": "catalog:syntax",
-    "@unocss/reset": "catalog:style",
-    "@vueuse/core": "catalog:utils",
-    "clsx": "catalog:style",
-    "echarts": "catalog:frontend",
+    "@unocss/reset": "catalog:frontend",
+    "@vueuse/core": "catalog:frontend",
+    "vue": "catalog:frontend",
+    "vue-json-pretty": "catalog:frontend",
+    "@monaco-editor/loader": "catalog:prod",
+    "@shikijs/monaco": "catalog:prod",
+    "clsx": "catalog:prod",
+    "echarts": "catalog:prod",
     "htmlparser2": "catalog:prod",
     "lz-string": "catalog:prod",
-    "tailwind-merge": "catalog:style",
-    "vue": "catalog:frontend",
-    "vue-json-pretty": "catalog:frontend"
+    "tailwind-merge": "catalog:prod"
   }
 }

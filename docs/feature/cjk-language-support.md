@@ -31,13 +31,13 @@ vue-stream-markdown includes built-in support for CJK (Chinese, Japanese, Korean
 
 ## The Problem
 
-The CommonMark/GFM specification has a limitation where emphasis markers (** or *) adjacent to ideographic punctuation marks occasionally fail to be recognized. This causes formatting to break in CJK text:
+The CommonMark/GFM specification has a limitation where emphasis markers (\*_ or _) adjacent to ideographic punctuation marks occasionally fail to be recognized. This causes formatting to break in CJK text:
 
 ```markdown
 **この文は太字になりません（This won't be bolded）。**この文のせいで（It is due to this sentence）。
 ```
 
-Without CJK-friendly parsing, the text above would render as plain text instead of bold because the closing ** appears next to the Japanese period.
+Without CJK-friendly parsing, the text above would render as plain text instead of bold because the closing \*\* appears next to the Japanese period.
 
 ## The Solution
 

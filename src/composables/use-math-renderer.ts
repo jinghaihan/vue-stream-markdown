@@ -37,8 +37,7 @@ export function useMathRenderer(options: UseMathRendererOptions) {
 
     if (errorMessage.value
       && renderFlag.value
-      && renderingCode.value === code.value
-    ) {
+      && renderingCode.value === code.value) {
       return true
     }
 

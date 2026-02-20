@@ -14,6 +14,7 @@ This document serves to acknowledge and document the key dependencies and librar
 The [mdast](https://github.com/syntax-tree/mdast) (Markdown Abstract Syntax Tree) ecosystem provides the foundation for parsing and transforming Markdown content into a structured tree format. This AST-based approach enables fine-grained rendering control and optimizations for streaming scenarios where content arrives incrementally.
 
 **Key packages:**
+
 - `mdast-util-from-markdown` - Converts Markdown text into mdast syntax trees
 - `mdast-util-to-markdown` - Converts mdast syntax trees back to Markdown text
 - `mdast-util-gfm` - Adds GitHub Flavored Markdown support

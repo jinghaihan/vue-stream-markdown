@@ -7,13 +7,19 @@
 Streamdown supports all six levels of Markdown headings with responsive sizing and proper spacing:
 
 # Heading 1
+
 ## Heading 2
+
 ### Heading 3
+
 #### Heading 4
+
 ##### Heading 5
+
 ###### Heading 6
 
 Headings automatically include:
+
 - Responsive font sizes that scale appropriately
 - Proper font weights (semibold by default)
 - Optimal line heights for readability
@@ -23,9 +29,9 @@ Headings automatically include:
 
 Use standard Markdown syntax for emphasis:
 
-**Bold text** or __also bold__
-*Italic text* or _also italic_
-***Bold and italic***
+**Bold text** or **also bold**
+_Italic text_ or _also italic_
+**_Bold and italic_**
 
 ### Strikethrough
 
@@ -46,6 +52,7 @@ Links are styled with underlines and appropriate colors:
 [Visit our website](https://streamdown.ai)
 
 Features include:
+
 - Distinct styling for regular links
 - Proper hover and focus states
 - Accessible color contrast
@@ -70,6 +77,7 @@ Features include:
 3. Third step
 
 Lists include:
+
 - Proper indentation for nested levels
 - Consistent spacing between items
 - Clear visual hierarchy
@@ -83,6 +91,7 @@ Blockquotes are styled with a left border and subtle background:
 > — Stephen Hawking
 
 Features:
+
 - Left accent border
 - Subtle background color
 - Proper padding and margin
@@ -105,6 +114,7 @@ Images are responsive and properly contained:
 ![Alt text](https://placehold.co/600x400)
 
 Features:
+
 - Responsive sizing
 - Proper aspect ratio preservation
 - Loading states
@@ -114,11 +124,11 @@ Features:
 
 Tables are fully styled with borders and hover states:
 
-| Feature | Supported |
-|---------|-----------|
-| Markdown | ✓ |
-| Streaming | ✓ |
-| Math | ✓ |
+| Feature   | Supported |
+| --------- | --------- |
+| Markdown  | ✓         |
+| Streaming | ✓         |
+| Math      | ✓         |
 
 See the [GitHub Flavored Markdown](/docs/gfm) documentation for more table features.
 

@@ -303,6 +303,7 @@ vue-stream-markdown's unterminated block parser handles incomplete equations gra
 ```markdown
 $$
 E = mc^
+$$
 ```
 
 <StreamMarkdown :content="incompleteEquation" />

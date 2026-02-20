@@ -7,9 +7,6 @@
     "build": "vitepress build",
     "preview": "vitepress preview"
   },
-  "dependencies": {
-    "vue": "catalog:frontend"
-  },
   "devDependencies": {
     "vitepress-plugin-llms": "catalog:docs"
   }

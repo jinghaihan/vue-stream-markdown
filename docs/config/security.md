@@ -220,6 +220,7 @@ const hardenOptions: HardenOptions = {
 ### When to Disable
 
 Set `allowDataImages: false` to prevent:
+
 - Tracking pixels embedded in Markdown
 - Large embedded image files
 - Potential malicious payloads

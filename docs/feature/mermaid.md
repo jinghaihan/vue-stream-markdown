@@ -193,6 +193,7 @@ Create flowcharts to visualize processes and workflows:
 <StreamMarkdown :content="flowchart" />
 
 **Node Shapes:**
+
 - `[text]` - Rectangle
 - `(text)` - Rounded rectangle
 - `{text}` - Rhombus (decision)
@@ -200,6 +201,7 @@ Create flowcharts to visualize processes and workflows:
 - `[[text]]` - Subroutine shape
 
 **Direction:**
+
 - `graph TD` - Top to bottom
 - `graph LR` - Left to right
 - `graph BT` - Bottom to top
@@ -212,6 +214,7 @@ Visualize interactions between different actors or systems:
 <StreamMarkdown :content="sequenceDiagram" />
 
 **Arrow Types:**
+
 - `->` - Solid line
 - `-->` - Dotted line
 - `->>` - Solid arrow
@@ -461,7 +464,7 @@ When Mermaid diagrams are first streamed in, they appear as code blocks until th
 ### Diagram Not Rendering
 
 1. Verify the syntax is correct (check [Mermaid Live Editor](https://mermaid.live/))
-2. Ensure the code block uses `` ```mermaid ``
+2. Ensure the code block uses ` ```mermaid `
 3. Check browser console for JavaScript errors
 4. Verify Mermaid is not being blocked by CSP
 

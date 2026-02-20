@@ -80,11 +80,11 @@ vue-stream-markdown includes full support for GitHub Flavored Markdown (GFM) thr
 Create formatted tables with Table options:
 
 ```markdown
-| Feature | Supported | Notes |
-|---------|-----------|-------|
-| Tables | ✅ | Full support |
-| Task Lists | ✅ | Interactive |
-| Strikethrough | ✅ | ~~Like this~~ |
+| Feature       | Supported | Notes         |
+| ------------- | --------- | ------------- |
+| Tables        | ✅        | Full support  |
+| Task Lists    | ✅        | Interactive   |
+| Strikethrough | ✅        | ~~Like this~~ |
 ```
 
 <StreamMarkdown :content="table" />
@@ -95,19 +95,21 @@ Control text alignment using colons in the separator row:
 
 ```markdown
 | Left | Center | Right |
-|:-----|:------:|------:|
-| A | B | C |
-| 1 | 2 | 3 |
+| :--- | :----: | ----: |
+| A    |   B    |     C |
+| 1    |   2    |     3 |
 ```
 
 <StreamMarkdown :content="alignmentTable" />
 
 **Alignment Syntax:**
+
 - `:---` - Left-aligned (default)
 - `:---:` - Center-aligned
 - `---:` - Right-aligned
 
 vue-stream-markdown enhances tables with:
+
 - **Responsive scrolling** - Tables scroll horizontally on narrow screens
 - **Download button** - Export tables as CSV or JSON
 - **Proper spacing** - Optimized cell padding
@@ -117,11 +119,11 @@ vue-stream-markdown enhances tables with:
 Tables support inline formatting:
 
 ```markdown
-| Name | Description | Status |
-|------|-------------|--------|
-| **Streamdown** | A `react-markdown` replacement | ✅ Active |
-| *Feature X* | Under development | 🚧 WIP |
-| ~~Old Package~~ | Deprecated | ❌ Removed |
+| Name            | Description                    | Status     |
+| --------------- | ------------------------------ | ---------- |
+| **Streamdown**  | A `react-markdown` replacement | ✅ Active  |
+| _Feature X_     | Under development              | 🚧 WIP     |
+| ~~Old Package~~ | Deprecated                     | ❌ Removed |
 ```
 
 <StreamMarkdown :content="complexTable" />
@@ -173,11 +175,13 @@ Task lists work in various contexts:
 
 ```markdown
 ## Shopping List
+
 - [ ] Milk
 - [ ] Eggs
 - [x] Bread
 
 > **Note**: Here's a quote with tasks:
+>
 > - [x] Complete quote formatting
 > - [ ] Add more examples
 ```

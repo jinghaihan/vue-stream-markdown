@@ -61,6 +61,7 @@ const linkOptions: LinkOptions = {
 ```
 
 The callback receives the URL and can return:
+
 - `true` - Open the link directly without modal
 - `false` - Show the confirmation modal
 - `Promise<boolean>` - Async checks are supported

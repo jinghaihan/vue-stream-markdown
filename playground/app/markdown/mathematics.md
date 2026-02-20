@@ -149,6 +149,7 @@ The probability density function:
 $$
 f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2}
 $$
+
 ### Taylor Series
 
 ```markdown
@@ -160,6 +161,7 @@ $$
 $$
 e^x = \sum_{n=0}^{\infty} \frac{x^n}{n!} = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \cdots
 $$
+
 ### Integration by Parts
 
 ```markdown
@@ -171,6 +173,7 @@ $$
 $$
 \int u \, dv = uv - \int v \, du
 $$
+
 ## Special Operators and Symbols
 
 ### Comparison Operators

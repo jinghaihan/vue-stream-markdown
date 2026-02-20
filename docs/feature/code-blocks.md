@@ -209,6 +209,7 @@ Inline code uses backticks and receives subtle styling:
 <StreamMarkdown :content="inlineCode" />
 
 Inline code is styled with:
+
 - Monospace font family
 - Subtle background color
 - Rounded corners
@@ -217,6 +218,7 @@ Inline code is styled with:
 ## Code Block Styling
 
 Code blocks include:
+
 - **Line Numbers** - Optional line numbers for reference
 - **Rounded Corners** - Modern, polished appearance
 - **Proper Padding** - Comfortable spacing
@@ -235,6 +237,7 @@ When a code block is streaming in, vue-stream-markdown handles the incomplete st
 ```javascript
 function example() {
   // Streaming in progress...
+```
 ````
 
 <StreamMarkdown :content="incomplete" />

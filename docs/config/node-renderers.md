@@ -31,35 +31,35 @@ const nodeRenderers: NodeRenderers = {
 
 The following node types can be customized:
 
-| Node Type | Description | Props Type |
-|-----------|-------------|------------|
-| `blockquote` | Blockquote (`> quote`) | `BlockquoteNodeRendererProps` |
-| `break` | Line break | `BreakNodeRendererProps` |
-| `code` | Code block (```code```) | `CodeNodeRendererProps` |
-| `definition` | Link/image definition | `DefinitionNodeRendererProps` |
-| `delete` | Strikethrough (`~~text~~`) | `DeleteNodeRendererProps` |
-| `emphasis` | Emphasis (`*text*` or `_text_`) | `EmphasisNodeRendererProps` |
-| `footnoteDefinition` | Footnote definition | `FootnoteDefinitionNodeRendererProps` |
-| `footnoteReference` | Footnote reference | `FootnoteReferenceNodeRendererProps` |
-| `heading` | Heading (`# heading`) | `HeadingNodeRendererProps` |
-| `html` | HTML node | `HtmlNodeRendererProps` |
-| `image` | Image (`![alt](url)`) | `ImageNodeRendererProps` |
-| `imageReference` | Image reference | `ImageReferenceNodeRendererProps` |
-| `inlineCode` | Inline code (`` `code` ``) | `InlineCodeNodeRendererProps` |
-| `inlineMath` | Inline math (`$formula$`) | `InlineMathNodeRendererProps` |
-| `link` | Link (`[text](url)`) | `LinkNodeRendererProps` |
-| `linkReference` | Link reference | `LinkReferenceNodeRendererProps` |
-| `list` | List (`- item` or `1. item`) | `ListNodeRendererProps` |
-| `listItem` | List item | `ListItemNodeRendererProps` |
-| `math` | Math block (`$$formula$$`) | `MathNodeRendererProps` |
-| `paragraph` | Paragraph | `ParagraphNodeRendererProps` |
-| `strong` | Strong (`**text**` or `__text__`) | `StrongNodeRendererProps` |
-| `table` | Table | `TableNodeRendererProps` |
-| `tableRow` | Table row | `TableRowNodeRendererProps` |
-| `tableCell` | Table cell | `TableCellNodeRendererProps` |
-| `text` | Text node | `TextNodeRendererProps` |
-| `thematicBreak` | Thematic break (`---`) | `ThematicBreakNodeRendererProps` |
-| `yaml` | YAML front matter | `YamlNodeRendererProps` |
+| Node Type            | Description                       | Props Type                            |
+| -------------------- | --------------------------------- | ------------------------------------- |
+| `blockquote`         | Blockquote (`> quote`)            | `BlockquoteNodeRendererProps`         |
+| `break`              | Line break                        | `BreakNodeRendererProps`              |
+| `code`               | Code block (`code`)               | `CodeNodeRendererProps`               |
+| `definition`         | Link/image definition             | `DefinitionNodeRendererProps`         |
+| `delete`             | Strikethrough (`~~text~~`)        | `DeleteNodeRendererProps`             |
+| `emphasis`           | Emphasis (`*text*` or `_text_`)   | `EmphasisNodeRendererProps`           |
+| `footnoteDefinition` | Footnote definition               | `FootnoteDefinitionNodeRendererProps` |
+| `footnoteReference`  | Footnote reference                | `FootnoteReferenceNodeRendererProps`  |
+| `heading`            | Heading (`# heading`)             | `HeadingNodeRendererProps`            |
+| `html`               | HTML node                         | `HtmlNodeRendererProps`               |
+| `image`              | Image (`![alt](url)`)             | `ImageNodeRendererProps`              |
+| `imageReference`     | Image reference                   | `ImageReferenceNodeRendererProps`     |
+| `inlineCode`         | Inline code (`` `code` ``)        | `InlineCodeNodeRendererProps`         |
+| `inlineMath`         | Inline math (`$formula$`)         | `InlineMathNodeRendererProps`         |
+| `link`               | Link (`[text](url)`)              | `LinkNodeRendererProps`               |
+| `linkReference`      | Link reference                    | `LinkReferenceNodeRendererProps`      |
+| `list`               | List (`- item` or `1. item`)      | `ListNodeRendererProps`               |
+| `listItem`           | List item                         | `ListItemNodeRendererProps`           |
+| `math`               | Math block (`$$formula$$`)        | `MathNodeRendererProps`               |
+| `paragraph`          | Paragraph                         | `ParagraphNodeRendererProps`          |
+| `strong`             | Strong (`**text**` or `__text__`) | `StrongNodeRendererProps`             |
+| `table`              | Table                             | `TableNodeRendererProps`              |
+| `tableRow`           | Table row                         | `TableRowNodeRendererProps`           |
+| `tableCell`          | Table cell                        | `TableCellNodeRendererProps`          |
+| `text`               | Text node                         | `TextNodeRendererProps`               |
+| `thematicBreak`      | Thematic break (`---`)            | `ThematicBreakNodeRendererProps`      |
+| `yaml`               | YAML front matter                 | `YamlNodeRendererProps`               |
 
 ## TypeScript Support
 

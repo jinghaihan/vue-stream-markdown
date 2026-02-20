@@ -17,6 +17,7 @@ The `normalize` function is used for routine normalization of markdown content. 
 ### How It Works
 
 In streaming mode, the parser:
+
 1. First applies `normalize` to the raw content
 2. Then applies `preprocess` to the normalized content (for syntax completion)
 3. Compares the two results: if they differ, it indicates that syntax completion occurred, and the parser marks the last leaf node as `loading`
@@ -93,7 +94,7 @@ const preprocess = flow([
 
 The following functions are available for use in `preprocess`:
 
-- `fixCode`: Completes incomplete code block syntax (```code```)
+- `fixCode`: Completes incomplete code block syntax (`code`)
 - `fixFootnote`: Removes incomplete footnote references (`[^label]`) that don't have corresponding definitions (`[^label]:`)
 - `fixStrong`: Completes incomplete strong syntax (`**bold**`). Also removes standalone list markers (`- `) left after removing incomplete `**` to prevent parsing issues
 - `fixEmphasis`: Completes incomplete emphasis syntax (`*italic*`). Also removes standalone list markers (`- `) left after removing incomplete `*` to prevent parsing issues
@@ -143,6 +144,7 @@ The `postNormalize` function is executed after the AST (Abstract Syntax Tree) is
 ### How It Works
 
 The parser processes the AST in the following order:
+
 1. Markdown is parsed into an AST
 2. `postNormalize` is applied (for basic normalization)
 3. `postprocess` is applied (for streaming-specific processing)
@@ -316,6 +318,7 @@ Micromark extensions for parsing. These are added **in addition to** the default
 Control built-in plugins. Set a plugin key to `false` to disable it, or provide a function to override it.
 
 Available built-in plugins:
+
 - **micromark**: `gfm`, `math`, `frontmatter`, `cjkFriendlyExtension`, `gfmStrikethroughCjkFriendly`
 - **from**: `gfmFromMarkdown`, `mathFromMarkdown`, `frontmatterFromMarkdown`
 - **to**: `gfmToMarkdown`, `mathToMarkdown`, `frontmatterToMarkdown`
