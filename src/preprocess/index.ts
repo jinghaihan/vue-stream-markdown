@@ -48,6 +48,7 @@ export {
   fixDelete,
   fixEmphasis,
   fixFootnote,
+  fixInlineMath,
   fixLink,
   fixMath,
   fixStrong,

@@ -63,6 +63,15 @@ const content = ref('# Hello World\n\nThis is a markdown content.')
 </template>
 ```
 
+## Showcase
+
+I am grateful to the teams and builders who trust this library in their products:
+
+- [AI Elements Vue](https://github.com/vuepont/ai-elements-vue)
+- [ElevenLabs UI Vue](https://elevenlabs-ui-vue.com/)
+
+Thank you for your trust and support.
+
 ## Credit
 
 This project is inspired by [streamdown](https://streamdown.ai/) and even uses some source code from it.
