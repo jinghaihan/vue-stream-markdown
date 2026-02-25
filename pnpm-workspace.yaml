@@ -12,10 +12,7 @@ catalogs:
     unplugin-lightningcss: ^0.4.5
     vite: ^7.3.1
   dev:
-    '@nuxt/devtools': ^3.2.1
-    '@nuxtjs/color-mode': ^4.0.0
     bumpp: ^10.4.1
-    nuxt: ^4.3.1
     pncat: ^0.10.2
     simple-git-hooks: ^2.13.1
     taze: ^19.9.2
@@ -26,13 +23,9 @@ catalogs:
     vitepress-plugin-llms: ^1.11.0
   frontend:
     '@floating-ui/dom': ^1.7.5
-    '@unocss/nuxt': ^66.6.0
-    '@unocss/reset': ^66.6.0
     '@vueuse/core': ^14.2.1
-    '@vueuse/nuxt': ^14.2.1
     unocss: ^66.6.0
     vue: ^3.5.28
-    vue-json-pretty: ^2.6.0
   icons:
     '@iconify-json/catppuccin': ^1.2.17
     '@iconify-json/lucide': ^1.2.92
@@ -61,14 +54,21 @@ catalogs:
     micromark-extension-gfm: ^3.0.0
     micromark-extension-math: ^3.1.0
     micromark-util-types: ^2.0.2
-  prod:
+  playground:
     '@monaco-editor/loader': ^1.7.0
+    '@nuxt/devtools': ^3.2.1
+    '@nuxtjs/color-mode': ^4.0.0
     '@shikijs/monaco': ^3.22.0
+    '@unocss/nuxt': ^66.6.0
+    '@unocss/reset': ^66.6.0
+    '@vueuse/nuxt': ^14.2.1
     clsx: ^2.1.1
     echarts: ^6.0.0
     htmlparser2: ^10.1.0
     lz-string: ^1.5.0
+    nuxt: ^4.3.1
     tailwind-merge: ^3.5.0
+    vue-json-pretty: ^2.6.0
   test:
     '@vitest/coverage-v8': ^4.0.18
     '@vue/test-utils': ^2.4.6

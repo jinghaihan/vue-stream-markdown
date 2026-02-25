@@ -13,16 +13,21 @@
     "typecheck": "nuxt typecheck"
   },
   "dependencies": {
-    "@unocss/reset": "catalog:frontend",
     "@vueuse/core": "catalog:frontend",
     "vue": "catalog:frontend",
-    "vue-json-pretty": "catalog:frontend",
-    "@monaco-editor/loader": "catalog:prod",
-    "@shikijs/monaco": "catalog:prod",
-    "clsx": "catalog:prod",
-    "echarts": "catalog:prod",
-    "htmlparser2": "catalog:prod",
-    "lz-string": "catalog:prod",
-    "tailwind-merge": "catalog:prod"
+    "@monaco-editor/loader": "catalog:playground",
+    "@nuxt/devtools": "catalog:playground",
+    "@nuxtjs/color-mode": "catalog:playground",
+    "@shikijs/monaco": "catalog:playground",
+    "@unocss/nuxt": "catalog:playground",
+    "@unocss/reset": "catalog:playground",
+    "@vueuse/nuxt": "catalog:playground",
+    "clsx": "catalog:playground",
+    "echarts": "catalog:playground",
+    "htmlparser2": "catalog:playground",
+    "lz-string": "catalog:playground",
+    "nuxt": "catalog:playground",
+    "tailwind-merge": "catalog:playground",
+    "vue-json-pretty": "catalog:playground"
   }
 }

@@ -1,4 +1,5 @@
 import { defineConfig, mergeCatalogRules } from 'pncat'
+import { dependencies } from './playground/package.json'
 
 export default defineConfig({
   exclude: [
@@ -17,6 +18,11 @@ export default defineConfig({
       name: 'inlined',
       match: ['@antfu/utils', /quick-lru/, /treechop/],
       priority: 0,
+    },
+    {
+      name: 'playground',
+      match: Object.keys(dependencies).filter(i => !['vue', '@vueuse/core'].includes(i)),
+      priority: 20,
     },
     {
       name: 'frontend',
