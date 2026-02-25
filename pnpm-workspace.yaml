@@ -9,13 +9,14 @@ catalogs:
     '@vitejs/plugin-vue': ^6.0.4
     tsdown: ^0.20.3
     unplugin-icons: ^23.0.1
-    unplugin-lightningcss: ^0.4.5
     vite: ^7.3.1
   dev:
     bumpp: ^10.4.1
+    lightningcss: ^1.31.1
     pncat: ^0.10.2
     simple-git-hooks: ^2.13.1
     taze: ^19.9.2
+    tinyglobby: ^0.2.15
     tsx: ^4.21.0
     typescript: ^5.9.3
   docs:

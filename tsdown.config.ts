@@ -1,7 +1,6 @@
 import Vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'tsdown'
 import Icons from 'unplugin-icons/vite'
-import LightningCSS from 'unplugin-lightningcss/rolldown'
 
 export default defineConfig({
   entry: ['./src/index'],
@@ -31,14 +30,6 @@ export default defineConfig({
   plugins: [
     Vue(),
     Icons({ compiler: 'vue3' }),
-    LightningCSS({
-      options: {
-        targets: {
-          chrome: 89,
-        },
-        minify: true,
-      },
-    }),
   ],
   copy: [
     {

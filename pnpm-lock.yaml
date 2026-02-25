@@ -15,9 +15,6 @@ catalogs:
     unplugin-icons:
       specifier: ^23.0.1
       version: 23.0.1
-    unplugin-lightningcss:
-      specifier: ^0.4.5
-      version: 0.4.5
     vite:
       specifier: ^7.3.1
       version: 7.3.1
@@ -25,6 +22,9 @@ catalogs:
     bumpp:
       specifier: ^10.4.1
       version: 10.4.1
+    lightningcss:
+      specifier: ^1.31.1
+      version: 1.31.1
     pncat:
       specifier: ^0.10.2
       version: 0.10.2
@@ -34,6 +34,9 @@ catalogs:
     taze:
       specifier: ^19.9.2
       version: 19.9.2
+    tinyglobby:
+      specifier: ^0.2.15
+      version: 0.2.15
     tsx:
       specifier: ^4.21.0
       version: 4.21.0
@@ -289,6 +292,9 @@ importers:
       katex:
         specifier: ^0.16.28
         version: 0.16.28
+      lightningcss:
+        specifier: catalog:dev
+        version: 1.31.1
       lint-staged:
         specifier: catalog:lint
         version: 16.2.7
@@ -310,6 +316,9 @@ importers:
       taze:
         specifier: catalog:dev
         version: 19.9.2
+      tinyglobby:
+        specifier: catalog:dev
+        version: 0.2.15
       treechop:
         specifier: catalog:inlined
         version: 0.1.2
@@ -328,9 +337,6 @@ importers:
       unplugin-icons:
         specifier: catalog:build
         version: 23.0.1(@vue/compiler-sfc@3.5.28)
-      unplugin-lightningcss:
-        specifier: catalog:build
-        version: 0.4.5
       vite:
         specifier: catalog:build
         version: 7.3.1(@types/node@25.3.0)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
@@ -14592,6 +14598,7 @@ snapshots:
     dependencies:
       lightningcss: 1.31.1
       unplugin: 3.0.0
+    optional: true
 
   unplugin-utils@0.2.5:
     dependencies:
