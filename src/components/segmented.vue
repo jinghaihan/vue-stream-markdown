@@ -37,7 +37,10 @@ function onClick(item: SelectOption) {
 </script>
 
 <template>
-  <div data-stream-markdown="segmented">
+  <div
+    data-stream-markdown="segmented"
+    class="p-0.5 rounded-md flex gap-1 items-center"
+  >
     <component
       :is="UI.Button"
       v-for="item in options"
@@ -51,15 +54,3 @@ function onClick(item: SelectOption) {
     />
   </div>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='segmented'] {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.125rem;
-    border-radius: 0.375rem;
-  }
-}
-</style>

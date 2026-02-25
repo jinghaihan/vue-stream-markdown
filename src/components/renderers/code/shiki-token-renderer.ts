@@ -13,6 +13,10 @@ export default defineComponent({
       type: Function as PropType<() => Promise<typeof import('shiki')>>,
       required: true,
     },
+    showLineNumbers: {
+      type: Boolean,
+      default: true,
+    },
   },
   setup(props) {
     if (!props.tokens)
@@ -34,6 +38,7 @@ export default defineComponent({
           'class': [
             'shiki',
             props.tokens.themeName,
+            'p-4 font-mono text-sm',
           ],
           'data-language': props.tokens.grammarState?.lang,
           'data-bg': props.tokens.bg,
@@ -49,6 +54,9 @@ export default defineComponent({
               'div',
               {
                 'data-stream-markdown': 'code-line',
+                'class': props.showLineNumbers
+                  ? 'relative block min-h-4 text-sm before:inline-block before:mr-4 before:w-4 before:select-none before:text-right before:font-mono before:text-[13px] before:text-muted-foreground/50 before:content-[counter(line)] before:[counter-increment:line]'
+                  : 'relative block min-h-4 text-sm',
                 'key': index,
               },
               renderList(line, (token, tokenIndex) => h(

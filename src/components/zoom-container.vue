@@ -176,6 +176,7 @@ function onTouchEnd(event: TouchEvent) {
   <div
     ref="containerRef"
     data-stream-markdown="zoom-container"
+    class="h-full relative overflow-hidden"
     :style="{
       touchAction: interactive ? 'none' : 'auto',
     }"
@@ -189,7 +190,13 @@ function onTouchEnd(event: TouchEvent) {
     @pointercancel="onPointerUp"
     @pointerleave="onPointerUp"
   >
-    <div v-if="showControl && interactive" data-stream-markdown="zoom-controls" :style="controlsPosition" @click.stop>
+    <div
+      v-if="showControl && interactive"
+      data-stream-markdown="zoom-controls"
+      class="p-1 border border-border rounded-xl bg-background flex gap-1 items-center absolute z-[1] max-lg:gap-0"
+      :style="controlsPosition"
+      @click.stop
+    >
       <slot name="controls" v-bind="controlButtonProps" />
       <component
         :is="UI.Button"
@@ -200,9 +207,13 @@ function onTouchEnd(event: TouchEvent) {
       />
     </div>
 
-    <div data-stream-markdown="zoom-inner">
+    <div
+      data-stream-markdown="zoom-inner"
+      class="flex size-full items-center justify-center"
+    >
       <div
         data-stream-markdown="zoom-transform-container"
+        class="shrink-0 w-full"
         :style="{
           ...transformStyle,
           ...containerStyle,
@@ -215,46 +226,3 @@ function onTouchEnd(event: TouchEvent) {
     </div>
   </div>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='zoom-container'] {
-    height: 100%;
-    position: relative;
-    overflow: hidden;
-  }
-
-  & [data-stream-markdown='zoom-inner'] {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    width: 100%;
-  }
-
-  & [data-stream-markdown='zoom-transform-container'] {
-    width: 100%;
-    flex-shrink: 0;
-  }
-
-  & [data-stream-markdown='zoom-controls'] {
-    position: absolute;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.25rem;
-    border-radius: 0.75rem;
-    border: 1px solid var(--border);
-    background-color: var(--background);
-  }
-}
-
-@media (max-width: 1024px) {
-  :where(.stream-markdown, .stream-markdown-overlay) {
-    & [data-stream-markdown='zoom-controls'] {
-      gap: 0;
-    }
-  }
-}
-</style>

@@ -65,7 +65,10 @@ function onDropdownClick(event: MouseEvent, item: SelectOption) {
       v-bind="$attrs"
       data-stream-markdown="button"
       type="button"
-      :class="buttonClass"
+      class="text-xs text-muted-foreground p-2 rounded-md border-none bg-transparent flex gap-1 cursor-pointer transition-colors duration-[var(--default-transition-duration)] items-center justify-center hover:text-foreground hover:bg-accent"
+      :class="[
+        buttonClass,
+      ]"
       :style="buttonStyle"
       @click="onClick"
     >
@@ -78,7 +81,10 @@ function onDropdownClick(event: MouseEvent, item: SelectOption) {
     v-bind="$attrs"
     data-stream-markdown="button"
     type="button"
-    :class="buttonClass"
+    class="text-xs text-muted-foreground p-2 rounded-md border-none bg-transparent flex gap-1 cursor-pointer transition-colors duration-[var(--default-transition-duration)] items-center justify-center hover:text-foreground hover:bg-accent"
+    :class="[
+      buttonClass,
+    ]"
     :style="buttonStyle"
     @click="onClick"
   >
@@ -91,7 +97,10 @@ function onDropdownClick(event: MouseEvent, item: SelectOption) {
     <button
       data-stream-markdown="button"
       type="button"
-      :class="buttonClass"
+      class="text-xs text-muted-foreground p-2 rounded-md border-none bg-transparent flex gap-1 cursor-pointer transition-colors duration-[var(--default-transition-duration)] items-center justify-center hover:text-foreground hover:bg-accent"
+      :class="[
+        buttonClass,
+      ]"
       :style="buttonStyle"
       @click="onClick"
     >
@@ -101,28 +110,3 @@ function onDropdownClick(event: MouseEvent, item: SelectOption) {
     </button>
   </component>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='button'] {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.25rem;
-    padding: 0.5rem;
-    cursor: pointer;
-    border: none;
-    border-radius: 0.375rem;
-    font-size: 0.75rem;
-    line-height: 1rem;
-    background-color: transparent;
-    color: var(--muted-foreground);
-    transition-duration: var(--default-transition-duration);
-
-    &:hover {
-      color: var(--foreground);
-      background-color: var(--accent);
-    }
-  }
-}
-</style>

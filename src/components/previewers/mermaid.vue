@@ -195,6 +195,7 @@ if (!props.containerHeight) {
   <div
     ref="containerRef"
     data-stream-markdown="mermaid-previewer"
+    class="text-center"
     :style="{
       minHeight: `${minHeight}px`,
       height,
@@ -205,6 +206,7 @@ if (!props.containerHeight) {
       <component
         :is="Error"
         v-else
+        class="p-4"
         variant="mermaid"
         v-bind="props"
         :message="error"
@@ -223,30 +225,11 @@ if (!props.containerHeight) {
         />
       </template>
 
-      <div data-stream-markdown="mermaid" v-html="svg" />
+      <div
+        data-stream-markdown="mermaid"
+        class="flex select-none justify-center [&>svg]:!bg-transparent"
+        v-html="svg"
+      />
     </component>
   </div>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='mermaid-previewer'] {
-    text-align: center;
-
-    & [data-stream-markdown='error-component'] {
-      padding: 1rem;
-    }
-  }
-
-  & [data-stream-markdown='mermaid'] {
-    display: flex;
-    justify-content: center;
-    user-select: none;
-
-    /* mermaid use transparent background */
-    > svg {
-      background: transparent !important;
-    }
-  }
-}
-</style>

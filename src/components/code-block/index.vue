@@ -299,11 +299,15 @@ watch(
   <div
     data-stream-markdown="code-block"
     :data-collapsed="collapsed"
-    :class="{
-      'code-loading': props.node.loading,
-    }"
+    class="my-4 border border-border rounded-xl overflow-clip data-[collapsed=true]:[&_.code-block-header]:border-b-0"
+    :class="[
+      { 'code-loading': props.node.loading },
+    ]"
   >
-    <header data-stream-markdown="code-block-header">
+    <header
+      data-stream-markdown="code-block-header"
+      class="code-block-header text-sm text-muted-foreground px-4 py-1.5 border-b border-border bg-muted/80 flex items-center top-0 justify-between sticky z-[5] max-lg:px-3 [&>*:last-child]:flex [&>*:first-child]:flex-1 [&>*:last-child]:flex-1 [&>*:nth-child(2)]:left-1/2 [&>*:last-child]:justify-end [&>*:nth-child(2)]:absolute [&>*:nth-child(2)]:-translate-x-1/2"
+    >
       <slot name="title">
         <ReuseTemplate :show-preview="previewPlacement === 'left'" />
       </slot>
@@ -318,7 +322,10 @@ watch(
       </slot>
 
       <slot name="actions">
-        <div data-stream-markdown="actions">
+        <div
+          data-stream-markdown="actions"
+          class="flex gap-1 items-center"
+        >
           <PreviewSegmented
             v-if="previewable && previewPlacement === 'right'"
             v-model:mode="mode"
@@ -329,7 +336,12 @@ watch(
       </slot>
     </header>
 
-    <main v-show="!collapsed" data-stream-markdown="code-block-content" :style="{ maxHeight }">
+    <main
+      v-show="!collapsed"
+      data-stream-markdown="code-block-content"
+      class="overflow-auto"
+      :style="{ maxHeight }"
+    >
       <component
         :is="PreviewComponent"
         v-if="previewable"
@@ -364,7 +376,10 @@ watch(
       </template>
 
       <template #actions>
-        <div data-stream-markdown="actions">
+        <div
+          data-stream-markdown="actions"
+          class="flex gap-1 items-center"
+        >
           <PreviewSegmented
             v-if="previewable && previewPlacement === 'right'"
             v-model:mode="mode"
@@ -390,81 +405,3 @@ watch(
     </component>
   </div>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='actions'] {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-  }
-
-  & [data-stream-markdown='code-block'] {
-    margin-block: 1rem;
-    border-radius: 0.75rem;
-    border: 1px solid var(--border);
-    overflow: clip;
-
-    &[data-collapsed='true'] [data-stream-markdown='code-block-header'] {
-      border-bottom: none;
-    }
-  }
-
-  & [data-stream-markdown='code-block-header'] {
-    position: sticky;
-    top: 0;
-    z-index: 5;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-inline: 1rem;
-    padding-block: 0.375rem;
-    border-bottom: 1px solid var(--border);
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    background-color: color-mix(in oklab, var(--muted) 80%, transparent);
-    color: var(--muted-foreground);
-
-    & > :first-child {
-      flex: 1;
-    }
-
-    & > :last-child {
-      flex: 1;
-      display: flex;
-      justify-content: flex-end;
-    }
-
-    & > :nth-child(2) {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-  }
-
-  & [data-stream-markdown='code-block-content'] {
-    overflow: auto;
-  }
-
-  & [data-stream-markdown='language-title'] {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  & [data-stream-markdown='language-name'] {
-    font-family: var(--font-mono);
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    text-transform: lowercase;
-  }
-}
-
-@media (max-width: 1024px) {
-  :where(.stream-markdown, .stream-markdown-overlay) {
-    & [data-stream-markdown='code-block-header'] {
-      padding-inline: 0.75rem;
-    }
-  }
-}
-</style>

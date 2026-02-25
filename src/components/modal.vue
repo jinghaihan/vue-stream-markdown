@@ -41,8 +41,18 @@ onMounted(() => {
 
 <template>
   <DefineTemplate>
-    <div v-if="open" data-stream-markdown="modal" :style="modalStyle">
-      <header v-if="showHeader" data-stream-markdown="modal-header" :style="headerStyle">
+    <div
+      v-if="open"
+      data-stream-markdown="modal"
+      class="bg-background flex flex-col inset-0 fixed"
+      :style="modalStyle"
+    >
+      <header
+        v-if="showHeader"
+        data-stream-markdown="modal-header"
+        class="px-4 py-2 flex shrink-0 items-center justify-between relative [&>*:last-child]:flex [&>*:first-child]:flex-1 [&>*:last-child]:flex-1 [&>*:nth-child(2)]:left-1/2 [&>*:last-child]:justify-end [&>*:nth-child(2)]:absolute [&>*:nth-child(2)]:-translate-x-1/2"
+        :style="headerStyle"
+      >
         <slot name="title">
           {{ title }}
         </slot>
@@ -51,7 +61,10 @@ onMounted(() => {
         </slot>
         <slot name="actions" />
       </header>
-      <main data-stream-markdown="modal-body">
+      <main
+        data-stream-markdown="modal-body"
+        class="flex-1 basis-0 overflow-auto"
+      >
         <slot />
       </main>
     </div>
@@ -64,46 +77,3 @@ onMounted(() => {
     <ReuseTemplate v-else />
   </teleport>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='modal'] {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    background-color: var(--background);
-  }
-
-  & [data-stream-markdown='modal-header'] {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-shrink: 0;
-    padding-inline: 1rem;
-    padding-block: 0.5rem;
-
-    & > :first-child {
-      flex: 1;
-    }
-
-    & > :last-child {
-      flex: 1;
-      display: flex;
-      justify-content: flex-end;
-    }
-
-    & > :nth-child(2) {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-  }
-
-  & [data-stream-markdown='modal-body'] {
-    flex: 1 1 0%;
-    overflow: auto;
-  }
-}
-</style>

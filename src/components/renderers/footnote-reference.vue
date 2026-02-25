@@ -20,16 +20,11 @@ function scrollToFootnote() {
 </script>
 
 <template>
-  <sup data-stream-markdown="footnote-reference" @click="scrollToFootnote">
+  <sup
+    data-stream-markdown="footnote-reference"
+    class="text-primary cursor-pointer"
+    @click="scrollToFootnote"
+  >
     <a :id="`footnote-reference-${id}`">[{{ label }}]</a>
   </sup>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='footnote-reference'] {
-    color: var(--primary);
-    cursor: pointer;
-  }
-}
-</style>

@@ -41,7 +41,10 @@ function handleClick(event: MouseEvent, item: SelectOption) {
     data-stream-markdown="dropdown"
   >
     <template #content>
-      <div data-stream-markdown="dropdown-overlay">
+      <div
+        data-stream-markdown="dropdown-overlay"
+        class="p-1"
+      >
         <component
           :is="UI.Button"
           v-for="option in options"
@@ -57,11 +60,3 @@ function handleClick(event: MouseEvent, item: SelectOption) {
     <slot />
   </component>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='dropdown-overlay'] {
-    padding: 0.25rem;
-  }
-}
-</style>

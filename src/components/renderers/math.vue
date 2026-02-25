@@ -30,14 +30,9 @@ const Error = computed(() => katexOptions.value?.errorComponent ?? UI.value.Erro
     :message="errorMessage"
     v-bind="props"
   />
-  <div v-else data-stream-markdown="math" v-html="html" />
+  <div
+    v-else data-stream-markdown="math"
+    class="my-4 text-center"
+    v-html="html"
+  />
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='math'] {
-    text-align: center;
-    margin-block: 1rem;
-  }
-}
-</style>

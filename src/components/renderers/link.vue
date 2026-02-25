@@ -87,6 +87,7 @@ function handleClose() {
     v-if="!isHardenUrl && typeof transformedUrl === 'string'"
     data-stream-markdown="link"
     :data-stream-markdown-loading="loading"
+    class="text-primary underline cursor-pointer [overflow-wrap:anywhere] data-[stream-markdown-loading=true]:no-underline data-[stream-markdown-loading=true]:cursor-default data-[stream-markdown-loading=true]:pointer-events-none data-[stream-markdown-loading=true]:relative"
     rel="noreferrer"
     target="_blank"
     @click="handleClick"
@@ -106,7 +107,12 @@ function handleClose() {
     icon="externalLink"
     @confirm="handleConfirm"
   >
-    <code data-stream-markdown="link-url">{{ transformedUrl }}</code>
+    <code
+      data-stream-markdown="link-url"
+      class="text-sm font-mono p-3 rounded-lg bg-muted w-full inline-block"
+    >
+      {{ transformedUrl }}
+    </code>
     <template #footer>
       <component
         :is="UI.Button"
@@ -130,32 +136,3 @@ function handleClose() {
     </template>
   </component>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='link'] {
-    cursor: pointer;
-    color: var(--primary);
-    text-decoration: underline;
-    overflow-wrap: anywhere;
-
-    &[data-stream-markdown-loading='true'] {
-      position: relative;
-      cursor: default;
-      text-decoration: none;
-      pointer-events: none;
-    }
-  }
-
-  & [data-stream-markdown='link-url'] {
-    display: inline-block;
-    width: 100%;
-    padding: 0.75rem;
-    background-color: var(--muted);
-    font-family: var(--font-mono);
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    border-radius: 0.5rem;
-  }
-}
-</style>

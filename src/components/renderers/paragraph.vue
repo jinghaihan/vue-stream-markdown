@@ -28,6 +28,7 @@ const lineHeight = computed(() => {
 <template>
   <p
     data-stream-markdown="paragraph"
+    class="my-4 align-middle transition-[height] duration-[var(--default-transition-duration)] ease"
     :style="{
       marginBottom,
       lineHeight,
@@ -36,13 +37,3 @@ const lineHeight = computed(() => {
     <NodeList v-bind="props" :parent-node="node" :nodes="node.children" :deep="deep + 1" />
   </p>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='paragraph'] {
-    margin-block: 1rem;
-    vertical-align: middle;
-    transition: height var(--default-transition-duration) ease;
-  }
-}
-</style>

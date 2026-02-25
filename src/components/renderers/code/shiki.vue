@@ -62,6 +62,7 @@ watch(
       <ShikiTokensRenderer
         data-stream-markdown="code"
         :data-show-line-numbers="showLineNumbers"
+        :show-line-numbers="showLineNumbers"
         :tokens="tokens"
         :get-shiki="getShiki"
       />

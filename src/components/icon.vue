@@ -19,6 +19,10 @@ const iconStyle = computed(() => ({
 
 <template>
   <div data-stream-markdown="icon" :style="iconStyle">
-    <Icon :width="width" :height="height" :class="props.class" :style="style" />
+    <Icon
+      :width="width" :height="height"
+      :class="props.class"
+      :style="style"
+    />
   </div>
 </template>

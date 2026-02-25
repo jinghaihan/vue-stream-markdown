@@ -55,21 +55,32 @@ onMounted(() => {
     <div
       v-if="open"
       data-stream-markdown="alert"
+      class="p-6 border border-border rounded-xl bg-background flex flex-col gap-4 max-w-[28rem] w-full shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.1),0_8px_10px_-6px_rgb(0_0_0_/_0.1)] left-1/2 top-1/2 fixed -translate-x-1/2 -translate-y-1/2"
       :style="{ zIndex }"
       @click.stop
     >
-      <header data-stream-markdown="alert-header">
-        <div data-stream-markdown="alert-title">
+      <header
+        data-stream-markdown="alert-header"
+        class="flex flex-col relative"
+      >
+        <div
+          data-stream-markdown="alert-title"
+          class="text-lg font-semibold mb-2 flex gap-2 items-center"
+        >
           <component :is="UI.Icon" :icon="icon" :height="20" :width="20" />
           {{ title }}
         </div>
-        <div data-stream-markdown="alert-description">
+        <div
+          data-stream-markdown="alert-description"
+          class="text-sm text-muted-foreground"
+        >
           {{ description }}
         </div>
         <component
           :is="UI.Button"
           data-stream-markdown="alert-close-button"
           icon="x"
+          button-class="absolute -right-3 -top-3"
           :name="t('button.cancel')"
           :icon-height="20"
           :icon-width="20"
@@ -83,10 +94,14 @@ onMounted(() => {
       </div>
 
       <!-- Footer: Actions -->
-      <div data-stream-markdown="alert-footer">
+      <div
+        data-stream-markdown="alert-footer"
+        class="flex gap-2 [&>button]:!text-sm [&>button:last-child]:!text-primary-foreground [&>button]:!text-foreground [&>button]:!border [&>button]:!border-border [&>button]:!rounded-lg [&>button]:!border-solid [&>button:last-child:hover]:!bg-primary/90 [&>button:last-child]:!bg-primary [&>button]:!gap-2 [&>button]:!w-full"
+      >
         <slot name="footer">
           <component
             :is="UI.Button"
+            variant="text"
             :name="t('button.cancel')"
             type="button"
             @click="handleCancel"
@@ -95,6 +110,7 @@ onMounted(() => {
           </component>
           <component
             :is="UI.Button"
+            variant="text"
             :name="t('button.confirm')"
             type="button"
             @click="handleConfirm"
@@ -110,6 +126,7 @@ onMounted(() => {
     <div
       v-if="open"
       data-stream-markdown="alert-backdrop"
+      class="bg-[rgb(0_0_0_/_0.5)] flex items-center inset-0 justify-center fixed backdrop-blur"
       :style="{ zIndex: zIndex - 1 }"
       @click="handleCancel"
     >
@@ -119,85 +136,3 @@ onMounted(() => {
     </div>
   </Teleport>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='alert-backdrop'] {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgb(0 0 0 / 0.5);
-    backdrop-filter: blur(4px);
-  }
-
-  & [data-stream-markdown='alert'] {
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    width: 100%;
-    max-width: 28rem;
-    padding: 1.5rem;
-    background-color: var(--background);
-    border: 1px solid var(--border);
-    border-radius: 0.75rem;
-    box-shadow:
-      0 20px 25px -5px rgb(0 0 0 / 0.1),
-      0 8px 10px -6px rgb(0 0 0 / 0.1);
-  }
-
-  & [data-stream-markdown='alert-header'] {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  & [data-stream-markdown='alert-title'] {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 1.125rem;
-    line-height: 1.75rem;
-    font-weight: 600;
-  }
-
-  & [data-stream-markdown='alert-description'] {
-    color: var(--muted-foreground);
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-  }
-
-  & [data-stream-markdown='alert-close-button'] {
-    position: absolute;
-    top: -0.75rem;
-    right: -0.75rem;
-  }
-
-  & [data-stream-markdown='alert-footer'] {
-    display: flex;
-    gap: 0.5rem;
-    & > button {
-      width: 100%;
-      font-size: 0.875rem;
-      line-height: 1.25rem;
-      color: var(--foreground);
-      border: 1px solid var(--border);
-      border-radius: 0.5rem;
-      gap: 0.5rem;
-    }
-    & > button:nth-last-child(1) {
-      background-color: var(--primary);
-      color: var(--primary-foreground);
-    }
-    & > button:nth-last-child(1):hover {
-      background-color: color-mix(in oklch, var(--primary) 90%, transparent);
-    }
-  }
-}
-</style>

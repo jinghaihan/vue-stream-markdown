@@ -45,8 +45,15 @@ const isHarden = computed(() => props.variant?.startsWith?.('harden-'))
 </script>
 
 <template>
-  <span data-stream-markdown="error-component">
-    <div v-if="showIcon" data-stream-markdown="error-component-icon">
+  <span
+    data-stream-markdown="error-component"
+    class="text-sm text-muted-foreground font-mono inline-block [&_span]:flex-1 [&_span]:min-w-0 [&_span]:break-words"
+  >
+    <div
+      v-if="showIcon"
+      data-stream-markdown="error-component-icon"
+      class="leading-none mr-2 align-text-bottom inline-flex items-center"
+    >
       <component :is="UI.Icon" v-if="typeof icon === 'string'" :icon="icon" />
       <component :is="icon" v-else />
     </div>
@@ -54,30 +61,3 @@ const isHarden = computed(() => props.variant?.startsWith?.('harden-'))
     [{{ message }}]
   </span>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='error-component'] {
-    display: inline-block;
-    color: var(--muted-foreground);
-    font-family: var(--font-mono);
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-
-    & span {
-      flex: 1;
-      min-width: 0;
-      word-break: break-word;
-      overflow-wrap: break-word;
-    }
-  }
-
-  & [data-stream-markdown='error-component-icon'] {
-    display: inline-flex;
-    align-items: center;
-    line-height: 1;
-    vertical-align: text-bottom;
-    margin-right: 0.5rem;
-  }
-}
-</style>
