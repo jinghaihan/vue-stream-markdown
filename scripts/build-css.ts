@@ -14,7 +14,7 @@ const ROOT_DIR = fileURLToPath(new URL('..', import.meta.url))
 const SRC_DIR = join(ROOT_DIR, 'src')
 const STYLE_FILE = join(SRC_DIR, 'style.css')
 const OUTPUT_FILE = join(ROOT_DIR, 'dist', CSS_NAME)
-const SOURCE_GLOBS = ['**/*.vue', '**/*.ts']
+const SOURCE_GLOBS = ['**/*.vue']
 const NAMESPACE = ':where(.stream-markdown,.stream-markdown-overlay)'
 const VARIABLE_PREFIX = 'stream-markdown-'
 const UNO_VARIABLE_PREFIX = 'un-'
@@ -55,7 +55,7 @@ function minifyCSS(css: string): string {
   const { code } = transform({
     code: Buffer.from(css, 'utf8'),
     filename: CSS_NAME,
-    minify: false,
+    minify: true,
     targets: {
       chrome: 89,
     },
