@@ -19,11 +19,11 @@ describe('preprocess', () => {
   }
 
   for (const fixtureFile of getFixtureFiles()) {
-    it(fixtureFile, () => {
+    it(fixtureFile, async () => {
       const fixture = readFixture(fixtureFile)
       const result = preprocess(fixture)
       const snapshotPath = getSnapshotPath(fixtureFile)
-      expect(result).toMatchFileSnapshot(snapshotPath)
+      await expect(result).toMatchFileSnapshot(snapshotPath)
     })
   }
 })

@@ -113,9 +113,6 @@ export function fixStrong(
         i += 1 // Skip the second *
       }
     }
-    if (actualLastStarPos === -1) {
-      return content
-    }
     const paragraphOffset = calculateParagraphOffset(paragraphStartIndex, lines)
     const absoluteLastStarPos = paragraphOffset + actualLastStarPos
 
@@ -156,9 +153,6 @@ export function fixStrong(
         actualLastUnderscorePos = i
         i += 1 // Skip the second _
       }
-    }
-    if (actualLastUnderscorePos === -1) {
-      return content
     }
     const paragraphOffset = calculateParagraphOffset(paragraphStartIndex, lines)
     const absoluteLastUnderscorePos = paragraphOffset + actualLastUnderscorePos

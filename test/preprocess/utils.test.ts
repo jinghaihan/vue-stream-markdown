@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import {
+  findClosedCodeBlockRanges,
+  findInlineCodeRanges,
   findLastParagraphStart,
   getLastNonEmptyLine,
   getLastParagraph,
+  isPositionInRanges,
+  isRangeOverlappingRanges,
   isWithinHtmlTag,
   isWithinLinkOrImageUrl,
   isWithinMathBlock,
@@ -70,6 +74,12 @@ describe('isWithinLinkOrImageUrl', () => {
     const position = text.indexOf('with_parens')
     expect(isWithinLinkOrImageUrl(text, position)).toBe(false)
   })
+
+  it('returns false when URL candidate spans a newline before the position', () => {
+    const text = '[text](http://example.com/\npath'
+    const position = text.indexOf('path')
+    expect(isWithinLinkOrImageUrl(text, position)).toBe(false)
+  })
 })
 
 describe('isWithinHtmlTag', () => {
@@ -125,5 +135,32 @@ describe('isWithinMathBlock', () => {
     const text = '$$a$b$$'
     const position = text.indexOf('b')
     expect(isWithinMathBlock(text, position, { singleDollarTextMath: true })).toBe(true)
+  })
+})
+
+describe('code block range helpers', () => {
+  it('finds closed code block ranges and ignores trailing unclosed fences', () => {
+    const ranges = findClosedCodeBlockRanges('```js\na\n```\ntext\n```ts\nb')
+    expect(ranges).toEqual([{ start: 0, end: 11 }])
+  })
+
+  it('checks range overlap correctly', () => {
+    const ranges = [{ start: 2, end: 8 }]
+    expect(isRangeOverlappingRanges(3, 4, ranges)).toBe(true)
+    expect(isRangeOverlappingRanges(0, 2, ranges)).toBe(false)
+  })
+
+  it('checks positions inside ranges correctly', () => {
+    const ranges = [{ start: 2, end: 8 }]
+    expect(isPositionInRanges(2, ranges)).toBe(true)
+    expect(isPositionInRanges(8, ranges)).toBe(false)
+  })
+
+  it('finds inline code ranges outside fenced code blocks', () => {
+    const ranges = findInlineCodeRanges('a `x` ```js\n`skip`\n``` b `y`')
+    expect(ranges).toEqual([
+      { start: 2, end: 5 },
+      { start: 25, end: 28 },
+    ])
   })
 })

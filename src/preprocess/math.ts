@@ -57,10 +57,7 @@ export function fixMath(content: string): string {
 
   // If we have an odd number of block math delimiters, we have an unclosed block math
   if (blockMathDelimiters.length % 2 === 1) {
-    const lastDelimiterIndex = blockMathDelimiters[blockMathDelimiters.length - 1] ?? -1
-    if (lastDelimiterIndex === -1) {
-      return content
-    }
+    const lastDelimiterIndex = blockMathDelimiters[blockMathDelimiters.length - 1] as number
 
     // Check if there's content after the opening $$
     const hasContent = lines.slice(lastDelimiterIndex + 1).some((line) => {

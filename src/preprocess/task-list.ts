@@ -6,7 +6,7 @@ import {
   standaloneDashPattern,
   taskListPattern,
 } from './pattern'
-import { isInsideUnclosedCodeBlock } from './utils'
+import { findClosedCodeBlockRanges, isInsideUnclosedCodeBlock, isRangeOverlappingRanges } from './utils'
 
 /**
  * Fix incomplete task list syntax in streaming markdown
@@ -44,24 +44,9 @@ export function fixTaskList(content: string): string {
 
   // Check if the last line is inside a code block
   // Find all code block ranges
-  const codeBlockRanges: Array<{ start: number, end: number }> = []
-  let searchStart = 0
-  while (true) {
-    const codeBlockStart = content.indexOf('```', searchStart)
-    if (codeBlockStart === -1)
-      break
-    const codeBlockEnd = content.indexOf('```', codeBlockStart + 3)
-    if (codeBlockEnd === -1)
-      break
-    codeBlockRanges.push({ start: codeBlockStart, end: codeBlockEnd + 3 })
-    searchStart = codeBlockEnd + 3
-  }
+  const codeBlockRanges = findClosedCodeBlockRanges(content)
 
   const lines = content.split('\n')
-
-  // If content is empty or has no lines, return as is
-  if (lines.length === 0)
-    return content
 
   // Get the last line
   const lastLine = lines[lines.length - 1]
@@ -80,11 +65,7 @@ export function fixTaskList(content: string): string {
   const lastLineEndPos = lastLineStartPos + lastLine.length
 
   // Check if the last line is inside a code block
-  const isLastLineInCodeBlock = codeBlockRanges.some(
-    range => (lastLineStartPos >= range.start && lastLineStartPos < range.end)
-      || (lastLineEndPos > range.start && lastLineEndPos <= range.end)
-      || (lastLineStartPos < range.start && lastLineEndPos > range.end),
-  )
+  const isLastLineInCodeBlock = isRangeOverlappingRanges(lastLineStartPos, lastLineEndPos, codeBlockRanges)
 
   if (isLastLineInCodeBlock) {
     return content

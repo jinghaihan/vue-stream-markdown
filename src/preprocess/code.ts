@@ -85,10 +85,6 @@ function removeTrailingIncompleteBackticks(content: string): string {
   const beforeBackticks = content.substring(0, backtickPos)
   const afterBackticks = content.substring(backtickPos + backtickSequence.length)
 
-  // If there's non-whitespace content after the backticks, keep them
-  if (afterBackticks.trim().length > 0)
-    return content
-
   // For single backtick `
   if (backtickSequence.length === 1) {
     // Count backticks in the last paragraph before this one
@@ -161,10 +157,6 @@ function fixCodeBlock(content: string): string {
 
       return `${content}\`\`\``
     }
-    else {
-      // Remove the trailing ``` to avoid showing it as plain text
-      return content.slice(0, -3)
-    }
   }
 
   return content
@@ -175,10 +167,6 @@ function fixCodeBlock(content: string): string {
  * Only processes the last paragraph (content after the last blank line)
  */
 function fixInlineCode(content: string): string {
-  // Don't process inline code if we're inside a code block
-  if (isInsideUnclosedCodeBlock(content))
-    return content
-
   // Find the last paragraph
   const lines = content.split('\n')
   const { lastParagraph, startIndex: paragraphStartIndex } = getLastParagraphWithIndex(content)
@@ -237,9 +225,6 @@ function fixInlineCode(content: string): string {
       // If there's content after `, complete it
       if (afterLast.length > 0)
         return `${content}\``
-      else
-        // Remove the trailing ` to avoid showing it as plain text
-        return content.slice(0, actualPos) + content.slice(actualPos + 1)
     }
   }
 

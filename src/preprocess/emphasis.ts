@@ -85,11 +85,6 @@ export function fixEmphasis(content: string): string {
     // Check if there's content after the last * in the original text (skipping URLs)
     let hasContentAfter = false
     for (let i = lastStarPos + 1; i < lastParagraph.length; i++) {
-      const absolutePos = paragraphOffset + i
-      // Skip if it's in a URL, math block, or HTML tag
-      if (isWithinMathBlock(content, absolutePos) || isWithinLinkOrImageUrl(content, absolutePos) || isWithinHtmlTag(content, absolutePos)) {
-        continue
-      }
       const char = lastParagraph[i]
       if (char !== undefined && char.trim() !== '') {
         hasContentAfter = true
@@ -134,11 +129,6 @@ export function fixEmphasis(content: string): string {
     // Check if there's content after the last _ in the original text (skipping URLs)
     let hasContentAfter = false
     for (let i = lastUnderscorePos + 1; i < lastParagraph.length; i++) {
-      const absolutePos = paragraphOffset + i
-      // Skip if it's in a URL, math block, or HTML tag
-      if (isWithinMathBlock(content, absolutePos) || isWithinLinkOrImageUrl(content, absolutePos) || isWithinHtmlTag(content, absolutePos)) {
-        continue
-      }
       const char = lastParagraph[i]
       if (char !== undefined && char.trim() !== '') {
         hasContentAfter = true
@@ -178,9 +168,6 @@ export function fixEmphasis(content: string): string {
           break
         }
       }
-    }
-    if (lastUnderscorePosInOriginal === -1) {
-      return content
     }
     let result = content.substring(0, lastUnderscorePosInOriginal).trimEnd()
     // If after removing _, we're left with a line ending in `- ` or `-\t`, remove the standalone dash line

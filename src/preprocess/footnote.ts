@@ -1,3 +1,4 @@
+import type { TextRange } from './utils'
 import {
   codeBlockPattern,
   footnoteDefLabelPattern,
@@ -7,7 +8,150 @@ import {
   footnoteRefPattern,
   incompleteFootnoteRefPattern,
 } from './pattern'
-import { calculateAbsolutePosition, getLastParagraphWithIndex, isInsideUnclosedCodeBlock } from './utils'
+import {
+  calculateAbsolutePosition,
+  findClosedCodeBlockRanges,
+  findInlineCodeRanges,
+  getLastParagraphWithIndex,
+  isInsideUnclosedCodeBlock,
+  isPositionInRanges,
+
+} from './utils'
+
+interface FootnoteReference {
+  start: number
+  end: number
+  label: string
+}
+
+interface FootnoteScanContext {
+  lines: string[]
+  codeBlockRanges: TextRange[]
+  inlineCodeRanges: TextRange[]
+  footnoteDefRanges: TextRange[]
+}
+
+function getDefinedFootnoteLabels(content: string): Set<string> {
+  const contentWithoutCodeBlocks = content.replace(codeBlockPattern, '')
+  const defMatches = contentWithoutCodeBlocks.match(footnoteDefPattern)
+  const definedLabels = new Set<string>()
+
+  if (!defMatches) {
+    return definedLabels
+  }
+
+  for (const def of defMatches) {
+    const labelMatch = def.match(footnoteDefLabelPattern)
+    if (labelMatch && labelMatch[1]) {
+      definedLabels.add(labelMatch[1])
+    }
+  }
+
+  return definedLabels
+}
+
+function getFootnoteDefinitionLineRanges(lines: string[]): TextRange[] {
+  const ranges: TextRange[] = []
+  let lineOffset = 0
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i] || ''
+    if (footnoteDefLinePattern.test(line)) {
+      ranges.push({ start: lineOffset, end: lineOffset + line.length })
+    }
+
+    lineOffset += line.length
+    if (i < lines.length - 1) {
+      lineOffset += 1
+    }
+  }
+
+  return ranges
+}
+
+function buildScanContext(content: string): FootnoteScanContext {
+  const lines = content.split('\n')
+  const codeBlockRanges = findClosedCodeBlockRanges(content)
+  const inlineCodeRanges = findInlineCodeRanges(content, codeBlockRanges)
+  const footnoteDefRanges = getFootnoteDefinitionLineRanges(lines)
+
+  return {
+    lines,
+    codeBlockRanges,
+    inlineCodeRanges,
+    footnoteDefRanges,
+  }
+}
+
+function removeIncompleteReferenceInLastParagraph(
+  content: string,
+  context: FootnoteScanContext,
+): string {
+  const { lastParagraph, startIndex: lastParagraphStartIndex } = getLastParagraphWithIndex(content)
+
+  if (!incompleteFootnoteRefPattern.test(lastParagraph)) {
+    return content
+  }
+
+  const incompleteRefPos = lastParagraph.lastIndexOf('[^')
+  if (incompleteRefPos === -1) {
+    return content
+  }
+
+  const absolutePos = calculateAbsolutePosition(lastParagraphStartIndex, incompleteRefPos, context.lines)
+  const isInCodeBlock = isPositionInRanges(absolutePos, context.codeBlockRanges)
+  const isInInlineCode = isPositionInRanges(absolutePos, context.inlineCodeRanges)
+
+  if (isInCodeBlock || isInInlineCode) {
+    return content
+  }
+
+  const lineEnd = lastParagraph.indexOf('\n', incompleteRefPos)
+  const refEnd = lineEnd !== -1 ? lineEnd : lastParagraph.length
+
+  let refStart = incompleteRefPos
+  if (refStart > 0 && lastParagraph[refStart - 1] === ' ') {
+    refStart--
+  }
+
+  const absoluteStart = calculateAbsolutePosition(lastParagraphStartIndex, refStart, context.lines)
+  const absoluteEnd = calculateAbsolutePosition(lastParagraphStartIndex, refEnd, context.lines)
+
+  return content.substring(0, absoluteStart) + content.substring(absoluteEnd)
+}
+
+function collectCompleteReferences(
+  content: string,
+  context: FootnoteScanContext,
+): FootnoteReference[] {
+  const references: FootnoteReference[] = []
+  footnoteRefPattern.lastIndex = 0
+  let match: RegExpExecArray | null = footnoteRefPattern.exec(content)
+
+  while (match !== null) {
+    const absolutePos = match.index ?? 0
+    const refText = match[0] || ''
+
+    const isInCodeBlock = isPositionInRanges(absolutePos, context.codeBlockRanges)
+    const isInInlineCode = isPositionInRanges(absolutePos, context.inlineCodeRanges)
+    const isInFootnoteDef = isPositionInRanges(absolutePos, context.footnoteDefRanges)
+
+    if (!isInCodeBlock && !isInInlineCode && !isInFootnoteDef) {
+      const labelMatch = refText.match(footnoteRefLabelPattern)
+      if (labelMatch && labelMatch[1]) {
+        references.push({
+          start: absolutePos,
+          end: absolutePos + refText.length,
+          label: labelMatch[1],
+        })
+      }
+    }
+
+    match = footnoteRefPattern.exec(content)
+  }
+
+  return references
+}
 
 /**
  * Remove incomplete footnote references ([^...]) in streaming markdown
@@ -36,247 +180,36 @@ import { calculateAbsolutePosition, getLastParagraphWithIndex, isInsideUnclosedC
  * // Code block content is ignored, only processes Text [^1]
  */
 export function fixFootnote(content: string): string {
-  // Don't process if we're inside a code block
-  if (isInsideUnclosedCodeBlock(content))
+  if (isInsideUnclosedCodeBlock(content)) {
     return content
-
-  // Get all footnote definitions from the entire content (excluding code blocks)
-  const contentWithoutCodeBlocks = content.replace(codeBlockPattern, '')
-  const defMatches = contentWithoutCodeBlocks.match(footnoteDefPattern)
-  const definedLabels = new Set<string>()
-
-  if (defMatches) {
-    for (const def of defMatches) {
-      // Extract label from [^label]:
-      const labelMatch = def.match(footnoteDefLabelPattern)
-      if (labelMatch && labelMatch[1])
-        definedLabels.add(labelMatch[1])
-    }
   }
 
-  const isFootnoteDefLine = (line: string) => footnoteDefLinePattern.test(line)
+  const definedLabels = getDefinedFootnoteLabels(content)
+  let context = buildScanContext(content)
 
-  // Process the entire content to find and remove incomplete references
-  const lines = content.split('\n')
-
-  // Track code block ranges in the entire content
-  // Pair up code block fences in order (first with second, third with fourth, etc.)
-  const codeBlockRanges: Array<{ start: number, end: number }> = []
-  let searchStart = 0
-
-  while (true) {
-    const codeBlockStart = content.indexOf('```', searchStart)
-    if (codeBlockStart === -1)
-      break
-
-    const codeBlockEnd = content.indexOf('```', codeBlockStart + 3)
-    if (codeBlockEnd === -1)
-      break
-
-    codeBlockRanges.push({ start: codeBlockStart, end: codeBlockEnd + 3 })
-    searchStart = codeBlockEnd + 3
+  let result = removeIncompleteReferenceInLastParagraph(content, context)
+  if (result !== content) {
+    content = result
+    context = buildScanContext(content)
   }
 
-  // Track inline code ranges in the entire content
-  const inlineCodeRanges: Array<{ start: number, end: number }> = []
-  const backtickPositions: number[] = []
-
-  // Find all backticks in the content (excluding those in code blocks)
-  for (let i = 0; i < content.length; i++) {
-    // Skip code blocks
-    if (content.substring(i).startsWith('```')) {
-      const codeBlockEnd = content.indexOf('```', i + 3)
-      if (codeBlockEnd !== -1) {
-        i = codeBlockEnd + 2 // Skip to after closing ```
-        continue
-      }
-    }
-
-    if (content[i] === '`') {
-      // Check if it's part of ``` (triple backticks)
-      const before = content[i - 1] || ''
-      const before2 = content[i - 2] || ''
-      const after = content[i + 1] || ''
-      const after2 = content[i + 2] || ''
-
-      // Skip if this backtick is part of ```
-      const isPartOfTriple = (before === '`' && before2 === '`') // third of ```
-        || (before === '`' && after === '`') // middle of ```
-        || (after === '`' && after2 === '`') // first of ```
-
-      if (!isPartOfTriple)
-        backtickPositions.push(i)
-    }
-  }
-
-  // Pair up backticks to find inline code ranges
-  for (let i = 0; i < backtickPositions.length; i += 2) {
-    const start = backtickPositions[i]
-    const end = backtickPositions[i + 1]
-    if (start !== undefined && end !== undefined) {
-      inlineCodeRanges.push({ start, end: end + 1 })
-    }
-  }
-
-  // Track footnote definition line ranges to skip them
-  const footnoteDefRanges: Array<{ start: number, end: number }> = []
-  let lineOffset = 0
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i]
-    if (line && isFootnoteDefLine(line)) {
-      const lineEnd = lineOffset + line.length
-      footnoteDefRanges.push({ start: lineOffset, end: lineEnd })
-    }
-    if (line) {
-      lineOffset += line.length + 1 // +1 for newline
-    }
-  }
-
-  // First, handle incomplete footnote references (e.g., [^1 without closing ])
-  // These should be removed immediately, similar to how incomplete links are handled
-  // Only process the last paragraph for incomplete references
-  const { lastParagraph, startIndex: lastParagraphStartIndex } = getLastParagraphWithIndex(content)
-  let result = content
-
-  // Check for incomplete footnote reference in the last paragraph
-  if (incompleteFootnoteRefPattern.test(lastParagraph)) {
-    // Find the position of [^ in the last paragraph
-    const incompleteRefPos = lastParagraph.lastIndexOf('[^')
-    if (incompleteRefPos !== -1) {
-      // Check if it's inside a code block or inline code
-      const absolutePos = calculateAbsolutePosition(lastParagraphStartIndex, incompleteRefPos, lines)
-
-      const isInCodeBlock = codeBlockRanges.some(
-        range => absolutePos >= range.start && absolutePos < range.end,
-      )
-
-      const isInInlineCode = inlineCodeRanges.some(
-        range => absolutePos >= range.start && absolutePos < range.end,
-      )
-
-      if (!isInCodeBlock && !isInInlineCode) {
-        // Find where the incomplete reference ends (until end of line or end of content)
-        const lineEnd = lastParagraph.indexOf('\n', incompleteRefPos)
-        const refEnd = lineEnd !== -1 ? lineEnd : lastParagraph.length
-
-        // Find the start position, including a single preceding space if it exists
-        let refStart = incompleteRefPos
-        if (refStart > 0 && lastParagraph[refStart - 1] === ' ') {
-          refStart--
-        }
-
-        // Calculate absolute position in full content
-        const absoluteStart = calculateAbsolutePosition(lastParagraphStartIndex, refStart, lines)
-        const absoluteEnd = calculateAbsolutePosition(lastParagraphStartIndex, refEnd, lines)
-
-        // Remove the incomplete reference (from space before [^ to end of line or end of content)
-        result = result.substring(0, absoluteStart) + result.substring(absoluteEnd)
-        // Update content for further processing
-        content = result
-        // Recalculate code blocks and inline code ranges after removing incomplete reference
-        // This is important because positions may have shifted
-        codeBlockRanges.length = 0
-        searchStart = 0
-        while (true) {
-          const codeBlockStart = content.indexOf('```', searchStart)
-          if (codeBlockStart === -1)
-            break
-          const codeBlockEnd = content.indexOf('```', codeBlockStart + 3)
-          if (codeBlockEnd === -1)
-            break
-          codeBlockRanges.push({ start: codeBlockStart, end: codeBlockEnd + 3 })
-          searchStart = codeBlockEnd + 3
-        }
-        // Recalculate inline code ranges
-        inlineCodeRanges.length = 0
-        backtickPositions.length = 0
-        for (let i = 0; i < content.length; i++) {
-          if (content.substring(i).startsWith('```')) {
-            const codeBlockEnd = content.indexOf('```', i + 3)
-            if (codeBlockEnd !== -1) {
-              i = codeBlockEnd + 2
-              continue
-            }
-          }
-          if (content[i] === '`') {
-            const before = content[i - 1] || ''
-            const before2 = content[i - 2] || ''
-            const after = content[i + 1] || ''
-            const after2 = content[i + 2] || ''
-            const isPartOfTriple = (before === '`' && before2 === '`')
-              || (before === '`' && after === '`')
-              || (after === '`' && after2 === '`')
-            if (!isPartOfTriple)
-              backtickPositions.push(i)
-          }
-        }
-        for (let i = 0; i < backtickPositions.length; i += 2) {
-          const start = backtickPositions[i]
-          const end = backtickPositions[i + 1]
-          if (start !== undefined && end !== undefined) {
-            inlineCodeRanges.push({ start, end: end + 1 })
-          }
-        }
-      }
-    }
-  }
-
-  // Now find all complete footnote references in the entire content
-  const refPositions: Array<{ start: number, end: number, label: string }> = []
-  let refMatch: RegExpExecArray | null = footnoteRefPattern.exec(content)
-
-  while (refMatch !== null) {
-    const absolutePos = refMatch.index ?? 0
-    const refText = refMatch[0] ?? ''
-
-    // Check if this reference is inside a code block
-    const isInCodeBlock = codeBlockRanges.some(
-      range => absolutePos >= range.start && absolutePos < range.end,
-    )
-
-    // Check if this reference is inside inline code
-    const isInInlineCode = inlineCodeRanges.some(
-      range => absolutePos >= range.start && absolutePos < range.end,
-    )
-
-    // Check if this reference is inside a footnote definition line
-    const isInFootnoteDef = footnoteDefRanges.some(
-      range => absolutePos >= range.start && absolutePos < range.end,
-    )
-
-    if (!isInCodeBlock && !isInInlineCode && !isInFootnoteDef) {
-      // Extract label from [^label]
-      const labelMatch = refText.match(footnoteRefLabelPattern)
-      if (labelMatch && labelMatch[1]) {
-        refPositions.push({
-          start: absolutePos,
-          end: absolutePos + refText.length,
-          label: labelMatch[1],
-        })
-      }
-    }
-    refMatch = footnoteRefPattern.exec(content)
-  }
-
-  // If no references to process, return original content
-  if (refPositions.length === 0)
+  const references = collectCompleteReferences(content, context)
+  if (references.length === 0) {
     return content
+  }
 
-  // Remove references that don't have corresponding definitions
-  // Process from end to start to avoid index shifting issues
-  for (let i = refPositions.length - 1; i >= 0; i--) {
-    const ref = refPositions[i]
-    if (ref && !definedLabels.has(ref.label)) {
-      // Find the start position, including a single preceding space if it exists
-      let refStart = ref.start
-      if (refStart > 0 && result[refStart - 1] === ' ') {
-        refStart--
-      }
-
-      // Remove the reference along with preceding space (if any)
-      result = result.substring(0, refStart) + result.substring(ref.end)
+  for (let i = references.length - 1; i >= 0; i--) {
+    const ref = references[i]
+    if (!ref || definedLabels.has(ref.label)) {
+      continue
     }
+
+    let refStart = ref.start
+    if (refStart > 0 && result[refStart - 1] === ' ') {
+      refStart--
+    }
+
+    result = result.substring(0, refStart) + result.substring(ref.end)
   }
 
   return result

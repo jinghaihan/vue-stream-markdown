@@ -1,6 +1,11 @@
 import type { PreprocessContext } from '../types'
 import { codeBlockPattern, incompleteLinkImageUrlPattern, linkImagePattern } from './pattern'
 
+export interface TextRange {
+  start: number
+  end: number
+}
+
 /**
  * Find the start index of the last paragraph in content
  * A paragraph is defined as content after the last blank line
@@ -158,6 +163,99 @@ export function isInsideUnclosedCodeBlock(content: string): boolean {
 }
 
 /**
+ * Find all closed fenced code block ranges in content.
+ * Ranges are [start, end) where end is exclusive.
+ */
+export function findClosedCodeBlockRanges(content: string): TextRange[] {
+  const ranges: TextRange[] = []
+  let searchStart = 0
+
+  while (true) {
+    const codeBlockStart = content.indexOf('```', searchStart)
+    if (codeBlockStart === -1) {
+      break
+    }
+
+    const codeBlockEnd = content.indexOf('```', codeBlockStart + 3)
+    if (codeBlockEnd === -1) {
+      break
+    }
+
+    ranges.push({ start: codeBlockStart, end: codeBlockEnd + 3 })
+    searchStart = codeBlockEnd + 3
+  }
+
+  return ranges
+}
+
+/**
+ * Check whether [start, end) overlaps with any ranges.
+ */
+export function isRangeOverlappingRanges(start: number, end: number, ranges: TextRange[]): boolean {
+  return ranges.some(
+    range => (start >= range.start && start < range.end)
+      || (end > range.start && end <= range.end)
+      || (start < range.start && end > range.end),
+  )
+}
+
+/**
+ * Check whether a position is inside any range.
+ */
+export function isPositionInRanges(position: number, ranges: TextRange[]): boolean {
+  return ranges.some(range => position >= range.start && position < range.end)
+}
+
+function isBacktickPartOfTriple(text: string, index: number): boolean {
+  const before = text[index - 1] || ''
+  const before2 = text[index - 2] || ''
+  const after = text[index + 1] || ''
+  const after2 = text[index + 2] || ''
+
+  return (before === '`' && before2 === '`')
+    || (before === '`' && after === '`')
+    || (after === '`' && after2 === '`')
+}
+
+/**
+ * Find inline code ranges (`...`) that are outside fenced code blocks.
+ * Returned ranges are [start, end) where end is exclusive.
+ */
+export function findInlineCodeRanges(
+  content: string,
+  codeBlockRanges: TextRange[] = findClosedCodeBlockRanges(content),
+): TextRange[] {
+  const backtickPositions: number[] = []
+
+  for (let i = 0; i < content.length; i++) {
+    if (isPositionInRanges(i, codeBlockRanges)) {
+      continue
+    }
+
+    if (content[i] !== '`') {
+      continue
+    }
+
+    if (isBacktickPartOfTriple(content, i)) {
+      continue
+    }
+
+    backtickPositions.push(i)
+  }
+
+  const ranges: TextRange[] = []
+  for (let i = 0; i < backtickPositions.length; i += 2) {
+    const start = backtickPositions[i]
+    const end = backtickPositions[i + 1]
+    if (start !== undefined && end !== undefined) {
+      ranges.push({ start, end: end + 1 })
+    }
+  }
+
+  return ranges
+}
+
+/**
  * Check if a position is within a math block (between $ or $$ delimiters)
  *
  * Note: we intentionally ignore single `$` here so that currency values
@@ -248,13 +346,8 @@ export function isWithinLinkOrImageUrl(
         // If we found ]( and haven't found ), we're in an unclosed URL
         // Check if there's a ) after position on the same line
         if (!hasClosingParen) {
-          // Check if we're on the same line (no newline between ( and position)
-          for (let j = i + 1; j < position; j += 1) {
-            if (text[j] === '\n') {
-              return false
-            }
-          }
-          // No newline found, we're in an unclosed URL
+          // A newline between `(` and position would have been caught by the
+          // backward scan above, so reaching this point means we're in URL text.
           return true
         }
         return true

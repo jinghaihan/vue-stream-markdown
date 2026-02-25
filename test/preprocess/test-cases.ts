@@ -80,6 +80,11 @@ export const codeTestCases: TestCasesByCategory = {
       input: 'Text with ` and more',
       expected: 'Text with ` and more`',
     },
+    {
+      description: 'should remove trailing fences longer than triple backticks',
+      input: 'Text ````',
+      expected: 'Text',
+    },
   ],
 
   'code-block': [
@@ -333,6 +338,22 @@ export const emphasisTestCases: TestCasesByCategory = {
       input: '*asterisk and _underscore',
       expected: '*asterisk and _underscore_*',
     },
+    {
+      description: 'should keep emphasis untouched in unclosed code block',
+      input: '```js\n*italic',
+      expected: '```js\n*italic',
+      integrationExpected: '```js\n*italic\n```',
+    },
+    {
+      description: 'should skip ** pairs while searching unclosed *',
+      input: '*open and **closed**',
+      expected: '*open and **closed***',
+    },
+    {
+      description: 'should cleanup standalone dash after removing dangling *',
+      input: 'a\n- *',
+      expected: 'a\n',
+    },
   ],
 
   'emphasis-underscore': [
@@ -428,6 +449,22 @@ export const emphasisTestCases: TestCasesByCategory = {
       input: '<file id="test" name="test.txt" url="http://example.com/path*value?param=test" size="135" />',
       expected: '<file id="test" name="test.txt" url="http://example.com/path*value?param=test" size="135" />',
     },
+    {
+      description: 'should skip __ pairs while searching unclosed _',
+      input: '_open and __closed__',
+      expected: '_open and __closed___',
+    },
+    {
+      description: 'should cleanup standalone dash after removing dangling _',
+      input: 'a\n- _',
+      expected: 'a\n',
+    },
+    {
+      description: 'should keep underscore emphasis untouched in unclosed code block',
+      input: '```js\n_italic',
+      expected: '```js\n_italic',
+      integrationExpected: '```js\n_italic\n```',
+    },
   ],
 }
 
@@ -482,6 +519,39 @@ export const strongTestCases: TestCasesByCategory = {
       description: 'should complete ** with unclosed *',
       input: '**bold and *mixed',
       expected: '**bold and *mixed***',
+    },
+    {
+      description: 'should keep strong untouched in unclosed code block',
+      input: '```js\n**bold',
+      expected: '```js\n**bold',
+      integrationExpected: '```js\n**bold\n```',
+    },
+    {
+      description: 'should skip ** inside inline fenced segment and complete outside',
+      input: 'Text ```ignore **inside``` and **open',
+      expected: 'Text ```ignore **inside``` and **open**',
+    },
+    {
+      description: 'should not complete when last ** is inside URL',
+      input: '**out [x](http://a/**b)',
+      expected: '**out [x](http://a/**b)',
+    },
+    {
+      description: 'should fallback to single * when input is ***',
+      input: '***',
+      expected: '*',
+      integrationExpected: '',
+    },
+    {
+      description: 'should cleanup standalone dash after removing dangling **',
+      input: 'a\n- **',
+      expected: 'a\n',
+    },
+    {
+      description: 'should fallback to single * after dropping trailing single *',
+      input: '** *',
+      expected: '*',
+      integrationExpected: '',
     },
     {
       description: 'should complete ** appropriately when there is trailing whitespace',
@@ -540,6 +610,32 @@ export const strongTestCases: TestCasesByCategory = {
       description: 'should complete __ with unclosed _',
       input: '__bold and _mixed',
       expected: '__bold and _mixed___',
+    },
+    {
+      description: 'should skip __ inside inline fenced segment and complete outside',
+      input: 'Text ```ignore __inside``` and __open',
+      expected: 'Text ```ignore __inside``` and __open__',
+    },
+    {
+      description: 'should not complete when last __ is inside URL',
+      input: '__out [x](http://a/__b)',
+      expected: '__out [x](http://a/__b)',
+    },
+    {
+      description: 'should fallback to single _ when input is ___',
+      input: '___',
+      expected: '_',
+      integrationExpected: '',
+    },
+    {
+      description: 'should cleanup standalone dash after removing dangling __',
+      input: 'a\n- __',
+      expected: 'a\n',
+    },
+    {
+      description: 'should remove __ after dropping trailing single _ with no remaining content',
+      input: '__ _',
+      expected: '',
     },
     {
       description: 'should ignore ** inside code block',
@@ -682,6 +778,12 @@ export const linkTestCases: TestCasesByCategory = {
       description: 'should complete link with URL containing multiple special chars',
       input: '[text](https://example.com/page_with_underscore*and~tilde',
       expected: '[text](https://example.com/page_with_underscore*and~tilde)',
+    },
+    {
+      description: 'should keep link untouched in unclosed code block',
+      input: '```js\n[Google',
+      expected: '```js\n[Google',
+      integrationExpected: '```js\n[Google\n```',
     },
   ],
 
@@ -897,6 +999,28 @@ export const inlineMathTestCases: TestCasesByCategory = {
       expected: 'The premium plan costs $7,000 and includes **priority support',
       integrationExpected: 'The premium plan costs $7,000 and includes **priority support**',
     },
+    {
+      description: 'should keep inline math untouched in unclosed code block',
+      input: '```js\n$$x = 1',
+      expected: '```js\n$$x = 1',
+      integrationExpected: '```js\n$$x = 1\n```',
+    },
+    {
+      description: 'should keep $$$ unchanged',
+      input: '$$$',
+      expected: '$$$',
+    },
+    {
+      description: 'should keep $$ unchanged when inside unmatched inline code',
+      input: '`$$x',
+      expected: '`$$x',
+      integrationExpected: '`$$x`',
+    },
+    {
+      description: 'should handle inline fenced segments when finding last $$',
+      input: '```ignore $$``` and $$x = 1',
+      expected: '```ignore $$``` and $$x = 1$$',
+    },
   ],
 }
 
@@ -985,6 +1109,12 @@ export const mathTestCases: TestCasesByCategory = {
       integrationExpected: 'The formula $x = 1 + 2**3$ has **bold**',
       preprocessOptions: { singleDollarTextMath: true },
     },
+    {
+      description: 'should keep block math untouched in unclosed code block',
+      input: '```js\n$$\nx = 1',
+      expected: '```js\n$$\nx = 1',
+      integrationExpected: '```js\n$$\nx = 1\n```',
+    },
   ],
 }
 
@@ -1065,6 +1195,22 @@ export const tableTestCases: TestCasesByCategory = {
       input: '```js\nconst table = "| A | B |"\n| Column A | Column B |\n```',
       expected: '```js\nconst table = "| A | B |"\n| Column A | Column B |\n```',
     },
+    {
+      description: 'should keep table untouched in unclosed code block',
+      input: '```md\n| A | B |',
+      expected: '```md\n| A | B |',
+      integrationExpected: '```md\n| A | B |\n```',
+    },
+    {
+      description: 'should complete header when next line is valid separator',
+      input: '| A | B\n| --- | --- |',
+      expected: '| A | B |\n| --- | --- |',
+    },
+    {
+      description: 'should replace incomplete separator and keep following rows',
+      input: '| A | B |\n| - |\n| 1 | 2 |',
+      expected: '| A | B |\n| --- | --- |\n| 1 | 2 |',
+    },
   ],
 }
 
@@ -1139,6 +1285,17 @@ export const taskListTestCases: TestCasesByCategory = {
       description: 'should remove standalone - outside code block',
       input: '```\ncode\n```\n\n-',
       expected: '```\ncode\n```\n',
+    },
+    {
+      description: 'should keep task list markers untouched in unclosed code block',
+      input: '```js\n- [',
+      expected: '```js\n- [',
+      integrationExpected: '```js\n- [\n```',
+    },
+    {
+      description: 'should keep content when last line is empty',
+      input: '- [ ] Task 1\n',
+      expected: '- [ ] Task 1\n',
     },
   ],
 }
@@ -1244,6 +1401,12 @@ export const footnoteTestCases: TestCasesByCategory = {
       description: 'should recalculate inline code after removing reference',
       input: 'Text `code` and [^1',
       expected: 'Text `code` and',
+    },
+    {
+      description: 'should keep footnote text untouched in unclosed code block',
+      input: '```md\nText [^1]',
+      expected: '```md\nText [^1]',
+      integrationExpected: '```md\nText [^1]\n```',
     },
   ],
 }
