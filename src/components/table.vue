@@ -9,8 +9,14 @@ function getAlign(index: number) {
 </script>
 
 <template>
-  <table data-stream-markdown="table">
-    <thead data-stream-markdown="table-header">
+  <table
+    data-stream-markdown="table"
+    class="border border-border rounded-lg w-full overflow-hidden border-collapse [&_p]:m-0 [&_tr]:border-b [&_tr]:border-border"
+  >
+    <thead
+      data-stream-markdown="table-header"
+      class="bg-muted/80 relative [&_th]:text-sm [&_th]:px-4 [&_th]:py-2 [&_th]:whitespace-nowrap"
+    >
       <tr>
         <th
           v-for="(cell, index) in headers"
@@ -23,7 +29,10 @@ function getAlign(index: number) {
         </th>
       </tr>
     </thead>
-    <tbody data-stream-markdown="table-body">
+    <tbody
+      data-stream-markdown="table-body"
+      class="font-semibold border-y border-border bg-muted/40 relative [&_td]:text-sm [&_td]:px-4 [&_td]:py-2"
+    >
       <tr v-for="(row, rowIndex) in rows" :key="`${row}-${rowIndex}`">
         <td
           v-for="(cell, cellIndex) in row.children"
@@ -38,51 +47,3 @@ function getAlign(index: number) {
     </tbody>
   </table>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='table'] {
-    width: 100%;
-    border-collapse: collapse;
-    border: 1px solid var(--border);
-    border-radius: 0.5rem;
-    overflow: hidden;
-
-    & tr {
-      border-bottom: 1px solid var(--border);
-    }
-
-    & p {
-      margin: 0;
-    }
-  }
-
-  & [data-stream-markdown='table-header'] {
-    position: relative;
-    background-color: color-mix(in oklab, var(--muted) 80%, transparent);
-
-    & th {
-      white-space: nowrap;
-      padding-inline: 1rem;
-      padding-block: 0.5rem;
-      font-size: 0.875rem;
-      line-height: 1.25rem;
-    }
-  }
-
-  & [data-stream-markdown='table-body'] {
-    position: relative;
-    border-color: var(--border);
-    border-block-width: 1px;
-    font-weight: 600;
-    background-color: color-mix(in oklab, var(--muted) 40%, transparent);
-
-    & td {
-      padding-inline: 1rem;
-      padding-block: 0.5rem;
-      font-size: 0.875rem;
-      line-height: 1.25rem;
-    }
-  }
-}
-</style>

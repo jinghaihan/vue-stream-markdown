@@ -10,7 +10,7 @@ const props = withDefaults(defineProps<CodeNodeRendererProps>(), {})
 
 const { shikiOptions, codeOptions, isDark } = toRefs(props)
 
-const ShikiTokensRenderer = defineAsyncComponent(() => import('./shiki-token-renderer'))
+const ShikiTokensRenderer = defineAsyncComponent(() => import('./shiki-token-renderer.vue'))
 
 const code = computed(() => props.node.value.trim())
 const lang = computed(() => props.node.lang || '')
@@ -62,6 +62,7 @@ watch(
       <ShikiTokensRenderer
         data-stream-markdown="code"
         :data-show-line-numbers="showLineNumbers"
+        :show-line-numbers="showLineNumbers"
         :tokens="tokens"
         :get-shiki="getShiki"
       />

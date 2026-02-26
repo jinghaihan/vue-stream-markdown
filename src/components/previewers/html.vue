@@ -17,10 +17,14 @@ function updateHeight() {
 </script>
 
 <template>
-  <div class="html-previewer" :style="{ height: `${height}px` }">
+  <div
+    class="html-previewer"
+    :style="{ height: `${height}px` }"
+  >
     <iframe
       ref="iframeRef"
       data-stream-markdown="html-previewer"
+      class="size-full"
       :srcdoc="code"
       sandbox="allow-scripts allow-same-origin"
       :frameborder="0"
@@ -28,12 +32,3 @@ function updateHeight() {
     />
   </div>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='html-previewer'] {
-    height: 100%;
-    width: 100%;
-  }
-}
-</style>

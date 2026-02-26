@@ -5,15 +5,8 @@ withDefaults(defineProps<ThematicBreakNodeRendererProps>(), {})
 </script>
 
 <template>
-  <hr data-stream-markdown="thematic-break">
+  <hr
+    data-stream-markdown="thematic-break"
+    class="my-6 border-t border-border"
+  >
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='thematic-break'] {
-    margin-top: 1.5rem;
-    margin-bottom: 1.5rem;
-    border-top: 1px solid var(--border);
-  }
-}
-</style>

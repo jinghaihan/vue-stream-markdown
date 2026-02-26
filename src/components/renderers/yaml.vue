@@ -20,7 +20,10 @@ const rows = computed(() => [{ children: data.value.map(line => line[1]) }])
 </script>
 
 <template>
-  <div data-stream-markdown="yaml">
+  <div
+    data-stream-markdown="yaml"
+    class="w-full overflow-x-auto"
+  >
     <component :is="UI.Table" :headers="headers" :rows="rows">
       <template #header-cell="{ cell }">
         {{ cell }}
@@ -31,12 +34,3 @@ const rows = computed(() => [{ children: data.value.map(line => line[1]) }])
     </component>
   </div>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='yaml'] {
-    width: 100%;
-    overflow-x: auto;
-  }
-}
-</style>

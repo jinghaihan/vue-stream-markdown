@@ -25,12 +25,20 @@ function scrollToReference() {
 </script>
 
 <template>
-  <a :id="`footnote-definition-${id}`" data-stream-markdown="footnote-definition">
-    <span data-stream-markdown="footnote-definition-label">{{ title }}</span>
+  <a
+    :id="`footnote-definition-${id}`"
+    data-stream-markdown="footnote-definition"
+    class="text-muted-foreground block [&_p]:inline"
+  >
+    <span
+      data-stream-markdown="footnote-definition-label"
+      class="mr-1 align-middle inline-block"
+    >{{ title }}</span>
     <NodeList v-bind="props" :parent-node="node" :nodes="node.children" />
     <component
       :is="UI.Button"
       data-stream-markdown="footnote-definition-button"
+      class="ml-1 align-middle inline-block"
       :name="t('button.back')"
       icon="cornerDownLeft"
       :icon-style="{
@@ -43,28 +51,3 @@ function scrollToReference() {
     />
   </a>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='footnote-definition'] {
-    display: block;
-    color: var(--muted-foreground);
-
-    & [data-stream-markdown='footnote-definition-label'] {
-      display: inline-block;
-      vertical-align: middle;
-      margin-right: 0.25rem;
-    }
-
-    & [data-stream-markdown='footnote-definition-button'] {
-      display: inline-block;
-      vertical-align: middle;
-      margin-left: 0.25rem;
-    }
-
-    & p {
-      display: inline;
-    }
-  }
-}
-</style>

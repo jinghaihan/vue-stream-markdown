@@ -6,15 +6,10 @@ const props = withDefaults(defineProps<DeleteNodeRendererProps>(), {})
 </script>
 
 <template>
-  <del data-stream-markdown="delete">
+  <del
+    data-stream-markdown="delete"
+    class="line-through"
+  >
     <NodeList v-bind="props" :parent-node="node" :nodes="node.children" :deep="deep + 1" />
   </del>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='delete'] {
-    text-decoration: line-through;
-  }
-}
-</style>

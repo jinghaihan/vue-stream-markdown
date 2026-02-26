@@ -118,8 +118,14 @@ function getNodes(cell: unknown) {
 </script>
 
 <template>
-  <div data-stream-markdown="table-wrapper">
-    <div data-stream-markdown="table-controls">
+  <div
+    data-stream-markdown="table-wrapper"
+    class="my-4 flex flex-col gap-2 items-center"
+  >
+    <div
+      data-stream-markdown="table-controls"
+      class="flex gap-1 w-full items-center justify-end"
+    >
       <component
         :is="UI.Button"
         v-for="item in controls"
@@ -129,7 +135,10 @@ function getNodes(cell: unknown) {
       />
     </div>
 
-    <div data-stream-markdown="table-inner-wrapper">
+    <div
+      data-stream-markdown="table-inner-wrapper"
+      class="w-full overflow-x-auto"
+    >
       <component :is="UI.Table" ref="tableRef" :headers="headerCells" :rows="bodyRows" :get-align="getAlign">
         <template #header-cell="{ cell }">
           <NodeList v-bind="props" :parent-node="node" :nodes="getNodes(cell)" :deep="deep + 1" />
@@ -143,28 +152,3 @@ function getNodes(cell: unknown) {
     <component :is="UI.Spin" v-if="loading" />
   </div>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='table-wrapper'] {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-block: 1rem;
-  }
-
-  & [data-stream-markdown='table-controls'] {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: end;
-    gap: 0.25rem;
-  }
-
-  & [data-stream-markdown='table-inner-wrapper'] {
-    width: 100%;
-    overflow-x: auto;
-  }
-}
-</style>

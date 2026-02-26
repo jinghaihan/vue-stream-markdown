@@ -10,10 +10,17 @@ const checked = computed(() => !!props.node.checked)
 </script>
 
 <template>
-  <li data-stream-markdown="list-item">
-    <p v-if="isTaskListItem" data-stream-markdown="task-list-item">
+  <li
+    data-stream-markdown="list-item"
+    class="py-1 pl-1 [&_p]:m-0"
+  >
+    <p
+      v-if="isTaskListItem" data-stream-markdown="task-list-item"
+      class="[&_p]:inline-block"
+    >
       <input
         data-stream-markdown="task-list-item-checkbox"
+        class="mr-2 align-middle"
         type="checkbox"
         :checked="checked"
         disabled
@@ -24,27 +31,3 @@ const checked = computed(() => !!props.node.checked)
     <NodeList v-else v-bind="props" :parent-node="node" :nodes="node.children" :deep="deep + 1" />
   </li>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='list-item'] {
-    padding-block: 0.25rem;
-    padding-left: 0.25rem;
-
-    & p {
-      margin: 0;
-    }
-  }
-
-  & [data-stream-markdown='task-list-item'] {
-    & p {
-      display: inline-block;
-    }
-  }
-
-  & [data-stream-markdown='task-list-item-checkbox'] {
-    margin-right: 0.5rem;
-    vertical-align: middle;
-  }
-}
-</style>

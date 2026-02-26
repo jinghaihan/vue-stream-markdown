@@ -13,17 +13,11 @@ const loading = computed(() => props.node.loading)
 </script>
 
 <template>
-  <span data-stream-markdown="text">
+  <span
+    data-stream-markdown="text"
+    class="whitespace-pre-wrap break-words"
+  >
     {{ node.value }}
     <Caret v-if=" loading" />
   </span>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='text'] {
-    white-space: pre-wrap;
-    overflow-wrap: break-word;
-  }
-}
-</style>

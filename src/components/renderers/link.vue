@@ -83,79 +83,58 @@ function handleClose() {
 </script>
 
 <template>
-  <a
-    v-if="!isHardenUrl && typeof transformedUrl === 'string'"
-    data-stream-markdown="link"
-    :data-stream-markdown-loading="loading"
-    rel="noreferrer"
-    target="_blank"
-    @click="handleClick"
-  >
-    <NodeList v-bind="props" :parent-node="node" :nodes="node.children" :deep="deep + 1" />
-  </a>
+  <span data-stream-markdown="link-container" class="inline">
+    <a
+      v-if="!isHardenUrl && typeof transformedUrl === 'string'"
+      data-stream-markdown="link"
+      :data-stream-markdown-loading="loading"
+      class="text-primary underline cursor-pointer [overflow-wrap:anywhere] data-[stream-markdown-loading=true]:no-underline data-[stream-markdown-loading=true]:cursor-default data-[stream-markdown-loading=true]:pointer-events-none data-[stream-markdown-loading=true]:relative"
+      rel="noreferrer"
+      target="_blank"
+      @click="handleClick"
+    >
+      <NodeList v-bind="props" :parent-node="node" :nodes="node.children" :deep="deep + 1" />
+    </a>
 
-  <component :is="Error" v-else v-bind="props" variant="harden-link">
-    <NodeList v-bind="props" :parent-node="node" :nodes="node.children" :deep="deep + 1" />
-  </component>
+    <component :is="Error" v-else v-bind="props" variant="harden-link">
+      <NodeList v-bind="props" :parent-node="node" :nodes="node.children" :deep="deep + 1" />
+    </component>
 
-  <component
-    :is="UI.Alert"
-    v-model:open="open"
-    :title="t('link.title')"
-    :description="`${t('link.description')}`"
-    icon="externalLink"
-    @confirm="handleConfirm"
-  >
-    <code data-stream-markdown="link-url">{{ transformedUrl }}</code>
-    <template #footer>
-      <component
-        :is="UI.Button"
-        variant="text"
-        :name="copied ? t('button.copied') : t('link.copy')"
-        :icon="copied ? 'check' : 'copy'"
-        :icon-height="16"
-        :icon-width="16"
-        @click="handleCopy"
-      />
-      <component
-        :is="UI.Button"
-        data-stream-markdown="open-link-button"
-        variant="text"
-        :name="t('link.open')"
-        icon="externalLink"
-        :icon-height="16"
-        :icon-width="16"
-        @click="handleConfirm"
-      />
-    </template>
-  </component>
+    <component
+      :is="UI.Alert"
+      v-model:open="open"
+      :title="t('link.title')"
+      :description="`${t('link.description')}`"
+      icon="externalLink"
+      @confirm="handleConfirm"
+    >
+      <code
+        data-stream-markdown="link-url"
+        class="text-sm font-mono p-3 rounded-lg bg-muted w-full inline-block"
+      >
+        {{ transformedUrl }}
+      </code>
+      <template #footer>
+        <component
+          :is="UI.Button"
+          variant="text"
+          :name="copied ? t('button.copied') : t('link.copy')"
+          :icon="copied ? 'check' : 'copy'"
+          :icon-height="16"
+          :icon-width="16"
+          @click="handleCopy"
+        />
+        <component
+          :is="UI.Button"
+          data-stream-markdown="open-link-button"
+          variant="text"
+          :name="t('link.open')"
+          icon="externalLink"
+          :icon-height="16"
+          :icon-width="16"
+          @click="handleConfirm"
+        />
+      </template>
+    </component>
+  </span>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='link'] {
-    cursor: pointer;
-    color: var(--primary);
-    text-decoration: underline;
-    overflow-wrap: anywhere;
-
-    &[data-stream-markdown-loading='true'] {
-      position: relative;
-      cursor: default;
-      text-decoration: none;
-      pointer-events: none;
-    }
-  }
-
-  & [data-stream-markdown='link-url'] {
-    display: inline-block;
-    width: 100%;
-    padding: 0.75rem;
-    background-color: var(--muted);
-    font-family: var(--font-mono);
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    border-radius: 0.5rem;
-  }
-}
-</style>

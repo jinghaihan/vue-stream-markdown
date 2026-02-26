@@ -199,6 +199,7 @@ watch(open, (data) => {
   <img
     ref="elementRef"
     data-stream-markdown="image"
+    class="rounded-lg h-auto max-w-full block cursor-pointer object-contain"
     :src="src"
     :alt="alt"
     :title="title"

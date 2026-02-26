@@ -12,7 +12,10 @@ const { uiComponents: UI } = useContext()
 </script>
 
 <template>
-  <div data-stream-markdown="actions">
+  <div
+    data-stream-markdown="actions"
+    class="flex gap-1 items-center"
+  >
     <component
       :is="UI.Button"
       v-for="item in actions"

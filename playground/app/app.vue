@@ -65,7 +65,14 @@ const {
 })
 
 const mode = computed(() => userConfig.value.staticMode ? 'static' : 'streaming')
-const markdownContent = computed(() => mode.value === 'static' ? content.value : typedContent.value)
+const renderMode = computed(() => {
+  if (userConfig.value.staticMode)
+    return 'static'
+
+  const completed = !isTyping.value && typingIndex.value >= content.value.length
+  return completed ? 'static' : 'streaming'
+})
+const markdownContent = computed(() => renderMode.value === 'static' ? content.value : typedContent.value)
 
 const copyContent = computed(() => {
   return JSON.stringify({
@@ -242,9 +249,10 @@ function resetScrollState() {
   lastScrollTop.value = 0
 }
 
-watch(() => isTyping.value, () => {
-  typedEnable.value = isTyping.value
-  if (!isTyping.value)
+watch(() => isTyping.value, (value) => {
+  typedEnable.value = value
+
+  if (!value)
     resetScrollState()
 })
 watch(() => mode.value, terminateTypeWriting)
@@ -327,7 +335,7 @@ onMounted(() => {
         <Markdown
           ref="markdownRef"
           class="my-4"
-          :mode="mode"
+          :mode="renderMode"
           :caret="caret"
           :content="markdownContent"
           :controls="controlsConfig"

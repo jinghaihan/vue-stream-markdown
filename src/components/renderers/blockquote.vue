@@ -6,25 +6,10 @@ const props = withDefaults(defineProps<BlockquoteNodeRendererProps>(), {})
 </script>
 
 <template>
-  <blockquote data-stream-markdown="blockquote">
+  <blockquote
+    data-stream-markdown="blockquote"
+    class="text-muted-foreground mx-0 my-4 pl-4 border-l-4 border-l-muted-foreground/30 italic relative [&_p]:mb-0"
+  >
     <NodeList v-bind="props" :parent-node="node" :nodes="node.children" :deep="deep + 1" />
   </blockquote>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='blockquote'] {
-    position: relative;
-    margin-inline: 0;
-    margin-block: 1rem;
-    padding-left: 1rem;
-    border-left: 4px solid color-mix(in oklab, var(--muted-foreground) 30%, transparent);
-    font-style: italic;
-    color: var(--muted-foreground);
-
-    & p {
-      margin-bottom: 0;
-    }
-  }
-}
-</style>

@@ -5,21 +5,10 @@ withDefaults(defineProps<InlineCodeNodeRendererProps>(), {})
 </script>
 
 <template>
-  <code data-stream-markdown="inline-code">{{ node.value }}</code>
+  <code
+    data-stream-markdown="inline-code"
+    class="text-sm font-mono px-1.5 py-0.5 rounded bg-muted whitespace-normal break-words"
+  >
+    {{ node.value }}
+  </code>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='inline-code'] {
-    background-color: var(--muted);
-    border-radius: 0.25rem;
-    padding-inline: 0.375rem;
-    padding-block: 0.125rem;
-    font-family: var(--font-mono);
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    white-space: normal;
-    overflow-wrap: break-word;
-  }
-}
-</style>

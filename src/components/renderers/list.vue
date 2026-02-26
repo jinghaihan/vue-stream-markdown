@@ -11,31 +11,19 @@ const tag = computed(() => props.node.ordered ? 'ol' : 'ul')
 const id = computed(() => isTaskList.value
   ? 'task-list'
   : props.node.ordered ? 'ordered-list' : 'unordered-list')
+const listClass = computed(() => {
+  const shared = 'pl-5 leading-6 whitespace-normal'
+  if (id.value === 'ordered-list')
+    return `${shared} list-decimal`
+  return `${shared} list-disc`
+})
 </script>
 
 <template>
-  <component :is="tag" :data-stream-markdown="id">
+  <component
+    :is="tag" :data-stream-markdown="id"
+    :class="listClass"
+  >
     <NodeList v-bind="props" :parent-node="node" :nodes="node.children" :deep="deep + 1" />
   </component>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='ordered-list'],
-  & [data-stream-markdown='unordered-list'],
-  & [data-stream-markdown='task-list'] {
-    padding-left: 1.25rem;
-    line-height: 1.5;
-    white-space: normal;
-  }
-
-  & [data-stream-markdown='ordered-list'] {
-    list-style-type: decimal;
-  }
-
-  & [data-stream-markdown='unordered-list'],
-  & [data-stream-markdown='task-list'] {
-    list-style-type: disc;
-  }
-}
-</style>

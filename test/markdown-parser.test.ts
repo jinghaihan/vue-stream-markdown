@@ -21,16 +21,20 @@ function getFirstNodeTag(ast: SyntaxTree): string | undefined {
 }
 
 describe('markdown-parser', () => {
-  it('should not mark complete markdown as loading in streaming mode', () => {
+  it('should mark only the last block tail text as loading in streaming mode', () => {
     const parser = new MarkdownParser({
       mode: 'streaming',
     })
 
     const result = parser.parseMarkdown('# Title\n\nComplete paragraph.')
-    const nodes = result.asts.flatMap(ast => ast.children) as ParsedNode[]
+    const firstBlockNodes = result.asts[0]?.children as ParsedNode[] | undefined
+    const lastBlockNodes = result.asts[result.asts.length - 1]?.children as ParsedNode[] | undefined
+    const lastText = (lastBlockNodes?.[0] as { children?: ParsedNode[] } | undefined)?.children?.[0]
 
-    expect(hasAnyLoading(nodes)).toBe(false)
-    expect(parser.hasLoadingNode()).toBe(false)
+    expect(hasAnyLoading(firstBlockNodes ?? [])).toBe(false)
+    expect(lastText?.type).toBe('text')
+    expect(lastText?.loading).toBe(true)
+    expect(parser.hasLoadingNode()).toBe(true)
   })
 
   it('should mark incomplete markdown as loading in streaming mode', () => {
@@ -41,6 +45,32 @@ describe('markdown-parser', () => {
     parser.parseMarkdown('[incomplete link](https://example.com')
 
     expect(parser.hasLoadingNode()).toBe(true)
+  })
+
+  it('should not mark complete non-text tail node as loading in streaming mode', () => {
+    const parser = new MarkdownParser({
+      mode: 'streaming',
+    })
+
+    const result = parser.parseMarkdown('![ok](https://example.com/image.png)')
+    const paragraph = result.asts[0]?.children[0] as { children?: ParsedNode[] } | undefined
+    const image = paragraph?.children?.[0]
+
+    expect(image?.type).toBe('image')
+    expect(image?.loading).toBeFalsy()
+  })
+
+  it('should mark non-text tail node as loading when syntax is incomplete', () => {
+    const parser = new MarkdownParser({
+      mode: 'streaming',
+    })
+
+    const result = parser.parseMarkdown('![broken](https://example.com/image.png')
+    const paragraph = result.asts[0]?.children[0] as { children?: ParsedNode[] } | undefined
+    const image = paragraph?.children?.[0]
+
+    expect(image?.type).toBe('image')
+    expect(image?.loading).toBe(true)
   })
 
   it('should check sibling branches when detecting loading nodes', () => {
@@ -71,6 +101,41 @@ describe('markdown-parser', () => {
     ] as ParsedNode[]
 
     expect(parser.hasLoadingNode(nodes)).toBe(true)
+  })
+
+  it('should clear loading state when switching to static mode without reparsing', () => {
+    const parser = new MarkdownParser({
+      mode: 'streaming',
+    })
+
+    const result = parser.parseMarkdown('# Title\n\nComplete paragraph.')
+    const blockCount = result.asts.length
+    const lastBlockNodes = result.asts[result.asts.length - 1]?.children as ParsedNode[] | undefined
+    const lastText = (lastBlockNodes?.[0] as { children?: ParsedNode[] } | undefined)?.children?.[0]
+
+    expect(parser.hasLoadingNode()).toBe(true)
+    expect(lastText?.loading).toBe(true)
+
+    parser.updateMode('static')
+
+    expect(result.asts.length).toBe(blockCount)
+    expect(lastText?.loading).toBe(false)
+    expect(parser.hasLoadingNode()).toBe(false)
+  })
+
+  it('should mark tail text loading when switching back to streaming mode without reparsing', () => {
+    const parser = new MarkdownParser({
+      mode: 'streaming',
+    })
+
+    parser.parseMarkdown('Complete paragraph.')
+    parser.updateMode('static')
+
+    expect(parser.hasLoadingNode()).toBe(false)
+
+    parser.updateMode('streaming')
+
+    expect(parser.hasLoadingNode()).toBe(true)
   })
 
   it('should not share cached ast between parser instances', () => {

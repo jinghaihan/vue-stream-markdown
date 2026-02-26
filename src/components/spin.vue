@@ -1,18 +1,7 @@
 <template>
-  <div aria-hidden="true" data-stream-markdown="spin" />
+  <div
+    aria-hidden="true"
+    data-stream-markdown="spin"
+    class="my-4 border-2 border-foreground border-t-transparent rounded-full size-4 inline-block animate-[stream-markdown-spin_1s_linear_infinite]"
+  />
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='spin'] {
-    display: inline-block;
-    height: 1rem;
-    width: 1rem;
-    margin-block: 1rem;
-    border: 2px solid var(--foreground);
-    border-top-color: transparent;
-    border-radius: 50%;
-    animation: stream-markdown-spin 1s linear infinite;
-  }
-}
-</style>

@@ -87,18 +87,28 @@ function handleMouseLeave() {
 <template>
   <figure
     data-stream-markdown="image-figure"
+    class="inline-block"
     :style="{
       width: isLoading || !imageLoaded ? '100%' : 'auto',
     }"
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
   >
-    <div data-stream-markdown="image-wrapper">
-      <div v-if="!isHardenUrl" ref="maskRef" data-stream-markdown="image-mask">
+    <div
+      data-stream-markdown="image-wrapper"
+      class="text-center relative"
+    >
+      <div
+        v-if="!isHardenUrl"
+        ref="maskRef"
+        data-stream-markdown="image-mask"
+        class="rounded-lg bg-[rgb(0_0_0_/_0.1)] opacity-0 pointer-events-none transition-opacity duration-[var(--default-transition-duration)] ease inset-0 absolute"
+      >
         <component
           :is="UI.Button"
           v-if="!isLoading && enableDownload"
           data-stream-markdown="image-download-button"
+          class="pointer-events-auto bottom-2 right-2 absolute"
           icon="download"
           :name="t('button.download')"
           icon-class="test"
@@ -138,54 +148,12 @@ function handleMouseLeave() {
       </component>
     </div>
 
-    <figcaption v-if="showCaption && title" data-stream-markdown="image-caption">
+    <figcaption
+      v-if="showCaption && title"
+      data-stream-markdown="image-caption"
+      class="text-sm text-center italic"
+    >
       {{ title }}
     </figcaption>
   </figure>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='image'] {
-    display: block;
-    height: auto;
-    max-width: 100%;
-    border-radius: 0.5rem;
-    object-fit: contain;
-    cursor: pointer;
-  }
-
-  & [data-stream-markdown='image-figure'] {
-    display: inline-block;
-  }
-
-  & [data-stream-markdown='image-wrapper'] {
-    position: relative;
-    text-align: center;
-  }
-
-  & [data-stream-markdown='image-caption'] {
-    text-align: center;
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    font-style: italic;
-  }
-
-  & [data-stream-markdown='image-mask'] {
-    opacity: 0;
-    position: absolute;
-    inset: 0;
-    border-radius: 0.5rem;
-    background-color: rgb(0 0 0 / 0.1);
-    pointer-events: none;
-    transition: opacity var(--default-transition-duration) ease;
-  }
-
-  & [data-stream-markdown='image-download-button'] {
-    pointer-events: all;
-    position: absolute;
-    bottom: 0.5rem;
-    right: 0.5rem;
-  }
-}
-</style>

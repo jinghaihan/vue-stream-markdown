@@ -26,6 +26,9 @@ export default defineComponent({
       language: lang,
     })
     const lines = computed(() => code.value.split('\n'))
+    const lineClass = computed(() => showLineNumbers.value
+      ? 'relative block min-h-4 text-sm before:inline-block before:mr-4 before:w-4 before:select-none before:text-right before:font-mono before:text-[13px] before:text-muted-foreground/50 before:content-[counter(line)] before:[counter-increment:line]'
+      : 'relative block min-h-4 text-sm')
 
     return () => h(
       'pre',
@@ -33,14 +36,13 @@ export default defineComponent({
         'data-stream-markdown': 'code',
         'data-show-line-numbers': showLineNumbers.value,
         'data-lang': lang.value,
-        'style': {
-          counterReset: 'line',
-        },
+        'class': 'p-4 font-mono text-sm [counter-reset:line]',
       },
       h(
         'code',
         {
           translate: 'no',
+          class: 'font-mono text-sm',
         },
         renderList(
           lines.value,
@@ -48,6 +50,7 @@ export default defineComponent({
             'div',
             {
               'data-stream-markdown': 'code-line',
+              'class': lineClass.value,
               'key': index,
             },
             line,

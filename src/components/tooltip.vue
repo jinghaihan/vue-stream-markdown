@@ -59,31 +59,16 @@ defineExpose({ show, hide })
       ref="_floatingEl"
       :style="floatingStyle"
       data-stream-markdown="tooltip"
+      class="text-popover-foreground border border-border rounded-lg bg-popover z-[10000]"
       @mouseenter="onFloatingEnter"
       @mouseleave="onFloatingLeave"
     >
       <slot name="content">
-        <pre data-stream-markdown="tooltip-overlay">{{ content }}</pre>
+        <pre
+          data-stream-markdown="tooltip-overlay"
+          class="text-sm px-2 py-1"
+        >{{ content }}</pre>
       </slot>
     </div>
   </Teleport>
 </template>
-
-<style>
-:where(.stream-markdown, .stream-markdown-overlay) {
-  & [data-stream-markdown='tooltip'] {
-    background: var(--popover);
-    color: var(--popover-foreground);
-    border: 1px solid var(--border);
-    border-radius: 0.5rem;
-    z-index: 10000;
-  }
-
-  & [data-stream-markdown='tooltip-overlay'] {
-    padding-block: 0.25rem;
-    padding-inline: 0.5rem;
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-  }
-}
-</style>
