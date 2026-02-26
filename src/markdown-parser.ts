@@ -25,14 +25,13 @@ export interface Options extends MarkdownParserOptions {
   mode: 'streaming' | 'static'
 }
 
-const astCache = new QuickLRU<string, SyntaxTree>({
-  maxSize: 100,
-})
-
 export class MarkdownParser {
   private mode: Options['mode'] = 'streaming'
   private contents: string[] = []
   private asts: SyntaxTree[] = []
+  private astCache = new QuickLRU<string, SyntaxTree>({
+    maxSize: 100,
+  })
 
   private micromarkExtensions: MicromarkExtension[] = []
   private fromMdastExtensions: FromMarkdownExtension[] = []
@@ -87,15 +86,12 @@ export class MarkdownParser {
     const asts: SyntaxTree[] = []
     const contents: string[] = []
 
-    const postprocess = (ast: SyntaxTree, loading: boolean, markText: boolean = true) => {
-      // update the ast loading and
+    const applyLoadingState = (ast: SyntaxTree, loading: boolean) => {
       const updated = this.updateAstLoading(ast, loading)
-      if (!markText)
+      if (!loading)
         return updated
 
-      // mark the last text node
-      const marked = this.markLastTextNodeLoading(updated)
-      return marked
+      return this.markLastTextNodeLoading(updated)
     }
 
     for (let index = 0; index < blocks.length; index++) {
@@ -110,27 +106,31 @@ export class MarkdownParser {
       const loading = blocks[index] !== content
 
       // check if the ast is cached
-      if (astCache.has(content)) {
-        const ast = astCache.get(content)!
-        asts.push(postprocess(ast, loading, false))
+      if (this.astCache.has(content)) {
+        const ast = this.astCache.get(content)!
+        asts.push(applyLoadingState(ast, loading))
         continue
       }
 
       const ast = this.markdownToAst(content)
-      astCache.set(content, ast)
+      this.astCache.set(content, ast)
 
-      asts.push(postprocess(ast, loading))
+      asts.push(applyLoadingState(ast, loading))
     }
 
-    this.asts = structuredClone(asts)
+    this.asts = asts
     this.contents = contents
   }
 
   private updateAstLoading(ast: SyntaxTree, loading: boolean) {
     loading = loading && this.mode === 'streaming'
     const node = findLastLeafNode(ast.children)
-    if (!node)
-      return ast
+    if (!node) {
+      return {
+        ...ast,
+        children: [...ast.children],
+      }
+    }
     return this.updateNodeLoading(ast, node, loading)
   }
 
@@ -221,8 +221,13 @@ export class MarkdownParser {
       if (node?.loading)
         return true
       const nodeWithChildren = node as { children?: ParsedNode[] }
-      if (nodeWithChildren.children && nodeWithChildren.children.length > 0)
-        return this.hasLoadingNode(nodeWithChildren.children)
+      if (
+        nodeWithChildren.children
+        && nodeWithChildren.children.length > 0
+        && this.hasLoadingNode(nodeWithChildren.children)
+      ) {
+        return true
+      }
     }
     return false
   }
