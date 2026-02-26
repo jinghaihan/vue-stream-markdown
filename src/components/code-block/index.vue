@@ -3,7 +3,7 @@ import type { BuiltinLanguage } from 'shiki'
 import type { Component } from 'vue'
 import type { CodeNodeRendererProps, Control, PreviewSegmentedPlacement, SelectOption } from '../../types'
 import { createReusableTemplate, useClipboard } from '@vueuse/core'
-import { computed, defineAsyncComponent, ref, toRefs, watch } from 'vue'
+import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useCodeOptions, useContext, useControls, useI18n, useMermaid } from '../../composables'
 import {
   LANGUAGE_ALIAS,
@@ -22,18 +22,20 @@ defineOptions({
 
 const props = withDefaults(defineProps<CodeNodeRendererProps>(), {})
 
-const { uiComponents: UI } = useContext()
+const {
+  beforeDownload,
+  codeOptions,
+  controls,
+  icons: commonIcons,
+  isDark,
+  mermaidOptions,
+  onCopied,
+  previewers,
+  shikiOptions,
+  uiComponents: UI,
+} = useContext()
 
 const CodeNode = defineAsyncComponent(() => import('../renderers/code/index.vue'))
-
-const {
-  controls,
-  previewers,
-  codeOptions,
-  mermaidOptions,
-  shikiOptions,
-  isDark,
-} = toRefs(props)
 
 const [DefineTemplate, ReuseTemplate] = createReusableTemplate()
 
@@ -43,7 +45,6 @@ const { isControlEnabled, getControlValue, resolveControls } = useControls({
   controls,
 })
 
-const { icons: commonIcons, beforeDownload, onCopied } = useContext()
 const { copy, copied } = useClipboard({
   legacy: true,
 })
@@ -266,7 +267,8 @@ const headerControls = computed(
 )
 
 const modalControls = computed(
-  () => resolveControls<CodeNodeRendererProps>('code', headerControls.value, props).filter(i => i.key !== 'collapse'),
+  () => resolveControls<CodeNodeRendererProps>('code', headerControls.value, props)
+    .filter(i => i.key !== 'collapse'),
 )
 
 watch(

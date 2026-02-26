@@ -2,16 +2,16 @@
 import type { CodeNodeRendererProps } from 'vue-stream-markdown'
 import { useResizeObserver } from '@vueuse/core'
 import * as echarts from 'echarts'
-import { UI } from 'vue-stream-markdown'
+import { UI, useContext } from 'vue-stream-markdown'
 
 const props = defineProps<CodeNodeRendererProps>()
+const { isDark } = useContext()
 
 const chartRef = ref<HTMLDivElement>()
 const chart = shallowRef<echarts.ECharts>()
 
 const code = computed(() => props.node.value.trim())
 const loading = computed(() => !!props.node.loading)
-const isDark = computed<boolean>(() => props.isDark)
 
 const hasError = ref<boolean>(false)
 

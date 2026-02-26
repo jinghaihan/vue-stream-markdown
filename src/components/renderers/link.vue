@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { LinkNodeRendererProps } from '../../types'
 import { useClipboard } from '@vueuse/core'
-import { computed, ref, toRefs } from 'vue'
+import { computed, ref } from 'vue'
 import { useContext, useI18n, useSanitizers } from '../../composables'
 import NodeList from '../node-list.vue'
 
@@ -11,9 +11,7 @@ defineOptions({
 
 const props = withDefaults(defineProps<LinkNodeRendererProps>(), {})
 
-const { uiComponents: UI } = useContext()
-
-const { linkOptions, hardenOptions } = toRefs(props)
+const { uiComponents: UI, linkOptions, hardenOptions } = useContext()
 const { t } = useI18n()
 
 const open = ref<boolean>(false)
@@ -96,7 +94,7 @@ function handleClose() {
       <NodeList v-bind="props" :parent-node="node" :nodes="node.children" :deep="deep + 1" />
     </a>
 
-    <component :is="Error" v-else v-bind="props" variant="harden-link">
+    <component :is="Error" v-else variant="harden-link">
       <NodeList v-bind="props" :parent-node="node" :nodes="node.children" :deep="deep + 1" />
     </component>
 

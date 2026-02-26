@@ -129,7 +129,7 @@ To add previewers for other languages, you must explicitly configure them with c
 - **Type:** `Record<string, boolean>`
 - **Default:** `{ mermaid: true }`
 
-Controls progressive rendering for previewers. When enabled for a language, the preview component will be displayed even while the code block is still loading (streaming). The previewer component receives the `loading` prop to display loading states. When disabled, the preview component only appears after the code block has finished loading.
+Controls progressive rendering for previewers. When enabled for a language, the preview component will be displayed even while the code block is still loading (streaming). The previewer component can use `props.node.loading` to display loading states. When disabled, the preview component only appears after the code block has finished loading.
 
 ## placement
 
@@ -280,13 +280,13 @@ const previewers: PreviewerConfig = {
 </template>
 ```
 
-When using a custom component, it will receive the same props as the default Mermaid previewer component, which includes the code block node data, Mermaid options, and dark mode state.
+When using a custom component, it will receive `CodeNodeRendererProps` (including code block node data). For context configuration such as Mermaid options and dark mode state, use `useContext()` inside your previewer component.
 
 ## Custom Previewers for Other Languages
 
 For languages other than `html` and `mermaid`, you must provide a custom `Component` (boolean values are not accepted since there are no built-in previewers for these languages).
 
-The previewer component will receive `CodeNodeRendererProps`, which includes the code block node data with `value` (code content) and `loading` (loading state) properties. If progressive rendering is enabled, handle the `loading` prop to show appropriate loading states.
+The previewer component will receive `CodeNodeRendererProps`, which includes the code block node data (`props.node.value` for code content, `props.node.loading` for loading state). If progressive rendering is enabled, handle `props.node.loading` to show appropriate loading states.
 
 ```vue
 <!-- JavaScriptPreviewer.vue -->

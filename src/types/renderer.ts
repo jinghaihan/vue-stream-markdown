@@ -1,5 +1,4 @@
 import type { MarkdownParser } from '../markdown-parser'
-import type { StreamMarkdownContext } from './context'
 import type {
   BlockquoteNode,
   BreakNode,
@@ -24,7 +23,6 @@ import type {
   ParagraphNode,
   ParsedNode,
   StrongNode,
-  SyntaxTree,
   TableCellNode,
   TableNode,
   TableRowNode,
@@ -33,16 +31,16 @@ import type {
   YamlNode,
 } from './core'
 
-export interface NodeRendererListProps extends Omit<NodeRendererProps, 'node' | 'nodeKey'> {
+export interface NodeRendererListProps extends Omit<NodeRendererProps, 'node' | 'nodeKey' | 'markdownParser' | 'nodeRenderers'> {
+  markdownParser?: MarkdownParser
+  nodeRenderers?: NodeRenderers
   nodes?: ParsedNode[]
   nodeKey?: string
 }
 
-export interface NodeRendererProps extends StreamMarkdownContext {
+export interface NodeRendererProps {
   markdownParser: MarkdownParser
   nodeRenderers: NodeRenderers
-  parsedNodes?: ParsedNode[]
-  blocks?: SyntaxTree[]
   blockIndex?: number
   node: ParsedNode
   parentNode?: ParsedNode

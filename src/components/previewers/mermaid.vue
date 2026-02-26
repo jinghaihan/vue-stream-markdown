@@ -2,7 +2,7 @@
 import type { CodeNodeRendererProps, Control, ZoomControlPosition } from '../../types'
 import { throttle } from '@antfu/utils'
 import { useResizeObserver } from '@vueuse/core'
-import { computed, nextTick, ref, toRefs, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { useContext, useControls, useDeferredRender, useMermaid } from '../../composables'
 
 const props = withDefaults(defineProps<CodeNodeRendererProps & {
@@ -18,9 +18,13 @@ const props = withDefaults(defineProps<CodeNodeRendererProps & {
   immediateRender: false,
 })
 
-const { uiComponents: UI } = useContext()
-
-const { controls, mermaidOptions, shikiOptions, isDark } = toRefs(props)
+const {
+  controls,
+  mermaidOptions,
+  shikiOptions,
+  isDark,
+  uiComponents: UI,
+} = useContext()
 
 const { isControlEnabled, getControlValue, resolveControls } = useControls({
   controls,
@@ -208,7 +212,6 @@ if (!props.containerHeight) {
         v-else
         class="p-4"
         variant="mermaid"
-        v-bind="props"
         :message="error"
         :show-icon="false"
       />

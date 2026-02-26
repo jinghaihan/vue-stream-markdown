@@ -88,7 +88,11 @@ All custom renderers receive the following props through their specific Props ty
 - `markdownParser` - The `MarkdownParser` instance
 - `nodeRenderers` - The merged node renderers object
 - `nodeKey` - A unique key for the node
-- `isDark` - Dark mode state
+- `deep` - Current renderer nesting depth
+- `parentNode` - Parent node in the markdown tree (if available)
+- `prevNode` - Previous sibling node (if available)
+- `nextNode` - Next sibling node (if available)
+- `blockIndex` - Current block index (top-level rendering only)
 
 ## Example: Custom Heading Renderer
 
@@ -189,7 +193,7 @@ If `preload.nodeRenderers` is not specified, the default list above is used. Set
 - Custom renderers are merged with default renderers, so you only need to specify the ones you want to override
 - Use the provided Props types for full TypeScript support
 - The `NodeList` component is available for rendering child nodes
-- Renderers receive all context props including `node`, `isDark`...
+- Context configuration (such as `isDark`, `controls`, `previewers`, etc.) should be accessed via `useContext()`
 
 ## Special Considerations: HTML Nodes
 

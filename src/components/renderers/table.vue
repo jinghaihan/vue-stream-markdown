@@ -14,7 +14,12 @@ import NodeList from '../node-list.vue'
 
 const props = withDefaults(defineProps<TableNodeRendererProps>(), {})
 
-const { beforeDownload, onCopied, uiComponents: UI } = useContext()
+const {
+  beforeDownload,
+  controls: controlsConfig,
+  onCopied,
+  uiComponents: UI,
+} = useContext()
 
 const { t } = useI18n()
 
@@ -23,7 +28,7 @@ const { copy, copied } = useClipboard({
 })
 
 const { isControlEnabled, resolveControls } = useControls({
-  controls: props.controls,
+  controls: controlsConfig,
 })
 
 const showCopy = computed(() => isControlEnabled('table.copy'))

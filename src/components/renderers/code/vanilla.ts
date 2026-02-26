@@ -1,5 +1,5 @@
 import type { PropType } from 'vue'
-import type { CodeNodeRendererProps } from '../../../types'
+import type { CodeNodeRendererProps, CodeOptions } from '../../../types'
 import { computed, defineComponent, h, renderList, toRefs } from 'vue'
 import { useCodeOptions } from '../../../composables'
 
@@ -11,7 +11,7 @@ export default defineComponent({
       required: true,
     },
     codeOptions: {
-      type: Object as PropType<CodeNodeRendererProps['codeOptions']>,
+      type: Object as PropType<CodeOptions>,
       default: undefined,
     },
   },

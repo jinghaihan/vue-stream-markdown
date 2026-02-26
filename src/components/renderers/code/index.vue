@@ -29,9 +29,14 @@ const component = computed(() => {
 </script>
 
 <template>
-  <component :is="UI.CodeBlock" v-if="showHeader" v-bind="props">
+  <component
+    :is="UI.CodeBlock"
+    v-if="showHeader"
+    v-bind="props"
+  >
     <component
-      :is="component" v-bind="props"
+      :is="component"
+      v-bind="props"
       :class="[languageClass]"
     />
   </component>

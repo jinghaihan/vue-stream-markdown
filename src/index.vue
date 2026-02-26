@@ -34,13 +34,21 @@ const emits = defineEmits<{
 }>()
 
 const {
+  controls,
+  previewers,
   mode,
   content,
   isDark: darkProp,
   locale: localeProp,
+  codeOptions,
+  imageOptions,
+  linkOptions,
+  katexOptions,
+  hardenOptions,
   shikiOptions,
   mermaidOptions,
   uiOptions,
+  cdnOptions,
   caret,
 } = toRefs(props)
 
@@ -132,7 +140,18 @@ watch(mode, () => markdownParser.updateMode(mode.value))
 watch(locale, () => loadLocaleMessages(locale.value))
 
 provideContext({
+  controls,
+  previewers,
+  shikiOptions,
+  mermaidOptions,
+  katexOptions,
+  hardenOptions,
+  codeOptions,
+  imageOptions,
+  linkOptions,
+  cdnOptions,
   mode,
+  nodeRenderers,
   icons,
   uiComponents,
   uiOptions,
@@ -140,7 +159,9 @@ provideContext({
   enableAnimate,
   enableCaret,
   caret,
+  blocks,
   parsedNodes,
+  markdownParser,
   getContainer,
   beforeDownload: props.beforeDownload,
   onCopied: (content: string) => {
@@ -173,16 +194,9 @@ defineExpose({
   >
     <template v-for="(block, index) in blocks" :key="index">
       <NodeList
-        v-bind="props"
-        :markdown-parser="markdownParser"
-        :node-renderers="nodeRenderers"
         :nodes="block.children"
-        :parsed-nodes="parsedNodes"
-        :blocks="blocks"
         :block-index="index"
-        :get-container="getContainer"
         :node-key="`stream-markdown-block-${index}`"
-        :is-dark="isDark"
         :deep="0"
       />
     </template>

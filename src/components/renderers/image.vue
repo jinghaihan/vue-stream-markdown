@@ -1,16 +1,20 @@
 <script setup lang="ts">
 import type { ImageNodeRendererProps } from '../../types'
-import { computed, ref, toRefs } from 'vue'
+import { computed, ref } from 'vue'
 import { useContext, useControls, useI18n, useSanitizers } from '../../composables'
 import { saveImage } from '../../utils'
 
 const props = withDefaults(defineProps<ImageNodeRendererProps>(), {})
 
-const { beforeDownload, uiComponents: UI } = useContext()
+const {
+  beforeDownload,
+  controls,
+  hardenOptions,
+  imageOptions,
+  uiComponents: UI,
+} = useContext()
 
 const { t } = useI18n()
-
-const { controls, hardenOptions } = toRefs(props)
 
 const { isControlEnabled } = useControls({
   controls,
@@ -27,7 +31,7 @@ const isLoading = computed(() => props.node.loading || !props.node.url)
 const enableDownload = computed(() => isControlEnabled('image.download'))
 const enablePreview = computed(() => isControlEnabled('image.preview'))
 
-const fallback = computed(() => props.imageOptions?.fallback ?? '')
+const fallback = computed(() => imageOptions.value?.fallback ?? '')
 
 const imageSrc = computed(() => fallbackAttempted.value && fallback.value ? fallback.value : props.node.url)
 
@@ -42,13 +46,13 @@ const alt = computed(() => String(props.node.alt ?? props.node.title ?? ''))
 const title = computed(() => String(props.node.title ?? props.node.alt ?? ''))
 
 const showCaption = computed((): boolean =>
-  (typeof props.imageOptions?.caption === 'boolean' ? props.imageOptions.caption : true)
+  (typeof imageOptions.value?.caption === 'boolean' ? imageOptions.value.caption : true)
   && !isLoading.value && !!title.value,
 )
 
 const Error = computed(() => isHardenUrl.value
   ? (hardenOptions.value?.errorComponent ?? UI.value.ErrorComponent)
-  : (props.imageOptions?.errorComponent ?? UI.value.ErrorComponent))
+  : (imageOptions.value?.errorComponent ?? UI.value.ErrorComponent))
 
 function handleLoaded() {
   imageLoaded.value = true
@@ -142,7 +146,6 @@ function handleMouseLeave() {
         :is="Error"
         v-else-if="isHardenUrl || loadError"
         :variant="isHardenUrl ? 'harden-image' : 'image'"
-        v-bind="props"
       >
         {{ title }}
       </component>

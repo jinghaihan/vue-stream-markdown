@@ -9,14 +9,18 @@ const props = withDefaults(defineProps<InlineMathNodeRendererProps & {
   throttle: 300,
 })
 
-const { uiComponents: UI } = useContext()
+const {
+  cdnOptions,
+  katexOptions,
+  uiComponents: UI,
+} = useContext()
 
-const { node, katexOptions, throttle } = toRefs(props)
+const { node, throttle } = toRefs(props)
 const { html, error, errorMessage } = useMathRenderer({
   node,
   katexOptions,
   throttle,
-  cdnOptions: props.cdnOptions,
+  cdnOptions: cdnOptions.value,
 })
 
 const Error = computed(() => katexOptions.value?.errorComponent ?? UI.value.ErrorComponent)
@@ -28,7 +32,6 @@ const Error = computed(() => katexOptions.value?.errorComponent ?? UI.value.Erro
     v-if="error"
     variant="katex"
     :message="errorMessage"
-    v-bind="props"
   />
   <span v-else data-stream-markdown="inline-math" v-html="html" />
 </template>

@@ -2,13 +2,13 @@
 import type { TokensResult } from 'shiki'
 import type { CodeNodeRendererProps } from '../../../types'
 import { useResizeObserver } from '@vueuse/core'
-import { computed, defineAsyncComponent, ref, toRefs, watch } from 'vue'
-import { useCodeOptions, useShiki } from '../../../composables'
+import { computed, defineAsyncComponent, ref, watch } from 'vue'
+import { useCodeOptions, useContext, useShiki } from '../../../composables'
 import VanillaRenderer from './vanilla'
 
 const props = withDefaults(defineProps<CodeNodeRendererProps>(), {})
 
-const { shikiOptions, codeOptions, isDark } = toRefs(props)
+const { codeOptions, isDark, shikiOptions } = useContext()
 
 const ShikiTokensRenderer = defineAsyncComponent(() => import('./shiki-token-renderer.vue'))
 
