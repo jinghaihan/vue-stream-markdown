@@ -56,7 +56,7 @@ function minifyCSS(css: string): string {
   const { code } = transform({
     code: Buffer.from(css, 'utf8'),
     filename: CSS_NAME,
-    minify: false,
+    minify: true,
     targets: {
       chrome: 89,
     },
