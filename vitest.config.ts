@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [Vue()],
   test: {
     coverage: {
-      include: ['src/preprocess/*.ts'],
+      include: ['src/preprocess/*.ts', 'src/markdown-parser.ts'],
     },
   },
 })
