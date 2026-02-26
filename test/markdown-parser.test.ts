@@ -103,6 +103,41 @@ describe('markdown-parser', () => {
     expect(parser.hasLoadingNode(nodes)).toBe(true)
   })
 
+  it('should clear loading state when switching to static mode without reparsing', () => {
+    const parser = new MarkdownParser({
+      mode: 'streaming',
+    })
+
+    const result = parser.parseMarkdown('# Title\n\nComplete paragraph.')
+    const blockCount = result.asts.length
+    const lastBlockNodes = result.asts[result.asts.length - 1]?.children as ParsedNode[] | undefined
+    const lastText = (lastBlockNodes?.[0] as { children?: ParsedNode[] } | undefined)?.children?.[0]
+
+    expect(parser.hasLoadingNode()).toBe(true)
+    expect(lastText?.loading).toBe(true)
+
+    parser.updateMode('static')
+
+    expect(result.asts.length).toBe(blockCount)
+    expect(lastText?.loading).toBe(false)
+    expect(parser.hasLoadingNode()).toBe(false)
+  })
+
+  it('should mark tail text loading when switching back to streaming mode without reparsing', () => {
+    const parser = new MarkdownParser({
+      mode: 'streaming',
+    })
+
+    parser.parseMarkdown('Complete paragraph.')
+    parser.updateMode('static')
+
+    expect(parser.hasLoadingNode()).toBe(false)
+
+    parser.updateMode('streaming')
+
+    expect(parser.hasLoadingNode()).toBe(true)
+  })
+
   it('should not share cached ast between parser instances', () => {
     const parserA = new MarkdownParser({
       mode: 'streaming',
