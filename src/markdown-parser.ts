@@ -86,9 +86,13 @@ export class MarkdownParser {
     const asts: SyntaxTree[] = []
     const contents: string[] = []
 
-    const applyLoadingState = (ast: SyntaxTree, loading: boolean) => {
-      const updated = this.updateAstLoading(ast, loading)
-      if (!loading)
+    const applyLoadingState = (
+      ast: SyntaxTree,
+      syntaxLoading: boolean,
+      tailTextLoading: boolean,
+    ) => {
+      const updated = this.updateAstLoading(ast, syntaxLoading)
+      if (!tailTextLoading)
         return updated
 
       return this.markLastTextNodeLoading(updated)
@@ -103,19 +107,20 @@ export class MarkdownParser {
         content = this.mode === 'streaming' ? pre(content, this.getPreprocessContext()) : content
       contents.push(content)
 
-      const loading = blocks[index] !== content
+      const syntaxLoading = isLastBlock && blocks[index] !== content
+      const tailTextLoading = isLastBlock && this.mode === 'streaming'
 
       // check if the ast is cached
       if (this.astCache.has(content)) {
         const ast = this.astCache.get(content)!
-        asts.push(applyLoadingState(ast, loading))
+        asts.push(applyLoadingState(ast, syntaxLoading, tailTextLoading))
         continue
       }
 
       const ast = this.markdownToAst(content)
       this.astCache.set(content, ast)
 
-      asts.push(applyLoadingState(ast, loading))
+      asts.push(applyLoadingState(ast, syntaxLoading, tailTextLoading))
     }
 
     this.asts = asts

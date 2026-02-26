@@ -1,3 +1,4 @@
+<script lang="ts">
 import type { getTokenStyleObject, TokensResult } from 'shiki'
 import type { PropType } from 'vue'
 import { defineComponent, h, renderList, shallowRef } from 'vue'
@@ -22,8 +23,8 @@ export default defineComponent({
     if (!props.tokens)
       return null
 
-    const getTokenStyleObjectRef = shallowRef<typeof getTokenStyleObject | null>(null);
-    (async () => {
+    const getTokenStyleObjectRef = shallowRef<typeof getTokenStyleObject | null>(null)
+    void (async () => {
       const { getTokenStyleObject } = await props.getShiki()
       getTokenStyleObjectRef.value = getTokenStyleObject
     })()
@@ -74,3 +75,4 @@ export default defineComponent({
     }
   },
 })
+</script>
