@@ -1,6 +1,7 @@
 export * from './dom'
 export * from './harden'
 export * from './helper'
+export * from './html'
 export * from './idle'
 export * from './inference'
 export * from './module'

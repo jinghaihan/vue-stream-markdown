@@ -89,7 +89,8 @@
     "micromark-extension-frontmatter": "catalog:parser",
     "micromark-extension-gfm": "catalog:parser",
     "micromark-extension-math": "catalog:parser",
-    "micromark-util-types": "catalog:parser"
+    "micromark-util-types": "catalog:parser",
+    "dompurify": "catalog:prod"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "catalog:build",
