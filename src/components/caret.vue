@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useContext } from '../composables'
 
-const { enableAnimate, caret } = useContext()
+const { enableCaret, caret } = useContext()
 </script>
 
 <template>
-  <span v-if="enableAnimate" data-stream-markdown="caret">{{ caret }}</span>
+  <span v-if="enableCaret" data-stream-markdown="caret">{{ caret }}</span>
 </template>

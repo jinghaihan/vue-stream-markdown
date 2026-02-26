@@ -114,7 +114,9 @@ export class MarkdownParser {
 
     data = normal(data)
 
-    const blocks = this.mode === 'static' ? [data] : parse(data)
+    // Preserve multi-block segmentation when switching from streaming -> static at runtime.
+    // Otherwise block keys collapse from N -> 1 and can trigger broad component remounts.
+    const blocks = this.mode === 'static' && this.contents.length <= 1 ? [data] : parse(data)
 
     const asts: SyntaxTree[] = []
     const contents: string[] = []
@@ -163,12 +165,10 @@ export class MarkdownParser {
   private updateAstLoading(ast: SyntaxTree, loading: boolean) {
     loading = loading && this.mode === 'streaming'
     const node = findLastLeafNode(ast.children)
-    if (!node) {
-      return {
-        ...ast,
-        children: [...ast.children],
-      }
-    }
+    if (!node)
+      return ast
+    if (Boolean(node.loading) === loading)
+      return ast
     return this.updateNodeLoading(ast, node, loading)
   }
 
@@ -179,6 +179,8 @@ export class MarkdownParser {
     const node = findLastLeafNode(ast.children)
     if (!node || node.type !== 'text')
       return ast
+    if (node.loading)
+      return ast
     return this.updateNodeLoading(ast, node, true)
   }
 
@@ -187,25 +189,53 @@ export class MarkdownParser {
     targetNode: ParsedNode,
     loading: boolean,
   ): SyntaxTree {
-    const cloneNode = (node: ParsedNode): ParsedNode => {
-      if (node === targetNode)
-        return { ...node, loading }
-
-      const nodeWithChildren = node as { children?: ParsedNode[] }
-      if (nodeWithChildren.children) {
-        return {
-          ...node,
-          // @ts-expect-error - generate children array
-          children: nodeWithChildren.children.map(cloneNode),
-        }
+    const cloneNode = (node: ParsedNode): [ParsedNode, boolean] => {
+      if (node === targetNode) {
+        if (Boolean(node.loading) === loading)
+          return [node, false]
+        return [{ ...node, loading }, true]
       }
 
-      return { ...node }
+      const nodeWithChildren = node as { children?: ParsedNode[] }
+      const children = nodeWithChildren.children
+      if (!children || !children.length)
+        return [node, false]
+
+      let changed = false
+      const nextChildren: ParsedNode[] = Array.from({ length: children.length })
+      for (let i = 0; i < children.length; i++) {
+        const child = children[i]!
+        const [nextChild, childChanged] = cloneNode(child)
+        nextChildren[i] = nextChild
+        changed = changed || childChanged
+      }
+
+      if (!changed)
+        return [node, false]
+      return [
+        {
+          ...node,
+          // @ts-expect-error - generate children array
+          children: nextChildren,
+        },
+        true,
+      ]
     }
+
+    let changed = false
+    const nextChildren: ParsedNode[] = Array.from({ length: ast.children.length })
+    for (let i = 0; i < ast.children.length; i++) {
+      const child = ast.children[i]!
+      const [nextChild, childChanged] = cloneNode(child)
+      nextChildren[i] = nextChild
+      changed = changed || childChanged
+    }
+    if (!changed)
+      return ast
 
     return {
       ...ast,
-      children: ast.children.map(cloneNode),
+      children: nextChildren,
     }
   }
 

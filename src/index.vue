@@ -67,14 +67,15 @@ const { preload: preloadKatex, dispose: disposeKatex } = useKatex({
 const containerRef = ref<HTMLDivElement>()
 
 const markdownParser = new MarkdownParser(props)
+const defaultEnableAnimate = props.mode === 'streaming'
 
 const enableAnimate = computed(() => {
   if (typeof props.enableAnimate === 'boolean')
     return props.enableAnimate
-  return mode.value === 'streaming'
+  return defaultEnableAnimate
 })
 
-const enableCaret = computed(() => !!props.caret && enableAnimate.value)
+const enableCaret = computed(() => !!props.caret && mode.value === 'streaming')
 
 const processed = computed(() => markdownParser.parseMarkdown(props.content))
 

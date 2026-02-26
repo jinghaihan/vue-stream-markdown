@@ -138,6 +138,39 @@ describe('markdown-parser', () => {
     expect(parser.hasLoadingNode()).toBe(true)
   })
 
+  it('should preserve block segmentation after switching from streaming to static', () => {
+    const parser = new MarkdownParser({
+      mode: 'streaming',
+    })
+
+    const content = '# Title\n\nFirst paragraph.\n\n## Subtitle\n\nSecond paragraph.'
+    const initial = parser.parseMarkdown(content)
+
+    expect(initial.asts.length).toBeGreaterThan(1)
+
+    parser.updateMode('static')
+    const reparsed = parser.parseMarkdown(content)
+
+    expect(reparsed.asts.length).toBe(initial.asts.length)
+  })
+
+  it('should preserve unchanged block references when only loading state changes', () => {
+    const parser = new MarkdownParser({
+      mode: 'streaming',
+    })
+
+    const content = '# Title\n\nFirst paragraph.\n\n## Subtitle\n\nSecond paragraph.'
+    const initial = parser.parseMarkdown(content)
+
+    expect(initial.asts.length).toBeGreaterThan(1)
+
+    parser.updateMode('static')
+    const reparsed = parser.parseMarkdown(content)
+
+    for (let i = 0; i < reparsed.asts.length - 1; i++)
+      expect(reparsed.asts[i]).toBe(initial.asts[i])
+  })
+
   it('should not share cached ast between parser instances', () => {
     const parserA = new MarkdownParser({
       mode: 'streaming',
