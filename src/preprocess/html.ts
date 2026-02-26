@@ -17,6 +17,9 @@ function isUnclosedHtmlFragment(fragment: string): boolean {
   if (!fragment.startsWith('<') || fragment.includes('>'))
     return false
 
+  if (fragment === '<')
+    return true
+
   if (fragment.length <= 1)
     return false
 

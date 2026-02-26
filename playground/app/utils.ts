@@ -53,27 +53,3 @@ export function getContentFromUrl(url: string = ''): string {
   const params = new URLSearchParams(url.split('?')[1])
   return params.get('content') || ''
 }
-
-export function removeUnclosedGithubTag(content: string): string {
-  const openIndex = content.indexOf('<GitHub')
-  if (openIndex === -1)
-    return content
-
-  const rest = content.slice(openIndex)
-
-  const selfCloseIndex = rest.indexOf('/>')
-  const fullCloseIndex = rest.indexOf('</GitHub>')
-
-  const hasSelfClose
-    = selfCloseIndex !== -1
-      && selfCloseIndex < rest.indexOf('>')
-
-  const hasFullClose = fullCloseIndex !== -1
-
-  if (hasSelfClose)
-    return content
-  if (hasFullClose)
-    return content
-
-  return content.slice(0, openIndex)
-}

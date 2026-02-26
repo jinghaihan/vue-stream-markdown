@@ -16,10 +16,18 @@ function normalizeToken(value: string): string {
   return value.trim().toLowerCase()
 }
 
-function normalizeAllowedTags(rules: HtmlAllowedTagRule[] = []): Map<string, TagAttrs> {
+function normalizeAllowedTags(rules: Array<HtmlAllowedTagRule | string> = []): Map<string, TagAttrs> {
   const tagRules = new Map<string, TagAttrs>()
 
   for (const rule of rules) {
+    if (typeof rule === 'string') {
+      const tagName = normalizeToken(rule)
+      if (!tagName)
+        continue
+      tagRules.set(tagName, undefined)
+      continue
+    }
+
     const tagName = normalizeToken(rule.name || '')
     if (!tagName)
       continue

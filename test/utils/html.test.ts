@@ -12,6 +12,7 @@ describe('resolvePurifyConfig', () => {
   it('should merge allowed tags and attrs into array-based purify config', () => {
     const { config, tagRules } = resolvePurifyConfig({
       allowedTags: [
+        'x-short',
         { name: 'GitHub-Card', attrs: ['Name', 'Description'] },
         { name: 'x-empty' },
       ],
@@ -21,7 +22,7 @@ describe('resolvePurifyConfig', () => {
       },
     })
 
-    expect(config.ADD_TAGS).toEqual(['trusted-tag', 'github-card', 'x-empty'])
+    expect(config.ADD_TAGS).toEqual(['trusted-tag', 'x-short', 'github-card', 'x-empty'])
     expect(config.ADD_ATTR).toEqual(['id', 'name', 'description'])
     expect(tagRules.get('github-card')).toEqual(new Set(['name', 'description']))
 
@@ -39,6 +40,7 @@ describe('resolvePurifyConfig', () => {
     else {
       expect(attributeNameCheck?.('name', 'github-card')).toBe(true)
       expect(attributeNameCheck?.('name', 'x-empty')).toBe(false)
+      expect(attributeNameCheck?.('name', 'x-short')).toBe(false)
     }
   })
 

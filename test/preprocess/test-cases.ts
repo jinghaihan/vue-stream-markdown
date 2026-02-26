@@ -1419,6 +1419,11 @@ export const htmlTestCases: TestCasesByCategory = {
       expected: '',
     },
     {
+      description: 'should remove trailing bare <',
+      input: 'Hello <',
+      expected: 'Hello',
+    },
+    {
       description: 'should remove trailing unclosed opening tag with attributes',
       input: 'Hello <custom-card name="demo"',
       expected: 'Hello',

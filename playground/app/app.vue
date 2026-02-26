@@ -14,10 +14,10 @@ import { throttle } from '@antfu/utils'
 import { useCycleList, useResizeObserver } from '@vueuse/core'
 import * as LZString from 'lz-string'
 import { hydrateOnVisible } from 'vue'
-import { Markdown, normalize, SUPPORT_LANGUAGES, useTailwindV3Theme } from 'vue-stream-markdown'
+import { Markdown, SUPPORT_LANGUAGES, useTailwindV3Theme } from 'vue-stream-markdown'
 import { ChartPie } from './icons'
 import { DEFAULT_MARKDOWN_PATH, getPresetContent } from './markdown'
-import { getContentFromUrl, removeUnclosedGithubTag } from './utils'
+import { getContentFromUrl } from './utils'
 
 const HtmlNodeRenderer = defineAsyncComponent({
   loader: () => import('./components/html.vue'),
@@ -209,11 +209,6 @@ function getContainer() {
   return containerRef.value
 }
 
-function normalizeContent(content: string) {
-  const _content = normalize(content)
-  return removeUnclosedGithubTag(_content)
-}
-
 function onScroll() {
   const element = containerRef.value
   if (!element)
@@ -347,7 +342,6 @@ onMounted(() => {
           :mermaid-options="mermaidOptions"
           :ui-options="uiOptions"
           :cdn-options="cdnOptions"
-          :normalize="normalizeContent"
         />
       </div>
     </template>

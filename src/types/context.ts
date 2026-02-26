@@ -190,7 +190,7 @@ export interface HtmlAllowedTagRule {
 }
 
 export interface HtmlOptions {
-  allowedTags?: HtmlAllowedTagRule[]
+  allowedTags?: Array<HtmlAllowedTagRule | string>
   purifyConfig?: DOMPurifyConfig
 }
 
