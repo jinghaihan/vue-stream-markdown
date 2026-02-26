@@ -1,7 +1,7 @@
 import { Buffer } from 'node:buffer'
-import fs from 'node:fs/promises'
+import * as fs from 'node:fs/promises'
 import { dirname, join } from 'node:path'
-import process from 'node:process'
+import { argv, exit } from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { styleText } from 'node:util'
 import { transform } from 'lightningcss'
@@ -18,6 +18,7 @@ const SOURCE_GLOBS = ['**/*.vue']
 const NAMESPACE = ':where(.stream-markdown,.stream-markdown-overlay)'
 const VARIABLE_PREFIX = 'stream-markdown-'
 const UNO_VARIABLE_PREFIX = 'un-'
+const IGNORE_PRESETS = ['@unocss/preset-wind4', '@unocss/preset-web-fonts']
 
 async function buildCSS() {
   const generator = await createGenerator(createScopedUnoConfig())
@@ -34,8 +35,8 @@ async function buildCSS() {
     await generator.applyExtractors(content, file, tokens)
   }
 
-  const generated = await generator.generate(tokens, { preflights: false })
-  const generatedCss = normalizeVariablePrefix(generated.css)
+  const generated = await generator.generate(tokens, { preflights: true })
+  const generatedCss = scopeThemeVariable(normalizeVariablePrefix(generated.css))
   const css = [userStyle.trim(), generatedCss]
     .filter(Boolean)
     .join('\n\n')
@@ -55,7 +56,7 @@ function minifyCSS(css: string): string {
   const { code } = transform({
     code: Buffer.from(css, 'utf8'),
     filename: CSS_NAME,
-    minify: true,
+    minify: false,
     targets: {
       chrome: 89,
     },
@@ -69,8 +70,39 @@ function normalizeVariablePrefix(css: string): string {
   return css.replaceAll(from, to)
 }
 
+function scopeThemeVariable(css: string): string {
+  let output = css
+  const blocks: string[] = []
+
+  output = output.replace(/:root\s*,\s*:host\s*\{([\s\S]*?)\}/g, (_, block) => {
+    blocks.push(String(block).trim())
+    return ''
+  })
+
+  output = output.replace(/:root\s*\{([\s\S]*?)\}/g, (_, block) => {
+    blocks.push(String(block).trim())
+    return ''
+  })
+
+  output = output.replace(/:host\s*\{([\s\S]*?)\}/g, (_, block) => {
+    blocks.push(String(block).trim())
+    return ''
+  })
+
+  const unique = [...new Set(blocks.filter(Boolean))]
+  if (!unique.length)
+    return output
+
+  const scoped = unique
+    .map(block => `${NAMESPACE} {\n${block}\n}`)
+    .join('\n\n')
+
+  return `${scoped}\n\n${output}`.trim()
+}
+
 function createScopedUnoConfig() {
-  const presets = (unoConfig.presets || [])
+  // @ts-expect-error filter unocss preset by name
+  const presets = (unoConfig.presets || []).filter(preset => !IGNORE_PRESETS.includes(preset.name))
 
   return {
     ...unoConfig,
@@ -78,6 +110,10 @@ function createScopedUnoConfig() {
       presetWind4({
         important: NAMESPACE,
         variablePrefix: VARIABLE_PREFIX,
+        preflights: {
+          reset: false,
+          theme: 'on-demand',
+        },
       }),
       ...presets,
     ],
@@ -93,9 +129,9 @@ async function run() {
   )
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+if (argv[1] && fileURLToPath(import.meta.url) === argv[1]) {
   run().catch((error) => {
     console.error('[build-css] failed', String(error))
-    process.exit(1)
+    exit(1)
   })
 }
