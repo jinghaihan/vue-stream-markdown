@@ -264,7 +264,9 @@ Visit the [Playground](https://play-vue-stream-markdown.netlify.app/) to compare
 
 vue-stream-markdown supports two Mermaid rendering engines:
 
-### Vanilla Renderer (Default)
+When `mermaidOptions.renderer` is not set, vue-stream-markdown automatically uses `beautiful` if `beautiful-mermaid` is available; otherwise it uses `vanilla`.
+
+### Vanilla Renderer
 
 The standard Mermaid.js renderer that supports all diagram types including flowcharts, sequence diagrams, state diagrams, class diagrams, ER diagrams, pie charts, Gantt charts, git graphs, and more.
 
@@ -294,7 +296,7 @@ import type { MermaidOptions } from 'vue-stream-markdown'
 import { Markdown } from 'vue-stream-markdown'
 
 const mermaidOptions: MermaidOptions = {
-  renderer: 'beautiful', // or 'vanilla' (default)
+  renderer: 'beautiful', // or 'vanilla' (default is auto when omitted)
 }
 </script>
 
