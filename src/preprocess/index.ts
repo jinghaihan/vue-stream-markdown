@@ -4,6 +4,7 @@ import { fixCode } from './code'
 import { fixDelete } from './delete'
 import { fixEmphasis } from './emphasis'
 import { fixFootnote } from './footnote'
+import { fixHtml } from './html'
 import { fixInlineMath } from './inline-math'
 import { fixLink } from './link'
 import { fixMath } from './math'
@@ -29,6 +30,7 @@ export function normalize(content: string): string {
 export function preprocess(content: string, options?: PreprocessContext): string {
   const tasks: ((content: string) => string)[] = [
     fixCode,
+    fixHtml,
     fixFootnote,
     c => fixStrong(c, options),
     fixEmphasis,
@@ -48,6 +50,7 @@ export {
   fixDelete,
   fixEmphasis,
   fixFootnote,
+  fixHtml,
   fixInlineMath,
   fixLink,
   fixMath,

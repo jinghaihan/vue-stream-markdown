@@ -1411,6 +1411,57 @@ export const footnoteTestCases: TestCasesByCategory = {
   ],
 }
 
+export const htmlTestCases: TestCasesByCategory = {
+  html: [
+    {
+      description: 'should remove trailing unclosed opening tag',
+      input: '<div',
+      expected: '',
+    },
+    {
+      description: 'should remove trailing bare <',
+      input: 'Hello <',
+      expected: 'Hello',
+    },
+    {
+      description: 'should remove trailing unclosed opening tag with attributes',
+      input: 'Hello <custom-card name="demo"',
+      expected: 'Hello',
+    },
+    {
+      description: 'should remove trailing unclosed closing tag',
+      input: 'Hello </custom-card',
+      expected: 'Hello',
+    },
+    {
+      description: 'should preserve complete html tags',
+      input: '<div>ok</div>',
+      expected: '<div>ok</div>',
+    },
+    {
+      description: 'should not treat math-like text as html',
+      input: '1 < 2',
+      expected: '1 < 2',
+    },
+    {
+      description: 'should not modify html-like text in inline code',
+      input: 'Use `<div` as literal text',
+      expected: 'Use `<div` as literal text',
+    },
+    {
+      description: 'should not modify html-like text in closed code blocks',
+      input: '```html\n<div\n```',
+      expected: '```html\n<div\n```',
+    },
+    {
+      description: 'should not modify html-like text in unclosed code blocks',
+      input: '```html\n<div',
+      expected: '```html\n<div',
+      integrationExpected: '```html\n<div\n```',
+    },
+  ],
+}
+
 export const testCasesByCategory: TestCasesByCategory = {
   ...codeTestCases,
   ...deleteTestCases,
@@ -1422,6 +1473,7 @@ export const testCasesByCategory: TestCasesByCategory = {
   ...tableTestCases,
   ...taskListTestCases,
   ...footnoteTestCases,
+  ...htmlTestCases,
 }
 
 export function getTestCases(): TestCase[] {
