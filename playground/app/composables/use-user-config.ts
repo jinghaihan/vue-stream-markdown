@@ -10,7 +10,7 @@ const DEFAULT_USER_CONFIG: UserConfig = {
   showAstResult: false,
   shikiLightTheme: 'github-light',
   shikiDarkTheme: 'github-dark',
-  mermaidRenderer: 'vanilla',
+  mermaidRenderer: 'beautiful',
   mermaidLightTheme: 'neutral',
   mermaidDarkTheme: 'dark',
   mermaidBeautifulLightTheme: 'github-light',

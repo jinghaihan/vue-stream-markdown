@@ -4,7 +4,7 @@ import type { CodeNodeRendererProps } from '../../../types'
 import { useResizeObserver } from '@vueuse/core'
 import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useCodeOptions, useContext, useShiki } from '../../../composables'
-import VanillaRenderer from './vanilla'
+import VanillaRenderer from './vanilla.vue'
 
 const props = withDefaults(defineProps<CodeNodeRendererProps>(), {})
 

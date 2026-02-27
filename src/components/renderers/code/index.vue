@@ -17,7 +17,7 @@ const languageClass = computed(() => `language-${props.node.lang}`)
 const { installed: hasShiki } = useShiki()
 
 const components: Record<string, Component> = {
-  vanilla: defineAsyncComponent(() => import('./vanilla')),
+  vanilla: defineAsyncComponent(() => import('./vanilla.vue')),
   shiki: defineAsyncComponent(() => import('./shiki.vue')),
 }
 
