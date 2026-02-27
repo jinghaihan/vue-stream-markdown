@@ -1,5 +1,4 @@
 import type { RenderOptions as BeautifulMermaidConfig } from 'beautiful-mermaid'
-import type { Config as DOMPurifyConfig } from 'dompurify'
 import type { KatexOptions as KatexConfig } from 'katex'
 import type { Extension as FromMarkdownExtension } from 'mdast-util-from-markdown'
 import type { Options as ToMarkdownExtension } from 'mdast-util-to-markdown'
@@ -64,7 +63,6 @@ export interface StreamMarkdownContext {
   shikiOptions?: ShikiOptions
   mermaidOptions?: MermaidOptions
   katexOptions?: KatexOptions
-  htmlOptions?: HtmlOptions
   hardenOptions?: HardenOptions
   codeOptions?: CodeOptions
   imageOptions?: ImageOptions
@@ -181,17 +179,6 @@ export interface ImageOptions {
 export interface LinkOptions {
   safetyCheck?: boolean
   isTrusted?: (url: string) => Promise<boolean> | boolean
-}
-
-export interface HtmlAllowedTagRule {
-  name: string
-  // Use ['*'] to allow any attribute on this tag.
-  attrs?: string[]
-}
-
-export interface HtmlOptions {
-  allowedTags?: Array<HtmlAllowedTagRule | string>
-  purifyConfig?: DOMPurifyConfig
 }
 
 export interface CodeOptions {

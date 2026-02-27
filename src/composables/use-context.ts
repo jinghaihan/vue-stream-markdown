@@ -22,7 +22,6 @@ interface Context {
   shikiOptions?: MaybeRef<StreamMarkdownContext['shikiOptions']>
   mermaidOptions?: MaybeRef<StreamMarkdownContext['mermaidOptions']>
   katexOptions?: MaybeRef<StreamMarkdownContext['katexOptions']>
-  htmlOptions?: MaybeRef<StreamMarkdownContext['htmlOptions']>
   hardenOptions?: MaybeRef<StreamMarkdownContext['hardenOptions']>
   codeOptions?: MaybeRef<StreamMarkdownContext['codeOptions']>
   imageOptions?: MaybeRef<StreamMarkdownContext['imageOptions']>
@@ -54,7 +53,6 @@ export function useContext() {
   const shikiOptions = computed(() => unref(context.shikiOptions))
   const mermaidOptions = computed(() => unref(context.mermaidOptions))
   const katexOptions = computed(() => unref(context.katexOptions))
-  const htmlOptions = computed(() => unref(context.htmlOptions))
   const hardenOptions = computed(() => unref(context.hardenOptions))
   const codeOptions = computed(() => unref(context.codeOptions))
   const imageOptions = computed(() => unref(context.imageOptions))
@@ -104,7 +102,6 @@ export function useContext() {
     shikiOptions,
     mermaidOptions,
     katexOptions,
-    htmlOptions,
     hardenOptions,
     codeOptions,
     imageOptions,

@@ -1,13 +1,19 @@
 <script setup lang="ts">
 import type { HtmlNodeRendererProps } from 'vue-stream-markdown'
+import DOMPurify from 'dompurify'
 import { parseDocument } from 'htmlparser2'
 import { treeFind } from 'treechop'
 import { homepage } from '../../../package.json'
 import { GitHub } from '../icons'
 
 const props = withDefaults(defineProps<HtmlNodeRendererProps>(), {})
+const PURIFY_CONFIG = {
+  ADD_TAGS: ['github'],
+  ADD_ATTR: ['name', 'description'],
+}
 
-const code = computed(() => props.node.value)
+const raw = computed(() => props.node.value)
+const code = computed(() => DOMPurify.sanitize(raw.value, PURIFY_CONFIG))
 const data = computed(() => parseDocument(code.value))
 const github = computed(() => {
   const children = data.value.children

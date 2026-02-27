@@ -23,6 +23,7 @@
     "@unocss/reset": "catalog:playground",
     "@vueuse/nuxt": "catalog:playground",
     "clsx": "catalog:playground",
+    "dompurify": "catalog:playground",
     "echarts": "catalog:playground",
     "htmlparser2": "catalog:playground",
     "lz-string": "catalog:playground",

@@ -70,14 +70,20 @@ The recommended approach is to parse the HTML and filter it before rendering. He
 ```vue
 <script setup lang="ts">
 import type { HtmlNodeRendererProps } from 'vue-stream-markdown'
+import DOMPurify from 'dompurify'
 import { parseDocument } from 'htmlparser2'
 import { treeFind } from 'treechop'
 import { homepage } from '../../../package.json'
 import { GitHub } from '../icons'
 
 const props = withDefaults(defineProps<HtmlNodeRendererProps>(), {})
+const PURIFY_CONFIG = {
+  ADD_TAGS: ['github'],
+  ADD_ATTR: ['name', 'description'],
+}
 
-const code = computed(() => props.node.value)
+const raw = computed(() => props.node.value)
+const code = computed(() => DOMPurify.sanitize(raw.value, PURIFY_CONFIG))
 const document = computed(() => parseDocument(code.value))
 const github = computed(() => {
   const children = document.value.children
@@ -114,10 +120,11 @@ function onClick() {
 
 The core approach here is:
 
-1. **Parse the HTML** using an HTML parser (like `htmlparser2`) to safely extract the structure
-2. **Filter for safe nodes** - Extract only the specific tags you want to render (customizable per your needs)
-3. **Extract attributes** - The parser will safely extract attributes without executing any code
-4. **Render custom components** - Map the parsed and filtered nodes to your custom Vue components
+1. **Sanitize HTML first** using `DOMPurify` (or another sanitizer), and explicitly allow the tags/attributes you need
+2. **Parse the HTML** using an HTML parser (like `htmlparser2`) to safely extract the structure
+3. **Filter for safe nodes** - Extract only the specific tags you want to render (customizable per your needs)
+4. **Extract attributes** - The parser will safely extract attributes without executing any code
+5. **Render custom components** - Map the parsed and filtered nodes to your custom Vue components
 
 ### Using the Custom Renderer
 
@@ -198,7 +205,10 @@ Never render raw HTML directly. Always parse and filter:
 ```typescript
 import DOMPurify from 'dompurify' // or another sanitization library
 
-const sanitized = DOMPurify.sanitize(htmlContent)
+const sanitized = DOMPurify.sanitize(htmlContent, {
+  ADD_TAGS: ['github'],
+  ADD_ATTR: ['name', 'description'],
+})
 ```
 
 ### Test with Malicious Content
