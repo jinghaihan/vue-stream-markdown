@@ -34,6 +34,11 @@ export default defineNuxtConfig({
   alias,
   future: { compatibilityVersion: 4 },
   compatibilityDate: 'latest',
+  vite: {
+    build: {
+      minify: 'terser',
+    },
+  },
   typescript: {
     tsConfig: {
       compilerOptions: {
