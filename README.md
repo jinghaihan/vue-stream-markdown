@@ -21,7 +21,7 @@ pnpm add vue-stream-markdown
 <br>
 
 <p align='center'>
-<img src='./assets/screenshot.png' />
+<img src='./assets/screenshot.png' alt="screenshot" />
 </p>
 
 ## Features

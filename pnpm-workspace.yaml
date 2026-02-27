@@ -25,26 +25,26 @@ catalogs:
   frontend:
     '@floating-ui/dom': ^1.7.5
     '@vueuse/core': ^14.2.1
-    unocss: ^66.6.0
-    vue: ^3.5.28
+    unocss: ^66.6.2
+    vue: ^3.5.29
   icons:
     '@iconify-json/catppuccin': ^1.2.17
-    '@iconify-json/lucide': ^1.2.92
+    '@iconify-json/lucide': ^1.2.94
   inlined:
     '@antfu/utils': ^9.3.0
     quick-lru: ^7.3.0
     treechop: ^0.1.2
   lint:
-    '@nuxt/eslint': ^1.15.1
-    '@octohash/eslint-config': ^0.2.3
+    '@nuxt/eslint': ^1.15.2
+    '@octohash/eslint-config': ^0.2.4
     '@unocss/eslint-plugin': 66.5.9
-    eslint: ^9.39.3
-    eslint-plugin-format: ^1.4.0
+    eslint: ^10.0.2
+    eslint-plugin-format: ^2.0.1
     lint-staged: ^16.2.7
-    vue-tsc: ^3.2.4
+    vue-tsc: ^3.2.5
   parser:
     marked: ^17.0.3
-    mdast-util-from-markdown: ^2.0.2
+    mdast-util-from-markdown: ^2.0.3
     mdast-util-frontmatter: ^2.0.1
     mdast-util-gfm: ^3.1.0
     mdast-util-math: ^3.0.0
@@ -57,11 +57,11 @@ catalogs:
     micromark-util-types: ^2.0.2
   playground:
     '@monaco-editor/loader': ^1.7.0
-    '@nuxt/devtools': ^3.2.1
+    '@nuxt/devtools': ^3.2.2
     '@nuxtjs/color-mode': ^4.0.0
-    '@shikijs/monaco': ^3.22.0
-    '@unocss/nuxt': ^66.6.0
-    '@unocss/reset': ^66.6.0
+    '@shikijs/monaco': ^3.23.0
+    '@unocss/nuxt': ^66.6.2
+    '@unocss/reset': ^66.6.2
     '@vueuse/nuxt': ^14.2.1
     clsx: ^2.1.1
     dompurify: ^3.3.1
@@ -76,7 +76,7 @@ catalogs:
     '@vue/test-utils': ^2.4.6
     vitest: ^4.0.18
   types:
-    '@types/node': ^25.3.0
+    '@types/node': ^25.3.2
 onlyBuiltDependencies:
   - esbuild
   - simple-git-hooks
