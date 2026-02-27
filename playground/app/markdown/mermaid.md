@@ -178,3 +178,16 @@ gitGraph
     merge develop
     commit
 ```
+
+### XY Data Charts
+
+Render bar, line, and combined XY charts:
+
+```mermaid
+xychart-beta
+    title "Monthly Active Users"
+    x-axis [Jan, Feb, Mar, Apr, May, Jun]
+    y-axis "Users (k)" 0 --> 80
+    bar [22, 30, 41, 53, 61, 72]
+    line [18, 28, 39, 49, 58, 70]
+```

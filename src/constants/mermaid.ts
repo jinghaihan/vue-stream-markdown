@@ -8,6 +8,7 @@ export const BEAUTIFUL_MERMAID_SUPPORTED_PATTERNS = [
   'sequence',
   'classDiagram',
   'erDiagram',
+  'xychart',
 ] as const
 
 export const DEFAULT_MERMAID_THEME = [

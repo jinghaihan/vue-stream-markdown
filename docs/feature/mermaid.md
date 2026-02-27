@@ -280,7 +280,7 @@ A beautiful-mermaid integration that creates more aesthetically pleasing diagram
 
 **Supported Diagram Types:**
 
-The beautiful renderer currently supports a limited set of diagram types. For the complete and up-to-date list of supported diagrams, please refer to the [beautiful-mermaid documentation](https://github.com/lukilabs/beautiful-mermaid).
+The beautiful renderer's supported diagram types follow the installed `beautiful-mermaid` version. For the complete and up-to-date list, please refer to the [beautiful-mermaid documentation](https://github.com/lukilabs/beautiful-mermaid).
 
 ## Configuration
 
