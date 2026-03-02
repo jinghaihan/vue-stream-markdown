@@ -49,6 +49,10 @@ export default defineComponent({
         },
         h(
           'code',
+          {
+            translate: 'no',
+            class: 'text-sm font-mono',
+          },
           renderList(
             props.tokens.tokens,
             (line, index) => h(
