@@ -96,7 +96,6 @@ The following CSS variables are actually used in the source code:
 
 ```sh
 /* Typography */
---font-sans
 --font-mono
 
 /* Colors */
