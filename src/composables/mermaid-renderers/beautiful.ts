@@ -152,7 +152,7 @@ export class BeautifulMermaidRenderer extends MermaidRenderer {
     try {
       await this.ensureLoaded()
       const renderOptions = await this.getRenderOptions()
-      const svg = await this.beautifulMermaid!.renderMermaid(code, renderOptions)
+      const svg = await this.beautifulMermaid!.renderMermaidSVGAsync(code, renderOptions)
       return { svg, valid: true }
     }
     catch (error) {
