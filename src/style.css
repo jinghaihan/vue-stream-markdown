@@ -1,4 +1,4 @@
-:where(.stream-markdown, .stream-markdown-overlay) {
+.stream-markdown {
   --default-transition-duration: 150ms;
   --typewriter-transition-duration: 900ms;
 

@@ -1,7 +1,6 @@
 import type { MaybeRef } from 'vue'
 import { useMutationObserver } from '@vueuse/core'
 import { computed, onMounted, ref, unref, watch } from 'vue'
-import { OVERLAY_CONTAINER_ID } from '../constants'
 import { getOverlayContainer } from '../utils'
 
 export function useDarkDetector(darkProp: MaybeRef<boolean | undefined>, cssVariables: MaybeRef<Record<string, string>>) {
@@ -25,8 +24,8 @@ export function useDarkDetector(darkProp: MaybeRef<boolean | undefined>, cssVari
 
   function createOverlayContainer() {
     const div = document.createElement('div')
-    div.id = OVERLAY_CONTAINER_ID
-    div.classList.add(OVERLAY_CONTAINER_ID)
+    div.id = 'stream-markdown-overlay'
+    div.classList.add('stream-markdown')
     div.classList.add(isDark.value ? 'dark' : 'light')
     document.body.appendChild(div)
   }

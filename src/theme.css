@@ -1,4 +1,4 @@
-:where(.stream-markdown, .stream-markdown-overlay).light {
+.stream-markdown.light {
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
   --card: oklch(1 0 0);
@@ -32,7 +32,7 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-:where(.stream-markdown, .stream-markdown-overlay).dark {
+.stream-markdown.dark {
   --background: oklch(0.141 0.005 285.823);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.21 0.006 285.885);
