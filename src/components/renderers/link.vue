@@ -108,7 +108,7 @@ function handleClose() {
     >
       <code
         data-stream-markdown="link-url"
-        class="text-sm font-mono p-3 rounded-lg bg-muted w-full inline-block"
+        class="text-sm font-mono p-3 rounded-lg bg-muted w-full inline-block overflow-x-auto"
       >
         {{ transformedUrl }}
       </code>
