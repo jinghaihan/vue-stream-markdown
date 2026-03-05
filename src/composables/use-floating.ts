@@ -37,6 +37,8 @@ export function useFloating(options: UseFloatingOptions) {
   const y = ref<number | null>(null)
   const strategy = ref<'absolute' | 'fixed'>('absolute')
 
+  const appendTo = ref<Element | Body | string>()
+
   // Auto-update position when elements or placement change
   let cleanupAutoUpdate: (() => void) | null = null
 
@@ -94,14 +96,14 @@ export function useFloating(options: UseFloatingOptions) {
     return referenceEl.value?.parentElement || null
   })
 
-  const appendTo = computed(() => {
+  const getAppendTo = () => {
     if (!isClient())
       return options.getContainer?.() || 'body'
     const target = options.getContainer?.() || parentEl.value
     if (target instanceof HTMLElement && !document.body.contains(target))
       return 'body'
     return target || 'body'
-  })
+  }
 
   const floatingStyle = computed(() => ({
     position: strategy.value,
@@ -204,6 +206,7 @@ export function useFloating(options: UseFloatingOptions) {
   }
 
   onMounted(() => {
+    appendTo.value = getAppendTo()
     useEventListener(document, 'click', handleClickOutside)
   })
 

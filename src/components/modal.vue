@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { UIModalProps } from '../types'
 import { createReusableTemplate, useEventListener } from '@vueuse/core'
-import { computed, onMounted, useSlots } from 'vue'
-import { getOverlayContainer, isClient } from '../utils'
+import { computed, onMounted, ref, useSlots } from 'vue'
+import { getOverlayContainer } from '../utils'
 
 const props = withDefaults(defineProps<UIModalProps>(), {
   zIndex: 9999,
@@ -13,6 +13,8 @@ const slots = useSlots()
 
 const open = defineModel<boolean>('open', { required: false, default: false })
 
+const container = ref<HTMLElement>()
+
 const [DefineTemplate, ReuseTemplate] = createReusableTemplate()
 
 const modalStyle = computed(() => ({
@@ -21,13 +23,8 @@ const modalStyle = computed(() => ({
 }))
 const showHeader = computed(() => !!props.title || !!slots.title || !!slots.extra)
 
-const container = computed(() => {
-  if (!isClient())
-    return 'body'
-  return getOverlayContainer() || document.body
-})
-
 onMounted(() => {
+  container.value = getOverlayContainer() || document.body
   useEventListener(document, 'keyup', (event) => {
     if (event.key === 'Escape' || event.key === 'Esc') {
       if (props.close)
@@ -70,7 +67,7 @@ onMounted(() => {
     </div>
   </DefineTemplate>
 
-  <teleport :to="container">
+  <teleport v-if="container" :to="container">
     <Transition v-if="transition" :name="transition" appear>
       <ReuseTemplate />
     </Transition>

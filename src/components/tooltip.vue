@@ -53,7 +53,7 @@ defineExpose({ show, hide })
     <slot />
   </span>
 
-  <Teleport :to="appendTo">
+  <Teleport v-if="appendTo" :to="appendTo">
     <div
       v-if="open"
       ref="_floatingEl"

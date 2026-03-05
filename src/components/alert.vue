@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { UIAlertProps } from '../types'
 import { createReusableTemplate, useEventListener } from '@vueuse/core'
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useContext, useI18n } from '../composables'
-import { getOverlayContainer, isClient } from '../utils'
+import { getOverlayContainer } from '../utils'
 
 const props = withDefaults(defineProps<UIAlertProps>(), {
   zIndex: 9999,
@@ -21,11 +21,7 @@ const { t } = useI18n()
 
 const open = defineModel<boolean>('open', { required: false, default: false })
 
-const container = computed(() => {
-  if (!isClient())
-    return 'body'
-  return getOverlayContainer() || document.body
-})
+const container = ref<HTMLElement>()
 
 const [DefineTemplate, ReuseTemplate] = createReusableTemplate()
 
@@ -43,6 +39,7 @@ function handleCancel() {
 }
 
 onMounted(() => {
+  container.value = getOverlayContainer() || document.body
   useEventListener(document, 'keyup', (event) => {
     if (event.key === 'Escape' || event.key === 'Esc')
       handleCancel()
@@ -122,7 +119,7 @@ onMounted(() => {
     </div>
   </DefineTemplate>
 
-  <Teleport :to="container">
+  <Teleport v-if="container" :to="container">
     <div
       v-if="open"
       data-stream-markdown="alert-backdrop"
