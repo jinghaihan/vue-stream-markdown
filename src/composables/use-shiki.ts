@@ -84,42 +84,47 @@ export function useShiki(options?: UseShikiOptions) {
     return 'plaintext'
   }
 
-  async function getHighlighter(): Promise<Highlighter> {
-    if (createHighlighterPromise) {
-      highlighter = await createHighlighterPromise
-      createHighlighterPromise = null
+  async function ensureResourceLoaded(targetHighlighter: Highlighter) {
+    const language = await getLanguage()
+    const themes = await getThemes()
+    const loadedLangs = targetHighlighter.getLoadedLanguages()
+    const loadedThemes = targetHighlighter.getLoadedThemes()
+
+    if (!loadedLangs.includes(language))
+      await targetHighlighter.loadLanguage(language as BundledLanguage)
+
+    for (const theme of themes) {
+      if (!loadedThemes.includes(theme!))
+        await targetHighlighter.loadTheme(theme as BundledTheme)
     }
+  }
 
-    if (highlighter) {
-      const loadedLangs = highlighter.getLoadedLanguages()
-      const loadedThemes = highlighter.getLoadedThemes()
+  async function getHighlighter(): Promise<Highlighter> {
+    let targetHighlighter = highlighter
 
-      const language = await getLanguage()
-      const themes = await getThemes()
-
-      if (!loadedLangs.includes(language))
-        await highlighter.loadLanguage(language as BundledLanguage)
-
-      for (const theme of themes) {
-        if (!loadedThemes.includes(theme!))
-          await highlighter.loadTheme(theme as BundledTheme)
+    if (!targetHighlighter) {
+      if (!createHighlighterPromise) {
+        createHighlighterPromise = (async () => {
+          const { createHighlighter } = await getShiki()
+          return createHighlighter({
+            themes: await getThemes(),
+            langs: langs.value,
+            langAlias: langAlias.value,
+          })
+        })()
       }
 
-      return highlighter
+      try {
+        targetHighlighter = await createHighlighterPromise
+        highlighter = targetHighlighter
+      }
+      finally {
+        createHighlighterPromise = null
+      }
     }
 
-    createHighlighterPromise = (async () => {
-      const { createHighlighter } = await getShiki()
-      return createHighlighter({
-        themes: await getThemes(),
-        langs: langs.value,
-        langAlias: langAlias.value,
-      })
-    })()
-
-    highlighter = await createHighlighterPromise
-    createHighlighterPromise = null
-    return highlighter
+    await ensureResourceLoaded(targetHighlighter)
+    return targetHighlighter
   }
 
   async function codeToTokens(code: string): Promise<TokensResult> {
