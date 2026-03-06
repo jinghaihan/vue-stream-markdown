@@ -115,6 +115,20 @@ const shikiOptions: ShikiOptions = {
 
 Refer to the [Shiki Themes](https://shiki.style/themes) page for a full list of available themes.
 
+## Highlighter Lifecycle
+
+Shiki's `createHighlighter()` is relatively expensive, so vue-stream-markdown keeps a shared highlighter singleton across code blocks, component remounts, and route changes. The singleton is not disposed automatically when a `<Markdown>` component unmounts.
+
+If you need to free Shiki memory manually, call `disposeShikiHighlighter()` only when no active markdown rendering is still using the shared highlighter:
+
+```ts
+import { disposeShikiHighlighter } from 'vue-stream-markdown'
+
+disposeShikiHighlighter()
+```
+
+Typical use cases are test teardown, HMR cleanup, or explicit full-app cleanup. Avoid calling it from each markdown component's `onBeforeUnmount()`, because other mounted or in-flight renders may still be using the shared highlighter.
+
 ## Display Options
 
 You can control the visibility of code block display elements using the `codeOptions` prop:
