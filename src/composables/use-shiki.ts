@@ -22,6 +22,12 @@ interface UseShikiOptions {
 let highlighter: Highlighter | null = null
 let createHighlighterPromise: Promise<Highlighter> | null = null
 
+export function disposeShikiHighlighter() {
+  highlighter?.dispose()
+  highlighter = null
+  createHighlighterPromise = null
+}
+
 export function useShiki(options?: UseShikiOptions) {
   const installed = ref<boolean>(false)
 
@@ -134,10 +140,7 @@ export function useShiki(options?: UseShikiOptions) {
       await getHighlighter()
   }
 
-  function dispose() {
-    highlighter?.dispose()
-    highlighter = null
-  }
+  function dispose() {}
 
   if (isClient()) {
     (async () => {
