@@ -19,16 +19,6 @@ export function useMermaid(options?: UseMermaidOptions) {
     options?.isDark,
   )
 
-  async function hasMermaid(): Promise<boolean> {
-    try {
-      await renderer.load()
-      return true
-    }
-    catch {
-      return false
-    }
-  }
-
   async function parseMermaid(code: string) {
     return renderer.parse(code)
   }
@@ -66,10 +56,8 @@ export function useMermaid(options?: UseMermaidOptions) {
   }
 
   async function preload() {
-    if (renderer.isLoaded())
+    if (!await renderer.isEnabled())
       return
-
-    await hasMermaid()
     if (!renderer.isLoaded())
       await renderer.load()
   }
@@ -82,7 +70,7 @@ export function useMermaid(options?: UseMermaidOptions) {
 
   if (isClient()) {
     (async () => {
-      installed.value = await hasMermaid()
+      installed.value = await renderer.isEnabled()
     })()
   }
 

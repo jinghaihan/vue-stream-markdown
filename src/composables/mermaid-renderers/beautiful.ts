@@ -8,6 +8,8 @@ import {
   DEFAULT_BEAUTIFUL_MERMAID_THEME,
   PRESET_BEAUTIFUL_MERMAID_CONFIG,
 } from '../../constants/mermaid'
+import { hasBeautifulMermaidModule } from '../../utils'
+import { useBeautifulMermaidCdn } from '../modules'
 import { useCdnLoader } from '../use-cdn-loader'
 import { useShiki } from '../use-shiki'
 import { MermaidRenderer } from './types'
@@ -157,6 +159,21 @@ export class BeautifulMermaidRenderer extends MermaidRenderer {
     }
     catch (error) {
       return { valid: false, error: this.toError(error) }
+    }
+  }
+
+  async isEnabled(): Promise<boolean> {
+    const { getCdnUrl } = useBeautifulMermaidCdn({
+      cdnOptions: unref(this.cdnOptions),
+    })
+    try {
+      if (await hasBeautifulMermaidModule())
+        return true
+      const url = getCdnUrl()
+      return !!url
+    }
+    catch {
+      return false
     }
   }
 }

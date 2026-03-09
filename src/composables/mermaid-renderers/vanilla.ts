@@ -6,6 +6,7 @@ import { randomStr } from '@antfu/utils'
 import { unref } from 'vue'
 import { DEFAULT_MERMAID_THEME } from '../../constants/mermaid'
 import { hasMermaidModule, isClient } from '../../utils'
+import { useMermaidCdn } from '../modules'
 import { useCdnLoader } from '../use-cdn-loader'
 import { MermaidRenderer } from './types'
 
@@ -87,6 +88,21 @@ export class VanillaMermaidRenderer extends MermaidRenderer {
     catch (error) {
       document.getElementById(`d${id}`)?.remove()
       return { valid: false, error: this.toError(error) }
+    }
+  }
+
+  async isEnabled(): Promise<boolean> {
+    const { getCdnUrl } = useMermaidCdn({
+      cdnOptions: unref(this.cdnOptions),
+    })
+    try {
+      if (await hasMermaidModule())
+        return true
+      const url = getCdnUrl()
+      return !!url
+    }
+    catch {
+      return false
     }
   }
 }

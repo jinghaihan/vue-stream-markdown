@@ -68,6 +68,6 @@ watch(
       />
     </div>
 
-    <VanillaRenderer v-else ref="vanillaRef" :node="node" :code-options="codeOptions" />
+    <VanillaRenderer v-else ref="vanillaRef" :node="node" />
   </Transition>
 </template>

@@ -14,6 +14,7 @@ interface MermaidRendererInstance {
   isSupported: (diagramType: string) => boolean
   render: (code: string) => Promise<MermaidRenderResult>
   parse: (code: string) => Promise<MermaidParseResult>
+  isEnabled: () => Promise<boolean>
 }
 
 export function createMermaidRenderer(
@@ -76,6 +77,10 @@ export function createMermaidRenderer(
       const renderer = await getRenderer()
       return await renderer.parse(code)
     },
+    async isEnabled() {
+      const renderer = await getRenderer()
+      return await renderer.isEnabled()
+    },
   }
 }
 
@@ -84,14 +89,15 @@ export async function resolveMermaidRendererType(
   cdnOptions?: CdnOptions,
   hasBeautifulModule: () => Promise<boolean> = hasBeautifulMermaidModule,
 ): Promise<'beautiful' | 'vanilla'> {
+  const { getCdnUrl: getBeautifulCdnUrl } = useBeautifulMermaidCdn({ cdnOptions })
+
   if (options?.renderer === 'beautiful')
     return 'beautiful'
 
   if (options?.renderer === 'vanilla')
     return 'vanilla'
 
-  const { getCdnUrl } = useBeautifulMermaidCdn({ cdnOptions })
-  if (getCdnUrl())
+  if (getBeautifulCdnUrl())
     return 'beautiful'
 
   return await hasBeautifulModule()
