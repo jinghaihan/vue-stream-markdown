@@ -3,6 +3,8 @@ export interface TableData {
   rows: string[][]
 }
 
+const CSV_QUOTE_PATTERN = /"/g
+
 export function extractTableDataFromElement(tableElement: HTMLElement): TableData {
   const headers: string[] = []
   const rows: string[][] = []
@@ -55,7 +57,7 @@ export function tableDataToCSV(data: TableData): string {
 
     // If the value contains comma, quote, or newline, wrap in quotes and escape internal quotes
     if (hasQuote) {
-      return `"${value.replace(/"/g, '""')}"`
+      return `"${value.replace(CSV_QUOTE_PATTERN, '""')}"`
     }
     return `"${value}"`
   }

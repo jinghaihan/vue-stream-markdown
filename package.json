@@ -2,7 +2,7 @@
   "name": "vue-stream-markdown",
   "type": "module",
   "version": "0.6.5",
-  "packageManager": "pnpm@10.30.3",
+  "packageManager": "pnpm@10.32.1",
   "description": "Streaming markdown output, Useful for text streams like LLM outputs.",
   "author": "jinghaihan",
   "license": "MIT",
@@ -51,7 +51,7 @@
     "test": "vitest",
     "test:coverage": "vitest --coverage",
     "release": "bumpp",
-    "prepare": "simple-git-hooks && pnpm playground:prepare",
+    "prepare": "simple-git-hooks && pnpm playground:prepare && skills-npm",
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
@@ -92,14 +92,20 @@
     "micromark-util-types": "catalog:parser"
   },
   "devDependencies": {
+    "beautiful-mermaid": "catalog:",
+    "katex": "catalog:",
+    "mermaid": "catalog:",
+    "shiki": "catalog:",
     "@vitejs/plugin-vue": "catalog:build",
     "tsdown": "catalog:build",
     "unplugin-icons": "catalog:build",
     "vite": "catalog:build",
     "bumpp": "catalog:dev",
     "lightningcss": "catalog:dev",
+    "nano-staged": "catalog:dev",
     "pncat": "catalog:dev",
     "simple-git-hooks": "catalog:dev",
+    "skills-npm": "catalog:dev",
     "taze": "catalog:dev",
     "tinyglobby": "catalog:dev",
     "tsx": "catalog:dev",
@@ -115,21 +121,16 @@
     "@unocss/eslint-plugin": "catalog:lint",
     "eslint": "catalog:lint",
     "eslint-plugin-format": "catalog:lint",
-    "lint-staged": "catalog:lint",
     "vue-tsc": "catalog:lint",
     "@vitest/coverage-v8": "catalog:test",
     "@vue/test-utils": "catalog:test",
     "vitest": "catalog:test",
-    "@types/node": "catalog:types",
-    "beautiful-mermaid": "^1.1.3",
-    "katex": "^0.16.33",
-    "mermaid": "^11.12.3",
-    "shiki": "^3.23.0"
+    "@types/node": "catalog:types"
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpm lint-staged"
+    "pre-commit": "pnpm nano-staged"
   },
-  "lint-staged": {
+  "nano-staged": {
     "*": "eslint --fix"
   }
 }

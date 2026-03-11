@@ -1,4 +1,4 @@
-import { codeBlockPattern, incompleteBracketPattern, incompleteLinkTextPattern, incompleteUrlPattern } from './pattern'
+import { codeBlockPattern, incompleteBracketPattern, incompleteLinkTextPattern, incompleteUrlPattern, standaloneBracketPattern } from './pattern'
 import { findLastNonEmptyLineIndex, getLastParagraphWithIndex, isInsideUnclosedCodeBlock } from './utils'
 
 /**
@@ -69,7 +69,7 @@ export function fixLink(content: string): string {
     // First, remove trailing standalone [ or ![ (without any content after)
     // This prevents showing incomplete brackets that would create empty links
     // Check for both [ and ![ patterns
-    const standaloneBracketMatch = lastLine.match(/(!?\[)\s*$/)
+    const standaloneBracketMatch = lastLine.match(standaloneBracketPattern)
     if (standaloneBracketMatch && standaloneBracketMatch[1]) {
       const bracket = standaloneBracketMatch[1]
       const bracketPos = lastLine.lastIndexOf(bracket)

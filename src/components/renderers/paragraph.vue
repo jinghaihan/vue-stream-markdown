@@ -18,8 +18,8 @@ const marginBottom = computed(() => {
 const lineHeight = computed(() => {
   if (props.deep !== 0)
     return ''
-  const data = Array.from(new Set(treeFlatMap(props.node.children, node => node.type)))
-  if (Array.from(data).every(type => PLAIN_TEXT_NODES.includes(type)))
+  const data = [...new Set(treeFlatMap(props.node.children, node => node.type))]
+  if ([...data].every(type => PLAIN_TEXT_NODES.includes(type)))
     return 1.75
   return ''
 })

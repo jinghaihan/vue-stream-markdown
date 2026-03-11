@@ -1,5 +1,13 @@
 import type { PreprocessContext } from '../types'
-import { codeBlockPattern, incompleteLinkImageUrlPattern, linkImagePattern } from './pattern'
+import {
+  codeBlockPattern,
+  htmlTagPattern,
+  incompleteLinkImageUrlPattern,
+  incompleteLinkImageUrlSuffixPattern,
+  linkImagePattern,
+  linkImageUrlSuffixPattern,
+  trailingWhitespacePattern,
+} from './pattern'
 
 export interface TextRange {
   start: number
@@ -403,18 +411,18 @@ export function removeUrlsFromText(text: string): string {
 
   // Remove HTML tags (including their attributes which may contain URLs)
   // This handles cases like <file url="http://example.com/path_with_underscore">
-  let result = withoutCodeBlocks.replace(/<[^>]*>/g, '')
+  let result = withoutCodeBlocks.replace(htmlTagPattern, '')
 
   // Remove complete link/image URLs: [text](url) or ![alt](url)
   // Replace the URL part with empty string, keep the [text] or ![alt] part
   result = result.replace(linkImagePattern, (match) => {
-    return match.replace(/\]\([^)]*\)/, ']()')
+    return match.replace(linkImageUrlSuffixPattern, ']()')
   })
 
   // Remove incomplete link/image URLs: [text](url or ![alt](url
   // Replace the incomplete URL part with empty string
   result = result.replace(incompleteLinkImageUrlPattern, (match) => {
-    return match.replace(/\]\([^)]*$/, '](')
+    return match.replace(incompleteLinkImageUrlSuffixPattern, '](')
   })
 
   return result
@@ -500,7 +508,7 @@ export function removeMathBlocksFromText(
  * @returns The content with the suffix appended before trailing whitespace
  */
 export function appendBeforeTrailingWhitespace(content: string, suffix: string): string {
-  const match = content.match(/\s*$/)
+  const match = content.match(trailingWhitespacePattern)
   const trailing = match ? match[0] : ''
   const withoutTrailing = trailing.length > 0 ? content.slice(0, -trailing.length) : content
   return `${withoutTrailing}${suffix}${trailing}`

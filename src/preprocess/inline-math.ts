@@ -1,4 +1,4 @@
-import { codeBlockPattern, doubleDollarPattern } from './pattern'
+import { codeBlockPattern, doubleDollarPattern, inlineCodePattern } from './pattern'
 import { calculateParagraphOffset, getLastParagraphWithIndex, isInsideUnclosedCodeBlock } from './utils'
 
 /**
@@ -45,7 +45,6 @@ export function fixInlineMath(content: string): string {
 
   // Remove code blocks and inline code from the last paragraph to avoid counting $$ inside them
   let withoutCodeBlocks = lastParagraph.replace(codeBlockPattern, '')
-  const inlineCodePattern = /`[^`\n]+`/g
   withoutCodeBlocks = withoutCodeBlocks.replace(inlineCodePattern, '')
 
   // Count $$ in the last paragraph only (excluding code blocks and inline code)

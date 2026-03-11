@@ -92,7 +92,7 @@ export class MarkdownParser {
     if (this.mode !== 'streaming')
       return
 
-    const lastAst = this.asts[this.asts.length - 1]
+    const lastAst = this.asts.at(-1)
     if (!lastAst)
       return
 
@@ -280,7 +280,7 @@ export class MarkdownParser {
   }
 
   hasLoadingNode(nodes?: ParsedNode[]): boolean {
-    nodes = nodes || this.asts[this.asts.length - 1]?.children || []
+    nodes = nodes || this.asts.at(-1)?.children || []
     if (!nodes.length)
       return false
 

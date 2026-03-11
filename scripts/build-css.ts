@@ -19,6 +19,9 @@ const NAMESPACE = '.stream-markdown'
 const VARIABLE_PREFIX = 'stream-markdown-'
 const UNO_VARIABLE_PREFIX = 'un-'
 const IGNORE_PRESETS = ['@unocss/preset-wind4', '@unocss/preset-web-fonts']
+const ROOT_AND_HOST_BLOCK_PATTERN = /:root\s*,\s*:host\s*\{([\s\S]*?)\}/g
+const ROOT_BLOCK_PATTERN = /:root\s*\{([\s\S]*?)\}/g
+const HOST_BLOCK_PATTERN = /:host\s*\{([\s\S]*?)\}/g
 
 async function buildCSS() {
   const generator = await createGenerator(createScopedUnoConfig())
@@ -74,17 +77,17 @@ function scopeThemeVariable(css: string): string {
   let output = css
   const blocks: string[] = []
 
-  output = output.replace(/:root\s*,\s*:host\s*\{([\s\S]*?)\}/g, (_, block) => {
+  output = output.replace(ROOT_AND_HOST_BLOCK_PATTERN, (_, block) => {
     blocks.push(String(block).trim())
     return ''
   })
 
-  output = output.replace(/:root\s*\{([\s\S]*?)\}/g, (_, block) => {
+  output = output.replace(ROOT_BLOCK_PATTERN, (_, block) => {
     blocks.push(String(block).trim())
     return ''
   })
 
-  output = output.replace(/:host\s*\{([\s\S]*?)\}/g, (_, block) => {
+  output = output.replace(HOST_BLOCK_PATTERN, (_, block) => {
     blocks.push(String(block).trim())
     return ''
   })

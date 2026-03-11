@@ -1,4 +1,5 @@
 import {
+  dashWithSpacePattern,
   incompleteTaskListPattern,
   quoteIncompleteTaskListPattern,
   quoteStandaloneDashPattern,
@@ -49,7 +50,7 @@ export function fixTaskList(content: string): string {
   const lines = content.split('\n')
 
   // Get the last line
-  const lastLine = lines[lines.length - 1]
+  const lastLine = lines.at(-1)
   if (!lastLine) {
     return content
   }
@@ -106,7 +107,7 @@ export function fixTaskList(content: string): string {
   // Check for `- ` (dash with space, regular list item, not a task list)
   // Pattern: starts with optional whitespace, then `- `, then optional trailing whitespace
   // But not a task list pattern
-  if (/^\s*-\s+$/.test(lastLine) && !taskListPattern.test(lastLine)) {
+  if (dashWithSpacePattern.test(lastLine) && !taskListPattern.test(lastLine)) {
     // Remove the last line (the `- `)
     const newLines = lines.slice(0, -1)
     return newLines.join('\n')

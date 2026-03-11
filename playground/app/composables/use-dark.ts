@@ -35,7 +35,7 @@ export function useDark() {
         document.documentElement.animate(
           {
             clipPath: isDark.value
-              ? [...clipPath].reverse()
+              ? clipPath.toReversed()
               : clipPath,
           },
           {

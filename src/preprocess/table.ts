@@ -1,4 +1,4 @@
-import { separatorPattern, tableRowPattern } from './pattern'
+import { pipePattern, separatorPattern, tableRowPattern } from './pattern'
 import {
   findClosedCodeBlockRanges,
   getLastParagraphWithIndex,
@@ -92,7 +92,7 @@ export function fixTable(content: string): string {
   }
 
   // Count columns in the completed header row
-  const headerColumns = (completedHeaderRow.match(/\|/g) || []).length - 1
+  const headerColumns = (completedHeaderRow.match(pipePattern) || []).length - 1
 
   const separator = generateSeparator(headerColumns)
 
@@ -115,7 +115,7 @@ export function fixTable(content: string): string {
 
   // Check if next line is already a valid separator with correct column count
   if (separatorPattern.test(nextLine)) {
-    const separatorColumns = (nextLine.match(/\|/g) || []).length - 1
+    const separatorColumns = (nextLine.match(pipePattern) || []).length - 1
     if (separatorColumns === headerColumns) {
       // Separator matches, but we might still need to complete the header
       if (!isHeaderComplete) {

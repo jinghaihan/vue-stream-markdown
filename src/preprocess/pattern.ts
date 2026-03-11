@@ -4,6 +4,7 @@ export const trailingBackticksPattern = /(`+)\s*$/
 export const codeBlockPattern = /```[\s\S]*?```/g
 export const singleBacktickPattern = /`/g
 export const tripleBacktickPattern = /```/g
+export const inlineCodePattern = /`[^`\n]+`/g
 export const trailingWhitespacePattern = /\s+$/
 
 export const doubleAsteriskPattern = /\*\*/g
@@ -12,13 +13,20 @@ export const doubleUnderscorePattern = /__/g
 export const singleUnderscorePattern = /_/g
 
 export const doubleTildePattern = /~~/g
+export const singleDollarPattern = /\$/g
 export const doubleDollarPattern = /\$\$/g
+export const inlineBracketMathPattern = /\\\[(.*?)\\\]/g
+export const blockBracketMathPattern = /\\\[([\s\S]*?)\\\]/g
+export const parenMathPattern = /\\\((.*?)\\\)/g
+export const inlineDollarMathPattern = /(^|[^\\])\$(.+?)\$/g
+export const dollarPlaceholderPattern = /_TMP_REPLACE_DOLLAR_/g
 
 export const incompleteBracketPattern = /!?\[[^\]]*$/
 export const incompleteLinkTextPattern = /!?\[[^\]]*\]\s*$/
 export const incompleteUrlPattern = /!?\[[^\]]*\]\([^)]*$/
 export const incompleteFootnoteRefPattern = /\[\^[^\]]*$/
 export const trailingStandaloneBracketPattern = /(\[)\s*$/
+export const standaloneBracketPattern = /(!?\[)\s*$/
 
 // Footnote patterns
 export const footnoteDefPattern = /\[\^[^\]]+\]:/g
@@ -27,11 +35,13 @@ export const footnoteDefLinePattern = /^\s*\[\^[^\]]+\]:/
 export const footnoteDefLabelPattern = /\[\^([^\]]+)\]:/
 export const footnoteRefLabelPattern = /\[\^([^\]]+)\]/
 
+export const pipePattern = /\|/g
 export const tableRowPattern = /^\|.*\|.*\|/
 export const separatorPattern = /^\|[\s:]*-{3,}[\s:]*(?:\|[\s:]*-{3,}[\s:]*)+\|?$/
 
 // Match standalone `-` without trailing space (to distinguish from regular list items like `- `)
 export const standaloneDashPattern = /^\s*-$/
+export const dashWithSpacePattern = /^\s*-\s+$/
 export const taskListPattern = /^\s*- \[[x ]\]/i
 // Match incomplete task list item `- [` or `-[` (with optional space between - and [, and optional trailing whitespace)
 export const incompleteTaskListPattern = /^\s*-\s*\[\s*$/
@@ -49,9 +59,12 @@ export const trailingStandaloneDashWithNewlinesPattern = /(\n\n?)-[ \t]*$/
 // Match link/image URL: [text](url) or ![alt](url)
 // This matches the entire link/image syntax including the URL part
 export const linkImagePattern = /!?\[[^\]]*\]\([^)]*\)/g
+export const linkImageUrlSuffixPattern = /\]\([^)]*\)/
 // Match incomplete link/image URL: [text](url or ![alt](url
 // This matches incomplete links/images where the URL is not closed
 export const incompleteLinkImageUrlPattern = /!?\[[^\]]*\]\([^)]*$/g
+export const incompleteLinkImageUrlSuffixPattern = /\]\([^)]*$/
 // Match standalone URL (not part of markdown link syntax)
 // Matches http:// or https:// URLs that are not part of ](url) pattern
 export const standaloneUrlPattern = /https?:\/\/[^\s<>)]+/gi
+export const htmlTagPattern = /<[^>]*>/g

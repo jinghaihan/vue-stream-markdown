@@ -54,6 +54,7 @@ const blockedProtocols = new Set([
   'file:',
   'vbscript:',
 ])
+const HTTP_PROTOCOL_PATTERN = /^https?:$/
 
 export function transformUrl(
   url: unknown,
@@ -134,7 +135,7 @@ export function transformUrl(
     return null
 
   // mailto: and other custom protocols can just return as-is
-  if (parsedUrl.protocol === 'mailto:' || !parsedUrl.protocol.match(/^https?:$/)) {
+  if (parsedUrl.protocol === 'mailto:' || !HTTP_PROTOCOL_PATTERN.test(parsedUrl.protocol)) {
     return parsedUrl.href
   }
 

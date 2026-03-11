@@ -28,7 +28,7 @@ describe('markdown-parser', () => {
 
     const result = parser.parseMarkdown('# Title\n\nComplete paragraph.')
     const firstBlockNodes = result.asts[0]?.children as ParsedNode[] | undefined
-    const lastBlockNodes = result.asts[result.asts.length - 1]?.children as ParsedNode[] | undefined
+    const lastBlockNodes = result.asts.at(-1)?.children as ParsedNode[] | undefined
     const lastText = (lastBlockNodes?.[0] as { children?: ParsedNode[] } | undefined)?.children?.[0]
 
     expect(hasAnyLoading(firstBlockNodes ?? [])).toBe(false)
@@ -110,7 +110,7 @@ describe('markdown-parser', () => {
 
     const result = parser.parseMarkdown('# Title\n\nComplete paragraph.')
     const blockCount = result.asts.length
-    const lastBlockNodes = result.asts[result.asts.length - 1]?.children as ParsedNode[] | undefined
+    const lastBlockNodes = result.asts.at(-1)?.children as ParsedNode[] | undefined
     const lastText = (lastBlockNodes?.[0] as { children?: ParsedNode[] } | undefined)?.children?.[0]
 
     expect(parser.hasLoadingNode()).toBe(true)
