@@ -13,13 +13,15 @@ export default defineConfig({
   outputOptions: {
     minify: true,
   },
-  inlineOnly: false,
-  external: [
-    'shiki',
-    'mermaid',
-    'beautiful-mermaid',
-    'katex',
-  ],
+  deps: {
+    onlyBundle: false,
+    neverBundle: [
+      'shiki',
+      'mermaid',
+      'beautiful-mermaid',
+      'katex',
+    ],
+  },
   css: {
     splitting: false,
     fileName: 'index.css',

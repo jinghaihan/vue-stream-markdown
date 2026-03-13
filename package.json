@@ -96,6 +96,7 @@
     "katex": "catalog:",
     "mermaid": "catalog:",
     "shiki": "catalog:",
+    "@tsdown/css": "catalog:build",
     "@vitejs/plugin-vue": "catalog:build",
     "tsdown": "catalog:build",
     "unplugin-icons": "catalog:build",

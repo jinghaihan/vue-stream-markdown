@@ -11,6 +11,7 @@ catalog:
   shiki: ^4.0.2
 catalogs:
   build:
+    '@tsdown/css': ^0.21.2
     '@vitejs/plugin-vue': ^6.0.5
     tsdown: ^0.21.2
     unplugin-icons: ^23.0.1
