@@ -22,6 +22,7 @@ catalogs:
     taze: ^19.10.0
     tinyglobby: ^0.2.15
     tsx: ^4.21.0
+    turbo: ^2.9.3
     typescript: ^5.9.3
   docs:
     vitepress: ^1.6.4
