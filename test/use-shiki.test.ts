@@ -52,7 +52,7 @@ vi.mock('shiki', () => {
 })
 
 async function importUseShiki() {
-  return import('../src/composables/use-shiki')
+  return import('@vue-stream-markdown/composables/use-shiki')
 }
 
 describe('useShiki', () => {

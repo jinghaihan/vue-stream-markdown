@@ -7,6 +7,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@markmend': resolve(__dirname, './packages/markmend/src'),
+      '@vue-stream-markdown': resolve(__dirname, './packages/vue-stream-markdown/src'),
+      'shiki': resolve(__dirname, './packages/vue-stream-markdown/node_modules/shiki'),
     },
   },
   test: {

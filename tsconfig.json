@@ -7,10 +7,11 @@
     "module": "preserve",
     "moduleResolution": "bundler",
     "paths": {
-      "@markmend": ["./packages/markmend/src/index.ts"],
-      "@markmend/*": ["./packages/markmend/src/*"],
+      "@root/*": ["./*"],
       "markmend": ["./packages/markmend/src/index.ts"],
-      "vue-stream-markdown": ["./src/"],
+      "@markmend/*": ["./packages/markmend/src/*"],
+      "vue-stream-markdown": ["./packages/vue-stream-markdown/src/index.ts"],
+      "@vue-stream-markdown/*": ["./packages/vue-stream-markdown/src/*"],
       "@shared/*": ["./playground/app/*"],
       "@shared/components/*": ["./playground/app/components/*"]
     },
@@ -31,7 +32,7 @@
     "skipLibCheck": true
   },
   "include": [
-    "src",
+    "packages/vue-stream-markdown/src",
     "docs",
     "docs/.**/**/*.ts",
     "docs/.**/**/*.vue",

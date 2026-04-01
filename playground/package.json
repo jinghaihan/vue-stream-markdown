@@ -13,8 +13,11 @@
     "typecheck": "nuxt typecheck"
   },
   "dependencies": {
+    "@floating-ui/dom": "catalog:frontend",
     "@vueuse/core": "catalog:frontend",
     "vue": "catalog:frontend",
+    "@antfu/utils": "catalog:inlined",
+    "treechop": "catalog:inlined",
     "@monaco-editor/loader": "catalog:playground",
     "@nuxt/devtools": "catalog:playground",
     "@nuxtjs/color-mode": "catalog:playground",
@@ -29,6 +32,9 @@
     "lz-string": "catalog:playground",
     "nuxt": "catalog:playground",
     "tailwind-merge": "catalog:playground",
-    "vue-json-pretty": "catalog:playground"
+    "vue-json-pretty": "catalog:playground",
+    "beautiful-mermaid": "^1.1.3",
+    "shiki": "^4.0.2",
+    "vue-stream-markdown": "workspace:*"
   }
 }

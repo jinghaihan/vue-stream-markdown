@@ -7,6 +7,10 @@
     "build": "vitepress build",
     "preview": "vitepress preview"
   },
+  "dependencies": {
+    "@vueuse/core": "catalog:frontend",
+    "vue-stream-markdown": "workspace:*"
+  },
   "devDependencies": {
     "vitepress": "catalog:docs",
     "vitepress-plugin-llms": "catalog:docs"

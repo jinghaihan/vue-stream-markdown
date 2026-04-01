@@ -1,4 +1,4 @@
-import { description } from '../package.json'
+import { description } from 'vue-stream-markdown/package.json'
 import { alias } from '../shared'
 
 export default defineNuxtConfig({
@@ -24,7 +24,7 @@ export default defineNuxtConfig({
     },
   },
   css: [
-    '../src/style.css',
+    '../packages/vue-stream-markdown/src/style.css',
     './app/assets/reset.css',
     './app/assets/main.css',
     './app/assets/theme.css',
@@ -44,7 +44,7 @@ export default defineNuxtConfig({
       compilerOptions: {
         paths: {
           'markmend': ['../packages/markmend/src/index.ts'],
-          'vue-stream-markdown': ['../src/'],
+          'vue-stream-markdown': ['../packages/vue-stream-markdown/src/'],
         },
       },
       include: [

@@ -1,7 +1,7 @@
 import type { DefaultTheme, Plugin } from 'vitepress'
 import { defineConfig } from 'vitepress'
 import LLMsTxt from 'vitepress-plugin-llms'
-import { version } from '../../package.json'
+import { version } from 'vue-stream-markdown/package.json'
 import { alias, getPlugins } from '../../shared'
 
 const Guides: DefaultTheme.NavItemWithLink[] = [

@@ -4,10 +4,10 @@ import { dirname, join } from 'node:path'
 import { argv, exit } from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { styleText } from 'node:util'
+import unoConfig from '@root/unocss.config.ts'
 import { transform } from 'lightningcss'
 import { glob } from 'tinyglobby'
 import { createGenerator, presetWind4 } from 'unocss'
-import unoConfig from '../unocss.config.ts'
 
 const CSS_NAME = 'index.css'
 const ROOT_DIR = fileURLToPath(new URL('..', import.meta.url))

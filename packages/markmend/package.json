@@ -29,6 +29,7 @@
     "micromark-util-types": "catalog:parser"
   },
   "devDependencies": {
+    "tsdown": "catalog:build",
     "quick-lru": "catalog:inlined",
     "treechop": "catalog:inlined"
   },

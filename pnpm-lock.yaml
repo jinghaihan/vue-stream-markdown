@@ -209,23 +209,7 @@ overrides:
 importers:
 
   .:
-    dependencies:
-      '@floating-ui/dom':
-        specifier: catalog:frontend
-        version: 1.7.6
-      '@vueuse/core':
-        specifier: catalog:frontend
-        version: 14.2.1(vue@3.5.30(typescript@5.9.3))
-      markmend:
-        specifier: workspace:*
-        version: link:packages/markmend
-      vue:
-        specifier: ^3.5.30
-        version: 3.5.30(typescript@5.9.3)
     devDependencies:
-      '@antfu/utils':
-        specifier: catalog:inlined
-        version: 9.3.0
       '@iconify-json/catppuccin':
         specifier: catalog:icons
         version: 1.2.17
@@ -238,9 +222,6 @@ importers:
       '@octohash/eslint-config':
         specifier: catalog:lint
         version: 0.2.8(@typescript-eslint/rule-tester@8.56.1(eslint@10.0.3(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.57.0(typescript@5.9.3))(@typescript-eslint/utils@8.57.0(eslint@10.0.3(jiti@2.6.1))(typescript@5.9.3))(@unocss/eslint-plugin@66.5.9(eslint@10.0.3(jiti@2.6.1))(typescript@5.9.3))(@vue/compiler-sfc@3.5.30)(eslint-plugin-format@2.0.1(eslint@10.0.3(jiti@2.6.1)))(eslint@10.0.3(jiti@2.6.1))(typescript@5.9.3)(vitest@4.1.0(@types/node@25.5.0)(happy-dom@20.0.11)(vite@8.0.0(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)))
-      '@tsdown/css':
-        specifier: catalog:build
-        version: 0.21.2(jiti@2.6.1)(postcss@8.5.8)(tsdown@0.21.2)(tsx@4.21.0)(yaml@2.8.2)
       '@types/node':
         specifier: catalog:types
         version: 25.5.0
@@ -256,9 +237,6 @@ importers:
       '@vue/test-utils':
         specifier: catalog:test
         version: 2.4.6
-      beautiful-mermaid:
-        specifier: ^1.1.3
-        version: 1.1.3
       bumpp:
         specifier: catalog:dev
         version: 10.4.1(magicast@0.5.2)
@@ -268,24 +246,12 @@ importers:
       eslint-plugin-format:
         specifier: catalog:lint
         version: 2.0.1(eslint@10.0.3(jiti@2.6.1))
-      katex:
-        specifier: ^0.16.38
-        version: 0.16.38
-      lightningcss:
-        specifier: catalog:dev
-        version: 1.32.0
-      mermaid:
-        specifier: ^11.13.0
-        version: 11.13.0
       nano-staged:
         specifier: catalog:dev
         version: 0.9.0
       pncat:
         specifier: catalog:dev
         version: 0.10.4
-      shiki:
-        specifier: ^4.0.2
-        version: 4.0.2
       simple-git-hooks:
         specifier: catalog:dev
         version: 2.13.1
@@ -295,18 +261,6 @@ importers:
       taze:
         specifier: catalog:dev
         version: 19.10.0
-      tinyglobby:
-        specifier: catalog:dev
-        version: 0.2.15
-      treechop:
-        specifier: catalog:inlined
-        version: 0.1.2
-      tsdown:
-        specifier: catalog:build
-        version: 0.21.2(@tsdown/css@0.21.2)(synckit@0.11.12)(typescript@5.9.3)(vue-tsc@3.2.5(typescript@5.9.3))
-      tsx:
-        specifier: catalog:dev
-        version: 4.21.0
       typescript:
         specifier: catalog:dev
         version: 5.9.3
@@ -322,11 +276,18 @@ importers:
       vitest:
         specifier: catalog:test
         version: 4.1.0(@types/node@25.5.0)(happy-dom@20.0.11)(vite@8.0.0(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
-      vue-tsc:
-        specifier: catalog:lint
-        version: 3.2.5(typescript@5.9.3)
+      vue:
+        specifier: ^3.5.30
+        version: 3.5.30(typescript@5.9.3)
 
   docs:
+    dependencies:
+      '@vueuse/core':
+        specifier: catalog:frontend
+        version: 14.2.1(vue@3.5.30(typescript@5.9.3))
+      vue-stream-markdown:
+        specifier: workspace:*
+        version: link:../packages/vue-stream-markdown
     devDependencies:
       vitepress:
         specifier: catalog:docs
@@ -380,9 +341,91 @@ importers:
       treechop:
         specifier: catalog:inlined
         version: 0.1.2
+      tsdown:
+        specifier: catalog:build
+        version: 0.21.2(@tsdown/css@0.21.2)(synckit@0.11.12)(typescript@5.9.3)(vue-tsc@3.2.5(typescript@5.9.3))
+
+  packages/vue-stream-markdown:
+    dependencies:
+      '@floating-ui/dom':
+        specifier: catalog:frontend
+        version: 1.7.6
+      '@vueuse/core':
+        specifier: catalog:frontend
+        version: 14.2.1(vue@3.5.30(typescript@5.9.3))
+      markmend:
+        specifier: workspace:*
+        version: link:../markmend
+    devDependencies:
+      '@antfu/utils':
+        specifier: catalog:inlined
+        version: 9.3.0
+      '@iconify-json/catppuccin':
+        specifier: catalog:icons
+        version: 1.2.17
+      '@iconify-json/lucide':
+        specifier: catalog:icons
+        version: 1.2.97
+      '@tsdown/css':
+        specifier: catalog:build
+        version: 0.21.2(jiti@2.6.1)(postcss@8.5.8)(tsdown@0.21.2)(tsx@4.21.0)(yaml@2.8.2)
+      '@vitejs/plugin-vue':
+        specifier: catalog:build
+        version: 6.0.5(vite@8.0.0(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(vue@3.5.30(typescript@5.9.3))
+      beautiful-mermaid:
+        specifier: ^1.1.3
+        version: 1.1.3
+      katex:
+        specifier: ^0.16.38
+        version: 0.16.38
+      lightningcss:
+        specifier: catalog:dev
+        version: 1.32.0
+      mermaid:
+        specifier: ^11.13.0
+        version: 11.13.0
+      shiki:
+        specifier: ^4.0.2
+        version: 4.0.2
+      tinyglobby:
+        specifier: catalog:dev
+        version: 0.2.15
+      treechop:
+        specifier: catalog:inlined
+        version: 0.1.2
+      tsdown:
+        specifier: catalog:build
+        version: 0.21.2(@tsdown/css@0.21.2)(synckit@0.11.12)(typescript@5.9.3)(vue-tsc@3.2.5(typescript@5.9.3))
+      tsx:
+        specifier: catalog:dev
+        version: 4.21.0
+      typescript:
+        specifier: catalog:dev
+        version: 5.9.3
+      unocss:
+        specifier: catalog:frontend
+        version: 66.6.6(@unocss/webpack@66.6.6(webpack@5.103.0(esbuild@0.27.3)))(vite@8.0.0(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
+      unplugin-icons:
+        specifier: catalog:build
+        version: 23.0.1(@vue/compiler-sfc@3.5.30)
+      vite:
+        specifier: catalog:build
+        version: 8.0.0(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
+      vue:
+        specifier: ^3.5.30
+        version: 3.5.30(typescript@5.9.3)
+      vue-tsc:
+        specifier: catalog:lint
+        version: 3.2.5(typescript@5.9.3)
 
   playground:
     dependencies:
+      '@antfu/utils':
+        specifier: catalog:inlined
+        version: 9.3.0
+      '@floating-ui/dom':
+        specifier: catalog:frontend
+        version: 1.7.6
       '@monaco-editor/loader':
         specifier: catalog:playground
         version: 1.7.0
@@ -407,6 +450,9 @@ importers:
       '@vueuse/nuxt':
         specifier: catalog:playground
         version: 14.2.1(magicast@0.5.2)(nuxt@4.4.2(@babel/core@7.29.0)(@babel/plugin-syntax-jsx@7.27.1(@babel/core@7.29.0))(@parcel/watcher@2.5.1)(@types/node@25.5.0)(@vue/compiler-sfc@3.5.30)(cac@6.7.14)(db0@0.3.4)(eslint@10.0.3(jiti@2.6.1))(ioredis@5.9.2)(lightningcss@1.32.0)(magicast@0.5.2)(optionator@0.9.4)(rolldown@1.0.0-rc.9)(rollup-plugin-visualizer@6.0.5(rolldown@1.0.0-rc.9)(rollup@4.56.0))(rollup@4.56.0)(terser@5.44.1)(tsx@4.21.0)(typescript@5.9.3)(vite@8.0.0(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(vue-tsc@3.2.5(typescript@5.9.3))(yaml@2.8.2))(vue@3.5.30(typescript@5.9.3))
+      beautiful-mermaid:
+        specifier: ^1.1.3
+        version: 1.1.3
       clsx:
         specifier: catalog:playground
         version: 2.1.1
@@ -425,15 +471,24 @@ importers:
       nuxt:
         specifier: catalog:playground
         version: 4.4.2(@babel/core@7.29.0)(@babel/plugin-syntax-jsx@7.27.1(@babel/core@7.29.0))(@parcel/watcher@2.5.1)(@types/node@25.5.0)(@vue/compiler-sfc@3.5.30)(cac@6.7.14)(db0@0.3.4)(eslint@10.0.3(jiti@2.6.1))(ioredis@5.9.2)(lightningcss@1.32.0)(magicast@0.5.2)(optionator@0.9.4)(rolldown@1.0.0-rc.9)(rollup-plugin-visualizer@6.0.5(rolldown@1.0.0-rc.9)(rollup@4.56.0))(rollup@4.56.0)(terser@5.44.1)(tsx@4.21.0)(typescript@5.9.3)(vite@8.0.0(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(vue-tsc@3.2.5(typescript@5.9.3))(yaml@2.8.2)
+      shiki:
+        specifier: ^4.0.2
+        version: 4.0.2
       tailwind-merge:
         specifier: catalog:playground
         version: 3.5.0
+      treechop:
+        specifier: catalog:inlined
+        version: 0.1.2
       vue:
         specifier: ^3.5.30
         version: 3.5.30(typescript@5.9.3)
       vue-json-pretty:
         specifier: catalog:playground
         version: 2.6.0(vue@3.5.30(typescript@5.9.3))
+      vue-stream-markdown:
+        specifier: workspace:*
+        version: link:../packages/vue-stream-markdown
 
 packages:
 
@@ -3166,13 +3221,6 @@ packages:
     engines: {node: ^18.0.0 || >=20.0.0}
     peerDependencies:
       vite: ^5.0.0 || ^6.0.0
-      vue: ^3.5.30
-
-  '@vitejs/plugin-vue@6.0.4':
-    resolution: {integrity: sha512-uM5iXipgYIn13UUQCZNdWkYk+sysBeA97d5mHsAoAt1u/wpN3+zxOmsVJWosuzX+IMGRzeYUNytztrYznboIkQ==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    peerDependencies:
-      vite: ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0
       vue: ^3.5.30
 
   '@vitejs/plugin-vue@6.0.5':
@@ -8691,7 +8739,7 @@ snapshots:
     dependencies:
       '@nuxt/kit': 4.4.2(magicast@0.5.2)
       '@rollup/plugin-replace': 6.0.3(rollup@4.56.0)
-      '@vitejs/plugin-vue': 6.0.4(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(vue@3.5.30(typescript@5.9.3))
+      '@vitejs/plugin-vue': 6.0.5(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(vue@3.5.30(typescript@5.9.3))
       '@vitejs/plugin-vue-jsx': 5.1.4(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(vue@3.5.30(typescript@5.9.3))
       autoprefixer: 10.4.27(postcss@8.5.8)
       consola: 3.4.2
@@ -10219,7 +10267,7 @@ snapshots:
       vite: 5.4.21(@types/node@25.5.0)(lightningcss@1.32.0)(terser@5.44.1)
       vue: 3.5.30(typescript@5.9.3)
 
-  '@vitejs/plugin-vue@6.0.4(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(vue@3.5.30(typescript@5.9.3))':
+  '@vitejs/plugin-vue@6.0.5(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(vue@3.5.30(typescript@5.9.3))':
     dependencies:
       '@rolldown/pluginutils': 1.0.0-rc.2
       vite: 7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
@@ -10448,8 +10496,8 @@ snapshots:
   '@vue/language-core@3.2.5':
     dependencies:
       '@volar/language-core': 2.4.28
-      '@vue/compiler-dom': 3.5.29
-      '@vue/shared': 3.5.29
+      '@vue/compiler-dom': 3.5.30
+      '@vue/shared': 3.5.30
       alien-signals: 3.1.0
       muggle-string: 0.4.1
       path-browserify: 1.0.1
