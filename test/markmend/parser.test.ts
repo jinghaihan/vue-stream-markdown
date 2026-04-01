@@ -1,6 +1,6 @@
-import type { ParsedNode, SyntaxTree } from '../packages/markmend/src/types'
+import type { ParsedNode, SyntaxTree } from '@markmend/types'
+import { MarkdownParser } from '@markmend/parser'
 import { describe, expect, it, vi } from 'vitest'
-import { MarkdownParser } from '../packages/markmend/src/parser'
 
 function hasAnyLoading(nodes: ParsedNode[]): boolean {
   for (const node of nodes) {

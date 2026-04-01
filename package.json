@@ -82,10 +82,6 @@
     "markmend": "workspace:*"
   },
   "devDependencies": {
-    "beautiful-mermaid": "catalog:",
-    "katex": "catalog:",
-    "mermaid": "catalog:",
-    "shiki": "catalog:",
     "@tsdown/css": "catalog:build",
     "@vitejs/plugin-vue": "catalog:build",
     "tsdown": "catalog:build",
@@ -115,7 +111,11 @@
     "@vitest/coverage-v8": "catalog:test",
     "@vue/test-utils": "catalog:test",
     "vitest": "catalog:test",
-    "@types/node": "catalog:types"
+    "@types/node": "catalog:types",
+    "beautiful-mermaid": "^1.1.3",
+    "katex": "^0.16.38",
+    "mermaid": "^11.13.0",
+    "shiki": "^4.0.2"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm nano-staged"

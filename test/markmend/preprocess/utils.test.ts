@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest'
 import {
   findClosedCodeBlockRanges,
   findInlineCodeRanges,
@@ -11,7 +10,8 @@ import {
   isWithinLinkOrImageUrl,
   isWithinMathBlock,
   removeMathBlocksFromText,
-} from '../../packages/markmend/src/preprocess/utils'
+} from '@markmend/preprocess/utils'
+import { describe, expect, it } from 'vitest'
 
 describe('findLastParagraphStart', () => {
   it('skips undefined lines defensively', () => {

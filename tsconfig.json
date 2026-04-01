@@ -7,6 +7,8 @@
     "module": "preserve",
     "moduleResolution": "bundler",
     "paths": {
+      "@markmend": ["./packages/markmend/src/index.ts"],
+      "@markmend/*": ["./packages/markmend/src/*"],
       "markmend": ["./packages/markmend/src/index.ts"],
       "vue-stream-markdown": ["./src/"],
       "@shared/*": ["./playground/app/*"],

@@ -1,5 +1,5 @@
+import { fixEmphasis } from '@markmend/preprocess/emphasis'
 import { describe, expect, it } from 'vitest'
-import { fixEmphasis } from '../../packages/markmend/src/preprocess/emphasis'
 import { getTestCasesByCategories } from './test-cases'
 
 describe('fixEmphasis', () => {

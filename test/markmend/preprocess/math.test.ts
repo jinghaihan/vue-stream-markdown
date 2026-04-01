@@ -1,5 +1,5 @@
+import { fixMath, preprocess } from '@markmend/preprocess'
 import { describe, expect, it } from 'vitest'
-import { fixMath, preprocess } from '../../packages/markmend/src/preprocess'
 import { getTestCasesByCategories } from './test-cases'
 
 describe('fixMath', () => {
