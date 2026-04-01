@@ -19,7 +19,7 @@ describe('resolveBuiltinExtensions', () => {
       math: () => createExtension('math'),
     }
 
-    const result = resolveBuiltinExtensions(builtins, ctx)
+    const result: TestExtension[] = resolveBuiltinExtensions(builtins, ctx)
 
     expect(result).toHaveLength(2)
     expect(result.map(e => e.name)).toEqual(['gfm', 'math'])
@@ -60,12 +60,12 @@ describe('resolveBuiltinExtensions', () => {
 
   it('should handle factory returning array', () => {
     const ctx: TestContext = {}
-    const builtins = {
+    const builtins: Record<string, BuiltinPluginFactory<TestContext, TestExtension>> = {
       gfm: () => createExtension('gfm'),
       math: () => [createExtension('math'), createExtension('math-extra')],
     }
 
-    const result = resolveBuiltinExtensions(builtins, ctx)
+    const result: TestExtension[] = resolveBuiltinExtensions(builtins, ctx)
 
     expect(result).toHaveLength(3)
     expect(result.map(e => e.name)).toEqual(['gfm', 'math', 'math-extra'])
@@ -97,6 +97,6 @@ describe('resolveBuiltinExtensions', () => {
     const result = resolveBuiltinExtensions(builtins, ctx)
 
     expect(result).toHaveLength(1)
-    expect(result[0].name).toBe('math-enabled')
+    expect(result[0]!.name).toBe('math-enabled')
   })
 })

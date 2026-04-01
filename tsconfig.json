@@ -35,6 +35,7 @@
     "docs",
     "docs/.**/**/*.ts",
     "docs/.**/**/*.vue",
+    "test",
     "shims.d.ts"
   ],
   "exclude": [
