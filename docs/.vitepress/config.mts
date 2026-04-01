@@ -1,7 +1,7 @@
 import type { DefaultTheme, UserConfig } from 'vitepress'
 import { defineConfig } from 'vitepress'
 import LLMsTxt from 'vitepress-plugin-llms'
-import packageJson from 'vue-stream-markdown/package.json' with { type: 'json' }
+import { version } from '../../package.json'
 import { alias, getPlugins } from '../../shared'
 
 const Guides: DefaultTheme.NavItemWithLink[] = [
@@ -77,7 +77,7 @@ const Nav: DefaultTheme.NavItem[] = [
     link: 'https://play-vue-stream-markdown.netlify.app/',
   },
   {
-    text: `v${packageJson.version}`,
+    text: `v${version}`,
     items: [
       {
         text: 'Release Notes',
