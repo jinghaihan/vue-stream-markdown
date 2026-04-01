@@ -1,7 +1,7 @@
 {
   "name": "markmend",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.6.5",
   "description": "Streaming-friendly Markdown parser with syntax completion.",
   "exports": {
     ".": "./dist/index.mjs",
