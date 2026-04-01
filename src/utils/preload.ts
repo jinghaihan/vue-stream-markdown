@@ -5,13 +5,15 @@ function isAsyncComponent(component: Component): boolean {
 }
 
 export async function preloadAsyncComponents(
-  components: Record<string, Component>,
+  components: Record<string, Component | undefined>,
   include: string[] = [],
   exclude: string[] = [],
 ): Promise<void> {
   const loaders: Promise<void>[] = []
 
   Object.entries(components).forEach(([key, component]) => {
+    if (!component)
+      return
     if (!isAsyncComponent(component))
       return
     if (include.length > 0 && !include.includes(key))

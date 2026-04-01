@@ -1,4 +1,4 @@
-import type { MarkdownParser } from '../markdown-parser'
+import type { MarkdownParser } from 'markmend'
 import type {
   BlockquoteNode,
   BreakNode,

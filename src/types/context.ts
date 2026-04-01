@@ -1,21 +1,20 @@
 import type { RenderOptions as BeautifulMermaidConfig } from 'beautiful-mermaid'
 import type { KatexOptions as KatexConfig } from 'katex'
-import type { Extension as FromMarkdownExtension } from 'mdast-util-from-markdown'
-import type { Options as ToMarkdownExtension } from 'mdast-util-to-markdown'
+import type {
+  FromMarkdownExtension,
+  MarkdownParserOptions,
+  MdastOptions,
+  MicromarkExtension,
+  PreprocessContext,
+  ToMarkdownExtension,
+} from 'markmend'
 import type { MermaidConfig } from 'mermaid'
-import type { Extension as MicromarkExtension } from 'micromark-util-types'
 import type { BuiltinTheme, BundledLanguage, BundledTheme, CodeToTokensOptions } from 'shiki'
 import type { Component } from 'vue'
 import type { CARETS } from '../constants'
-import type { NodeRenderers, SyntaxTree } from './core'
+import type { NodeRenderers } from './core'
 import type { DownloadEvent } from './events'
 import type { LocaleConfig } from './locale'
-import type {
-  BuiltinFromMdastExtension,
-  BuiltinMicromarkExtension,
-  BuiltinPluginControl,
-  BuiltinToMdastExtension,
-} from './plugins'
 import type { CodeNodeRendererProps, ImageNodeRendererProps, TableNodeRendererProps } from './renderer'
 import type { BuiltinNodeRenderers, ControlTransformer, Icons, MaybePromise, UIComponents } from './shared'
 
@@ -34,27 +33,6 @@ export interface StreamMarkdownProps extends StreamMarkdownContext, StreamMarkdo
 
 export interface PreloadConfig {
   nodeRenderers?: BuiltinNodeRenderers[]
-}
-
-export interface MarkdownParserOptions {
-  mdastOptions?: MdastOptions
-  normalize?: (content: string) => string
-  preprocess?: (content: string) => string
-  postNormalize?: (data: SyntaxTree) => SyntaxTree
-  postprocess?: (data: SyntaxTree) => SyntaxTree
-  parseMarkdownIntoBlocks?: (content: string) => string[]
-}
-
-export interface MdastOptions {
-  from?: FromMarkdownExtension[]
-  to?: ToMarkdownExtension[]
-  micromark?: MicromarkExtension[]
-  builtin?: {
-    micromark?: BuiltinPluginControl<BuiltinMicromarkExtension, MicromarkExtension>
-    from?: BuiltinPluginControl<BuiltinFromMdastExtension, FromMarkdownExtension>
-    to?: BuiltinPluginControl<BuiltinToMdastExtension, ToMarkdownExtension>
-  }
-  singleDollarTextMath?: boolean
 }
 
 export interface StreamMarkdownContext {
@@ -234,12 +212,11 @@ export interface CdnOptions {
   katex?: 'esm' | 'umd' | false
 }
 
-export interface PreprocessContext {
-  singleDollarTextMath?: boolean
-}
-
 export {
   type FromMarkdownExtension,
+  type MarkdownParserOptions,
+  type MdastOptions,
   type MicromarkExtension,
+  type PreprocessContext,
   type ToMarkdownExtension,
 }

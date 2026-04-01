@@ -37,8 +37,9 @@
   ],
   "scripts": {
     "dev": "pnpm playground:dev",
-    "build": "tsdown && pnpm build:css",
+    "build": "pnpm markmend:build && tsdown && pnpm build:css",
     "build:css": "tsx scripts/build-css.ts",
+    "markmend:build": "pnpm -F markmend build",
     "playground:dev": "pnpm -F playground dev",
     "playground:build": "pnpm -F playground generate",
     "playground:typecheck": "pnpm -F playground typecheck",
@@ -50,7 +51,7 @@
     "typecheck": "vue-tsc --noEmit && pnpm playground:typecheck",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
-    "release": "bumpp",
+    "release": "bumpp -r",
     "prepare": "simple-git-hooks && pnpm playground:prepare && skills-npm",
     "prepublishOnly": "pnpm build"
   },
@@ -78,18 +79,7 @@
   "dependencies": {
     "@floating-ui/dom": "catalog:frontend",
     "@vueuse/core": "catalog:frontend",
-    "marked": "catalog:parser",
-    "mdast-util-from-markdown": "catalog:parser",
-    "mdast-util-frontmatter": "catalog:parser",
-    "mdast-util-gfm": "catalog:parser",
-    "mdast-util-math": "catalog:parser",
-    "mdast-util-to-markdown": "catalog:parser",
-    "micromark-extension-cjk-friendly": "catalog:parser",
-    "micromark-extension-cjk-friendly-gfm-strikethrough": "catalog:parser",
-    "micromark-extension-frontmatter": "catalog:parser",
-    "micromark-extension-gfm": "catalog:parser",
-    "micromark-extension-math": "catalog:parser",
-    "micromark-util-types": "catalog:parser"
+    "markmend": "workspace:*"
   },
   "devDependencies": {
     "beautiful-mermaid": "catalog:",
@@ -115,7 +105,6 @@
     "@iconify-json/catppuccin": "catalog:icons",
     "@iconify-json/lucide": "catalog:icons",
     "@antfu/utils": "catalog:inlined",
-    "quick-lru": "catalog:inlined",
     "treechop": "catalog:inlined",
     "@nuxt/eslint": "catalog:lint",
     "@octohash/eslint-config": "catalog:lint",

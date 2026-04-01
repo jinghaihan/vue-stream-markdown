@@ -1,8 +1,50 @@
-import type { ParsedNode } from '../types'
+import type { BuiltinPluginFactory, ParsedNode } from './types'
 
 const MIDDLE_DOLLAR_PATTERN = /[^$]\$[^$]/
 const START_DOLLAR_PATTERN = /^\$[^$]/
 const END_DOLLAR_PATTERN = /[^$]\$$/
+
+export function flow<T>(fns: Array<(arg: T) => T>): (arg: T) => T {
+  return (input: T) => fns.reduce((acc, fn) => fn(acc), input)
+}
+
+export function resolveBuiltinExtensions<
+  Builtins extends Record<string, BuiltinPluginFactory<Ctx, any>>,
+  Ctx,
+  Key extends keyof Builtins,
+  Ext = ReturnType<Builtins[Key]> extends (infer U)[]
+    ? U
+    : ReturnType<Builtins[Key]>,
+>(
+  builtins: Builtins,
+  ctx: Ctx,
+  control?: Partial<Record<Key, false | BuiltinPluginFactory<Ctx, Ext>>>,
+  extend?: Ext[],
+): Ext[] {
+  const result: Ext[] = []
+
+  for (const key in builtins) {
+    const action = control?.[key as unknown as Key]
+    if (action === false)
+      continue
+
+    const factory = typeof action === 'function'
+      ? action
+      : builtins[key]
+    if (!factory || typeof factory === 'boolean')
+      continue
+
+    const value = factory(ctx)
+    if (Array.isArray(value))
+      result.push(...value)
+    else
+      result.push(value)
+  }
+
+  if (extend?.length)
+    result.push(...extend)
+  return result
+}
 
 export function checkMathSyntax(content: string, singleDollarEnabled: boolean = false): boolean {
   const hasDoubleDollar = content.includes('$$')

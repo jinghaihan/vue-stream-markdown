@@ -229,42 +229,9 @@ importers:
       '@vueuse/core':
         specifier: catalog:frontend
         version: 14.2.1(vue@3.5.30(typescript@5.9.3))
-      marked:
-        specifier: catalog:parser
-        version: 17.0.4
-      mdast-util-from-markdown:
-        specifier: catalog:parser
-        version: 2.0.3
-      mdast-util-frontmatter:
-        specifier: catalog:parser
-        version: 2.0.1
-      mdast-util-gfm:
-        specifier: catalog:parser
-        version: 3.1.0
-      mdast-util-math:
-        specifier: catalog:parser
-        version: 3.0.0
-      mdast-util-to-markdown:
-        specifier: catalog:parser
-        version: 2.1.2
-      micromark-extension-cjk-friendly:
-        specifier: catalog:parser
-        version: 2.0.1(micromark-util-types@2.0.2)(micromark@4.0.2)
-      micromark-extension-cjk-friendly-gfm-strikethrough:
-        specifier: catalog:parser
-        version: 2.0.1(micromark-util-types@2.0.2)(micromark@4.0.2)
-      micromark-extension-frontmatter:
-        specifier: catalog:parser
-        version: 2.0.0
-      micromark-extension-gfm:
-        specifier: catalog:parser
-        version: 3.0.0
-      micromark-extension-math:
-        specifier: catalog:parser
-        version: 3.1.0
-      micromark-util-types:
-        specifier: catalog:parser
-        version: 2.0.2
+      markmend:
+        specifier: workspace:*
+        version: link:packages/markmend
       vue:
         specifier: ^3.5.30
         version: 3.5.30(typescript@5.9.3)
@@ -329,9 +296,6 @@ importers:
       pncat:
         specifier: catalog:dev
         version: 0.10.4
-      quick-lru:
-        specifier: catalog:inlined
-        version: 7.3.0
       shiki:
         specifier: 'catalog:'
         version: 4.0.2
@@ -383,6 +347,52 @@ importers:
       vitepress-plugin-llms:
         specifier: catalog:docs
         version: 1.11.0
+
+  packages/markmend:
+    dependencies:
+      marked:
+        specifier: catalog:parser
+        version: 17.0.4
+      mdast-util-from-markdown:
+        specifier: catalog:parser
+        version: 2.0.3
+      mdast-util-frontmatter:
+        specifier: catalog:parser
+        version: 2.0.1
+      mdast-util-gfm:
+        specifier: catalog:parser
+        version: 3.1.0
+      mdast-util-math:
+        specifier: catalog:parser
+        version: 3.0.0
+      mdast-util-to-markdown:
+        specifier: catalog:parser
+        version: 2.1.2
+      micromark-extension-cjk-friendly:
+        specifier: catalog:parser
+        version: 2.0.1(micromark-util-types@2.0.2)(micromark@4.0.2)
+      micromark-extension-cjk-friendly-gfm-strikethrough:
+        specifier: catalog:parser
+        version: 2.0.1(micromark-util-types@2.0.2)(micromark@4.0.2)
+      micromark-extension-frontmatter:
+        specifier: catalog:parser
+        version: 2.0.0
+      micromark-extension-gfm:
+        specifier: catalog:parser
+        version: 3.0.0
+      micromark-extension-math:
+        specifier: catalog:parser
+        version: 3.1.0
+      micromark-util-types:
+        specifier: catalog:parser
+        version: 2.0.2
+    devDependencies:
+      quick-lru:
+        specifier: catalog:inlined
+        version: 7.3.0
+      treechop:
+        specifier: catalog:inlined
+        version: 0.1.2
 
   playground:
     dependencies:

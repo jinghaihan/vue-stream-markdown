@@ -5,7 +5,10 @@ export default defineConfig({
   plugins: [Vue()],
   test: {
     coverage: {
-      include: ['src/preprocess/*.ts', 'src/markdown-parser.ts'],
+      include: [
+        'packages/markmend/src/preprocess/*.ts',
+        'packages/markmend/src/parser.ts',
+      ],
     },
   },
 })

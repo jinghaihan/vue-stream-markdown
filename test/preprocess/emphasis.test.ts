@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { fixEmphasis } from '../../src/preprocess/emphasis'
+import { fixEmphasis } from '../../packages/markmend/src/preprocess/emphasis'
 import { getTestCasesByCategories } from './test-cases'
 
 describe('fixEmphasis', () => {

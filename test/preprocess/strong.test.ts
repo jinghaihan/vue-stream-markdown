@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { fixStrong } from '../../src/preprocess/strong'
+import { fixStrong } from '../../packages/markmend/src/preprocess/strong'
 import { getTestCasesByCategories } from './test-cases'
 
 describe('fixStrong', () => {

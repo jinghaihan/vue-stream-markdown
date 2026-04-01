@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { ListNodeRendererProps } from '../../types'
+import type { ListItemNode, ListNodeRendererProps } from '../../types'
 import { computed } from 'vue'
 import NodeList from '../node-list.vue'
 
 const props = withDefaults(defineProps<ListNodeRendererProps>(), {})
 
-const isTaskList = computed(() => props.node.children.some(child => typeof child.checked === 'boolean'))
+const isTaskList = computed(() => props.node.children.some((child: ListItemNode) => typeof child.checked === 'boolean'))
 
 const tag = computed(() => props.node.ordered ? 'ol' : 'ul')
 const id = computed(() => isTaskList.value

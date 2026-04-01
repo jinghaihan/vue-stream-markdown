@@ -1,6 +1,6 @@
-import type { BuiltinPluginFactory } from '../../src/types'
+import type { BuiltinPluginFactory } from '../../packages/markmend/src/types'
 import { describe, expect, it } from 'vitest'
-import { resolveBuiltinExtensions } from '../../src/utils/plugins'
+import { resolveBuiltinExtensions } from '../../packages/markmend/src/utils'
 
 describe('resolveBuiltinExtensions', () => {
   interface TestContext {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { normalize, preprocess } from '../../src/preprocess'
+import { normalize, preprocess } from '../../packages/markmend/src/preprocess'
 import { getTestCases } from './test-cases'
 import { getFixtureFiles, getSnapshotPath, readFixture } from './utils'
 

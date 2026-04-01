@@ -1,4 +1,4 @@
-import type { BuiltinPluginContext } from '../types'
+import type { BuiltinPluginContext } from './types'
 import { frontmatterFromMarkdown, frontmatterToMarkdown } from 'mdast-util-frontmatter'
 import { gfmFromMarkdown, gfmToMarkdown } from 'mdast-util-gfm'
 import { mathFromMarkdown, mathToMarkdown } from 'mdast-util-math'

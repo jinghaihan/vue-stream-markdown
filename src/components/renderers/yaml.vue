@@ -12,11 +12,11 @@ const data = computed(
   () => props.node.value
     .trim()
     .split('\n')
-    .map(line => line.split(reg)),
+    .map((line: string) => line.split(reg)),
 )
 
-const headers = computed(() => data.value.map(line => line[0]))
-const rows = computed(() => [{ children: data.value.map(line => line[1]) }])
+const headers = computed(() => data.value.map((line: string[]) => line[0]))
+const rows = computed(() => [{ children: data.value.map((line: string[]) => line[1]) }])
 </script>
 
 <template>

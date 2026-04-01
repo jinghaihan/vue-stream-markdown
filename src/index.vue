@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { BuiltinNodeRenderers, Icons, NodeRenderers, StreamMarkdownProps, UIComponents } from './types'
+import { MarkdownParser } from 'markmend'
 import { computed, onBeforeUnmount, onMounted, ref, toRefs, watch } from 'vue'
 import { NODE_RENDERERS, UI } from './components'
 import NodeList from './components/node-list.vue'
@@ -14,7 +15,6 @@ import {
 } from './composables'
 import { ICONS, PRELOAD_NODE_RENDERER } from './constants'
 import { loadLocaleMessages } from './locales'
-import { MarkdownParser } from './markdown-parser'
 import { preloadAsyncComponents } from './utils'
 import './style.css'
 

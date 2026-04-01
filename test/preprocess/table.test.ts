@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { fixTable } from '../../src/preprocess/table'
+import { fixTable } from '../../packages/markmend/src/preprocess/table'
 import { getTestCasesByCategories } from './test-cases'
 
 describe('fixTable', () => {

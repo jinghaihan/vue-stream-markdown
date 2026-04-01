@@ -1,8 +1,9 @@
 import type { KatexOptions } from 'katex'
 import type { MaybeRef } from 'vue'
 import type { CdnOptions, MdastOptions } from '../types'
+import { checkMathSyntax } from 'markmend'
 import { computed, ref, unref, watch } from 'vue'
-import { checkMathSyntax, hasKatexModule, isClient } from '../utils'
+import { hasKatexModule, isClient } from '../utils'
 import { useCdnLoader } from './use-cdn-loader'
 
 interface UseKatexOptions {

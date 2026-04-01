@@ -1,5 +1,5 @@
+import type { MarkdownParser } from 'markmend'
 import type { MaybeRef } from 'vue'
-import type { MarkdownParser } from '../markdown-parser'
 import type {
   Icons,
   NodeRenderers,

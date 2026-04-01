@@ -11,7 +11,7 @@ import {
   isWithinLinkOrImageUrl,
   isWithinMathBlock,
   removeMathBlocksFromText,
-} from '../../src/preprocess/utils'
+} from '../../packages/markmend/src/preprocess/utils'
 
 describe('findLastParagraphStart', () => {
   it('skips undefined lines defensively', () => {

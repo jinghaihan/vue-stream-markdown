@@ -43,6 +43,7 @@ export default defineNuxtConfig({
     tsConfig: {
       compilerOptions: {
         paths: {
+          'markmend': ['../packages/markmend/src/index.ts'],
           'vue-stream-markdown': ['../src/'],
         },
       },
