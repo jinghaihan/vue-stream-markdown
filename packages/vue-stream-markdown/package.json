@@ -64,8 +64,6 @@
     "markmend": "workspace:*"
   },
   "devDependencies": {
-    "@iconify-json/catppuccin": "catalog:icons",
-    "@iconify-json/lucide": "catalog:icons",
     "@antfu/utils": "catalog:inlined",
     "treechop": "catalog:inlined",
     "beautiful-mermaid": "^1.1.3",

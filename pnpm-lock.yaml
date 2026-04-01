@@ -381,12 +381,6 @@ importers:
       '@antfu/utils':
         specifier: catalog:inlined
         version: 9.3.0
-      '@iconify-json/catppuccin':
-        specifier: catalog:icons
-        version: 1.2.17
-      '@iconify-json/lucide':
-        specifier: catalog:icons
-        version: 1.2.97
       beautiful-mermaid:
         specifier: ^1.1.3
         version: 1.1.3
