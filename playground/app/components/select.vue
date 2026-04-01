@@ -35,7 +35,7 @@ const modelValue = defineModel<string>('value', { required: false, default: '' }
       </option>
     </select>
     <ChevronDown
-      class="text-muted-foreground size-3.5 pointer-events-none select-none right-1.5 top-1/2 absolute group-data-[size=sm]/native-select:size-3 -translate-y-1/2 group-data-[size=sm]/native-select:-translate-y-[calc(--spacing(1.25))]"
+      class="text-muted-foreground size-3.5 pointer-events-none select-none right-1.5 top-1/2 absolute group-data-[size=sm]/native-select:size-3 -translate-y-1/2 group-data-[size=sm]/native-select:-translate-y-1"
       aria-hidden="true"
       data-slot="native-select-icon"
     />

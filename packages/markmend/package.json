@@ -1,0 +1,40 @@
+{
+  "name": "markmend",
+  "type": "module",
+  "version": "0.6.5",
+  "description": "Streaming-friendly Markdown parser with syntax completion.",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown"
+  },
+  "dependencies": {
+    "marked": "catalog:parser",
+    "mdast-util-from-markdown": "catalog:parser",
+    "mdast-util-frontmatter": "catalog:parser",
+    "mdast-util-gfm": "catalog:parser",
+    "mdast-util-math": "catalog:parser",
+    "mdast-util-to-markdown": "catalog:parser",
+    "micromark-extension-cjk-friendly": "catalog:parser",
+    "micromark-extension-cjk-friendly-gfm-strikethrough": "catalog:parser",
+    "micromark-extension-frontmatter": "catalog:parser",
+    "micromark-extension-gfm": "catalog:parser",
+    "micromark-extension-math": "catalog:parser",
+    "micromark-util-types": "catalog:parser"
+  },
+  "devDependencies": {
+    "tsdown": "catalog:build",
+    "quick-lru": "catalog:inlined",
+    "treechop": "catalog:inlined"
+  },
+  "inlinedDependencies": {
+    "quick-lru": "7.3.0",
+    "treechop": "0.1.2"
+  }
+}

@@ -21,20 +21,10 @@ catalogs:
     vite:
       specifier: ^8.0.0
       version: 8.0.0
-  default:
-    beautiful-mermaid:
-      specifier: ^1.1.3
-      version: 1.1.3
-    katex:
-      specifier: ^0.16.38
-      version: 0.16.38
-    mermaid:
-      specifier: ^11.13.0
-      version: 11.13.0
-    shiki:
-      specifier: ^4.0.2
-      version: 4.0.2
   dev:
+    '@typescript/native-preview':
+      specifier: ^7.0.0-dev.20260401.1
+      version: 7.0.0-dev.20260401.1
     bumpp:
       specifier: ^10.4.1
       version: 10.4.1
@@ -222,13 +212,116 @@ overrides:
 importers:
 
   .:
-    dependencies:
-      '@floating-ui/dom':
+    devDependencies:
+      '@iconify-json/catppuccin':
+        specifier: catalog:icons
+        version: 1.2.17
+      '@iconify-json/lucide':
+        specifier: catalog:icons
+        version: 1.2.97
+      '@nuxt/eslint':
+        specifier: catalog:lint
+        version: 1.15.2(@typescript-eslint/utils@8.57.0(eslint@10.0.3(jiti@2.6.1))(typescript@5.9.3))(@vue/compiler-sfc@3.5.30)(eslint-plugin-format@2.0.1(eslint@10.0.3(jiti@2.6.1)))(eslint@10.0.3(jiti@2.6.1))(magicast@0.5.2)(typescript@5.9.3)(vite@8.0.0(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
+      '@octohash/eslint-config':
+        specifier: catalog:lint
+        version: 0.2.8(@typescript-eslint/rule-tester@8.56.1(eslint@10.0.3(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.57.0(typescript@5.9.3))(@typescript-eslint/utils@8.57.0(eslint@10.0.3(jiti@2.6.1))(typescript@5.9.3))(@unocss/eslint-plugin@66.5.9(eslint@10.0.3(jiti@2.6.1))(typescript@5.9.3))(@vue/compiler-sfc@3.5.30)(eslint-plugin-format@2.0.1(eslint@10.0.3(jiti@2.6.1)))(eslint@10.0.3(jiti@2.6.1))(typescript@5.9.3)(vitest@4.1.0(@types/node@25.5.0)(happy-dom@20.0.11)(vite@8.0.0(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)))
+      '@tsdown/css':
+        specifier: catalog:build
+        version: 0.21.2(jiti@2.6.1)(postcss@8.5.8)(tsdown@0.21.2)(tsx@4.21.0)(yaml@2.8.2)
+      '@types/node':
+        specifier: catalog:types
+        version: 25.5.0
+      '@typescript/native-preview':
+        specifier: catalog:dev
+        version: 7.0.0-dev.20260401.1
+      '@unocss/eslint-plugin':
+        specifier: catalog:lint
+        version: 66.5.9(eslint@10.0.3(jiti@2.6.1))(typescript@5.9.3)
+      '@vitejs/plugin-vue':
+        specifier: catalog:build
+        version: 6.0.5(vite@8.0.0(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(vue@3.5.30(typescript@5.9.3))
+      '@vitest/coverage-v8':
+        specifier: catalog:test
+        version: 4.1.0(vitest@4.1.0(@types/node@25.5.0)(happy-dom@20.0.11)(vite@8.0.0(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)))
+      '@vue/test-utils':
+        specifier: catalog:test
+        version: 2.4.6
+      bumpp:
+        specifier: catalog:dev
+        version: 10.4.1(magicast@0.5.2)
+      eslint:
+        specifier: catalog:lint
+        version: 10.0.3(jiti@2.6.1)
+      eslint-plugin-format:
+        specifier: catalog:lint
+        version: 2.0.1(eslint@10.0.3(jiti@2.6.1))
+      lightningcss:
+        specifier: catalog:dev
+        version: 1.32.0
+      nano-staged:
+        specifier: catalog:dev
+        version: 0.9.0
+      pncat:
+        specifier: catalog:dev
+        version: 0.10.4
+      simple-git-hooks:
+        specifier: catalog:dev
+        version: 2.13.1
+      skills-npm:
+        specifier: catalog:dev
+        version: 1.1.0
+      taze:
+        specifier: catalog:dev
+        version: 19.10.0
+      tinyglobby:
+        specifier: catalog:dev
+        version: 0.2.15
+      tsdown:
+        specifier: catalog:build
+        version: 0.21.2(@tsdown/css@0.21.2)(@typescript/native-preview@7.0.0-dev.20260401.1)(synckit@0.11.12)(typescript@5.9.3)(vue-tsc@3.2.5(typescript@5.9.3))
+      tsx:
+        specifier: catalog:dev
+        version: 4.21.0
+      typescript:
+        specifier: catalog:dev
+        version: 5.9.3
+      unocss:
         specifier: catalog:frontend
-        version: 1.7.6
+        version: 66.6.6(@unocss/webpack@66.6.6(webpack@5.103.0(esbuild@0.27.3)))(vite@8.0.0(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
+      unplugin-icons:
+        specifier: catalog:build
+        version: 23.0.1(@vue/compiler-sfc@3.5.30)
+      vite:
+        specifier: catalog:build
+        version: 8.0.0(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
+      vitest:
+        specifier: catalog:test
+        version: 4.1.0(@types/node@25.5.0)(happy-dom@20.0.11)(vite@8.0.0(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
+      vue:
+        specifier: ^3.5.30
+        version: 3.5.30(typescript@5.9.3)
+      vue-tsc:
+        specifier: catalog:lint
+        version: 3.2.5(typescript@5.9.3)
+
+  docs:
+    dependencies:
       '@vueuse/core':
         specifier: catalog:frontend
         version: 14.2.1(vue@3.5.30(typescript@5.9.3))
+      vue-stream-markdown:
+        specifier: workspace:*
+        version: link:../packages/vue-stream-markdown
+    devDependencies:
+      vitepress:
+        specifier: catalog:docs
+        version: 1.6.4(@algolia/client-search@5.46.0)(@types/node@25.5.0)(change-case@5.4.4)(fuse.js@7.1.0)(lightningcss@1.32.0)(postcss@8.5.8)(search-insights@2.17.3)(terser@5.44.1)(typescript@5.9.3)
+      vitepress-plugin-llms:
+        specifier: catalog:docs
+        version: 1.11.0
+
+  packages/markmend:
+    dependencies:
       marked:
         specifier: catalog:parser
         version: 17.0.4
@@ -265,6 +358,28 @@ importers:
       micromark-util-types:
         specifier: catalog:parser
         version: 2.0.2
+    devDependencies:
+      quick-lru:
+        specifier: catalog:inlined
+        version: 7.3.0
+      treechop:
+        specifier: catalog:inlined
+        version: 0.1.2
+      tsdown:
+        specifier: catalog:build
+        version: 0.21.2(@tsdown/css@0.21.2)(@typescript/native-preview@7.0.0-dev.20260401.1)(synckit@0.11.12)(typescript@5.9.3)(vue-tsc@3.2.5(typescript@5.9.3))
+
+  packages/vue-stream-markdown:
+    dependencies:
+      '@floating-ui/dom':
+        specifier: catalog:frontend
+        version: 1.7.6
+      '@vueuse/core':
+        specifier: catalog:frontend
+        version: 14.2.1(vue@3.5.30(typescript@5.9.3))
+      markmend:
+        specifier: workspace:*
+        version: link:../markmend
       vue:
         specifier: ^3.5.30
         version: 3.5.30(typescript@5.9.3)
@@ -272,120 +387,30 @@ importers:
       '@antfu/utils':
         specifier: catalog:inlined
         version: 9.3.0
-      '@iconify-json/catppuccin':
-        specifier: catalog:icons
-        version: 1.2.17
-      '@iconify-json/lucide':
-        specifier: catalog:icons
-        version: 1.2.97
-      '@nuxt/eslint':
-        specifier: catalog:lint
-        version: 1.15.2(@typescript-eslint/utils@8.57.0(eslint@10.0.3(jiti@2.6.1))(typescript@5.9.3))(@vue/compiler-sfc@3.5.30)(eslint-plugin-format@2.0.1(eslint@10.0.3(jiti@2.6.1)))(eslint@10.0.3(jiti@2.6.1))(magicast@0.5.2)(typescript@5.9.3)(vite@8.0.0(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
-      '@octohash/eslint-config':
-        specifier: catalog:lint
-        version: 0.2.8(@typescript-eslint/rule-tester@8.56.1(eslint@10.0.3(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.57.0(typescript@5.9.3))(@typescript-eslint/utils@8.57.0(eslint@10.0.3(jiti@2.6.1))(typescript@5.9.3))(@unocss/eslint-plugin@66.5.9(eslint@10.0.3(jiti@2.6.1))(typescript@5.9.3))(@vue/compiler-sfc@3.5.30)(eslint-plugin-format@2.0.1(eslint@10.0.3(jiti@2.6.1)))(eslint@10.0.3(jiti@2.6.1))(typescript@5.9.3)(vitest@4.1.0(@types/node@25.5.0)(happy-dom@20.0.11)(vite@8.0.0(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)))
-      '@tsdown/css':
-        specifier: catalog:build
-        version: 0.21.2(jiti@2.6.1)(postcss@8.5.8)(tsdown@0.21.2)(tsx@4.21.0)(yaml@2.8.2)
-      '@types/node':
-        specifier: catalog:types
-        version: 25.5.0
-      '@unocss/eslint-plugin':
-        specifier: catalog:lint
-        version: 66.5.9(eslint@10.0.3(jiti@2.6.1))(typescript@5.9.3)
-      '@vitejs/plugin-vue':
-        specifier: catalog:build
-        version: 6.0.5(vite@8.0.0(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(vue@3.5.30(typescript@5.9.3))
-      '@vitest/coverage-v8':
-        specifier: catalog:test
-        version: 4.1.0(vitest@4.1.0(@types/node@25.5.0)(happy-dom@20.0.11)(vite@8.0.0(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)))
-      '@vue/test-utils':
-        specifier: catalog:test
-        version: 2.4.6
       beautiful-mermaid:
-        specifier: 'catalog:'
+        specifier: ^1.1.3
         version: 1.1.3
-      bumpp:
-        specifier: catalog:dev
-        version: 10.4.1(magicast@0.5.2)
-      eslint:
-        specifier: catalog:lint
-        version: 10.0.3(jiti@2.6.1)
-      eslint-plugin-format:
-        specifier: catalog:lint
-        version: 2.0.1(eslint@10.0.3(jiti@2.6.1))
       katex:
-        specifier: 'catalog:'
+        specifier: ^0.16.38
         version: 0.16.38
-      lightningcss:
-        specifier: catalog:dev
-        version: 1.32.0
       mermaid:
-        specifier: 'catalog:'
+        specifier: ^11.13.0
         version: 11.13.0
-      nano-staged:
-        specifier: catalog:dev
-        version: 0.9.0
-      pncat:
-        specifier: catalog:dev
-        version: 0.10.4
-      quick-lru:
-        specifier: catalog:inlined
-        version: 7.3.0
       shiki:
-        specifier: 'catalog:'
+        specifier: ^4.0.2
         version: 4.0.2
-      simple-git-hooks:
-        specifier: catalog:dev
-        version: 2.13.1
-      skills-npm:
-        specifier: catalog:dev
-        version: 1.1.0
-      taze:
-        specifier: catalog:dev
-        version: 19.10.0
-      tinyglobby:
-        specifier: catalog:dev
-        version: 0.2.15
       treechop:
         specifier: catalog:inlined
         version: 0.1.2
-      tsdown:
-        specifier: catalog:build
-        version: 0.21.2(@tsdown/css@0.21.2)(synckit@0.11.12)(typescript@5.9.3)(vue-tsc@3.2.5(typescript@5.9.3))
-      tsx:
-        specifier: catalog:dev
-        version: 4.21.0
-      typescript:
-        specifier: catalog:dev
-        version: 5.9.3
-      unocss:
-        specifier: catalog:frontend
-        version: 66.6.6(@unocss/webpack@66.6.6(webpack@5.103.0(esbuild@0.27.3)))(vite@8.0.0(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
-      unplugin-icons:
-        specifier: catalog:build
-        version: 23.0.1(@vue/compiler-sfc@3.5.30)
-      vite:
-        specifier: catalog:build
-        version: 8.0.0(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
-      vitest:
-        specifier: catalog:test
-        version: 4.1.0(@types/node@25.5.0)(happy-dom@20.0.11)(vite@8.0.0(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
-      vue-tsc:
-        specifier: catalog:lint
-        version: 3.2.5(typescript@5.9.3)
-
-  docs:
-    devDependencies:
-      vitepress:
-        specifier: catalog:docs
-        version: 1.6.4(@algolia/client-search@5.46.0)(@types/node@25.5.0)(change-case@5.4.4)(fuse.js@7.1.0)(lightningcss@1.32.0)(postcss@8.5.8)(search-insights@2.17.3)(terser@5.44.1)(typescript@5.9.3)
-      vitepress-plugin-llms:
-        specifier: catalog:docs
-        version: 1.11.0
 
   playground:
     dependencies:
+      '@antfu/utils':
+        specifier: catalog:inlined
+        version: 9.3.0
+      '@floating-ui/dom':
+        specifier: catalog:frontend
+        version: 1.7.6
       '@monaco-editor/loader':
         specifier: catalog:playground
         version: 1.7.0
@@ -410,6 +435,9 @@ importers:
       '@vueuse/nuxt':
         specifier: catalog:playground
         version: 14.2.1(magicast@0.5.2)(nuxt@4.4.2(@babel/core@7.29.0)(@babel/plugin-syntax-jsx@7.27.1(@babel/core@7.29.0))(@parcel/watcher@2.5.1)(@types/node@25.5.0)(@vue/compiler-sfc@3.5.30)(cac@6.7.14)(db0@0.3.4)(eslint@10.0.3(jiti@2.6.1))(ioredis@5.9.2)(lightningcss@1.32.0)(magicast@0.5.2)(optionator@0.9.4)(rolldown@1.0.0-rc.9)(rollup-plugin-visualizer@6.0.5(rolldown@1.0.0-rc.9)(rollup@4.56.0))(rollup@4.56.0)(terser@5.44.1)(tsx@4.21.0)(typescript@5.9.3)(vite@8.0.0(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(vue-tsc@3.2.5(typescript@5.9.3))(yaml@2.8.2))(vue@3.5.30(typescript@5.9.3))
+      beautiful-mermaid:
+        specifier: ^1.1.3
+        version: 1.1.3
       clsx:
         specifier: catalog:playground
         version: 2.1.1
@@ -428,15 +456,24 @@ importers:
       nuxt:
         specifier: catalog:playground
         version: 4.4.2(@babel/core@7.29.0)(@babel/plugin-syntax-jsx@7.27.1(@babel/core@7.29.0))(@parcel/watcher@2.5.1)(@types/node@25.5.0)(@vue/compiler-sfc@3.5.30)(cac@6.7.14)(db0@0.3.4)(eslint@10.0.3(jiti@2.6.1))(ioredis@5.9.2)(lightningcss@1.32.0)(magicast@0.5.2)(optionator@0.9.4)(rolldown@1.0.0-rc.9)(rollup-plugin-visualizer@6.0.5(rolldown@1.0.0-rc.9)(rollup@4.56.0))(rollup@4.56.0)(terser@5.44.1)(tsx@4.21.0)(typescript@5.9.3)(vite@8.0.0(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(vue-tsc@3.2.5(typescript@5.9.3))(yaml@2.8.2)
+      shiki:
+        specifier: ^4.0.2
+        version: 4.0.2
       tailwind-merge:
         specifier: catalog:playground
         version: 3.5.0
+      treechop:
+        specifier: catalog:inlined
+        version: 0.1.2
       vue:
         specifier: ^3.5.30
         version: 3.5.30(typescript@5.9.3)
       vue-json-pretty:
         specifier: catalog:playground
         version: 2.6.0(vue@3.5.30(typescript@5.9.3))
+      vue-stream-markdown:
+        specifier: workspace:*
+        version: link:../packages/vue-stream-markdown
 
 packages:
 
@@ -2324,9 +2361,6 @@ packages:
   '@rolldown/pluginutils@1.0.0-rc.2':
     resolution: {integrity: sha512-izyXV/v+cHiRfozX62W9htOAvwMo4/bXKDrQ+vom1L1qRuexPock/7VZDAhnpHCLNejd3NJ6hiab+tO0D44Rgw==}
 
-  '@rolldown/pluginutils@1.0.0-rc.5':
-    resolution: {integrity: sha512-RxlLX/DPoarZ9PtxVrQgZhPoor987YtKQqCo5zkjX+0S0yLJ7Vv515Wk6+xtTL67VONKJKxETWZwuZjss2idYw==}
-
   '@rolldown/pluginutils@1.0.0-rc.9':
     resolution: {integrity: sha512-w6oiRWgEBl04QkFZgmW+jnU1EC9b57Oihi2ot3HNWIQRqgHp5PnYDia5iZ5FF7rpa4EQdiqMDXjlqKGXBhsoXw==}
 
@@ -2940,6 +2974,45 @@ packages:
     resolution: {integrity: sha512-zm6xx8UT/Xy2oSr2ZXD0pZo7Jx2XsCoID2IUh9YSTFRu7z+WdwYTRk6LhUftm1crwqbuoF6I8zAFeCMw0YjwDg==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260401.1':
+    resolution: {integrity: sha512-9PCc1D4/zLic30g1upOw6ZmUl98fnrXYRv5wIZ6fxm1zZAObieRKUX3Jbr8M9N8iQQFxPIZPniIScsxAbmbJvw==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260401.1':
+    resolution: {integrity: sha512-wwzca1KrjSVC6ApXfITsg/wF4GGbhVYebc7zChpuyi+phrHfw6ThTPB5XFUH4nA32vqw0Hn/6KACipMgzg8GPA==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260401.1':
+    resolution: {integrity: sha512-1hgKibGi4QZF1J0hKltgY4nj4yKDmI4Ang5ar80I+YeUdGxV/fP2kU3bJang7QtHuSso6W+a52SF62zgqbzdow==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20260401.1':
+    resolution: {integrity: sha512-bbIkRZYjtyoyCJ3wFES7qn3EwYO5Go1hxArL5X5oWiBmUHq5gMIxTZDv5mpWxopVf9Eyh4ErHefXjf1s4J+6Ag==}
+    cpu: [arm]
+    os: [linux]
+
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20260401.1':
+    resolution: {integrity: sha512-1ysZ4c/Wa3RYIlrwVceYlhb1m1hxQ4P2x92valZXH0bNWEPb+oiQ4Yf35O/vi5h8zDdX/ZQ59vivYl27cF1VVA==}
+    cpu: [x64]
+    os: [linux]
+
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260401.1':
+    resolution: {integrity: sha512-fZYLCRe36y1BuzRFFpU2/RQ212l6Y1dccRMh8oTB8HlAVAAwtbkb6cjEn0Ablj4Dy16+Ih8R9uHsxPLNhtKw1Q==}
+    cpu: [arm64]
+    os: [win32]
+
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20260401.1':
+    resolution: {integrity: sha512-I6ses4SjWvpbvSpm1BPFRrDeqrzu7JTchJG/a26iwwmTLv4fAGLc5/o6Kv9Naygozop1W3KOcVM5i3A9oxiIjQ==}
+    cpu: [x64]
+    os: [win32]
+
+  '@typescript/native-preview@7.0.0-dev.20260401.1':
+    resolution: {integrity: sha512-xJcN9WlY/P6xKjCMH4+DTzZSj/EKR6H9avuqUKs4eKyPEvaQ4bX+9Ys3Vl2qhlUaD7IRWY7HN7db0LHAGlWRSA==}
+    hasBin: true
+
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
 
@@ -3169,13 +3242,6 @@ packages:
     engines: {node: ^18.0.0 || >=20.0.0}
     peerDependencies:
       vite: ^5.0.0 || ^6.0.0
-      vue: ^3.5.30
-
-  '@vitejs/plugin-vue@6.0.4':
-    resolution: {integrity: sha512-uM5iXipgYIn13UUQCZNdWkYk+sysBeA97d5mHsAoAt1u/wpN3+zxOmsVJWosuzX+IMGRzeYUNytztrYznboIkQ==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    peerDependencies:
-      vite: ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0
       vue: ^3.5.30
 
   '@vitejs/plugin-vue@6.0.5':
@@ -8694,7 +8760,7 @@ snapshots:
     dependencies:
       '@nuxt/kit': 4.4.2(magicast@0.5.2)
       '@rollup/plugin-replace': 6.0.3(rollup@4.56.0)
-      '@vitejs/plugin-vue': 6.0.4(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(vue@3.5.30(typescript@5.9.3))
+      '@vitejs/plugin-vue': 6.0.5(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(vue@3.5.30(typescript@5.9.3))
       '@vitejs/plugin-vue-jsx': 5.1.4(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(vue@3.5.30(typescript@5.9.3))
       autoprefixer: 10.4.27(postcss@8.5.8)
       consola: 3.4.2
@@ -9257,8 +9323,6 @@ snapshots:
 
   '@rolldown/pluginutils@1.0.0-rc.2': {}
 
-  '@rolldown/pluginutils@1.0.0-rc.5': {}
-
   '@rolldown/pluginutils@1.0.0-rc.9': {}
 
   '@rollup/plugin-alias@6.0.0(rollup@4.56.0)':
@@ -9520,7 +9584,7 @@ snapshots:
       lightningcss: 1.32.0
       postcss-load-config: 6.0.1(jiti@2.6.1)(postcss@8.5.8)(tsx@4.21.0)(yaml@2.8.2)
       rolldown: 1.0.0-rc.9
-      tsdown: 0.21.2(@tsdown/css@0.21.2)(synckit@0.11.12)(typescript@5.9.3)(vue-tsc@3.2.5(typescript@5.9.3))
+      tsdown: 0.21.2(@tsdown/css@0.21.2)(@typescript/native-preview@7.0.0-dev.20260401.1)(synckit@0.11.12)(typescript@5.9.3)(vue-tsc@3.2.5(typescript@5.9.3))
     optionalDependencies:
       postcss: 8.5.8
     transitivePeerDependencies:
@@ -9919,6 +9983,37 @@ snapshots:
       '@typescript-eslint/types': 8.57.0
       eslint-visitor-keys: 5.0.1
 
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260401.1':
+    optional: true
+
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260401.1':
+    optional: true
+
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260401.1':
+    optional: true
+
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20260401.1':
+    optional: true
+
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20260401.1':
+    optional: true
+
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260401.1':
+    optional: true
+
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20260401.1':
+    optional: true
+
+  '@typescript/native-preview@7.0.0-dev.20260401.1':
+    optionalDependencies:
+      '@typescript/native-preview-darwin-arm64': 7.0.0-dev.20260401.1
+      '@typescript/native-preview-darwin-x64': 7.0.0-dev.20260401.1
+      '@typescript/native-preview-linux-arm': 7.0.0-dev.20260401.1
+      '@typescript/native-preview-linux-arm64': 7.0.0-dev.20260401.1
+      '@typescript/native-preview-linux-x64': 7.0.0-dev.20260401.1
+      '@typescript/native-preview-win32-arm64': 7.0.0-dev.20260401.1
+      '@typescript/native-preview-win32-x64': 7.0.0-dev.20260401.1
+
   '@ungap/structured-clone@1.3.0': {}
 
   '@unhead/vue@2.1.12(vue@3.5.30(typescript@5.9.3))':
@@ -10210,7 +10305,7 @@ snapshots:
       '@babel/core': 7.29.0
       '@babel/plugin-syntax-typescript': 7.28.6(@babel/core@7.29.0)
       '@babel/plugin-transform-typescript': 7.28.6(@babel/core@7.29.0)
-      '@rolldown/pluginutils': 1.0.0-rc.5
+      '@rolldown/pluginutils': 1.0.0-rc.9
       '@vue/babel-plugin-jsx': 2.0.1(@babel/core@7.29.0)
       vite: 7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
       vue: 3.5.30(typescript@5.9.3)
@@ -10222,7 +10317,7 @@ snapshots:
       vite: 5.4.21(@types/node@25.5.0)(lightningcss@1.32.0)(terser@5.44.1)
       vue: 3.5.30(typescript@5.9.3)
 
-  '@vitejs/plugin-vue@6.0.4(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(vue@3.5.30(typescript@5.9.3))':
+  '@vitejs/plugin-vue@6.0.5(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(vue@3.5.30(typescript@5.9.3))':
     dependencies:
       '@rolldown/pluginutils': 1.0.0-rc.2
       vite: 7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
@@ -10451,8 +10546,8 @@ snapshots:
   '@vue/language-core@3.2.5':
     dependencies:
       '@volar/language-core': 2.4.28
-      '@vue/compiler-dom': 3.5.29
-      '@vue/shared': 3.5.29
+      '@vue/compiler-dom': 3.5.30
+      '@vue/shared': 3.5.30
       alien-signals: 3.1.0
       muggle-string: 0.4.1
       path-browserify: 1.0.1
@@ -14058,7 +14153,7 @@ snapshots:
 
   robust-predicates@3.0.2: {}
 
-  rolldown-plugin-dts@0.22.5(rolldown@1.0.0-rc.9)(typescript@5.9.3)(vue-tsc@3.2.5(typescript@5.9.3)):
+  rolldown-plugin-dts@0.22.5(@typescript/native-preview@7.0.0-dev.20260401.1)(rolldown@1.0.0-rc.9)(typescript@5.9.3)(vue-tsc@3.2.5(typescript@5.9.3)):
     dependencies:
       '@babel/generator': 8.0.0-rc.2
       '@babel/helper-validator-identifier': 8.0.0-rc.2
@@ -14071,6 +14166,7 @@ snapshots:
       obug: 2.1.1
       rolldown: 1.0.0-rc.9
     optionalDependencies:
+      '@typescript/native-preview': 7.0.0-dev.20260401.1
       typescript: 5.9.3
       vue-tsc: 3.2.5(typescript@5.9.3)
     transitivePeerDependencies:
@@ -14551,7 +14647,7 @@ snapshots:
 
   ts-dedent@2.2.0: {}
 
-  tsdown@0.21.2(@tsdown/css@0.21.2)(synckit@0.11.12)(typescript@5.9.3)(vue-tsc@3.2.5(typescript@5.9.3)):
+  tsdown@0.21.2(@tsdown/css@0.21.2)(@typescript/native-preview@7.0.0-dev.20260401.1)(synckit@0.11.12)(typescript@5.9.3)(vue-tsc@3.2.5(typescript@5.9.3)):
     dependencies:
       ansis: 4.2.0
       cac: 7.0.0
@@ -14562,7 +14658,7 @@ snapshots:
       obug: 2.1.1
       picomatch: 4.0.3
       rolldown: 1.0.0-rc.9
-      rolldown-plugin-dts: 0.22.5(rolldown@1.0.0-rc.9)(typescript@5.9.3)(vue-tsc@3.2.5(typescript@5.9.3))
+      rolldown-plugin-dts: 0.22.5(@typescript/native-preview@7.0.0-dev.20260401.1)(rolldown@1.0.0-rc.9)(typescript@5.9.3)(vue-tsc@3.2.5(typescript@5.9.3))
       semver: 7.7.4
       tinyexec: 1.0.2
       tinyglobby: 0.2.15

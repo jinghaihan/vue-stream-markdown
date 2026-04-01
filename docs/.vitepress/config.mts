@@ -1,4 +1,4 @@
-import type { DefaultTheme, Plugin } from 'vitepress'
+import type { DefaultTheme, UserConfig } from 'vitepress'
 import { defineConfig } from 'vitepress'
 import LLMsTxt from 'vitepress-plugin-llms'
 import { version } from '../../package.json'
@@ -125,8 +125,38 @@ const SidebarConfig: DefaultTheme.SidebarItem[] = [
   },
 ]
 
-// https://vitepress.dev/reference/site-config
-export default defineConfig({
+const themeConfig: DefaultTheme.Config = {
+  nav: Nav,
+  search: {
+    provider: 'local',
+  },
+  sidebar: {
+    '/guide/': SidebarGuide,
+    '/feature/': SidebarFeature,
+    '/config/': SidebarConfig,
+  },
+  outline: {
+    level: [2, 4],
+  },
+  editLink: {
+    pattern: 'https://github.com/jinghaihan/vue-stream-markdown/edit/main/docs/:path',
+    text: 'Suggest changes to this page',
+  },
+  socialLinks: [
+    { icon: 'github', link: 'https://github.com/jinghaihan/vue-stream-markdown' },
+  ],
+}
+
+type DocsViteConfig = NonNullable<UserConfig<DefaultTheme.Config>['vite']>
+
+const plugins = [LLMsTxt(), ...getPlugins()] as NonNullable<DocsViteConfig['plugins']>
+
+const viteConfig = {
+  plugins,
+  resolve: { alias },
+} as DocsViteConfig
+
+const config: UserConfig<DefaultTheme.Config> = {
   title: 'Vue Stream Markdown',
   description: 'Streaming markdown output, Useful for text streams like LLM outputs.',
   outDir: './dist',
@@ -135,28 +165,7 @@ export default defineConfig({
   ],
   lastUpdated: true,
   cleanUrls: true,
-
-  themeConfig: {
-    nav: Nav,
-    search: {
-      provider: 'local',
-    },
-    sidebar: {
-      '/guide/': SidebarGuide,
-      '/feature/': SidebarFeature,
-      '/config/': SidebarConfig,
-    },
-    outline: {
-      level: [2, 4],
-    },
-    editLink: {
-      pattern: 'https://github.com/jinghaihan/vue-stream-markdown/edit/main/docs/:path',
-      text: 'Suggest changes to this page',
-    },
-    socialLinks: [
-      { icon: 'github', link: 'https://github.com/jinghaihan/vue-stream-markdown' },
-    ],
-  },
+  themeConfig,
 
   markdown: {
     theme: {
@@ -169,9 +178,8 @@ export default defineConfig({
     hostname: 'https://docs-vue-stream-markdown.netlify.app',
   },
 
-  vite: {
-    // @ts-expect-error vitepress-plugin-llms type is broken
-    plugins: [LLMsTxt(), ...getPlugins<Plugin>()],
-    resolve: { alias },
-  },
-})
+  vite: viteConfig,
+}
+
+// https://vitepress.dev/reference/site-config
+export default defineConfig(config)

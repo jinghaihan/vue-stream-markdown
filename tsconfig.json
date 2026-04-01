@@ -1,4 +1,5 @@
 {
+  "typescript.experimental.useTsgo": true,
   "compilerOptions": {
     "target": "esnext",
     "lib": ["es2023", "DOM"],
@@ -7,7 +8,11 @@
     "module": "preserve",
     "moduleResolution": "bundler",
     "paths": {
-      "vue-stream-markdown": ["./src/"],
+      "@root/*": ["./*"],
+      "markmend": ["./packages/markmend/src/index.ts"],
+      "@markmend/*": ["./packages/markmend/src/*"],
+      "vue-stream-markdown": ["./packages/vue-stream-markdown/src/index.ts"],
+      "@vue-stream-markdown/*": ["./packages/vue-stream-markdown/src/*"],
       "@shared/*": ["./playground/app/*"],
       "@shared/components/*": ["./playground/app/components/*"]
     },
@@ -28,10 +33,11 @@
     "skipLibCheck": true
   },
   "include": [
-    "src",
+    "packages/vue-stream-markdown/src",
     "docs",
     "docs/.**/**/*.ts",
     "docs/.**/**/*.vue",
+    "test",
     "shims.d.ts"
   ],
   "exclude": [

@@ -1,7 +1,8 @@
 {
-  "name": "vue-stream-markdown",
+  "name": "vue-stream-markdown-monorepo",
   "type": "module",
   "version": "0.6.5",
+  "private": true,
   "packageManager": "pnpm@10.32.1",
   "description": "Streaming markdown output, Useful for text streams like LLM outputs.",
   "author": "jinghaihan",
@@ -14,31 +15,9 @@
   "bugs": {
     "url": "https://github.com/jinghaihan/vue-stream-markdown/issues"
   },
-  "keywords": [
-    "vue",
-    "markdown",
-    "stream",
-    "mermaid",
-    "katex",
-    "latex",
-    "customizable"
-  ],
-  "exports": {
-    ".": "./dist/index.js",
-    "./index.css": "./dist/index.css",
-    "./theme.css": "./dist/theme.css",
-    "./package.json": "./package.json"
-  },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "dev": "pnpm playground:dev",
-    "build": "tsdown && pnpm build:css",
-    "build:css": "tsx scripts/build-css.ts",
+    "build": "pnpm -F vue-stream-markdown build",
     "playground:dev": "pnpm -F playground dev",
     "playground:build": "pnpm -F playground generate",
     "playground:typecheck": "pnpm -F playground typecheck",
@@ -47,60 +26,19 @@
     "docs:build": "pnpm -F docs build",
     "deps": "taze major -I",
     "lint": "eslint",
-    "typecheck": "vue-tsc --noEmit && pnpm playground:typecheck",
+    "typecheck": "pnpm -F vue-stream-markdown typecheck && pnpm playground:typecheck",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
-    "release": "bumpp",
-    "prepare": "simple-git-hooks && pnpm playground:prepare && skills-npm",
-    "prepublishOnly": "pnpm build"
-  },
-  "peerDependencies": {
-    "beautiful-mermaid": ">=0.1.0",
-    "katex": ">=0.16.20",
-    "mermaid": ">=11",
-    "shiki": ">=3.15.0",
-    "vue": ">=3.0.0"
-  },
-  "peerDependenciesMeta": {
-    "beautiful-mermaid": {
-      "optional": true
-    },
-    "katex": {
-      "optional": true
-    },
-    "mermaid": {
-      "optional": true
-    },
-    "shiki": {
-      "optional": true
-    }
-  },
-  "dependencies": {
-    "@floating-ui/dom": "catalog:frontend",
-    "@vueuse/core": "catalog:frontend",
-    "marked": "catalog:parser",
-    "mdast-util-from-markdown": "catalog:parser",
-    "mdast-util-frontmatter": "catalog:parser",
-    "mdast-util-gfm": "catalog:parser",
-    "mdast-util-math": "catalog:parser",
-    "mdast-util-to-markdown": "catalog:parser",
-    "micromark-extension-cjk-friendly": "catalog:parser",
-    "micromark-extension-cjk-friendly-gfm-strikethrough": "catalog:parser",
-    "micromark-extension-frontmatter": "catalog:parser",
-    "micromark-extension-gfm": "catalog:parser",
-    "micromark-extension-math": "catalog:parser",
-    "micromark-util-types": "catalog:parser"
+    "release": "bumpp -r",
+    "prepare": "simple-git-hooks && pnpm playground:prepare && skills-npm"
   },
   "devDependencies": {
-    "beautiful-mermaid": "catalog:",
-    "katex": "catalog:",
-    "mermaid": "catalog:",
-    "shiki": "catalog:",
     "@tsdown/css": "catalog:build",
     "@vitejs/plugin-vue": "catalog:build",
     "tsdown": "catalog:build",
     "unplugin-icons": "catalog:build",
     "vite": "catalog:build",
+    "@typescript/native-preview": "catalog:dev",
     "bumpp": "catalog:dev",
     "lightningcss": "catalog:dev",
     "nano-staged": "catalog:dev",
@@ -112,11 +50,9 @@
     "tsx": "catalog:dev",
     "typescript": "catalog:dev",
     "unocss": "catalog:frontend",
+    "vue": "catalog:frontend",
     "@iconify-json/catppuccin": "catalog:icons",
     "@iconify-json/lucide": "catalog:icons",
-    "@antfu/utils": "catalog:inlined",
-    "quick-lru": "catalog:inlined",
-    "treechop": "catalog:inlined",
     "@nuxt/eslint": "catalog:lint",
     "@octohash/eslint-config": "catalog:lint",
     "@unocss/eslint-plugin": "catalog:lint",

@@ -1,5 +1,5 @@
+import { resolveMermaidRendererType } from '@vue-stream-markdown/composables/mermaid-renderers'
 import { describe, expect, it, vi } from 'vitest'
-import { resolveMermaidRendererType } from '../src/composables/mermaid-renderers'
 
 describe('resolveMermaidRendererType', () => {
   it('should use beautiful when renderer is explicitly set to beautiful', async () => {

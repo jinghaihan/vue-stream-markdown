@@ -3,7 +3,7 @@ import type { StreamMarkdownProps } from 'vue-stream-markdown'
 import type { Action } from '../types'
 import { useClipboard } from '@vueuse/core'
 import * as LZString from 'lz-string'
-import { homepage } from '../../../package.json'
+import { homepage } from 'vue-stream-markdown/package.json'
 import {
   BookOpenText,
   BrushClean,

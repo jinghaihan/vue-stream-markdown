@@ -73,7 +73,7 @@ import type { HtmlNodeRendererProps } from 'vue-stream-markdown'
 import DOMPurify from 'dompurify'
 import { parseDocument } from 'htmlparser2'
 import { treeFind } from 'treechop'
-import { homepage } from '../../../package.json'
+import { homepage } from 'vue-stream-markdown/package.json'
 import { GitHub } from '../icons'
 
 const props = withDefaults(defineProps<HtmlNodeRendererProps>(), {})

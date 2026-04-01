@@ -1,14 +1,9 @@
 packages:
-  - .
+  - packages/*
   - playground
   - docs
 overrides:
   vue: catalog:frontend
-catalog:
-  beautiful-mermaid: ^1.1.3
-  katex: ^0.16.38
-  mermaid: ^11.13.0
-  shiki: ^4.0.2
 catalogs:
   build:
     '@tsdown/css': ^0.21.2
@@ -17,6 +12,7 @@ catalogs:
     unplugin-icons: ^23.0.1
     vite: ^8.0.0
   dev:
+    '@typescript/native-preview': ^7.0.0-dev.20260401.1
     bumpp: ^10.4.1
     lightningcss: ^1.32.0
     nano-staged: ^0.9.0

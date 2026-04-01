@@ -9,7 +9,10 @@ function r(p: string) {
 }
 
 export const alias: Record<string, string> = {
-  'vue-stream-markdown': r('src/'),
+  'markmend': r('packages/markmend/src/index.ts'),
+  'vue-stream-markdown/package.json': r('packages/vue-stream-markdown/package.json'),
+  'vue-stream-markdown/style.css': r('packages/vue-stream-markdown/src/style.css'),
+  'vue-stream-markdown': r('packages/vue-stream-markdown/src/index.ts'),
   '@shared': r('playground/app/'),
 }
 

@@ -1,11 +1,15 @@
 {
   "name": "docs",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.6.5",
   "scripts": {
     "dev": "vitepress dev",
     "build": "vitepress build",
     "preview": "vitepress preview"
+  },
+  "dependencies": {
+    "@vueuse/core": "catalog:frontend",
+    "vue-stream-markdown": "workspace:*"
   },
   "devDependencies": {
     "vitepress": "catalog:docs",

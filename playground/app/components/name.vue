@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { version } from '../../../package.json'
+import { version } from 'vue-stream-markdown/package.json'
 </script>
 
 <template>
