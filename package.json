@@ -38,6 +38,7 @@
     "tsdown": "catalog:build",
     "unplugin-icons": "catalog:build",
     "vite": "catalog:build",
+    "@typescript/native-preview": "catalog:dev",
     "bumpp": "catalog:dev",
     "lightningcss": "catalog:dev",
     "nano-staged": "catalog:dev",

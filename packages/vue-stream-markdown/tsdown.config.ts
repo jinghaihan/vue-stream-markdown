@@ -6,13 +6,8 @@ export default defineConfig({
   entry: ['./src/index'],
   platform: 'neutral',
   exports: true,
-  inputOptions: {
-    resolve: {
-      mainFields: ['module', 'main'],
-    },
-  },
-  outputOptions: {
-    minify: true,
+  dts: {
+    vue: true,
   },
   deps: {
     onlyBundle: false,
@@ -27,8 +22,13 @@ export default defineConfig({
     splitting: false,
     fileName: 'index.css',
   },
-  dts: {
-    vue: true,
+  inputOptions: {
+    resolve: {
+      mainFields: ['module', 'main'],
+    },
+  },
+  outputOptions: {
+    minify: true,
   },
   plugins: [
     Vue(),

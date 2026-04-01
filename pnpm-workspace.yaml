@@ -12,6 +12,7 @@ catalogs:
     unplugin-icons: ^23.0.1
     vite: ^8.0.0
   dev:
+    '@typescript/native-preview': ^7.0.0-dev.20260401.1
     bumpp: ^10.4.1
     lightningcss: ^1.32.0
     nano-staged: ^0.9.0

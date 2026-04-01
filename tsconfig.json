@@ -1,4 +1,5 @@
 {
+  "typescript.experimental.useTsgo": true,
   "compilerOptions": {
     "target": "esnext",
     "lib": ["es2023", "DOM"],
