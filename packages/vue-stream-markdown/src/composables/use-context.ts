@@ -1,5 +1,5 @@
-import type { MarkdownParser } from 'markmend'
-import type { MaybeRef } from 'vue'
+import type { MarkdownAstParser } from 'markmend-ast'
+import type { ComputedRef, MaybeRef } from 'vue'
 import type {
   Icons,
   NodeRenderers,
@@ -38,13 +38,44 @@ interface Context {
   caret?: MaybeRef<StreamMarkdownProps['caret']>
   parsedNodes?: MaybeRef<ParsedNode[]>
   blocks?: MaybeRef<SyntaxTree[]>
-  markdownParser?: MarkdownParser
+  markdownParser?: MarkdownAstParser
   getContainer?: () => HTMLElement | undefined
   beforeDownload?: StreamMarkdownProps['beforeDownload']
   onCopied?: (content: string) => void
 }
 
-export function useContext() {
+interface UseContextResult {
+  context: Context
+  provideContext: (ctx: Partial<Context>) => void
+  injectContext: () => Context
+  mode: ComputedRef<'static' | 'streaming'>
+  controls: ComputedRef<StreamMarkdownContext['controls'] | undefined>
+  previewers: ComputedRef<StreamMarkdownContext['previewers'] | undefined>
+  shikiOptions: ComputedRef<StreamMarkdownContext['shikiOptions'] | undefined>
+  mermaidOptions: ComputedRef<StreamMarkdownContext['mermaidOptions'] | undefined>
+  katexOptions: ComputedRef<StreamMarkdownContext['katexOptions'] | undefined>
+  hardenOptions: ComputedRef<StreamMarkdownContext['hardenOptions'] | undefined>
+  codeOptions: ComputedRef<StreamMarkdownContext['codeOptions'] | undefined>
+  imageOptions: ComputedRef<StreamMarkdownContext['imageOptions'] | undefined>
+  linkOptions: ComputedRef<StreamMarkdownContext['linkOptions'] | undefined>
+  cdnOptions: ComputedRef<StreamMarkdownContext['cdnOptions'] | undefined>
+  hideTooltip: ComputedRef<boolean>
+  icons: ComputedRef<Partial<Icons>>
+  nodeRenderers: ComputedRef<NodeRenderers>
+  uiComponents: ComputedRef<UIComponents>
+  isDark: ComputedRef<boolean>
+  enableAnimate: ComputedRef<boolean>
+  enableCaret: ComputedRef<boolean | undefined>
+  caret: ComputedRef<string | undefined>
+  parsedNodes: ComputedRef<ParsedNode[]>
+  blocks: ComputedRef<SyntaxTree[]>
+  readonly markdownParser: MarkdownAstParser | undefined
+  readonly getContainer: () => HTMLElement | undefined
+  readonly beforeDownload: NonNullable<StreamMarkdownProps['beforeDownload']>
+  readonly onCopied: (content: string) => void
+}
+
+export function useContext(): UseContextResult {
   const context = injectContext()
 
   const mode = computed(() => unref(context.mode) ?? 'streaming')

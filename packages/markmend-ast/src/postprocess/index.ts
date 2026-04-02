@@ -1,5 +1,5 @@
 import type { SyntaxTree } from '../types'
-import { flow } from '../utils'
+import { flow } from 'markmend'
 import { postFixFootnote } from './footnote'
 
 export function postNormalize(data: SyntaxTree): SyntaxTree {

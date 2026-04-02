@@ -4,11 +4,11 @@
     "target": "esnext",
     "lib": ["es2023", "DOM"],
     "moduleDetection": "force",
-    "baseUrl": ".",
     "module": "preserve",
     "moduleResolution": "bundler",
     "paths": {
       "@root/*": ["./*"],
+      "markmend-ast": ["./packages/markmend-ast/src/index.ts"],
       "markmend": ["./packages/markmend/src/index.ts"],
       "@markmend/*": ["./packages/markmend/src/*"],
       "vue-stream-markdown": ["./packages/vue-stream-markdown/src/index.ts"],
@@ -33,6 +33,8 @@
     "skipLibCheck": true
   },
   "include": [
+    "packages/markmend-ast/src",
+    "packages/markmend/src",
     "packages/vue-stream-markdown/src",
     "docs",
     "docs/.**/**/*.ts",

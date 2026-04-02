@@ -205,6 +205,9 @@ catalogs:
       specifier: ^4.1.0
       version: 4.1.0
   types:
+    '@types/mdast':
+      specifier: ^4.0.4
+      version: 4.0.4
     '@types/node':
       specifier: ^25.5.0
       version: 25.5.0
@@ -331,6 +334,19 @@ importers:
       marked:
         specifier: catalog:parser
         version: 17.0.4
+    devDependencies:
+      tsdown:
+        specifier: catalog:build
+        version: 0.21.2(@tsdown/css@0.21.2)(@typescript/native-preview@7.0.0-dev.20260401.1)(synckit@0.11.12)(typescript@5.9.3)(vue-tsc@3.2.5(typescript@5.9.3))
+
+  packages/markmend-ast:
+    dependencies:
+      '@types/mdast':
+        specifier: catalog:types
+        version: 4.0.4
+      markmend:
+        specifier: workspace:*
+        version: link:../markmend
       mdast-util-from-markdown:
         specifier: catalog:parser
         version: 2.0.3
@@ -386,6 +402,9 @@ importers:
       markmend:
         specifier: workspace:*
         version: link:../markmend
+      markmend-ast:
+        specifier: workspace:*
+        version: link:../markmend-ast
       vue:
         specifier: ^3.5.30
         version: 3.5.30(typescript@5.9.3)

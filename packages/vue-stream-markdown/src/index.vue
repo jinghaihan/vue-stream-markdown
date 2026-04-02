@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { BuiltinNodeRenderers, Icons, NodeRenderers, StreamMarkdownProps, UIComponents } from './types'
-import { MarkdownParser } from 'markmend'
+import type { BuiltinNodeRenderers, Icons, NodeRenderers, ParsedNode, StreamMarkdownProps, UIComponents } from './types'
+import { MarkdownAstParser } from 'markmend-ast'
 import { computed, onBeforeUnmount, onMounted, ref, toRefs, watch } from 'vue'
 import { NODE_RENDERERS, UI } from './components'
 import NodeList from './components/node-list.vue'
@@ -74,7 +74,7 @@ const { preload: preloadKatex, dispose: disposeKatex } = useKatex({
 
 const containerRef = ref<HTMLDivElement>()
 
-const markdownParser = new MarkdownParser(props)
+const markdownParser = new MarkdownAstParser(props)
 const defaultEnableAnimate = props.mode === 'streaming'
 
 const enableAnimate = computed(() => {
@@ -114,6 +114,12 @@ const uiComponents = computed((): UIComponents => ({
 
 function getContainer(): HTMLElement | undefined {
   return containerRef.value
+}
+
+interface StreamMarkdownExpose {
+  getMarkdownParser: () => MarkdownAstParser
+  getParsedNodes: () => ParsedNode[]
+  getProcessedContent: () => string
 }
 
 async function bootstrap() {
@@ -178,7 +184,7 @@ onBeforeUnmount(() => {
   stopDarkModeObserver()
 })
 
-defineExpose({
+defineExpose<StreamMarkdownExpose>({
   getMarkdownParser: () => markdownParser,
   getParsedNodes: () => parsedNodes.value,
   getProcessedContent: () => processedContent.value,

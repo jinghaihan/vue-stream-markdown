@@ -1,5 +1,5 @@
-import type { ParsedNode, SyntaxTree } from '@markmend/types'
-import { MarkdownParser } from '@markmend/parser'
+import type { ParsedNode, SyntaxTree } from 'markmend-ast'
+import { MarkdownAstParser } from 'markmend-ast'
 import { describe, expect, it, vi } from 'vitest'
 
 function hasAnyLoading(nodes: ParsedNode[]): boolean {
@@ -22,7 +22,7 @@ function getFirstNodeTag(ast: SyntaxTree): string | undefined {
 
 describe('markdown-parser', () => {
   it('should mark only the last block tail text as loading in streaming mode', () => {
-    const parser = new MarkdownParser({
+    const parser = new MarkdownAstParser({
       mode: 'streaming',
     })
 
@@ -38,7 +38,7 @@ describe('markdown-parser', () => {
   })
 
   it('should mark incomplete markdown as loading in streaming mode', () => {
-    const parser = new MarkdownParser({
+    const parser = new MarkdownAstParser({
       mode: 'streaming',
     })
 
@@ -48,7 +48,7 @@ describe('markdown-parser', () => {
   })
 
   it('should not mark complete non-text tail node as loading in streaming mode', () => {
-    const parser = new MarkdownParser({
+    const parser = new MarkdownAstParser({
       mode: 'streaming',
     })
 
@@ -61,7 +61,7 @@ describe('markdown-parser', () => {
   })
 
   it('should mark non-text tail node as loading when syntax is incomplete', () => {
-    const parser = new MarkdownParser({
+    const parser = new MarkdownAstParser({
       mode: 'streaming',
     })
 
@@ -74,7 +74,7 @@ describe('markdown-parser', () => {
   })
 
   it('should check sibling branches when detecting loading nodes', () => {
-    const parser = new MarkdownParser({
+    const parser = new MarkdownAstParser({
       mode: 'streaming',
     })
 
@@ -104,7 +104,7 @@ describe('markdown-parser', () => {
   })
 
   it('should clear loading state when switching to static mode without reparsing', () => {
-    const parser = new MarkdownParser({
+    const parser = new MarkdownAstParser({
       mode: 'streaming',
     })
 
@@ -124,7 +124,7 @@ describe('markdown-parser', () => {
   })
 
   it('should mark tail text loading when switching back to streaming mode without reparsing', () => {
-    const parser = new MarkdownParser({
+    const parser = new MarkdownAstParser({
       mode: 'streaming',
     })
 
@@ -139,7 +139,7 @@ describe('markdown-parser', () => {
   })
 
   it('should preserve block segmentation after switching from streaming to static', () => {
-    const parser = new MarkdownParser({
+    const parser = new MarkdownAstParser({
       mode: 'streaming',
     })
 
@@ -155,7 +155,7 @@ describe('markdown-parser', () => {
   })
 
   it('should preserve unchanged block references when only loading state changes', () => {
-    const parser = new MarkdownParser({
+    const parser = new MarkdownAstParser({
       mode: 'streaming',
     })
 
@@ -172,7 +172,7 @@ describe('markdown-parser', () => {
   })
 
   it('should not share cached ast between parser instances', () => {
-    const parserA = new MarkdownParser({
+    const parserA = new MarkdownAstParser({
       mode: 'streaming',
       postprocess: (data) => {
         const node = data.children[0] as { data?: { tag?: string } } | undefined
@@ -181,7 +181,7 @@ describe('markdown-parser', () => {
         return data
       },
     })
-    const parserB = new MarkdownParser({
+    const parserB = new MarkdownAstParser({
       mode: 'streaming',
       postprocess: (data) => {
         const node = data.children[0] as { data?: { tag?: string } } | undefined
@@ -199,7 +199,7 @@ describe('markdown-parser', () => {
   })
 
   it('should return empty result for empty content', () => {
-    const parser = new MarkdownParser({
+    const parser = new MarkdownAstParser({
       mode: 'streaming',
     })
 
@@ -207,7 +207,7 @@ describe('markdown-parser', () => {
   })
 
   it('should return empty result when custom block parser returns no blocks', () => {
-    const parser = new MarkdownParser({
+    const parser = new MarkdownAstParser({
       mode: 'streaming',
       parseMarkdownIntoBlocks: () => [],
     })
@@ -220,7 +220,7 @@ describe('markdown-parser', () => {
     const preprocess = vi.fn((content: string) => `${content}\n`)
     const parseMarkdownIntoBlocks = vi.fn((content: string) => [content])
 
-    const parser = new MarkdownParser({
+    const parser = new MarkdownAstParser({
       mode: 'streaming',
       normalize,
       preprocess,
@@ -236,7 +236,7 @@ describe('markdown-parser', () => {
   })
 
   it('should reuse cached ast within the same parser instance', () => {
-    const parser = new MarkdownParser({
+    const parser = new MarkdownAstParser({
       mode: 'streaming',
     })
     const spy = vi.spyOn(parser as unknown as { markdownToAst: (content: string) => SyntaxTree }, 'markdownToAst')
@@ -248,7 +248,7 @@ describe('markdown-parser', () => {
   })
 
   it('should skip postprocess when mode is static', () => {
-    const parser = new MarkdownParser({
+    const parser = new MarkdownAstParser({
       mode: 'static',
       postprocess: (data) => {
         const node = data.children[0] as { data?: { tag?: string } } | undefined
@@ -264,7 +264,7 @@ describe('markdown-parser', () => {
   })
 
   it('should convert both root and non-root nodes in astToMarkdown', () => {
-    const parser = new MarkdownParser({
+    const parser = new MarkdownAstParser({
       mode: 'streaming',
     })
 
@@ -277,7 +277,7 @@ describe('markdown-parser', () => {
   })
 
   it('should return false for empty node list in hasLoadingNode', () => {
-    const parser = new MarkdownParser({
+    const parser = new MarkdownAstParser({
       mode: 'streaming',
     })
 

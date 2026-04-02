@@ -1,4 +1,4 @@
-import type { MarkdownParser } from 'markmend'
+import type { MarkdownAstParser } from 'markmend-ast'
 import type {
   BlockquoteNode,
   BreakNode,
@@ -32,14 +32,14 @@ import type {
 } from './core'
 
 export interface NodeRendererListProps extends Omit<NodeRendererProps, 'node' | 'nodeKey' | 'markdownParser' | 'nodeRenderers'> {
-  markdownParser?: MarkdownParser
+  markdownParser?: MarkdownAstParser
   nodeRenderers?: NodeRenderers
   nodes?: ParsedNode[]
   nodeKey?: string
 }
 
 export interface NodeRendererProps {
-  markdownParser: MarkdownParser
+  markdownParser: MarkdownAstParser
   nodeRenderers: NodeRenderers
   blockIndex?: number
   node: ParsedNode

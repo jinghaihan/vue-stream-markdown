@@ -1,13 +1,14 @@
 import type { RenderOptions as BeautifulMermaidConfig } from 'beautiful-mermaid'
 import type { KatexOptions as KatexConfig } from 'katex'
+import type { PreprocessContext } from 'markmend'
 import type {
   FromMarkdownExtension,
+  MarkdownAstParserOptions,
   MarkdownParserOptions,
   MdastOptions,
   MicromarkExtension,
-  PreprocessContext,
   ToMarkdownExtension,
-} from 'markmend'
+} from 'markmend-ast'
 import type { MermaidConfig } from 'mermaid'
 import type { BuiltinTheme, BundledLanguage, BundledTheme, CodeToTokensOptions } from 'shiki'
 import type { Component } from 'vue'
@@ -18,7 +19,7 @@ import type { LocaleConfig } from './locale'
 import type { CodeNodeRendererProps, ImageNodeRendererProps, TableNodeRendererProps } from './renderer'
 import type { BuiltinNodeRenderers, ControlTransformer, Icons, MaybePromise, UIComponents } from './shared'
 
-export interface StreamMarkdownProps extends StreamMarkdownContext, StreamMarkdownHooks, MarkdownParserOptions {
+export interface StreamMarkdownProps extends StreamMarkdownContext, StreamMarkdownHooks, MarkdownAstParserOptions {
   mode?: 'static' | 'streaming'
   content?: string
   nodeRenderers?: NodeRenderers
@@ -214,6 +215,7 @@ export interface CdnOptions {
 
 export {
   type FromMarkdownExtension,
+  type MarkdownAstParserOptions,
   type MarkdownParserOptions,
   type MdastOptions,
   type MicromarkExtension,

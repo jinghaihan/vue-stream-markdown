@@ -1,14 +1,13 @@
 import type {
-  BuiltinPluginContext,
   FromMarkdownExtension,
-  MarkdownParserOptions,
-  MarkdownParserResult,
+  MarkdownAstParserOptions,
+  MarkdownAstParserResult,
   MicromarkExtension,
   ParsedNode,
-  PreprocessContext,
   SyntaxTree,
   ToMarkdownExtension,
 } from './types'
+import { MarkdownProcessor } from 'markmend'
 import { fromMarkdown } from 'mdast-util-from-markdown'
 import { toMarkdown } from 'mdast-util-to-markdown'
 import QuickLRU from 'quick-lru'
@@ -18,14 +17,13 @@ import {
   BUILTIN_TO_MDAST_EXTENSIONS,
 } from './constants'
 import { postNormalize, postprocess } from './postprocess'
-import { normalize, parseMarkdownIntoBlocks, preprocess } from './preprocess'
 import { findLastLeafNode, resolveBuiltinExtensions } from './utils'
 
-export interface Options extends MarkdownParserOptions {
+export interface Options extends MarkdownAstParserOptions {
   mode: 'streaming' | 'static'
 }
 
-export class MarkdownParser {
+export class MarkdownAstParser {
   private mode: Options['mode'] = 'streaming'
   private contents: string[] = []
   private asts: SyntaxTree[] = []
@@ -38,12 +36,14 @@ export class MarkdownParser {
   private toMdastExtensions: ToMarkdownExtension[] = []
 
   private options: Options
+  private processor: MarkdownProcessor
 
   constructor(options: Options) {
     this.mode = options.mode
     this.options = options
+    this.processor = new MarkdownProcessor(options)
 
-    const ctx: BuiltinPluginContext = {
+    const ctx = {
       mdastOptions: options.mdastOptions,
     }
 
@@ -101,22 +101,14 @@ export class MarkdownParser {
       lastLeafNode.loading = true
   }
 
-  private getPreprocessContext(): PreprocessContext {
-    return {
-      singleDollarTextMath: this.options.mdastOptions?.singleDollarTextMath ?? false,
-    }
-  }
-
   private update(data: string) {
-    const normal = this.options.normalize ?? normalize
-    const pre = this.options.preprocess ?? preprocess
-    const parse = this.options.parseMarkdownIntoBlocks ?? parseMarkdownIntoBlocks
-
-    data = normal(data)
+    data = this.processor.normalize(data)
 
     // Preserve multi-block segmentation when switching from streaming -> static at runtime.
     // Otherwise block keys collapse from N -> 1 and can trigger broad component remounts.
-    const blocks = this.mode === 'static' && this.contents.length <= 1 ? [data] : parse(data)
+    const blocks = this.mode === 'static' && this.contents.length <= 1
+      ? [data]
+      : this.processor.parseMarkdownIntoBlocks(data)
 
     const asts: SyntaxTree[] = []
     const contents: string[] = []
@@ -138,8 +130,13 @@ export class MarkdownParser {
       let content = blocks[index]!
 
       // preprocess the last block
-      if (isLastBlock)
-        content = this.mode === 'streaming' ? pre(content, this.getPreprocessContext()) : content
+      if (isLastBlock) {
+        content = this.mode === 'streaming'
+          ? this.processor.preprocess(content, {
+              singleDollarTextMath: this.options.mdastOptions?.singleDollarTextMath ?? false,
+            })
+          : content
+      }
       contents.push(content)
 
       const syntaxLoading = isLastBlock && blocks[index] !== content
@@ -239,7 +236,7 @@ export class MarkdownParser {
     }
   }
 
-  parseMarkdown(content: string): MarkdownParserResult {
+  parseMarkdown(content: string): MarkdownAstParserResult {
     if (!content)
       return { contents: [], asts: [] }
     this.update(content)
@@ -258,8 +255,8 @@ export class MarkdownParser {
       mdastExtensions: this.fromMdastExtensions,
     })
 
-    const normal = this.options.postNormalize ?? postNormalize
-    const treeData = normal(data)
+    const normalize = this.options.postNormalize ?? postNormalize
+    const treeData = normalize(data)
 
     const post = this.options.postprocess ?? postprocess
     const resolved = this.mode === 'streaming' ? post(treeData) : treeData
@@ -300,3 +297,5 @@ export class MarkdownParser {
     return false
   }
 }
+
+export { MarkdownAstParser as MarkdownParser }

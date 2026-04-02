@@ -1,4 +1,4 @@
-import type { NodeType as ParserNodeType } from 'markmend'
+import type { NodeType as ParserNodeType } from 'markmend-ast'
 import type { Component } from 'vue'
 
 export type {
@@ -20,6 +20,7 @@ export type {
   LinkReferenceNode,
   ListItemNode,
   ListNode,
+  MarkdownAstParserResult,
   MarkdownParserResult,
   MathNode,
   NodeType,
@@ -33,6 +34,6 @@ export type {
   TextNode,
   ThematicBreakNode,
   YamlNode,
-} from 'markmend'
+} from 'markmend-ast'
 
 export type NodeRenderers = Partial<Record<ParserNodeType, Component>>
