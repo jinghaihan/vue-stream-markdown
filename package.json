@@ -17,7 +17,7 @@
   },
   "scripts": {
     "dev": "pnpm playground:dev",
-    "build": "turbo run build \"--filter=./packages/*\"",
+    "build": "turbo run build \"--filter=./packages/*\" \"--filter=./packages/internal/*\"",
     "core:typecheck": "pnpm -F vue-stream-markdown typecheck",
     "playground:dev": "pnpm -F playground dev",
     "playground:build": "pnpm -F playground generate",

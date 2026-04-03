@@ -1,5 +1,6 @@
 packages:
   - packages/*
+  - packages/internal/*
   - playground
   - docs
 overrides:

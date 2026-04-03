@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { ImageNodeRendererProps } from '../../types'
+import { saveImage } from '@stream-markdown/shared'
 import { computed, ref } from 'vue'
 import { useContext, useControls, useI18n, useSanitizers } from '../../composables'
-import { saveImage } from '../../utils'
 
 const props = withDefaults(defineProps<ImageNodeRendererProps>(), {})
 

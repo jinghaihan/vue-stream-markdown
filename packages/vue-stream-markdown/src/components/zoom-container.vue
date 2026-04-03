@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import type { CSSProperties } from 'vue'
 import type { Control, SelectOption, UIZoomContainerProps } from '../types'
+import { resolveZoomControlPosition } from '@stream-markdown/shared'
 import { computed, ref } from 'vue'
 import { useContext, useI18n, useZoom } from '../composables'
 
@@ -37,43 +39,7 @@ const {
 
 const zoomPercent = computed(() => `${Math.round(zoom.value * 100)}%`)
 
-const controlsPosition = computed(() => {
-  switch (props.position) {
-    case 'top-left':
-      return {
-        top: '0.5rem',
-        left: '0.5rem',
-      }
-    case 'top-right':
-      return {
-        top: '0.5rem',
-        right: '0.5rem',
-      }
-    case 'top-center':
-      return {
-        top: '0.5rem',
-        left: '50%',
-        transform: 'translateX(-50%)',
-      }
-    case 'bottom-left':
-      return {
-        bottom: '0.5rem',
-        left: '0.5rem',
-      }
-    case 'bottom-center':
-      return {
-        bottom: '0.5rem',
-        left: '50%',
-        transform: 'translateX(-50%)',
-      }
-    case 'bottom-right':
-    default:
-      return {
-        bottom: '0.5rem',
-        right: '0.5rem',
-      }
-  }
-})
+const controlsPosition = computed(() => resolveZoomControlPosition(props.position) as CSSProperties)
 
 const controlButtonProps = computed(() => {
   if (props.controlSize === 'vanilla')

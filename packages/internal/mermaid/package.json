@@ -1,0 +1,26 @@
+{
+  "name": "@stream-markdown/mermaid",
+  "type": "module",
+  "version": "0.6.5",
+  "private": true,
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown"
+  },
+  "dependencies": {
+    "@antfu/utils": "catalog:inlined",
+    "@stream-markdown/shared": "workspace:*",
+    "beautiful-mermaid": "^1.1.3",
+    "mermaid": "^11.13.0"
+  },
+  "devDependencies": {
+    "tsdown": "catalog:build"
+  }
+}

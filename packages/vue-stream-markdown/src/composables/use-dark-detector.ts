@@ -1,14 +1,18 @@
-import type { MaybeRef } from 'vue'
+import type { MaybeRefOrGetter } from 'vue'
+import { getOverlayContainer, OVERLAY_CONTAINER_ID } from '@stream-markdown/shared'
 import { useMutationObserver } from '@vueuse/core'
-import { computed, onMounted, ref, unref, watch } from 'vue'
-import { getOverlayContainer } from '../utils'
+import { computed, onMounted, ref, toValue, watch } from 'vue'
 
-export function useDarkDetector(darkProp: MaybeRef<boolean | undefined>, cssVariables: MaybeRef<Record<string, string>>) {
+export function useDarkDetector(
+  darkProp: MaybeRefOrGetter<boolean | undefined>,
+  cssVariables: MaybeRefOrGetter<Record<string, string>>,
+) {
   const target = ref<HTMLElement | null>()
+  const resolvedCssVariables = computed(() => toValue(cssVariables))
 
-  const isDarkProvided = computed(() => typeof unref(darkProp) === 'boolean')
+  const isDarkProvided = computed(() => typeof toValue(darkProp) === 'boolean')
   const detectedDark = ref<boolean>(false)
-  const isDark = computed(() => isDarkProvided.value ? unref(darkProp)! : detectedDark.value)
+  const isDark = computed(() => isDarkProvided.value ? toValue(darkProp)! : detectedDark.value)
 
   function detect() {
     detectedDark.value = document.documentElement.classList.contains('dark')
@@ -24,7 +28,7 @@ export function useDarkDetector(darkProp: MaybeRef<boolean | undefined>, cssVari
 
   function createOverlayContainer() {
     const div = document.createElement('div')
-    div.id = 'stream-markdown-overlay'
+    div.id = OVERLAY_CONTAINER_ID
     div.classList.add('stream-markdown')
     div.classList.add(isDark.value ? 'dark' : 'light')
     document.body.appendChild(div)
@@ -37,7 +41,7 @@ export function useDarkDetector(darkProp: MaybeRef<boolean | undefined>, cssVari
 
     overlayContainer.classList.toggle('dark', isDark.value)
     overlayContainer.classList.toggle('light', !isDark.value)
-    Object.entries(cssVariables.value).forEach(([key, value]) => {
+    Object.entries(resolvedCssVariables.value).forEach(([key, value]) => {
       overlayContainer.style.setProperty(key, value)
     })
   }
@@ -52,7 +56,7 @@ export function useDarkDetector(darkProp: MaybeRef<boolean | undefined>, cssVari
     },
   )
 
-  watch(() => [isDark.value, cssVariables.value], () => updateOverlayContainerTheme())
+  watch(() => [isDark.value, resolvedCssVariables.value], () => updateOverlayContainerTheme())
 
   watch(isDarkProvided, () => {
     if (isDarkProvided.value)

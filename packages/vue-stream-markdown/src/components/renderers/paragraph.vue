@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { ParagraphNodeRendererProps } from '../../types'
+import { isPlainTextNodeType } from '@stream-markdown/shared'
 import { treeFlatMap } from 'treechop'
 import { computed } from 'vue'
-import { PLAIN_TEXT_NODES } from '../../constants'
 import NodeList from '../node-list.vue'
 
 const props = withDefaults(defineProps<ParagraphNodeRendererProps>(), {})
@@ -19,7 +19,7 @@ const lineHeight = computed(() => {
   if (props.deep !== 0)
     return ''
   const data = [...new Set(treeFlatMap(props.node.children, node => node.type))]
-  if ([...data].every(type => PLAIN_TEXT_NODES.includes(type)))
+  if ([...data].every(isPlainTextNodeType))
     return 1.75
   return ''
 })

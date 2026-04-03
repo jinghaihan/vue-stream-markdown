@@ -4,12 +4,14 @@ import Icons from 'unplugin-icons/vite'
 
 export default defineConfig({
   entry: ['./src/index'],
+  tsconfig: './tsconfig.build.json',
   platform: 'neutral',
   exports: true,
   dts: {
     vue: true,
   },
   deps: {
+    alwaysBundle: [/^@stream-markdown\//],
     onlyBundle: false,
     neverBundle: [
       'shiki',

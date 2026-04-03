@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { UIModalProps } from '../types'
+import { getOverlayContainer } from '@stream-markdown/shared'
 import { createReusableTemplate, useEventListener } from '@vueuse/core'
 import { computed, onMounted, ref, useSlots } from 'vue'
-import { getOverlayContainer } from '../utils'
 
 const props = withDefaults(defineProps<UIModalProps>(), {
   zIndex: 9999,

@@ -1,14 +1,15 @@
-import type { MaybeRef } from 'vue'
-import type { CdnOptions, InlineMathNode, KatexOptions, MathNode } from '../types'
+import type { CdnOptions } from '@stream-markdown/shared'
+import type { MaybeRefOrGetter } from 'vue'
+import type { InlineMathNode, KatexOptions, MathNode } from '../types'
 import { throttle } from '@antfu/utils'
-import { computed, ref, unref, watch } from 'vue'
+import { computed, ref, toValue, watch } from 'vue'
 import { useKatex } from './use-katex'
 
 interface UseMathRendererOptions {
-  node: MaybeRef<InlineMathNode | MathNode>
-  katexOptions?: MaybeRef<KatexOptions | undefined>
+  node: MaybeRefOrGetter<InlineMathNode | MathNode>
+  katexOptions?: MaybeRefOrGetter<KatexOptions | undefined>
   cdnOptions?: CdnOptions
-  throttle?: MaybeRef<number>
+  throttle?: MaybeRefOrGetter<number>
 }
 
 export function useMathRenderer(options: UseMathRendererOptions) {
@@ -22,9 +23,9 @@ export function useMathRenderer(options: UseMathRendererOptions) {
   const html = ref<string>('')
   const errorMessage = ref<string>('')
 
-  const node = computed(() => unref(options.node))
-  const katexOptions = computed(() => unref(options.katexOptions)?.config ?? {})
-  const throttleTime = computed(() => unref(options.throttle) ?? 150)
+  const node = computed(() => toValue(options.node))
+  const katexOptions = computed(() => toValue(options.katexOptions)?.config ?? {})
+  const throttleTime = computed(() => toValue(options.throttle) ?? 150)
 
   const code = computed(() => node.value.value)
   const loading = computed(() => node.value.loading)

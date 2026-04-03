@@ -1,4 +1,4 @@
-import { resolveMermaidRendererType } from '@vue-stream-markdown/composables/mermaid-renderers'
+import { resolveMermaidRendererType } from '@stream-markdown/mermaid'
 import { describe, expect, it, vi } from 'vitest'
 
 describe('resolveMermaidRendererType', () => {
@@ -7,7 +7,6 @@ describe('resolveMermaidRendererType', () => {
 
     const result = await resolveMermaidRendererType(
       { renderer: 'beautiful' },
-      undefined,
       hasBeautifulModule,
     )
 
@@ -20,7 +19,6 @@ describe('resolveMermaidRendererType', () => {
 
     const result = await resolveMermaidRendererType(
       { renderer: 'vanilla' },
-      undefined,
       hasBeautifulModule,
     )
 
@@ -32,10 +30,11 @@ describe('resolveMermaidRendererType', () => {
     const hasBeautifulModule = vi.fn(async () => false)
 
     const result = await resolveMermaidRendererType(
-      undefined,
       {
-        baseUrl: 'https://cdn.jsdelivr.net/npm',
-        beautifulMermaid: 'umd',
+        cdnOptions: {
+          baseUrl: 'https://cdn.jsdelivr.net/npm',
+          beautifulMermaid: 'umd',
+        },
       },
       hasBeautifulModule,
     )
@@ -48,8 +47,7 @@ describe('resolveMermaidRendererType', () => {
     const hasBeautifulModule = vi.fn(async () => true)
 
     const result = await resolveMermaidRendererType(
-      undefined,
-      undefined,
+      {},
       hasBeautifulModule,
     )
 
@@ -61,8 +59,7 @@ describe('resolveMermaidRendererType', () => {
     const hasBeautifulModule = vi.fn(async () => false)
 
     const result = await resolveMermaidRendererType(
-      undefined,
-      undefined,
+      {},
       hasBeautifulModule,
     )
 

@@ -1,38 +1,24 @@
-import type { MaybeRef } from 'vue'
+import type { MaybeRefOrGetter } from 'vue'
 import type { CodeOptions } from '../types'
-import { computed, unref } from 'vue'
+import { isCodeOptionEnabled, resolveCodeOptions } from '@stream-markdown/shared'
+import { computed, toValue } from 'vue'
 
 interface UseCodeOptionsOptions {
-  codeOptions?: MaybeRef<CodeOptions | undefined>
-  language?: MaybeRef<string>
+  codeOptions?: MaybeRefOrGetter<CodeOptions | undefined>
+  language?: MaybeRefOrGetter<string>
 }
 
 export function useCodeOptions(options: UseCodeOptionsOptions) {
-  const language = computed(() => unref(options.language) || '')
-  const codeOptions = computed(() => unref(options.codeOptions))
+  const language = computed(() => toValue(options.language) || '')
+  const codeOptions = computed(() => toValue(options.codeOptions))
 
-  const languageCodeOptions = computed(() => {
-    const specificOptions = codeOptions.value?.language?.[language.value]
-    return { ...codeOptions.value, ...(specificOptions ?? {}) }
-  })
+  const languageCodeOptions = computed(() => resolveCodeOptions(codeOptions.value, language.value))
 
-  const showLanguageIcon = computed(() => {
-    return typeof languageCodeOptions.value?.languageIcon === 'boolean'
-      ? languageCodeOptions.value.languageIcon
-      : true
-  })
+  const showLanguageIcon = computed(() => isCodeOptionEnabled(languageCodeOptions.value?.languageIcon))
 
-  const showLanguageName = computed(() =>
-    typeof languageCodeOptions.value?.languageName === 'boolean'
-      ? languageCodeOptions.value.languageName
-      : true,
-  )
+  const showLanguageName = computed(() => isCodeOptionEnabled(languageCodeOptions.value?.languageName))
 
-  const showLineNumbers = computed(() =>
-    typeof languageCodeOptions.value?.lineNumbers === 'boolean'
-      ? languageCodeOptions.value.lineNumbers
-      : true,
-  )
+  const showLineNumbers = computed(() => isCodeOptionEnabled(languageCodeOptions.value?.lineNumbers))
 
   return {
     languageCodeOptions,

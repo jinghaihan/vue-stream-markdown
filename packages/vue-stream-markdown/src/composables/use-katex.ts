@@ -1,81 +1,55 @@
+import type { CdnOptions } from '@stream-markdown/shared'
 import type { KatexOptions } from 'katex'
-import type { MaybeRef } from 'vue'
-import type { CdnOptions, MdastOptions } from '../types'
+import type { MaybeRefOrGetter } from 'vue'
+import type { MdastOptions } from '../types'
+import { createKatexRuntime } from '@stream-markdown/math'
+import { isClient } from '@stream-markdown/shared'
 import { checkMathSyntax } from 'markmend'
-import { computed, ref, unref, watch } from 'vue'
-import { hasKatexModule, isClient } from '../utils'
-import { useCdnLoader } from './use-cdn-loader'
+import { computed, ref, toValue, watch } from 'vue'
 
 interface UseKatexOptions {
-  markdown?: MaybeRef<string>
+  markdown?: MaybeRefOrGetter<string>
   mdastOptions?: MdastOptions
   cdnOptions?: CdnOptions
 }
 
-let existingKatex: boolean = false
-
 export function useKatex(options: UseKatexOptions) {
   const { mdastOptions, cdnOptions } = options ?? {}
 
-  const markdownContent = computed(() => unref(options.markdown) ?? '')
+  const markdownContent = computed(() => toValue(options.markdown) ?? '')
   const hasMathPlugin = mdastOptions?.builtin?.micromark?.math !== false
   const singleDollarTextMath = mdastOptions?.singleDollarTextMath === true
   const hasMathSyntax = computed(() => checkMathSyntax(markdownContent.value, singleDollarTextMath))
 
-  const { getCdnKatexUrl, loadCdnKatex, loadCdnKatexCss } = useCdnLoader({ cdnOptions })
-
   const installed = ref<boolean>(false)
+  const runtime = createKatexRuntime({
+    cdnOptions: () => cdnOptions,
+  })
 
-  async function getKatex(): Promise<typeof import('katex')> {
-    return await loadCdnKatex() ?? await import('katex')
+  async function render(code: string, options: KatexOptions = {}) {
+    return await runtime.renderToHtml(code, {
+      config: options,
+    })
   }
 
-  async function hasKatex(): Promise<boolean> {
-    return getCdnKatexUrl() ? true : await hasKatexModule()
+  async function preload() {
+    installed.value = await runtime.installed
+    if (installed.value)
+      await runtime.preload()
   }
-
-  async function render(code: string, options: KatexOptions = {}): Promise<{
-    html?: string
-    error?: string
-  }> {
-    const { renderToString } = await getKatex()
-    try {
-      const html = renderToString(code, {
-        output: 'html',
-        strict: 'ignore',
-        ...options,
-      })
-      return { html }
-    }
-    catch (error) {
-      return { error: (error as Error).message }
-    }
-  }
-
-  async function preload() {}
-
-  function dispose() {}
 
   watch(
     () => hasMathSyntax.value,
     (hasMathSyntax) => {
       if (hasMathSyntax && hasMathPlugin)
-        // Because `katex.min.css` is not included in the bundle, you need to import it manually when not using CDN.
-        // When using CDN, the CSS file will be automatically loaded when detected math syntax.
-        loadCdnKatexCss()
+        runtime.ensureCss()
     },
     { immediate: true },
   )
 
   if (isClient()) {
     (async () => {
-      if (existingKatex === true) {
-        installed.value = true
-        return
-      }
-
-      installed.value = await hasKatex()
-      existingKatex = installed.value
+      installed.value = await runtime.installed
     })()
   }
 
@@ -83,7 +57,7 @@ export function useKatex(options: UseKatexOptions) {
     installed,
     render,
     preload,
-    dispose,
-    loadCdnKatexCss,
+    dispose: runtime.dispose,
+    loadCdnKatexCss: runtime.ensureCss,
   }
 }

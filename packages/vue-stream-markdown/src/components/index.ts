@@ -1,9 +1,10 @@
+import type { BuiltinUIComponents } from '@stream-markdown/shared'
+import type { Component } from 'vue'
 import { defineAsyncComponent } from 'vue'
 
 export * from './previewers'
 export * from './renderers'
 
-/// keep-sorted
 export const UI = {
   Alert: defineAsyncComponent(() => import('./alert.vue')),
   Button: defineAsyncComponent(() => import('./button.vue')),
@@ -19,6 +20,6 @@ export const UI = {
   Table: defineAsyncComponent(() => import('./table.vue')),
   Tooltip: defineAsyncComponent(() => import('./tooltip.vue')),
   ZoomContainer: defineAsyncComponent(() => import('./zoom-container.vue')),
-} as const
+} as const satisfies Record<BuiltinUIComponents, Component>
 
 export const NodeList = defineAsyncComponent(() => import('./node-list.vue'))

@@ -8,6 +8,10 @@
     "moduleResolution": "bundler",
     "paths": {
       "@root/*": ["./*"],
+      "@stream-markdown/shared": ["./packages/internal/shared/src/index.ts"],
+      "@stream-markdown/code": ["./packages/internal/code/src/index.ts"],
+      "@stream-markdown/mermaid": ["./packages/internal/mermaid/src/index.ts"],
+      "@stream-markdown/math": ["./packages/internal/math/src/index.ts"],
       "markmend-ast": ["./packages/markmend-ast/src/index.ts"],
       "markmend": ["./packages/markmend/src/index.ts"],
       "@markmend/*": ["./packages/markmend/src/*"],
@@ -33,9 +37,7 @@
     "skipLibCheck": true
   },
   "include": [
-    "packages/markmend-ast/src",
-    "packages/markmend/src",
-    "packages/vue-stream-markdown/src",
+    "packages/**/*.ts",
     "docs",
     "docs/.**/**/*.ts",
     "docs/.**/**/*.vue",

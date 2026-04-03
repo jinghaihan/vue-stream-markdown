@@ -1,3 +1,4 @@
+import type { NodeRenderers as SharedNodeRenderers } from '@stream-markdown/shared'
 import type { NodeType as ParserNodeType } from 'markmend-ast'
 import type { Component } from 'vue'
 
@@ -36,4 +37,4 @@ export type {
   YamlNode,
 } from 'markmend-ast'
 
-export type NodeRenderers = Partial<Record<ParserNodeType, Component>>
+export type NodeRenderers = SharedNodeRenderers<Component, ParserNodeType>

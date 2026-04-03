@@ -1,5 +1,5 @@
 import type { Placement } from '@floating-ui/dom'
-import type { MaybeRef } from 'vue'
+import type { MaybeRefOrGetter } from 'vue'
 import {
   autoUpdate,
   computePosition,
@@ -7,23 +7,23 @@ import {
   offset,
   shift,
 } from '@floating-ui/dom'
+import { isClient } from '@stream-markdown/shared'
 import { useEventListener } from '@vueuse/core'
-import { computed, onMounted, ref, unref, watch, watchEffect } from 'vue'
-import { isClient } from '../utils'
+import { computed, onMounted, ref, toValue, watch, watchEffect } from 'vue'
 
 interface UseFloatingOptions {
-  hideTooltip?: MaybeRef<boolean>
-  trigger?: MaybeRef<'hover' | 'click'>
-  placement?: MaybeRef<Placement>
-  delay?: MaybeRef<number | [number, number]>
+  hideTooltip?: MaybeRefOrGetter<boolean>
+  trigger?: MaybeRefOrGetter<'hover' | 'click'>
+  placement?: MaybeRefOrGetter<Placement>
+  delay?: MaybeRefOrGetter<number | [number, number]>
   getContainer?: () => Element | HTMLElement | undefined | null
 }
 
 export function useFloating(options: UseFloatingOptions) {
-  const hideTooltip = computed(() => unref(options.hideTooltip) ?? false)
-  const trigger = computed((): 'hover' | 'click' => unref(options.trigger) ?? 'hover')
-  const placement = computed((): Placement => unref(options.placement) ?? 'top')
-  const delay = computed((): number | [number, number] => unref(options.delay) ?? [100, 100])
+  const hideTooltip = computed(() => toValue(options.hideTooltip) ?? false)
+  const trigger = computed((): 'hover' | 'click' => toValue(options.trigger) ?? 'hover')
+  const placement = computed((): Placement => toValue(options.placement) ?? 'top')
+  const delay = computed((): number | [number, number] => toValue(options.delay) ?? [100, 100])
 
   const referenceEl = ref<HTMLElement>()
   const floatingEl = ref<HTMLElement>()

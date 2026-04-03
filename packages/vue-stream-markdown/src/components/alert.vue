@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { UIAlertProps } from '../types'
+import { getOverlayContainer } from '@stream-markdown/shared'
 import { createReusableTemplate, useEventListener } from '@vueuse/core'
 import { computed, onMounted, ref } from 'vue'
 import { useContext, useI18n } from '../composables'
-import { getOverlayContainer } from '../utils'
 
 const props = withDefaults(defineProps<UIAlertProps>(), {
   zIndex: 9999,

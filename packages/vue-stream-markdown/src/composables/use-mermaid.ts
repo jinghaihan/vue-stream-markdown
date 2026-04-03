@@ -1,30 +1,64 @@
-import type { MaybeRef } from 'vue'
-import type { CdnOptions, MermaidOptions, ShikiOptions } from '../types'
-import { ref } from 'vue'
-import { isClient, save, svgToPngBlob } from '../utils'
-import { createMermaidRenderer } from './mermaid-renderers'
+import type { CdnOptions } from '@stream-markdown/shared'
+import type { MaybeRefOrGetter } from 'vue'
+import type { MermaidOptions, ShikiOptions } from '../types'
+import {
+  createShikiRuntime,
+  DEFAULT_SHIKI_DARK_THEME,
+  DEFAULT_SHIKI_LIGHT_THEME,
+} from '@stream-markdown/code'
+import { createMermaidRuntime } from '@stream-markdown/mermaid'
+import { isClient } from '@stream-markdown/shared'
+import { ref, toValue } from 'vue'
 
 interface UseMermaidOptions {
-  mermaidOptions?: MaybeRef<MermaidOptions | undefined>
+  mermaidOptions?: MaybeRefOrGetter<MermaidOptions | undefined>
   cdnOptions?: CdnOptions
-  shikiOptions?: MaybeRef<ShikiOptions | undefined>
-  isDark?: MaybeRef<boolean>
+  shikiOptions?: MaybeRefOrGetter<ShikiOptions | undefined>
+  isDark?: MaybeRefOrGetter<boolean>
 }
 
 export function useMermaid(options?: UseMermaidOptions) {
-  const renderer = createMermaidRenderer(
-    options?.mermaidOptions,
-    options?.cdnOptions,
-    options?.shikiOptions,
-    options?.isDark,
-  )
+  async function resolveThemeColorsFromShiki(): Promise<Record<string, string> | null> {
+    try {
+      const shikiTheme = (toValue(options?.shikiOptions)?.theme ?? [DEFAULT_SHIKI_LIGHT_THEME, DEFAULT_SHIKI_DARK_THEME])
+      const currentShikiTheme = (toValue(options?.isDark) ?? false) ? shikiTheme[1] : shikiTheme[0]
+      const shikiRuntime = createShikiRuntime({
+        cdnOptions: () => options?.cdnOptions,
+        isDark: () => toValue(options?.isDark) ?? false,
+        theme: () => shikiTheme,
+        langs: () => toValue(options?.shikiOptions)?.langs ?? [],
+        langAlias: () => toValue(options?.shikiOptions)?.langAlias ?? {},
+        codeToTokenOptions: () => toValue(options?.shikiOptions)?.codeToTokenOptions,
+      })
+      const [{ fromShikiTheme }, highlighter] = await Promise.all([
+        import('beautiful-mermaid'),
+        shikiRuntime.getHighlighter(),
+      ])
+      const theme = highlighter.getTheme(currentShikiTheme ?? DEFAULT_SHIKI_LIGHT_THEME)
+      return fromShikiTheme(theme) as unknown as Record<string, string>
+    }
+    catch {
+      return null
+    }
+  }
+
+  const runtime = createMermaidRuntime({
+    renderer: () => toValue(options?.mermaidOptions)?.renderer,
+    theme: () => toValue(options?.mermaidOptions)?.theme,
+    beautifulTheme: () => toValue(options?.mermaidOptions)?.beautifulTheme,
+    config: () => toValue(options?.mermaidOptions)?.config,
+    beautifulConfig: () => toValue(options?.mermaidOptions)?.beautifulConfig,
+    cdnOptions: () => options?.cdnOptions,
+    isDark: () => toValue(options?.isDark) ?? false,
+    getThemeColors: resolveThemeColorsFromShiki,
+  })
 
   async function parseMermaid(code: string) {
-    return renderer.parse(code)
+    return await runtime.parse(code)
   }
 
   async function renderMermaid(code: string) {
-    return renderer.render(code)
+    return await runtime.render(code)
   }
 
   async function saveMermaid(
@@ -33,54 +67,34 @@ export function useMermaid(options?: UseMermaidOptions) {
     onError?: (error: Error) => void,
   ) {
     try {
-      const { svg } = await renderer.render(code)
-      if (!svg) {
-        onError?.(new Error('SVG not found. Please wait for the diagram to render.'))
-        return
-      }
-
-      if (format === 'svg') {
-        const mimeType = 'image/svg+xml'
-        save('diagram.svg', svg, mimeType)
-      }
-
-      if (format === 'png') {
-        const blob = await svgToPngBlob(svg)
-        if (blob)
-          save('diagram.png', blob, 'image/png')
-      }
+      await runtime.save(format, code)
     }
     catch (error) {
       onError?.(error as Error)
     }
   }
 
-  async function preload() {
-    if (!await renderer.isEnabled())
-      return
-    if (!renderer.isLoaded())
-      await renderer.load()
-  }
-
-  function dispose() {
-    // Renderer cleanup if needed
-  }
-
   const installed = ref<boolean>(false)
+
+  async function preload() {
+    installed.value = await runtime.installed
+    if (installed.value)
+      await runtime.preload()
+  }
 
   if (isClient()) {
     (async () => {
-      installed.value = await renderer.isEnabled()
+      installed.value = await runtime.installed
     })()
   }
 
   return {
     installed,
-    getMermaid: () => renderer.load(),
+    getMermaid: runtime.load,
     parseMermaid,
     renderMermaid,
     saveMermaid,
     preload,
-    dispose,
+    dispose: runtime.dispose,
   }
 }

@@ -1,9 +1,6 @@
+import { isClient, resolveThemeVariables, SHADCN_SCHEMAS } from '@stream-markdown/shared'
 import { useMutationObserver } from '@vueuse/core'
 import { computed, ref, watchEffect } from 'vue'
-import { SHADCN_SCHEMAS } from '../constants'
-import { isClient } from '../utils'
-
-const reg = /^(?:hsl|rgb|oklch|lab|lch)\(/
 
 interface UseTailwindV3ThemeOptions {
   element?: () => HTMLElement | undefined
@@ -23,15 +20,7 @@ export function useTailwindV3Theme(options: UseTailwindV3ThemeOptions) {
       return
 
     const computedStyle = window.getComputedStyle(element.value)
-    const variables: Record<string, string> = {}
-
-    for (const schema of SHADCN_SCHEMAS) {
-      const name = `--${schema}`
-      const value = computedStyle.getPropertyValue(name).trim()
-
-      if (value && !reg.test(value))
-        variables[name] = `hsl(${value})`
-    }
+    const variables = resolveThemeVariables(SHADCN_SCHEMAS, name => computedStyle.getPropertyValue(name))
 
     if (Object.keys(variables).length > 0)
       cssVariables.value = variables

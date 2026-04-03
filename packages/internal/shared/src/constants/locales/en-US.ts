@@ -1,0 +1,41 @@
+import type { LocaleConfig } from '../../types'
+
+const locale: LocaleConfig = {
+  button: {
+    zoomIn: 'Zoom In',
+    zoomOut: 'Zoom Out',
+    resetZoom: 'Reset Zoom',
+    preview: 'Preview',
+    source: 'Source',
+    collapse: 'Collapse',
+    copy: 'Copy',
+    copied: 'Copied',
+    download: 'Download',
+    minimize: 'Minimize',
+    maximize: 'Maximize',
+    flipY: 'Flip Y',
+    flipX: 'Flip X',
+    rotateLeft: 'Rotate Left',
+    rotateRight: 'Rotate Right',
+    previous: 'Previous',
+    next: 'Next',
+    back: 'Back',
+    confirm: 'Confirm',
+    cancel: 'Cancel',
+  },
+  error: {
+    vanilla: 'Error',
+    image: 'Image failed to load',
+    mermaid: 'Mermaid failed to render',
+    katex: 'Katex failed to render',
+    harden: 'Blocked',
+  },
+  link: {
+    title: 'Open external link?',
+    description: 'You\'re about to visit an external website.',
+    copy: 'Copy link',
+    open: 'Open link',
+  },
+}
+
+export default locale

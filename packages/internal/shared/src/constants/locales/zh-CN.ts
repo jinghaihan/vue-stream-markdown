@@ -1,0 +1,41 @@
+import type { LocaleConfig } from '../../types'
+
+const locale: LocaleConfig = {
+  button: {
+    zoomIn: '放大',
+    zoomOut: '缩小',
+    resetZoom: '重置缩放',
+    preview: '预览',
+    source: '代码',
+    collapse: '折叠',
+    copy: '复制',
+    copied: '已复制',
+    download: '下载',
+    minimize: '最小化',
+    maximize: '最大化',
+    flipY: '翻转 Y',
+    flipX: '翻转 X',
+    rotateLeft: '左转',
+    rotateRight: '右转',
+    previous: '上个',
+    next: '下个',
+    back: '返回',
+    confirm: '确认',
+    cancel: '取消',
+  },
+  error: {
+    vanilla: '错误',
+    image: '图片加载失败',
+    mermaid: 'Mermaid 渲染失败',
+    katex: 'Katex 渲染失败',
+    harden: '已拦截',
+  },
+  link: {
+    title: '打开外部链接？',
+    description: '你即将访问外部网站',
+    copy: '复制链接',
+    open: '打开链接',
+  },
+}
+
+export default locale

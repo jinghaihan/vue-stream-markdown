@@ -1,18 +1,20 @@
+import type { MaybeRefOrGetter } from 'vue'
+import { toValue } from 'vue'
 import { isString } from '../utils'
 
 interface UseTypedEffectOptions {
-  enabled?: MaybeRef<boolean>
-  content: MaybeRef<string>
-  step?: MaybeRef<number>
-  delay?: MaybeRef<number>
+  enabled?: MaybeRefOrGetter<boolean>
+  content: MaybeRefOrGetter<string>
+  step?: MaybeRefOrGetter<number>
+  delay?: MaybeRefOrGetter<number>
 }
 
 export function useTypedEffect(options: UseTypedEffectOptions) {
-  const enabled = computed(() => unref(options.enabled) ?? true)
+  const enabled = computed(() => toValue(options.enabled) ?? true)
 
-  const content = computed(() => unref(options.content) ?? true)
-  const step = computed(() => unref(options.step) ?? 1)
-  const delay = computed(() => unref(options.delay) ?? 16)
+  const content = computed(() => toValue(options.content) ?? '')
+  const step = computed(() => toValue(options.step) ?? 1)
+  const delay = computed(() => toValue(options.delay) ?? 16)
 
   const isTyping = ref<boolean>(false)
   const prevContent = ref<string>('')

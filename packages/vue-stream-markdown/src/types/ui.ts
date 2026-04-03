@@ -1,11 +1,9 @@
+import type { SelectOption, UIErrorVariant, ZoomControlPosition } from '@stream-markdown/shared'
 import type { Component, CSSProperties } from 'vue'
 import type { ImageNodeRendererProps } from './renderer'
+import type { ControlsConfig } from './shared'
 
-export interface SelectOption {
-  label: string
-  value: string | number
-  icon?: string
-}
+export type { SelectOption, UIErrorVariant }
 
 export interface UIButtonProps {
   variant?: 'icon' | 'text'
@@ -35,8 +33,6 @@ export interface UIDropdownProps {
   options?: SelectOption[]
 }
 
-export type UIErrorVariant = 'vanilla' | 'image' | 'mermaid' | 'katex' | 'harden-image' | 'harden-link'
-
 export interface UIErrorComponentProps {
   variant?: UIErrorVariant
   showIcon?: boolean
@@ -58,7 +54,7 @@ export interface UIImageProps {
   title?: string
   preview?: boolean
   margin?: number
-  controls?: any
+  controls?: ControlsConfig
   transformHardenUrl?: (url: string) => string | null
   nodeProps: ImageNodeRendererProps
   handleDownload?: (url: string) => Promise<void>
@@ -93,7 +89,7 @@ export interface UITooltipProps {
   delay?: number | [number, number]
 }
 
-export type UIZoomControlPosition = 'top-left' | 'top-right' | 'top-center' | 'bottom-left' | 'bottom-right' | 'bottom-center'
+export type UIZoomControlPosition = ZoomControlPosition
 
 export interface UIZoomContainerProps {
   interactive?: boolean

@@ -1,0 +1,23 @@
+{
+  "name": "@stream-markdown/shared",
+  "type": "module",
+  "version": "0.6.5",
+  "private": true,
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown"
+  },
+  "dependencies": {
+    "markmend-ast": "workspace:*"
+  },
+  "devDependencies": {
+    "tsdown": "catalog:build"
+  }
+}

@@ -1,24 +1,10 @@
+import { getI18nText } from '@stream-markdown/shared'
 import { localeMessages } from '../locales'
 
 export function useI18n() {
-  function getI18nText(key: string) {
-    try {
-      const messages = localeMessages.value
-      if (!messages)
-        return key
-
-      const result = key.split('.').reduce<unknown>((obj, k) => {
-        if (obj && typeof obj === 'object' && k in obj)
-          return (obj as Record<string, unknown>)[k]
-        return undefined
-      }, messages)
-
-      return typeof result === 'string' ? result : key
-    }
-    catch {
-      return key
-    }
+  function t(key: string) {
+    return getI18nText(localeMessages.value, key)
   }
 
-  return { t: getI18nText }
+  return { t }
 }

@@ -2,17 +2,14 @@
 import type { BuiltinLanguage } from 'shiki'
 import type { Component } from 'vue'
 import type { CodeNodeRendererProps, Control, PreviewSegmentedPlacement, SelectOption } from '../../types'
+import { LANGUAGE_ALIAS, LANGUAGE_EXTENSIONS } from '@stream-markdown/code'
+import { save } from '@stream-markdown/shared'
 import { createReusableTemplate, useClipboard } from '@vueuse/core'
 import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useCodeOptions, useContext, useControls, useI18n, useMermaid } from '../../composables'
-import {
-  LANGUAGE_ALIAS,
-  LANGUAGE_EXTENSIONS,
-  LANGUAGE_ICONS,
-} from '../../constants'
-import { save } from '../../utils'
 import { CODE_PREVIEWERS } from '../previewers'
 import Actions from './actions.vue'
+import { LANGUAGE_ICONS } from './language-icons'
 import LanguageTitle from './language-title.vue'
 import PreviewSegmented from './preview-segmented.vue'
 

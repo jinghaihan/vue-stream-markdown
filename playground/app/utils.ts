@@ -8,7 +8,7 @@ export function isString(value: unknown): value is string {
   return typeof value === 'string'
 }
 
-export function isRegExp(value: any): boolean {
+export function isRegExp(value: unknown): value is RegExp {
   return Object.prototype.toString.call(value) === '[object RegExp]'
 }
 
@@ -32,7 +32,7 @@ export function filterObjectKeys(ast: unknown, exclude: string[]) {
       }
 
       if (value !== null && typeof value === 'object') {
-        let newValue: any
+        let newValue: object | string
         try {
           JSON.stringify(value)
           newValue = value

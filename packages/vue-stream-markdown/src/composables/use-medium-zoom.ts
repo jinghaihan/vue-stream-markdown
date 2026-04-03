@@ -1,15 +1,19 @@
-import type { MaybeRef } from 'vue'
-import { computed, nextTick, ref, unref } from 'vue'
-import { isClient } from '../utils'
+import type { MaybeRefOrGetter } from 'vue'
+import {
+  calculateMediumZoomOutTransform,
+  calculateMediumZoomTransforms,
+  isClient,
+} from '@stream-markdown/shared'
+import { computed, nextTick, ref, toValue } from 'vue'
 
 interface UseMediumZoomOptions {
-  margin?: MaybeRef<number>
+  margin?: MaybeRefOrGetter<number>
   open?: () => void
   close?: () => void
 }
 
 export function useMediumZoom(options: UseMediumZoomOptions) {
-  const margin = computed(() => unref(options.margin) ?? 0)
+  const margin = computed(() => toValue(options.margin) ?? 0)
 
   const elementRef = ref<HTMLElement>()
   const clonedElementRef = ref<HTMLElement>()
@@ -69,21 +73,17 @@ export function useMediumZoom(options: UseMediumZoomOptions) {
     const naturalWidth = (original as HTMLImageElement).naturalWidth || rect.width
     const naturalHeight = (original as HTMLImageElement).naturalHeight || rect.height
 
-    const maxWidth = viewportWidth - margin.value * 2
-    const maxHeight = viewportHeight - margin.value * 2
+    const transforms = calculateMediumZoomTransforms({
+      rect,
+      naturalWidth,
+      naturalHeight,
+      viewportWidth,
+      viewportHeight,
+      margin: margin.value,
+    })
 
-    const scaleX = Math.min(maxWidth / rect.width, naturalWidth / rect.width)
-    const scaleY = Math.min(maxHeight / rect.height, naturalHeight / rect.height)
-
-    const scale = Math.min(scaleX, scaleY, 1)
-    const targetX = (viewportWidth - rect.width * scale) / 2
-    const targetY = (viewportHeight - rect.height * scale) / 2
-
-    const translateX = targetX - rect.left
-    const translateY = targetY - rect.top
-
-    initialTransform.value = `translate3d(0, 0, 0) scale(1)`
-    targetTransform.value = `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale})`
+    initialTransform.value = transforms.initialTransform
+    targetTransform.value = transforms.targetTransform
   }
 
   async function zoomIn() {
@@ -163,18 +163,6 @@ export function useMediumZoom(options: UseMediumZoomOptions) {
     const computedStyle = window.getComputedStyle(zoomEl)
     const currentTransform = computedStyle.transform || 'none'
 
-    // Calculate centers in viewport coordinates
-    const currentCenterX = zoomRect.left + zoomRect.width / 2
-    const currentCenterY = zoomRect.top + zoomRect.height / 2
-    const targetCenterX = originalRect.left + originalRect.width / 2
-    const targetCenterY = originalRect.top + originalRect.height / 2
-
-    // Calculate scale from current zoomed size to original size
-    const scale = Math.min(
-      originalRect.width / zoomRect.width,
-      originalRect.height / zoomRect.height,
-    )
-
     // Set up cloned element to match current zoomed state
     cloned.style.top = `${zoomRect.top}px`
     cloned.style.left = `${zoomRect.left}px`
@@ -195,35 +183,12 @@ export function useMediumZoom(options: UseMediumZoomOptions) {
 
     isAnimating.value = true
 
-    // Calculate translation in viewport coordinates
-    const translateX = targetCenterX - currentCenterX
-    const translateY = targetCenterY - currentCenterY
-
     cloned.style.transition = 'transform 0.3s cubic-bezier(0.2, 0, 0.2, 1)'
-
-    if (currentTransform !== 'none') {
-      // Use DOMMatrix to handle transform composition correctly
-      try {
-        const currentMatrix = new DOMMatrix(currentTransform)
-
-        // Create the inverse matrix to convert viewport coordinates to local coordinates
-        const inverseMatrix = currentMatrix.inverse()
-
-        const point = new DOMPoint(translateX, translateY)
-        const transformedPoint = point.matrixTransform(inverseMatrix)
-
-        // Compose the final transform
-        // CSS applies right to left, so: scale -> translate(local) -> currentTransform
-        cloned.style.transform = `${currentTransform} translate3d(${transformedPoint.x}px, ${transformedPoint.y}px, 0) scale(${scale})`
-      }
-      catch {
-        // Fallback if DOMMatrix is not available or fails
-        cloned.style.transform = `${currentTransform} translate3d(${translateX}px, ${translateY}px, 0) scale(${scale})`
-      }
-    }
-    else {
-      cloned.style.transform = `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale})`
-    }
+    cloned.style.transform = calculateMediumZoomOutTransform({
+      originalRect,
+      zoomRect,
+      currentTransform,
+    })
 
     const handleAnimationEnd = () => {
       const cloned = clonedElementRef.value

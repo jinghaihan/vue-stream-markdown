@@ -1,32 +1,22 @@
-import type { LocaleConfig } from '../types'
+import type { LocaleConfig, SupportedLanguage } from '@stream-markdown/shared'
+import { DEFAULT_LANGUAGE, loadLocaleConfig, resolveLocaleLanguage } from '@stream-markdown/shared'
 import { ref } from 'vue'
-
-export const SUPPORT_LANGUAGES = ['en-US', 'zh-CN']
-
-export const localesGlob = import.meta.glob('./*.json')
 
 export const localeMessages = ref<LocaleConfig>()
 
-export const currentLocale = ref<string>('en-US')
+export const currentLocale = ref<SupportedLanguage>(DEFAULT_LANGUAGE)
 
 export async function loadLocaleMessages(language: string | LocaleConfig) {
-  const load = async (language: string) => {
-    const fn = localesGlob[`./${language}.json`]
-    if (!fn)
-      return
-    localeMessages.value = (await fn()) as LocaleConfig
-    currentLocale.value = language
-  }
-
   try {
+    localeMessages.value = await loadLocaleConfig(language)
+
     if (typeof language === 'string')
-      await load(language)
-    else
-      localeMessages.value = language
+      currentLocale.value = resolveLocaleLanguage(language)
   }
   catch {
-    await load('en-US')
+    localeMessages.value = await loadLocaleConfig(DEFAULT_LANGUAGE)
+    currentLocale.value = DEFAULT_LANGUAGE
   }
 }
 
-loadLocaleMessages('en-US')
+void loadLocaleMessages(DEFAULT_LANGUAGE)

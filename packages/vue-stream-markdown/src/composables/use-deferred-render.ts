@@ -1,10 +1,10 @@
-import type { MaybeRef } from 'vue'
+import type { MaybeRefOrGetter } from 'vue'
+import { createIdleCallback } from '@stream-markdown/shared'
 import { useIntersectionObserver } from '@vueuse/core'
-import { onUnmounted, ref } from 'vue'
-import { createIdleCallback } from '../utils'
+import { computed, onUnmounted, ref, toValue } from 'vue'
 
 interface UseDeferredRenderOptions {
-  targetRef: MaybeRef<HTMLElement | null | undefined>
+  targetRef: MaybeRefOrGetter<HTMLElement | null | undefined>
   immediate?: boolean
   debounceDelay?: number
   rootMargin?: string
@@ -13,7 +13,6 @@ interface UseDeferredRenderOptions {
 
 export function useDeferredRender(options: UseDeferredRenderOptions) {
   const {
-    targetRef,
     immediate = false,
     debounceDelay = 300,
     rootMargin = '300px',
@@ -24,6 +23,7 @@ export function useDeferredRender(options: UseDeferredRenderOptions) {
 
   const debounceTimer = ref<number | null>(null)
   const idleCallbackId = ref<number | null>(null)
+  const target = computed(() => toValue(options.targetRef))
 
   const { request, cancel } = createIdleCallback()
 
@@ -57,7 +57,7 @@ export function useDeferredRender(options: UseDeferredRenderOptions) {
   }
 
   const { stop } = useIntersectionObserver(
-    targetRef,
+    target,
     ([entry]) => {
       if (shouldRender.value || immediate)
         return

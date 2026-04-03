@@ -1,224 +1,138 @@
-import type { RenderOptions as BeautifulMermaidConfig } from 'beautiful-mermaid'
-import type { KatexOptions as KatexConfig } from 'katex'
+import type {
+  CaretType,
+  StreamMarkdownContext as SharedStreamMarkdownContext,
+  StreamMarkdownHooks as SharedStreamMarkdownHooks,
+  StreamMarkdownProps as SharedStreamMarkdownProps,
+} from '@stream-markdown/shared'
 import type { PreprocessContext } from 'markmend'
 import type {
   FromMarkdownExtension,
+  MarkdownAstParser,
   MarkdownAstParserOptions,
   MarkdownParserOptions,
   MdastOptions,
   MicromarkExtension,
   ToMarkdownExtension,
 } from 'markmend-ast'
-import type { MermaidConfig } from 'mermaid'
-import type { BuiltinTheme, BundledLanguage, BundledTheme, CodeToTokensOptions } from 'shiki'
-import type { Component } from 'vue'
-import type { CARETS } from '../constants'
-import type { NodeRenderers } from './core'
-import type { DownloadEvent } from './events'
-import type { LocaleConfig } from './locale'
-import type { CodeNodeRendererProps, ImageNodeRendererProps, TableNodeRendererProps } from './renderer'
-import type { BuiltinNodeRenderers, ControlTransformer, Icons, MaybePromise, UIComponents } from './shared'
+import type { ComputedRef, MaybeRefOrGetter } from 'vue'
+import type { NodeRenderers, ParsedNode, SyntaxTree } from './core'
+import type {
+  CodeOptions,
+  ControlsConfig,
+  HardenOptions,
+  Icons,
+  ImageOptions,
+  KatexOptions,
+  LinkOptions,
+  MermaidOptions,
+  PreloadConfig,
+  PreviewerConfig,
+  ShikiOptions,
+  UIComponents,
+  UIOptions,
+} from './shared'
 
-export interface StreamMarkdownProps extends StreamMarkdownContext, StreamMarkdownHooks, MarkdownAstParserOptions {
-  mode?: 'static' | 'streaming'
-  content?: string
-  nodeRenderers?: NodeRenderers
-  icons?: Partial<Icons>
-  components?: Partial<UIComponents>
-  preload?: PreloadConfig
-  locale?: string | LocaleConfig
-  enableAnimate?: boolean
-  caret?: keyof typeof CARETS
-  themeElement?: () => HTMLElement | undefined
+export type StreamMarkdownContext = SharedStreamMarkdownContext<
+  ControlsConfig,
+  PreviewerConfig,
+  ShikiOptions,
+  MermaidOptions,
+  KatexOptions,
+  HardenOptions,
+  CodeOptions,
+  ImageOptions,
+  LinkOptions,
+  UIOptions
+>
+
+export type StreamMarkdownHooks = SharedStreamMarkdownHooks
+
+export type StreamMarkdownProps = SharedStreamMarkdownProps<
+  NodeRenderers,
+  Icons,
+  UIComponents,
+  PreloadConfig,
+  CaretType,
+  ControlsConfig,
+  PreviewerConfig,
+  ShikiOptions,
+  MermaidOptions,
+  KatexOptions,
+  HardenOptions,
+  CodeOptions,
+  ImageOptions,
+  LinkOptions,
+  UIOptions
+>
+
+export interface StreamMarkdownProvideContext {
+  controls?: MaybeRefOrGetter<StreamMarkdownContext['controls']>
+  previewers?: MaybeRefOrGetter<StreamMarkdownContext['previewers']>
+  shikiOptions?: MaybeRefOrGetter<StreamMarkdownContext['shikiOptions']>
+  mermaidOptions?: MaybeRefOrGetter<StreamMarkdownContext['mermaidOptions']>
+  katexOptions?: MaybeRefOrGetter<StreamMarkdownContext['katexOptions']>
+  hardenOptions?: MaybeRefOrGetter<StreamMarkdownContext['hardenOptions']>
+  codeOptions?: MaybeRefOrGetter<StreamMarkdownContext['codeOptions']>
+  imageOptions?: MaybeRefOrGetter<StreamMarkdownContext['imageOptions']>
+  linkOptions?: MaybeRefOrGetter<StreamMarkdownContext['linkOptions']>
+  cdnOptions?: MaybeRefOrGetter<StreamMarkdownContext['cdnOptions']>
+  mode?: MaybeRefOrGetter<'static' | 'streaming'>
+  isDark?: MaybeRefOrGetter<boolean>
+  uiOptions?: MaybeRefOrGetter<UIOptions | undefined>
+  nodeRenderers?: MaybeRefOrGetter<NodeRenderers>
+  icons?: MaybeRefOrGetter<Icons>
+  uiComponents?: MaybeRefOrGetter<UIComponents>
+  enableAnimate?: MaybeRefOrGetter<boolean>
+  enableCaret?: MaybeRefOrGetter<boolean>
+  caret?: MaybeRefOrGetter<StreamMarkdownProps['caret']>
+  parsedNodes?: MaybeRefOrGetter<ParsedNode[]>
+  blocks?: MaybeRefOrGetter<SyntaxTree[]>
+  markdownParser?: MarkdownAstParser
+  getContainer?: () => HTMLElement | undefined
+  beforeDownload?: StreamMarkdownProps['beforeDownload']
+  onCopied?: (content: string) => void
 }
 
-export interface PreloadConfig {
-  nodeRenderers?: BuiltinNodeRenderers[]
-}
-
-export interface StreamMarkdownContext {
-  controls?: ControlsConfig
-  previewers?: PreviewerConfig
-  shikiOptions?: ShikiOptions
-  mermaidOptions?: MermaidOptions
-  katexOptions?: KatexOptions
-  hardenOptions?: HardenOptions
-  codeOptions?: CodeOptions
-  imageOptions?: ImageOptions
-  linkOptions?: LinkOptions
-  uiOptions?: UIOptions
-  cdnOptions?: CdnOptions
-  isDark?: boolean
-}
-
-export interface StreamMarkdownHooks {
-  beforeDownload?: (event: DownloadEvent) => MaybePromise<boolean>
-}
-
-export type TableControlsConfig
-  = | boolean
-    | {
-      copy?: boolean | string
-      download?: boolean | string
-      customize?: ControlTransformer<TableNodeRendererProps>
-    }
-
-export type CodeControlsConfig
-  = | boolean
-    | {
-      collapse?: boolean
-      copy?: boolean
-      download?: boolean
-      fullscreen?: boolean
-      customize?: ControlTransformer<CodeNodeRendererProps>
-    }
-
-export type ImageControlsConfig
-  = | boolean
-    | {
-      preview?: boolean
-      download?: boolean
-      carousel?: boolean
-      flip?: boolean
-      rotate?: boolean
-      controlPosition?: ZoomControlPosition
-      customize?: ControlTransformer<ImageNodeRendererProps>
-    }
-
-export type MermaidControlsConfig
-  = | boolean
-    | {
-      /**
-       * Disable drag/pan in page preview (but keep it in fullscreen preview)
-       * Useful for mobile devices where drag interactions can interfere with page scrolling
-       * @default true
-       */
-      inlineInteractive?: boolean
-      position?: ZoomControlPosition
-      customize?: ControlTransformer<CodeNodeRendererProps>
-    }
-
-export type ZoomControlPosition
-  = | 'top-left'
-    | 'top-right'
-    | 'top-center'
-    | 'bottom-left'
-    | 'bottom-right'
-    | 'bottom-center'
-
-export type ControlsConfig
-  = | boolean
-    | {
-      table?: boolean | TableControlsConfig
-      code?: boolean | CodeControlsConfig
-      image?: boolean | ImageControlsConfig
-      mermaid?: boolean | MermaidControlsConfig
-    }
-
-export type PreviewSegmentedPlacement = 'left' | 'center' | 'right' | 'auto'
-
-export type PreviewerConfig
-  = | boolean
-    | {
-      placement?: PreviewSegmentedPlacement
-      progressive?: Record<string, boolean>
-      components?: {
-        mermaid?: boolean | Component
-        html?: boolean | Component
-      } & Record<string, Component>
-    }
-
-export interface ShikiOptions {
-  theme?: [BuiltinTheme, BuiltinTheme]
-  langs?: BundledLanguage[]
-  langAlias?: Record<string, string>
-  codeToTokenOptions?: CodeToTokensOptions<BundledLanguage, BundledTheme>
-}
-
-export interface MermaidOptions {
-  renderer?: 'vanilla' | 'beautiful'
-  theme?: [string, string]
-  config?: MermaidConfig
-  beautifulTheme?: [string, string]
-  beautifulConfig?: BeautifulMermaidConfig
-  errorComponent?: Component
-}
-
-export interface KatexOptions {
-  config?: KatexConfig
-  errorComponent?: Component
-}
-
-export interface ImageOptions {
-  fallback?: string
-  caption?: boolean
-  errorComponent?: Component
-}
-
-export interface LinkOptions {
-  safetyCheck?: boolean
-  isTrusted?: (url: string) => Promise<boolean> | boolean
-}
-
-export interface CodeOptions {
-  languageIcon?: boolean
-  languageName?: boolean
-  lineNumbers?: boolean
-  maxHeight?: number | string
-  /**
-   * Language specific code options
-   * @example
-   * {
-   *   mermaid: {
-   *     languageIcon: false,
-   *     languageName: false,
-   *     lineNumbers: true,
-   *   },
-   * }
-   */
-  language?: Record<string, CodeOptionsLanguage>
-}
-
-export interface CodeOptionsLanguage extends Omit<CodeOptions, 'languageIcon'> {
-  languageIcon?: boolean | Component
-}
-
-// https://github.com/vercel-labs/markdown-sanitizers
-export interface HardenOptions {
-  defaultOrigin?: string
-  allowedLinkPrefixes?: string[]
-  allowedImagePrefixes?: string[]
-  allowedProtocols?: string[]
-  allowDataImages?: boolean
-  errorComponent?: Component
-}
-
-export interface UIOptions {
-  /**
-   * Hide tooltips triggered by hover (but keep dropdowns triggered by click)
-   * Useful for mobile devices where hover interactions don't work well
-   * @default false
-   */
-  hideTooltip?: boolean
-}
-
-export type CdnModule = 'shiki' | 'mermaid' | 'beautiful-mermaid' | 'katex' | 'katex-css'
-
-export interface CdnOptions {
-  baseUrl?: string
-  getUrl?: (module: CdnModule, version: string) => string
-  shiki?: boolean
-  mermaid?: 'esm' | 'umd' | false
-  beautifulMermaid?: 'esm' | 'umd' | false
-  katex?: 'esm' | 'umd' | false
+export interface StreamMarkdownResolvedContext {
+  context: StreamMarkdownProvideContext
+  provideContext: (ctx: Partial<StreamMarkdownProvideContext>) => void
+  injectContext: () => StreamMarkdownProvideContext
+  mode: ComputedRef<'static' | 'streaming'>
+  controls: ComputedRef<StreamMarkdownContext['controls']>
+  previewers: ComputedRef<StreamMarkdownContext['previewers']>
+  shikiOptions: ComputedRef<StreamMarkdownContext['shikiOptions']>
+  mermaidOptions: ComputedRef<StreamMarkdownContext['mermaidOptions']>
+  katexOptions: ComputedRef<StreamMarkdownContext['katexOptions']>
+  hardenOptions: ComputedRef<StreamMarkdownContext['hardenOptions']>
+  codeOptions: ComputedRef<StreamMarkdownContext['codeOptions']>
+  imageOptions: ComputedRef<StreamMarkdownContext['imageOptions']>
+  linkOptions: ComputedRef<StreamMarkdownContext['linkOptions']>
+  cdnOptions: ComputedRef<StreamMarkdownContext['cdnOptions']>
+  hideTooltip: ComputedRef<boolean>
+  icons: ComputedRef<Partial<Icons>>
+  nodeRenderers: ComputedRef<NodeRenderers>
+  uiComponents: ComputedRef<UIComponents>
+  isDark: ComputedRef<boolean>
+  enableAnimate: ComputedRef<boolean>
+  enableCaret: ComputedRef<boolean | undefined>
+  caret: ComputedRef<string | undefined>
+  parsedNodes: ComputedRef<ParsedNode[]>
+  blocks: ComputedRef<SyntaxTree[]>
+  readonly markdownParser: MarkdownAstParser | undefined
+  readonly getContainer: () => HTMLElement | undefined
+  readonly beforeDownload: NonNullable<StreamMarkdownProps['beforeDownload']>
+  readonly onCopied: (content: string) => void
 }
 
 export {
   type FromMarkdownExtension,
+  type MarkdownAstParser,
   type MarkdownAstParserOptions,
   type MarkdownParserOptions,
   type MdastOptions,
   type MicromarkExtension,
+  type ParsedNode,
   type PreprocessContext,
+  type SyntaxTree,
   type ToMarkdownExtension,
 }

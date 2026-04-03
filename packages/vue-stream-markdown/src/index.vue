@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { BuiltinNodeRenderers, Icons, NodeRenderers, ParsedNode, StreamMarkdownProps, UIComponents } from './types'
+import { PRELOAD_NODE_RENDERER } from '@stream-markdown/shared'
 import { MarkdownAstParser } from 'markmend-ast'
 import { computed, onBeforeUnmount, onMounted, ref, toRefs, watch } from 'vue'
 import { NODE_RENDERERS, UI } from './components'
+import { ICONS } from './components/icons'
 import NodeList from './components/node-list.vue'
 import {
   useContext,
@@ -13,7 +15,6 @@ import {
   useShiki,
   useTailwindV3Theme,
 } from './composables'
-import { ICONS, PRELOAD_NODE_RENDERER } from './constants'
 import { loadLocaleMessages } from './locales'
 import { preloadAsyncComponents } from './utils'
 import './style.css'

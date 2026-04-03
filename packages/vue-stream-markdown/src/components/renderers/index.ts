@@ -1,8 +1,9 @@
+import type { BuiltinNodeRenderers } from '@stream-markdown/shared'
+import type { Component } from 'vue'
 import type { NodeRenderers } from '../../types'
 import { defineAsyncComponent } from 'vue'
 
-/// keep-sorted
-export const NODE_RENDERERS: NodeRenderers = {
+export const NODE_RENDERERS = {
   blockquote: defineAsyncComponent(() => import('./blockquote.vue')),
   break: defineAsyncComponent(() => import('./break.vue')),
   code: defineAsyncComponent(() => import('./code/index.vue')),
@@ -25,4 +26,4 @@ export const NODE_RENDERERS: NodeRenderers = {
   text: defineAsyncComponent(() => import('./text.vue')),
   thematicBreak: defineAsyncComponent(() => import('./thematic-break.vue')),
   yaml: defineAsyncComponent(() => import('./yaml.vue')),
-} as const
+} as const satisfies Record<BuiltinNodeRenderers, Component> & NodeRenderers
