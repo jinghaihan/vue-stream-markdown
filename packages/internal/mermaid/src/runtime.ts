@@ -5,11 +5,7 @@ import type {
   MermaidRuntime,
   MermaidRuntimeOptions,
 } from './types'
-import {
-  resolveGetter,
-  save,
-  svgToPngBlob,
-} from '@stream-markdown/shared'
+import { resolveGetter, save, svgToPngBlob } from '@stream-markdown/shared'
 import { createBeautifulMermaidCdnLoader } from './beautiful-cdn'
 import { BeautifulMermaidRenderer } from './runtime/beautiful'
 import { VanillaMermaidRenderer } from './runtime/vanilla'
@@ -57,7 +53,7 @@ export function createMermaidRuntime(options: MermaidRuntimeOptions = {}): Merma
   let beautifulRenderer: BeautifulMermaidRenderer | null = null
   let vanillaRenderer: VanillaMermaidRenderer | null = null
   let activeRenderer: MermaidRendererInstance | null = null
-  let resolvingRenderer: Promise<MermaidRendererInstance> | null = null
+  let activeRendererType: MermaidRendererType | null = null
 
   const createRenderer = (rendererType: MermaidRendererType): MermaidRendererInstance => {
     if (rendererType === 'beautiful') {
@@ -72,19 +68,14 @@ export function createMermaidRuntime(options: MermaidRuntimeOptions = {}): Merma
   }
 
   const getRenderer = async (): Promise<MermaidRendererInstance> => {
-    if (activeRenderer)
+    const rendererType = await resolveMermaidRendererType(options)
+    if (activeRenderer && activeRendererType === rendererType)
       return activeRenderer
 
-    if (!resolvingRenderer) {
-      resolvingRenderer = (async () => {
-        const rendererType = await resolveMermaidRendererType(options)
-        const renderer = createRenderer(rendererType)
-        activeRenderer = renderer
-        return renderer
-      })()
-    }
-
-    return await resolvingRenderer
+    const renderer = createRenderer(rendererType)
+    activeRenderer = renderer
+    activeRendererType = rendererType
+    return renderer
   }
 
   async function load() {
@@ -134,7 +125,7 @@ export function createMermaidRuntime(options: MermaidRuntimeOptions = {}): Merma
     load,
     dispose() {
       activeRenderer = null
-      resolvingRenderer = null
+      activeRendererType = null
     },
     parse,
     render,

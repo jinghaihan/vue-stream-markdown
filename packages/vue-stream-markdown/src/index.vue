@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import type { BuiltinNodeRenderers, Icons, NodeRenderers, ParsedNode, StreamMarkdownProps, UIComponents } from './types'
+import type {
+  BuiltinNodeRenderers,
+  Icons,
+  NodeRenderers,
+  ParsedNode,
+  StreamMarkdownProps,
+  UIComponents,
+} from './types'
 import { PRELOAD_NODE_RENDERER } from '@stream-markdown/shared'
 import { MarkdownAstParser } from 'markmend-ast'
 import { computed, onBeforeUnmount, onMounted, ref, toRefs, watch } from 'vue'

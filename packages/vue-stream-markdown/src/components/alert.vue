@@ -73,16 +73,17 @@ onMounted(() => {
         >
           {{ description }}
         </div>
-        <component
-          :is="UI.Button"
-          data-stream-markdown="alert-close-button"
-          icon="x"
-          button-class="absolute -right-3 -top-3"
-          :name="t('button.cancel')"
-          :icon-height="20"
-          :icon-width="20"
-          @click="handleCancel"
-        />
+        <div class="absolute -right-3 -top-3">
+          <component
+            :is="UI.Button"
+            data-stream-markdown="alert-close-button"
+            icon="x"
+            :name="t('button.cancel')"
+            :icon-height="20"
+            :icon-width="20"
+            @click="handleCancel"
+          />
+        </div>
       </header>
 
       <!-- Body: Description -->

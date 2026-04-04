@@ -1,10 +1,7 @@
 import type { Mermaid } from 'mermaid'
 import type { MermaidParseResult, MermaidRenderResult } from '../types'
 import { randomStr } from '@antfu/utils'
-import {
-  isClient,
-  resolveGetter,
-} from '@stream-markdown/shared'
+import { isClient, resolveGetter } from '@stream-markdown/shared'
 import { DEFAULT_MERMAID_THEME } from '../constants'
 import { createMermaidCdnLoader } from '../mermaid-cdn'
 import { MermaidRenderer } from './base'

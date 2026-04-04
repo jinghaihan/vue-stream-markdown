@@ -8,11 +8,7 @@ import type {
 import type { CodeRuntimeOptions, ShikiRuntime } from './types'
 import { resolveGetter } from '@stream-markdown/shared'
 import { createShikiCdnLoader } from './cdn'
-import {
-  DEFAULT_SHIKI_DARK_THEME,
-  DEFAULT_SHIKI_LIGHT_THEME,
-  LANGUAGE_ALIAS,
-} from './constants'
+import { DEFAULT_SHIKI_DARK_THEME, DEFAULT_SHIKI_LIGHT_THEME, LANGUAGE_ALIAS } from './constants'
 
 let highlighter: Highlighter | null = null
 let createHighlighterPromise: Promise<Highlighter> | null = null

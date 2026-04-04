@@ -124,15 +124,15 @@ export interface StreamMarkdownResolvedContext {
   readonly onCopied: (content: string) => void
 }
 
-export {
-  type FromMarkdownExtension,
-  type MarkdownAstParser,
-  type MarkdownAstParserOptions,
-  type MarkdownParserOptions,
-  type MdastOptions,
-  type MicromarkExtension,
-  type ParsedNode,
-  type PreprocessContext,
-  type SyntaxTree,
-  type ToMarkdownExtension,
+export type {
+  FromMarkdownExtension,
+  MarkdownAstParser,
+  MarkdownAstParserOptions,
+  MarkdownParserOptions,
+  MdastOptions,
+  MicromarkExtension,
+  ParsedNode,
+  PreprocessContext,
+  SyntaxTree,
+  ToMarkdownExtension,
 }

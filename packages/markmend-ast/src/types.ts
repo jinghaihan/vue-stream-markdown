@@ -145,8 +145,8 @@ export type MathNode = Extract<ParsedNode, { type: 'math' }>
 // $L$
 export type InlineMathNode = Extract<ParsedNode, { type: 'inlineMath' }>
 
-export {
-  type FromMarkdownExtension,
-  type MicromarkExtension,
-  type ToMarkdownExtension,
+export type {
+  FromMarkdownExtension,
+  MicromarkExtension,
+  ToMarkdownExtension,
 }
