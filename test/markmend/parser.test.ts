@@ -1,5 +1,5 @@
-import type { ParsedNode, SyntaxTree } from 'markmend-ast'
-import { MarkdownAstParser } from 'markmend-ast'
+import type { ParsedNode, SyntaxTree } from '@markmend/ast'
+import { MarkdownAstParser } from '@markmend/ast'
 import { describe, expect, it, vi } from 'vitest'
 
 function hasAnyLoading(nodes: ParsedNode[]): boolean {

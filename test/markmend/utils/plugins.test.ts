@@ -1,5 +1,5 @@
-import type { BuiltinPluginFactory } from 'markmend-ast'
-import { resolveBuiltinExtensions } from 'markmend-ast'
+import type { BuiltinPluginFactory } from '@markmend/ast'
+import { resolveBuiltinExtensions } from '@markmend/ast'
 import { describe, expect, it } from 'vitest'
 
 describe('resolveBuiltinExtensions', () => {

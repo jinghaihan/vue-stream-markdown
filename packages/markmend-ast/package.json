@@ -1,8 +1,11 @@
 {
-  "name": "markmend-ast",
+  "name": "@markmend/ast",
   "type": "module",
-  "version": "0.6.5",
+  "version": "0.0.0-alpha.0",
   "description": "MDAST parser adapter for markmend.",
+  "publishConfig": {
+    "access": "public"
+  },
   "exports": {
     ".": "./dist/index.mjs",
     "./package.json": "./package.json"
@@ -27,7 +30,7 @@
     "micromark-extension-math": "catalog:parser",
     "micromark-util-types": "catalog:parser",
     "@types/mdast": "catalog:types",
-    "markmend": "workspace:*"
+    "@markmend/core": "workspace:*"
   },
   "devDependencies": {
     "tsdown": "catalog:build",

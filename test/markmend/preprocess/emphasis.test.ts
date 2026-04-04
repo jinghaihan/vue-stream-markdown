@@ -1,4 +1,4 @@
-import { fixEmphasis } from '@markmend/preprocess/emphasis'
+import { fixEmphasis } from '@markmend/core'
 import { describe, expect, it } from 'vitest'
 import { getTestCasesByCategories } from './test-cases'
 

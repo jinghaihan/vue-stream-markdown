@@ -1,4 +1,4 @@
-import { fixLink } from '@markmend/preprocess/link'
+import { fixLink } from '@markmend/core'
 import { describe, expect, it } from 'vitest'
 import { getTestCasesByCategories } from './test-cases'
 

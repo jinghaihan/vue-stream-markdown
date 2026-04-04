@@ -1,11 +1,4 @@
 import type {
-  CaretType,
-  StreamMarkdownContext as SharedStreamMarkdownContext,
-  StreamMarkdownHooks as SharedStreamMarkdownHooks,
-  StreamMarkdownProps as SharedStreamMarkdownProps,
-} from '@stream-markdown/shared'
-import type { PreprocessContext } from 'markmend'
-import type {
   FromMarkdownExtension,
   MarkdownAstParser,
   MarkdownAstParserOptions,
@@ -13,7 +6,14 @@ import type {
   MdastOptions,
   MicromarkExtension,
   ToMarkdownExtension,
-} from 'markmend-ast'
+} from '@markmend/ast'
+import type { PreprocessContext } from '@markmend/core'
+import type {
+  CaretType,
+  StreamMarkdownContext as SharedStreamMarkdownContext,
+  StreamMarkdownHooks as SharedStreamMarkdownHooks,
+  StreamMarkdownProps as SharedStreamMarkdownProps,
+} from '@stream-markdown/shared'
 import type { ComputedRef, MaybeRefOrGetter } from 'vue'
 import type { NodeRenderers, ParsedNode, SyntaxTree } from './core'
 import type {

@@ -9,6 +9,9 @@ function r(p: string) {
 }
 
 export const alias: Record<string, string> = {
+  '@root': r('.'),
+  '@markmend/ast': r('packages/markmend-ast/src/index.ts'),
+  '@markmend/core': r('packages/markmend/src/index.ts'),
   '@markmend': r('packages/markmend/src'),
   '@shared': r('playground/app/'),
   '@stream-markdown/code': r('packages/internal/code/src/index.ts'),
@@ -16,8 +19,6 @@ export const alias: Record<string, string> = {
   '@stream-markdown/mermaid': r('packages/internal/mermaid/src/index.ts'),
   '@stream-markdown/shared': r('packages/internal/shared/src/index.ts'),
   '@vue-stream-markdown': r('packages/vue-stream-markdown/src'),
-  'markmend-ast': r('packages/markmend-ast/src/index.ts'),
-  'markmend': r('packages/markmend/src/index.ts'),
   'vue-stream-markdown/package.json': r('packages/vue-stream-markdown/package.json'),
   'vue-stream-markdown/style.css': r('packages/vue-stream-markdown/src/style.css'),
   'vue-stream-markdown': r('packages/vue-stream-markdown/src/index.ts'),

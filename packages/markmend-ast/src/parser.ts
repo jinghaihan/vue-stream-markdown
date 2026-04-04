@@ -7,7 +7,7 @@ import type {
   SyntaxTree,
   ToMarkdownExtension,
 } from './types'
-import { MarkdownProcessor } from 'markmend'
+import { MarkdownProcessor } from '@markmend/core'
 import { fromMarkdown } from 'mdast-util-from-markdown'
 import { toMarkdown } from 'mdast-util-to-markdown'
 import QuickLRU from 'quick-lru'

@@ -7,8 +7,8 @@ import type {
   StreamMarkdownProps,
   UIComponents,
 } from './types'
+import { MarkdownAstParser } from '@markmend/ast'
 import { PRELOAD_NODE_RENDERER } from '@stream-markdown/shared'
-import { MarkdownAstParser } from 'markmend-ast'
 import { computed, onBeforeUnmount, onMounted, ref, toRefs, watch } from 'vue'
 import { NODE_RENDERERS, UI } from './components'
 import { ICONS } from './components/icons'

@@ -2,9 +2,9 @@ import type { CdnOptions } from '@stream-markdown/shared'
 import type { KatexOptions } from 'katex'
 import type { MaybeRefOrGetter } from 'vue'
 import type { MdastOptions } from '../types'
+import { checkMathSyntax } from '@markmend/core'
 import { createKatexRuntime } from '@stream-markdown/math'
 import { isClient } from '@stream-markdown/shared'
-import { checkMathSyntax } from 'markmend'
 import { computed, ref, toValue, watch } from 'vue'
 
 interface UseKatexOptions {

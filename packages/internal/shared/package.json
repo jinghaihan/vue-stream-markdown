@@ -15,7 +15,7 @@
     "build": "tsdown"
   },
   "dependencies": {
-    "markmend-ast": "workspace:*"
+    "@markmend/ast": "workspace:*"
   },
   "devDependencies": {
     "tsdown": "catalog:build"

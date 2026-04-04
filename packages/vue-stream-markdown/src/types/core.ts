@@ -1,5 +1,5 @@
+import type { NodeType as ParserNodeType } from '@markmend/ast'
 import type { NodeRenderers as SharedNodeRenderers } from '@stream-markdown/shared'
-import type { NodeType as ParserNodeType } from 'markmend-ast'
 import type { Component } from 'vue'
 
 export type {
@@ -35,6 +35,6 @@ export type {
   TextNode,
   ThematicBreakNode,
   YamlNode,
-} from 'markmend-ast'
+} from '@markmend/ast'
 
 export type NodeRenderers = SharedNodeRenderers<Component, ParserNodeType>

@@ -1,4 +1,4 @@
-import { fixMath, preprocess } from '@markmend/preprocess'
+import { fixMath, preprocess } from '@markmend/core'
 import { describe, expect, it } from 'vitest'
 import { getTestCasesByCategories } from './test-cases'
 

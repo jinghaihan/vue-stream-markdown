@@ -1,4 +1,4 @@
-import type { MarkdownProcessorOptions } from 'markmend'
+import type { MarkdownProcessorOptions } from '@markmend/core'
 import type { Root, RootContent } from 'mdast'
 import type { Extension as FromMarkdownExtension } from 'mdast-util-from-markdown'
 import type { Options as ToMarkdownExtension } from 'mdast-util-to-markdown'

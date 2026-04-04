@@ -1,4 +1,4 @@
-import { fixInlineMath } from '@markmend/preprocess/inline-math'
+import { fixInlineMath } from '@markmend/core'
 import { describe, expect, it } from 'vitest'
 import { getTestCasesByCategories } from './test-cases'
 

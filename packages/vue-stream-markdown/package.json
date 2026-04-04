@@ -61,8 +61,8 @@
   "dependencies": {
     "@floating-ui/dom": "catalog:frontend",
     "@vueuse/core": "catalog:frontend",
-    "markmend": "workspace:*",
-    "markmend-ast": "workspace:*"
+    "@markmend/ast": "workspace:*",
+    "@markmend/core": "workspace:*"
   },
   "devDependencies": {
     "@antfu/utils": "catalog:inlined",

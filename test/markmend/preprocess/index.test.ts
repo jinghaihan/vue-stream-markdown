@@ -1,4 +1,4 @@
-import { normalize, preprocess } from '@markmend/preprocess'
+import { normalize, preprocess } from '@markmend/core'
 import { describe, expect, it } from 'vitest'
 import { getTestCases } from './test-cases'
 import { getFixtureFiles, getSnapshotPath, readFixture } from './utils'

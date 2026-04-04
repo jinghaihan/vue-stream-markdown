@@ -1,4 +1,4 @@
-import { fixDelete } from '@markmend/preprocess/delete'
+import { fixDelete } from '@markmend/core'
 import { describe, expect, it } from 'vitest'
 import { getTestCasesByCategories } from './test-cases'
 

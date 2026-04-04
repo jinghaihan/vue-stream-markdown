@@ -1,4 +1,4 @@
-import type { MarkdownAstParserOptions } from 'markmend-ast'
+import type { MarkdownAstParserOptions } from '@markmend/ast'
 import type { CdnOptions } from './cdn'
 import type { MaybePromise } from './common'
 import type { DownloadEvent } from './events'

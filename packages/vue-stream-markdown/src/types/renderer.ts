@@ -1,4 +1,4 @@
-import type { MarkdownAstParser } from 'markmend-ast'
+import type { MarkdownAstParser } from '@markmend/ast'
 import type {
   BlockquoteNode,
   BreakNode,

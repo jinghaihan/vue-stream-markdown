@@ -370,7 +370,7 @@ importers:
 
   packages/internal/shared:
     dependencies:
-      markmend-ast:
+      '@markmend/ast':
         specifier: workspace:*
         version: link:../../markmend-ast
     devDependencies:
@@ -390,12 +390,12 @@ importers:
 
   packages/markmend-ast:
     dependencies:
+      '@markmend/core':
+        specifier: workspace:*
+        version: link:../markmend
       '@types/mdast':
         specifier: catalog:types
         version: 4.0.4
-      markmend:
-        specifier: workspace:*
-        version: link:../markmend
       mdast-util-from-markdown:
         specifier: catalog:parser
         version: 2.0.3
@@ -445,15 +445,15 @@ importers:
       '@floating-ui/dom':
         specifier: catalog:frontend
         version: 1.7.6
+      '@markmend/ast':
+        specifier: workspace:*
+        version: link:../markmend-ast
+      '@markmend/core':
+        specifier: workspace:*
+        version: link:../markmend
       '@vueuse/core':
         specifier: catalog:frontend
         version: 14.2.1(vue@3.5.32(typescript@6.0.2))
-      markmend:
-        specifier: workspace:*
-        version: link:../markmend
-      markmend-ast:
-        specifier: workspace:*
-        version: link:../markmend-ast
       vue:
         specifier: ^3.5.32
         version: 3.5.32(typescript@6.0.2)
@@ -13145,7 +13145,7 @@ snapshots:
       mdast-util-to-string: 4.0.0
       micromark-util-classify-character: 2.0.1
       micromark-util-decode-string: 2.0.1
-      unist-util-visit: 5.0.0
+      unist-util-visit: 5.1.0
       zwitch: 2.0.4
 
   mdast-util-to-string@4.0.0:
@@ -15095,7 +15095,7 @@ snapshots:
   unist-util-remove-position@5.0.0:
     dependencies:
       '@types/unist': 3.0.3
-      unist-util-visit: 5.0.0
+      unist-util-visit: 5.1.0
 
   unist-util-remove@4.0.0:
     dependencies:

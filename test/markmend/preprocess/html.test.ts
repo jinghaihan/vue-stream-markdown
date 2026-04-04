@@ -1,4 +1,4 @@
-import { fixHtml } from '@markmend/preprocess/html'
+import { fixHtml } from '@markmend/core'
 import { describe, expect, it } from 'vitest'
 import { getTestCasesByCategory } from './test-cases'
 

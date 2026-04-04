@@ -1,8 +1,11 @@
 {
-  "name": "markmend",
+  "name": "@markmend/core",
   "type": "module",
-  "version": "0.6.5",
+  "version": "0.0.0-alpha.0",
   "description": "Streaming-friendly Markdown processor with syntax completion.",
+  "publishConfig": {
+    "access": "public"
+  },
   "exports": {
     ".": "./dist/index.mjs",
     "./package.json": "./package.json"
