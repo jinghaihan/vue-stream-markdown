@@ -33,8 +33,7 @@
   ],
   "scripts": {
     "build": "tsdown && pnpm build:css",
-    "build:css": "tsx scripts/build-css.ts",
-    "typecheck": "vue-tsc --noEmit -p ./tsconfig.json",
+    "build:css": "tsx ./scripts/build-css.ts",
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {

@@ -32,10 +32,10 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
       - name: Install Dependencies
-        run: pnpm -r publish --access public
+        run: pnpm install
 
       - name: Update npm
         run: npm install -g npm@latest
 
       - name: Publish to NPM
-        run: pnpm publish --no-git-checks
+        run: pnpm prepack && pnpm -r publish --no-git-checks

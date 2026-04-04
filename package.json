@@ -18,7 +18,6 @@
   "scripts": {
     "dev": "pnpm playground:dev",
     "build": "turbo run build \"--filter=./packages/*\" \"--filter=./packages/internal/*\"",
-    "core:typecheck": "pnpm -F vue-stream-markdown typecheck",
     "playground:dev": "pnpm -F playground dev",
     "playground:build": "pnpm -F playground generate",
     "playground:typecheck": "pnpm -F playground typecheck",
@@ -27,11 +26,12 @@
     "docs:build": "pnpm -F docs build",
     "deps": "taze major -I",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit && pnpm core:typecheck && pnpm playground:typecheck",
+    "typecheck": "tsc --noEmit && pnpm playground:typecheck",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
     "release": "bumpp -r",
-    "prepare": "simple-git-hooks && pnpm playground:prepare"
+    "prepare": "simple-git-hooks && pnpm playground:prepare",
+    "prepack": "tsx ./scripts/publish.ts"
   },
   "devDependencies": {
     "@tsdown/css": "catalog:build",

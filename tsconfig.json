@@ -38,6 +38,7 @@
   },
   "include": [
     "packages/**/*.ts",
+    "scripts/**/*.ts",
     "docs",
     "docs/.**/**/*.ts",
     "docs/.**/**/*.vue",
