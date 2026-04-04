@@ -8,7 +8,7 @@ import VanillaRenderer from './vanilla-renderer.vue'
 
 const props = withDefaults(defineProps<CodeNodeRendererProps>(), {})
 
-const { codeOptions, isDark, shikiOptions } = useContext()
+const { cdnOptions, codeOptions, isDark, shikiOptions } = useContext()
 
 const ShikiTokensRenderer = defineAsyncComponent(() => import('./shiki-token-renderer.vue'))
 
@@ -21,6 +21,7 @@ const { showLineNumbers } = useCodeOptions({
 })
 
 const { getShiki, codeToTokens } = useShiki({
+  cdnOptions,
   lang,
   shikiOptions,
   isDark,

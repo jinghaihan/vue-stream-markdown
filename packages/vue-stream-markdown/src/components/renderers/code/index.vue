@@ -10,11 +10,13 @@ const props = withDefaults(defineProps<CodeNodeRendererProps & {
   showHeader: true,
 })
 
-const { uiComponents: UI } = useContext()
+const { cdnOptions, uiComponents: UI } = useContext()
 
 const languageClass = computed(() => `language-${props.node.lang}`)
 
-const { installed: hasShiki } = useShiki()
+const { installed: hasShiki } = useShiki({
+  cdnOptions,
+})
 
 const components: Record<string, Component> = {
   vanilla: defineAsyncComponent(() => import('./vanilla.vue')),

@@ -21,6 +21,7 @@ const props = withDefaults(defineProps<CodeNodeRendererProps>(), {})
 
 const {
   beforeDownload,
+  cdnOptions,
   codeOptions,
   controls,
   icons: commonIcons,
@@ -48,6 +49,7 @@ const { copy, copied } = useClipboard({
 
 const { installed: hasMermaid, saveMermaid } = useMermaid({
   mermaidOptions,
+  cdnOptions,
   shikiOptions,
   isDark,
 })

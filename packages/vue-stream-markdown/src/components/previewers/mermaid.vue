@@ -19,6 +19,7 @@ const props = withDefaults(defineProps<CodeNodeRendererProps & {
 })
 
 const {
+  cdnOptions,
   controls,
   mermaidOptions,
   shikiOptions,
@@ -69,6 +70,7 @@ const { shouldRender } = useDeferredRender({
 
 const { renderMermaid } = useMermaid({
   mermaidOptions,
+  cdnOptions,
   shikiOptions,
   isDark,
 })

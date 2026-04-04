@@ -12,7 +12,7 @@ import { ref, toValue } from 'vue'
 
 interface UseMermaidOptions {
   mermaidOptions?: MaybeRefOrGetter<MermaidOptions | undefined>
-  cdnOptions?: CdnOptions
+  cdnOptions?: MaybeRefOrGetter<CdnOptions | undefined>
   shikiOptions?: MaybeRefOrGetter<ShikiOptions | undefined>
   isDark?: MaybeRefOrGetter<boolean>
 }
@@ -23,7 +23,7 @@ export function useMermaid(options?: UseMermaidOptions) {
       const shikiTheme = (toValue(options?.shikiOptions)?.theme ?? [DEFAULT_SHIKI_LIGHT_THEME, DEFAULT_SHIKI_DARK_THEME])
       const currentShikiTheme = (toValue(options?.isDark) ?? false) ? shikiTheme[1] : shikiTheme[0]
       const shikiRuntime = createShikiRuntime({
-        cdnOptions: () => options?.cdnOptions,
+        cdnOptions: () => toValue(options?.cdnOptions),
         isDark: () => toValue(options?.isDark) ?? false,
         theme: () => shikiTheme,
         langs: () => toValue(options?.shikiOptions)?.langs ?? [],
@@ -48,7 +48,7 @@ export function useMermaid(options?: UseMermaidOptions) {
     beautifulTheme: () => toValue(options?.mermaidOptions)?.beautifulTheme,
     config: () => toValue(options?.mermaidOptions)?.config,
     beautifulConfig: () => toValue(options?.mermaidOptions)?.beautifulConfig,
-    cdnOptions: () => options?.cdnOptions,
+    cdnOptions: () => toValue(options?.cdnOptions),
     isDark: () => toValue(options?.isDark) ?? false,
     getThemeColors: resolveThemeColorsFromShiki,
   })

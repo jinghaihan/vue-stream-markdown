@@ -15,7 +15,7 @@ import { computed, ref, toValue } from 'vue'
 interface UseShikiOptions {
   lang?: MaybeRefOrGetter<string>
   shikiOptions?: MaybeRefOrGetter<ShikiOptions | undefined>
-  cdnOptions?: CdnOptions
+  cdnOptions?: MaybeRefOrGetter<CdnOptions | undefined>
   isDark?: MaybeRefOrGetter<boolean>
 }
 
@@ -29,7 +29,7 @@ export function useShiki(options?: UseShikiOptions) {
   const lang = computed(() => toValue(options?.lang) ?? 'plaintext')
   const runtime = createShikiRuntime({
     lang: () => lang.value,
-    cdnOptions: () => options?.cdnOptions,
+    cdnOptions: () => toValue(options?.cdnOptions),
     isDark: () => toValue(options?.isDark) ?? false,
     theme: () => toValue(options?.shikiOptions)?.theme ?? [DEFAULT_SHIKI_LIGHT_THEME, DEFAULT_SHIKI_DARK_THEME],
     langs: () => toValue(options?.shikiOptions)?.langs ?? [],
