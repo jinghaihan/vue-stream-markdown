@@ -31,7 +31,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsdown"
+    "build": "tsdown",
+    "prepublishOnly": "pnpm build"
   },
   "dependencies": {
     "mdast-util-from-markdown": "catalog:parser",
