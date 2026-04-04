@@ -39,3 +39,5 @@ jobs:
 
       - name: Publish to NPM
         run: pnpm prepack && pnpm -r publish --no-git-checks
+        env:
+          NODE_OPTIONS: --max-old-space-size=8192

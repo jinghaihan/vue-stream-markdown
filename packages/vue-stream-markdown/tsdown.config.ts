@@ -4,7 +4,6 @@ import Icons from 'unplugin-icons/vite'
 
 export default defineConfig({
   entry: ['./src/index'],
-  tsconfig: './tsconfig.build.json',
   platform: 'neutral',
   dts: {
     vue: true,
