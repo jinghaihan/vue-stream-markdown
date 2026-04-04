@@ -6,7 +6,6 @@ export default defineConfig({
   entry: ['./src/index'],
   tsconfig: './tsconfig.build.json',
   platform: 'neutral',
-  exports: true,
   dts: {
     vue: true,
   },

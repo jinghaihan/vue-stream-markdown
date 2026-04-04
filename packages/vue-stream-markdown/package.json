@@ -25,7 +25,8 @@
   "exports": {
     ".": "./dist/index.js",
     "./package.json": "./package.json",
-    "./index.css": "./dist/index.css"
+    "./index.css": "./dist/index.css",
+    "./theme.css": "./dist/theme.css"
   },
   "types": "./dist/index.d.ts",
   "files": [

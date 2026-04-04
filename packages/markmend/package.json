@@ -2,10 +2,25 @@
   "name": "@markmend/core",
   "type": "module",
   "version": "0.6.5",
-  "description": "Streaming-friendly Markdown processor with syntax completion.",
   "publishConfig": {
     "access": "public"
   },
+  "description": "Streaming-friendly Markdown processor with syntax completion.",
+  "author": "jinghaihan",
+  "license": "MIT",
+  "homepage": "https://github.com/jinghaihan/vue-stream-markdown#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jinghaihan/vue-stream-markdown.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jinghaihan/vue-stream-markdown/issues"
+  },
+  "keywords": [
+    "markdown",
+    "stream",
+    "parser"
+  ],
   "exports": {
     ".": "./dist/index.mjs",
     "./package.json": "./package.json"

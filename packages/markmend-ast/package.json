@@ -2,10 +2,26 @@
   "name": "@markmend/ast",
   "type": "module",
   "version": "0.6.5",
-  "description": "MDAST parser adapter for markmend.",
   "publishConfig": {
     "access": "public"
   },
+  "description": "MDAST parser adapter for markmend.",
+  "author": "jinghaihan",
+  "license": "MIT",
+  "homepage": "https://github.com/jinghaihan/vue-stream-markdown#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jinghaihan/vue-stream-markdown.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jinghaihan/vue-stream-markdown/issues"
+  },
+  "keywords": [
+    "markdown",
+    "stream",
+    "parser",
+    "ast"
+  ],
   "exports": {
     ".": "./dist/index.mjs",
     "./package.json": "./package.json"
