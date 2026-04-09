@@ -84,6 +84,7 @@ const MERMAID_BEAUTIFUL_THEMES: SelectOption[] = [
     label: key.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
     value: key,
   })),
+  ...SHIKI_THEMES,
 ]
 
 const CARETS_OPTIONS: SelectOption[] = [
