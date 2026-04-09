@@ -129,8 +129,22 @@ const uiOptions = computed((): UIOptions => {
 })
 
 const cdnOptions: CdnOptions = {
-  baseUrl: 'https://cdn.jsdelivr.net/npm/',
-  mermaid: 'umd',
+  getUrl: (module, version) => {
+    switch (module) {
+      case 'shiki':
+        return `https://esm.sh/shiki@${version}`
+      case 'mermaid':
+        return `https://esm.sh/mermaid@${version}`
+      case 'beautiful-mermaid':
+        return `https://esm.sh/beautiful-mermaid@${version}`
+      case 'katex':
+        return `https://esm.sh/katex@${version}`
+      case 'katex-css':
+        return `https://esm.sh/katex@${version}/dist/katex.min.css`
+      default:
+        return undefined
+    }
+  },
 }
 
 const controlsConfig = computed((): ControlsConfig => {
