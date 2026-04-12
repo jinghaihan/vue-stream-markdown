@@ -11,7 +11,7 @@ export default defineConfig({
   catalogRules: mergeCatalogRules([
     {
       name: 'parser',
-      match: [/marked/, /mdast/, /micromark/],
+      match: [/marked/, /mdast-/, /micromark-/],
       priority: 0,
     },
     {
@@ -21,12 +21,13 @@ export default defineConfig({
     },
     {
       name: 'playground',
-      match: Object.keys(dependencies).filter(i => !['vue', '@vueuse/core'].includes(i)),
+      match: Object.keys(dependencies).filter(i => !['vue', '@vueuse/core', '@floating-ui/dom'].includes(i)),
       priority: 20,
     },
     {
       name: 'frontend',
       match: [/floating-ui/],
+      priority: 30,
     },
   ]),
   postRun: 'eslint --fix "**/package.json" "**/pnpm-workspace.yaml"',
