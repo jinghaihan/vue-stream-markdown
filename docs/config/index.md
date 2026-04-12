@@ -33,7 +33,14 @@ Rendering mode. `'static'` renders the entire content at once, while `'streaming
 - **Type:** `boolean | undefined`
 - **Default:** `undefined`
 
-Whether to enable the typewriter animation effect when nodes are rendered. When set to `undefined` (default), the animation is automatically enabled in `'streaming'` mode and disabled in `'static'` mode. When explicitly set to `true` or `false`, it will override the default behavior based on the mode.
+Whether to enable node enter animations. When set to `undefined` (default), animations are enabled in `'streaming'` mode and disabled in `'static'` mode.
+
+### animation
+
+- **Type:** `'fade-in' | 'blur-in' | 'slide-up' | (string & {})`
+- **Default:** `'fade-in'`
+
+Node enter animation. Custom values map to `stream-markdown-${animation}` transition classes.
 
 ### caret
 

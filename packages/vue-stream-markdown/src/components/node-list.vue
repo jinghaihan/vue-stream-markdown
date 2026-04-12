@@ -14,6 +14,7 @@ const props = withDefaults(defineProps<NodeRendererListProps>(), {
 
 const {
   enableAnimate,
+  animation,
   blocks,
   nodeRenderers: contextNodeRenderers,
   markdownParser: contextMarkdownParser,
@@ -59,6 +60,8 @@ const items = computed(() => props.nodes.map((node, index) => ({
 // exclude nodes that should not be transitioned
 const excludeTransition: NodeType[] = ['code']
 
+const transitionName = computed(() => `stream-markdown-${animation.value}`)
+
 function getNodeComponent(node: ParsedNode) {
   return activeNodeRenderers.value[node.type] || null
 }
@@ -93,7 +96,7 @@ function getNodeKey(node: ParsedNode, index: number) {
   <template v-for="item in items" :key="item.key">
     <Transition
       v-if="enableAnimate && !excludeTransition.includes(item.node.type)"
-      name="stream-markdown-typewriter"
+      :name="transitionName"
       appear
     >
       <component

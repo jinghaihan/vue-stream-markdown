@@ -1,6 +1,6 @@
 .stream-markdown {
   --default-transition-duration: 150ms;
-  --typewriter-transition-duration: 900ms;
+  --stream-markdown-animation-duration: 900ms;
 
   color: var(--foreground);
   line-height: 1.5;
@@ -46,15 +46,51 @@
   }
 }
 
-.stream-markdown-typewriter-enter-from {
+.stream-markdown-fade-in-enter-from {
   opacity: 0;
 }
-.stream-markdown-typewriter-enter-active {
-  transition: opacity var(--typewriter-transition-duration) ease-out;
+
+.stream-markdown-fade-in-enter-active {
+  transition: opacity var(--stream-markdown-animation-duration) ease-out;
   will-change: opacity;
 }
-.stream-markdown-typewriter-enter-to {
+
+.stream-markdown-fade-in-enter-to {
   opacity: 1;
+}
+
+.stream-markdown-blur-in-enter-from {
+  opacity: 0;
+  filter: blur(4px);
+}
+
+.stream-markdown-blur-in-enter-active {
+  transition:
+    opacity var(--stream-markdown-animation-duration) ease-out,
+    filter var(--stream-markdown-animation-duration) ease-out;
+  will-change: opacity, filter;
+}
+
+.stream-markdown-blur-in-enter-to {
+  opacity: 1;
+  filter: blur(0);
+}
+
+.stream-markdown-slide-up-enter-from {
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+.stream-markdown-slide-up-enter-active {
+  transition:
+    opacity var(--stream-markdown-animation-duration) ease-out,
+    transform var(--stream-markdown-animation-duration) ease-out;
+  will-change: opacity, transform;
+}
+
+.stream-markdown-slide-up-enter-to {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .stream-markdown-code-switch-enter-active,

@@ -78,7 +78,8 @@ export default defineNuxtConfig({
 
 - `content` (string): The markdown content to render
 - `mode` ('streaming' | 'static'): Rendering mode, defaults to `'streaming'`
-- `enableAnimate` (boolean | undefined): Enable typewriter animation effect. When `undefined`, automatically enabled in `'streaming'` mode and disabled in `'static'` mode
+- `enableAnimate` (boolean | undefined): Enable node enter animations. When `undefined`, follows the rendering mode
+- `animation` ('fade-in' | 'blur-in' | 'slide-up' | string): Node enter animation, defaults to `'fade-in'`
 - `isDark` (boolean): Enable dark mode
 - `locale` (string | LocaleConfig): Locale for internationalization, defaults to `'en-US'`
 - `preload` (PreloadConfig): Configure which node renderers to preload for better initial rendering performance

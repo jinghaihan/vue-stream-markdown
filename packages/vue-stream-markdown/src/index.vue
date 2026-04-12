@@ -8,7 +8,7 @@ import type {
   UIComponents,
 } from './types'
 import { MarkdownAstParser } from '@markmend/ast'
-import { PRELOAD_NODE_RENDERER } from '@stream-markdown/shared'
+import { DEFAULT_ANIMATION, PRELOAD_NODE_RENDERER } from '@stream-markdown/shared'
 import { computed, onBeforeUnmount, onMounted, ref, toRefs, watch } from 'vue'
 import { NODE_RENDERERS, UI } from './components'
 import { ICONS } from './components/icons'
@@ -34,6 +34,7 @@ const props = withDefaults(defineProps<StreamMarkdownProps>(), {
   controls: true,
   previewers: true,
   enableAnimate: undefined,
+  animation: DEFAULT_ANIMATION,
   isDark: undefined,
 })
 
@@ -57,6 +58,7 @@ const {
   mermaidOptions,
   uiOptions,
   cdnOptions,
+  animation,
   caret,
 } = toRefs(props)
 
@@ -83,12 +85,11 @@ const { preload: preloadKatex, dispose: disposeKatex } = useKatex({
 const containerRef = ref<HTMLDivElement>()
 
 const markdownParser = new MarkdownAstParser(props)
-const defaultEnableAnimate = props.mode === 'streaming'
 
 const enableAnimate = computed(() => {
   if (typeof props.enableAnimate === 'boolean')
     return props.enableAnimate
-  return defaultEnableAnimate
+  return mode.value === 'streaming'
 })
 
 const enableCaret = computed(() => !!props.caret && mode.value === 'streaming')
@@ -171,6 +172,7 @@ provideContext({
   uiOptions,
   isDark,
   enableAnimate,
+  animation,
   enableCaret,
   caret,
   blocks,

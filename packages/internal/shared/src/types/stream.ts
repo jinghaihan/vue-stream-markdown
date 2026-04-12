@@ -1,4 +1,5 @@
 import type { MarkdownAstParserOptions } from '@markmend/ast'
+import type { AnimationType } from '../types'
 import type { CdnOptions } from './cdn'
 import type { MaybePromise } from './common'
 import type { DownloadEvent } from './events'
@@ -49,6 +50,7 @@ export interface StreamMarkdownViewProps<
   preload?: TPreload
   locale?: string | LocaleConfig
   enableAnimate?: boolean
+  animation?: AnimationType
   caret?: TCaret
   themeElement?: () => HTMLElement | undefined
 }

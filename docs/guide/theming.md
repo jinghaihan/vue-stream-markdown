@@ -111,7 +111,7 @@ The following CSS variables are actually used in the source code:
 
 /* Transitions */
 --default-transition-duration
---typewriter-transition-duration
+--stream-markdown-animation-duration
 ```
 
 ### Customizing CSS Variables

@@ -1,5 +1,13 @@
 import type { BuiltinNodeRenderers, CaretType, HardenOptions, PlainTextNodeTypes } from '../types'
 
+export const ANIMATION_TYPES = [
+  'fade-in',
+  'blur-in',
+  'slide-up',
+] as const
+
+export const DEFAULT_ANIMATION = ANIMATION_TYPES[0]
+
 export const CARETS = {
   block: ' ▋',
   circle: ' ●',

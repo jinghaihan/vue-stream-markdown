@@ -83,6 +83,7 @@ export interface StreamMarkdownProvideContext {
   icons?: MaybeRefOrGetter<Icons>
   uiComponents?: MaybeRefOrGetter<UIComponents>
   enableAnimate?: MaybeRefOrGetter<boolean>
+  animation?: MaybeRefOrGetter<StreamMarkdownProps['animation']>
   enableCaret?: MaybeRefOrGetter<boolean>
   caret?: MaybeRefOrGetter<StreamMarkdownProps['caret']>
   parsedNodes?: MaybeRefOrGetter<ParsedNode[]>
@@ -114,6 +115,7 @@ export interface StreamMarkdownResolvedContext {
   uiComponents: ComputedRef<UIComponents>
   isDark: ComputedRef<boolean>
   enableAnimate: ComputedRef<boolean>
+  animation: ComputedRef<NonNullable<StreamMarkdownProps['animation']>>
   enableCaret: ComputedRef<boolean | undefined>
   caret: ComputedRef<string | undefined>
   parsedNodes: ComputedRef<ParsedNode[]>

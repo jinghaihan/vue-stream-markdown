@@ -1,3 +1,5 @@
+import type { ANIMATION_TYPES } from '../constants'
+
 export type BuiltinNodeRenderers
   = | 'blockquote'
     | 'break'
@@ -41,6 +43,8 @@ export type BuiltinUIComponents
     | 'ZoomContainer'
 
 export type CaretType = 'block' | 'circle'
+
+export type AnimationType = typeof ANIMATION_TYPES[number] | (string & {})
 
 export type PlainTextNodeTypes
   = | 'text'

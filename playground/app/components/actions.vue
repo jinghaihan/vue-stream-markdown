@@ -61,6 +61,7 @@ const mermaidBeautifulLightTheme = defineModel<string>('mermaidBeautifulLightThe
 const mermaidBeautifulDarkTheme = defineModel<string>('mermaidBeautifulDarkTheme', { required: false, default: 'zinc-dark' })
 
 const caret = defineModel<StreamMarkdownProps['caret']>('caret', { required: false, default: 'block' })
+const animation = defineModel<NonNullable<StreamMarkdownProps['animation']>>('animation', { required: false, default: 'fade-in' })
 
 function wrapAction(action: Omit<Action, 'key'>): Action | null {
   if (action.visible && !action.visible?.())
@@ -174,6 +175,7 @@ const actions = computed((): Action[] => {
       v-model:auto-scroll="autoScroll"
       v-model:static-mode="staticMode"
       v-model:caret="caret"
+      v-model:animation="animation"
       v-model:typing-index="typingIndex"
       v-model:typed-step="typedStep"
       v-model:typed-delay="typedDelay"

@@ -2,7 +2,7 @@
 import type { SelectOption, StreamMarkdownProps } from 'vue-stream-markdown'
 import { THEMES } from 'beautiful-mermaid'
 import { bundledThemesInfo } from 'shiki'
-import { CARETS } from 'vue-stream-markdown'
+import { ANIMATION_TYPES, CARETS } from 'vue-stream-markdown'
 import { Settings } from '../icons'
 
 const props = withDefaults(defineProps<{
@@ -26,6 +26,7 @@ const mermaidBeautifulLightTheme = defineModel<string>('mermaidBeautifulLightThe
 const mermaidBeautifulDarkTheme = defineModel<string>('mermaidBeautifulDarkTheme', { required: false, default: 'zinc-dark' })
 
 const caret = defineModel<StreamMarkdownProps['caret']>('caret', { required: false, default: 'block' })
+const animation = defineModel<NonNullable<StreamMarkdownProps['animation']>>('animation', { required: false, default: 'fade-in' })
 
 const BLOCK_CLASSES = [
   'h-10',
@@ -91,6 +92,11 @@ const CARETS_OPTIONS: SelectOption[] = [
   { label: 'None', value: '' },
   ...Object.entries(CARETS).map(([key, value]) => ({ label: value, value: key })),
 ]
+
+const ANIMATION_OPTIONS: SelectOption[] = ANIMATION_TYPES.map(value => ({
+  label: value.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
+  value,
+}))
 
 function onTypingIndexChange() {
   props.toStep(typingIndex.value)
@@ -242,6 +248,15 @@ watch(() => staticMode.value, () => {
             v-model:value="caret"
             :class="CONTROL_CLASSES"
             :options="CARETS_OPTIONS"
+          />
+        </div>
+
+        <div :class="BLOCK_CLASSES">
+          <Label :class="LABEL_CLASSES">Animation</Label>
+          <Select
+            v-model:value="animation"
+            :class="CONTROL_CLASSES"
+            :options="ANIMATION_OPTIONS"
           />
         </div>
       </div>

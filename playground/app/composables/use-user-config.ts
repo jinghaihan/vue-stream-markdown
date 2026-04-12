@@ -16,6 +16,7 @@ const DEFAULT_USER_CONFIG: UserConfig = {
   mermaidBeautifulLightTheme: 'github-light',
   mermaidBeautifulDarkTheme: 'github-dark',
   caret: 'block',
+  animation: 'fade-in',
 }
 
 export function useUserConfig() {

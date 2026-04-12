@@ -5,7 +5,7 @@ import type {
   StreamMarkdownResolvedContext,
   UIComponents,
 } from '../types'
-import { CARETS } from '@stream-markdown/shared'
+import { CARETS, DEFAULT_ANIMATION } from '@stream-markdown/shared'
 import { computed, inject, provide, toValue } from 'vue'
 import { UI as DEFAULT_UI } from '../components'
 
@@ -40,6 +40,7 @@ export function useContext(): StreamMarkdownResolvedContext {
       return enable
     return mode.value === 'streaming'
   })
+  const animation = computed(() => toValue(context.animation) ?? DEFAULT_ANIMATION)
 
   const enableCaret = computed(() => toValue(context.enableCaret))
   const caret = computed(() => {
@@ -83,6 +84,7 @@ export function useContext(): StreamMarkdownResolvedContext {
     uiComponents,
     isDark,
     enableAnimate,
+    animation,
     enableCaret,
     caret,
     parsedNodes,

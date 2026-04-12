@@ -22,6 +22,7 @@ export interface UserConfig {
   mermaidBeautifulLightTheme: string
   mermaidBeautifulDarkTheme: string
   caret: StreamMarkdownProps['caret']
+  animation: NonNullable<StreamMarkdownProps['animation']>
 }
 
 export interface IconButtonProps {
