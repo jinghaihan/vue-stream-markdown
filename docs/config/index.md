@@ -193,6 +193,12 @@ Enable copy button for tables. Can be a boolean or a custom label string.
 
 Enable download button for tables. Can be a boolean or a custom label string.
 
+##### fullscreen
+
+- **Type:** `boolean`
+
+Enable fullscreen mode for tables.
+
 #### code
 
 - **Type:** `boolean | CodeControlsConfig`

@@ -48,6 +48,7 @@ const tableOnlyCopy = {
   table: {
     copy: true,
     download: false,
+    fullscreen: false,
   },
 }
 
@@ -55,6 +56,15 @@ const tableOnlyDownload = {
   table: {
     copy: false,
     download: true,
+    fullscreen: false,
+  },
+}
+
+const tableOnlyFullscreen = {
+  table: {
+    copy: false,
+    download: false,
+    fullscreen: true,
   },
 }
 
@@ -199,6 +209,7 @@ type TableControlsConfig
     | {
       copy?: boolean | string
       download?: boolean | string
+      fullscreen?: boolean
       customize?: ControlTransformer<TableNodeRendererProps>
     }
 ```
@@ -223,6 +234,7 @@ const controls: ControlsConfig = {
   table: {
     copy: true,
     download: false,
+    fullscreen: false,
   },
 }
 </script>
@@ -252,6 +264,37 @@ const controls: ControlsConfig = {
   table: {
     copy: false,
     download: true,
+    fullscreen: false,
+  },
+}
+</script>
+
+<template>
+  <Markdown :content="content" :controls="controls" />
+</template>
+```
+
+### fullscreen
+
+- **Type:** `boolean | undefined`
+- **Default:** `true`
+
+Enable fullscreen mode for tables.
+
+**Only fullscreen button enabled:**
+
+<StreamMarkdown :content="tableExample" :controls="tableOnlyFullscreen" />
+
+```vue
+<script setup lang="ts">
+import type { ControlsConfig } from 'vue-stream-markdown'
+import { Markdown } from 'vue-stream-markdown'
+
+const controls: ControlsConfig = {
+  table: {
+    copy: false,
+    download: false,
+    fullscreen: true,
   },
 }
 </script>

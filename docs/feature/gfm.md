@@ -111,7 +111,8 @@ Control text alignment using colons in the separator row:
 vue-stream-markdown enhances tables with:
 
 - **Responsive scrolling** - Tables scroll horizontally on narrow screens
-- **Download button** - Export tables as CSV or JSON
+- **Fullscreen view** - Open wide tables in a modal
+- **Download button** - Export tables as CSV, TSV, or Markdown
 - **Proper spacing** - Optimized cell padding
 
 ### Complex Tables

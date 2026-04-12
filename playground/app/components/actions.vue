@@ -98,7 +98,7 @@ const actions = computed((): Action[] => {
       buttonClass: typedEnable.value
         ? [isDark.value
             ? 'bg-destructive/30 hover:bg-destructive/50'
-            : 'bg-destructive hover:bg-red text-white']
+            : 'bg-destructive hover:bg-red text-destructive-foreground']
         : [],
       visible: () => !staticMode.value,
       onClick: () => props.terminateTypeWriting(),

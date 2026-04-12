@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { TableFormat } from '@stream-markdown/shared'
 import type { Control, ParsedNode, SelectOption, TableCellNode, TableNodeRendererProps, TableRowNode } from '../../types'
 import {
   extractTableDataFromElement,
@@ -33,8 +34,11 @@ const { isControlEnabled, resolveControls } = useControls({
 
 const showCopy = computed(() => isControlEnabled('table.copy'))
 const showDownload = computed(() => isControlEnabled('table.download'))
+const showFullscreen = computed(() => isControlEnabled('table.fullscreen'))
 
-const tableRef = ref()
+const tableRef = ref<{ $el?: HTMLElement }>()
+const fullscreenTableRef = ref<{ $el?: HTMLElement }>()
+const fullscreen = ref(false)
 const align = computed(() => props.node.align || [])
 
 const headerCells = computed(() => props.node.children?.[0]?.children ?? [])
@@ -46,14 +50,20 @@ function getAlign(index: number) {
   return align.value[index] || 'left'
 }
 
-function getTableContent(format: 'csv' | 'tsv' | 'markdown'): {
+function getTableElement() {
+  const currentTable = fullscreen.value ? fullscreenTableRef.value : tableRef.value
+  return currentTable?.$el ?? tableRef.value?.$el ?? fullscreenTableRef.value?.$el
+}
+
+function getTableContent(format: TableFormat): {
   content: string
   mimeType: string
   extension: string
 } | null {
-  if (!tableRef.value?.$el)
+  const tableElement = getTableElement()
+  if (!tableElement)
     return null
-  const tableData = extractTableDataFromElement(tableRef.value.$el)
+  const tableData = extractTableDataFromElement(tableElement)
   switch (format) {
     case 'markdown':
       return { content: tableDataToMarkdown(tableData), mimeType: 'text/markdown', extension: 'md' }
@@ -79,7 +89,7 @@ const builtinControls = computed((): Control[] => [
     options,
     visible: () => showCopy.value,
     onClick: (_event: MouseEvent, item?: SelectOption) => {
-      const format = (item?.value || 'csv') as 'csv' | 'tsv'
+      const format = (item?.value || 'csv') as TableFormat
       const data = getTableContent(format)
       if (!data)
         return
@@ -95,7 +105,7 @@ const builtinControls = computed((): Control[] => [
     options,
     visible: () => showDownload.value,
     onClick: async (_event: MouseEvent, item?: SelectOption) => {
-      const format = (item?.value || 'csv') as 'csv' | 'tsv'
+      const format = (item?.value || 'csv') as TableFormat
       const data = getTableContent(format)
       if (!data)
         return
@@ -107,6 +117,13 @@ const builtinControls = computed((): Control[] => [
       if (result)
         save(`table.${data.extension}`, data.content, data.mimeType)
     },
+  },
+  {
+    name: fullscreen.value ? t('button.minimize') : t('button.maximize'),
+    key: 'fullscreen',
+    icon: fullscreen.value ? 'minimize' : 'maximize',
+    visible: () => showFullscreen.value,
+    onClick: () => fullscreen.value = !fullscreen.value,
   },
 ])
 
@@ -155,5 +172,49 @@ function getNodes(cell: unknown) {
     </div>
 
     <component :is="UI.Spin" v-if="loading" />
+
+    <component
+      :is="UI.Modal"
+      v-model:open="fullscreen"
+      :header-style="{
+        backgroundColor: 'color-mix(in oklab, var(--muted) 80%, transparent)',
+        color: 'var(--muted-foreground)',
+        borderBottom: '1px solid var(--border)',
+      }"
+    >
+      <template #title>
+        <div />
+      </template>
+
+      <template #actions>
+        <div
+          data-stream-markdown="table-controls"
+          class="flex gap-1 items-center"
+        >
+          <component
+            :is="UI.Button"
+            v-for="item in controls"
+            v-bind="item"
+            :key="item.key"
+            @click="item.onClick"
+          />
+        </div>
+      </template>
+
+      <div
+        data-stream-markdown="table-fullscreen"
+        class="p-4 h-full overflow-auto [&_thead]:top-0 [&_thead]:sticky [&_thead]:z-10"
+        @click.self="fullscreen = false"
+      >
+        <component :is="UI.Table" ref="fullscreenTableRef" :headers="headerCells" :rows="bodyRows" :get-align="getAlign">
+          <template #header-cell="{ cell }">
+            <NodeList v-bind="props" :parent-node="node" :nodes="getNodes(cell)" :deep="deep + 1" />
+          </template>
+          <template #body-cell="{ cell }">
+            <NodeList v-bind="props" :parent-node="node" :nodes="getNodes(cell)" :deep="deep + 1" />
+          </template>
+        </component>
+      </div>
+    </component>
   </div>
 </template>

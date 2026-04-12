@@ -18,8 +18,8 @@ const active = ref<boolean>(props.defaultActive)
 
 const buttonClass = computed(() => {
   return cn(
-    'text-sm text-accent-foreground p-2 rounded-md flex-center gap-1 cursor-pointer transition-colors duration-150 duration-150 hover:bg-accent',
-    active.value ? 'bg-accent' : 'bg-transparent',
+    'text-sm p-2 rounded-md flex-center gap-1 cursor-pointer transition-colors duration-150 duration-150 hover:bg-accent hover:text-foreground',
+    active.value ? 'bg-accent text-foreground' : 'bg-transparent text-muted-foreground',
     ...props.buttonClass,
   )
 })

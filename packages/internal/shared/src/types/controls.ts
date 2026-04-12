@@ -11,6 +11,7 @@ export type TableControlsConfig<TTransformer = unknown>
     | {
       copy?: boolean | string
       download?: boolean | string
+      fullscreen?: boolean
       customize?: TTransformer
     }
 
