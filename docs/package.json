@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@vueuse/core": "catalog:frontend",
+    "vue": "catalog:frontend",
     "vue-stream-markdown": "workspace:*"
   },
   "devDependencies": {
