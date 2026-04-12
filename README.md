@@ -7,18 +7,10 @@
 
 A markdown renderer specially optimized for streaming scenarios, inspired by [streamdown](https://streamdown.ai/). Designed to achieve smoother streaming rendering through syntax inference and highly customizable rendering elements.
 
-```sh
-pnpm add vue-stream-markdown
-```
-
-<br>
-
 <p align="center">
-<a href="https://docs-vue-stream-markdown.netlify.app/">📚 Documentation</a> |
-<a href="https://play-vue-stream-markdown.netlify.app/">🤹‍♂️ Playground</a>
+<a href="https://docs-vue-stream-markdown.netlify.app/">Documentation</a> |
+<a href="https://play-vue-stream-markdown.netlify.app/">Playground</a>
 </p>
-
-<br>
 
 <p align='center'>
 <img src='./assets/screenshot.png' alt="screenshot" />
@@ -39,9 +31,12 @@ pnpm add vue-stream-markdown
 
 ## Usage
 
-> [!IMPORTANT]
-> 🚧 **vue-stream-markdown** is currently in active feature development.
-> From version `0.4.0` onwards, you need to manually include `katex.min.css`. If CDN is enabled, it will be automatically loaded.
+```sh
+pnpm add vue-stream-markdown
+```
+
+> [!TIP]
+> The parser layer is also available as standalone packages: `@markmend/core` for streaming-friendly completion, and `@markmend/ast` for MDAST parsing.
 
 For detailed usage and API documentation, please refer to the [Documentation](https://docs-vue-stream-markdown.netlify.app/).
 
@@ -79,11 +74,11 @@ This project is inspired by [streamdown](https://streamdown.ai/) and even uses s
 This project also uses and benefits from:
 
 - [mdast](https://github.com/syntax-tree/mdast) - Markdown Abstract Syntax Tree format
-- [Shiki](https://shiki.style/) - Beautiful syntax highlighting
-- [Mermaid](https://mermaid.js.org/) - Diagramming and charting tool
-- [beautiful-mermaid](https://github.com/notable-next/beautiful-mermaid) - Beautiful Mermaid diagram renderer with Shiki integration
-- [KaTeX](https://katex.org/) - Fast math typesetting library for the web
-- [Remend](https://github.com/vercel/streamdown/tree/main/packages/remend) - This project implements similar functionality inspired by remend for intelligently parsing and completing incomplete Markdown blocks.
+- [shiki](https://shiki.style/) - Beautiful syntax highlighting
+- [mermaid](https://mermaid.js.org/) - Diagramming and charting tool
+- [beautiful-mermaid](https://github.com/lukilabs/beautiful-mermaid) - Beautiful Mermaid diagram renderer with Shiki integration
+- [kaTeX](https://katex.org/) - Fast math typesetting library for the web
+- [remend](https://github.com/vercel/streamdown/tree/main/packages/remend) - This project implements similar functionality inspired by remend for intelligently parsing and completing incomplete Markdown blocks.
 
 ### Code Sources
 
@@ -91,7 +86,7 @@ This project also uses and benefits from:
 - [ast-explorer](https://github.com/sxzz/ast-explorer) - Learned AST knowledge from this project, and the playground layout inspiration and AST syntax tree filtering code are derived from it
 - [medium-zoom](https://github.com/francoischalifour/medium-zoom) - Inspired the custom image zoom implementation
 - [markdown-sanitizers](https://github.com/vercel-labs/markdown-sanitizers) - URL validation and security hardening logic in `src/utils/harden.ts` is ported from `rehype-harden`
-- [Dify](https://github.com/langgenius/dify) - LaTeX preprocessing logic in `src/preprocess/vendored/markdown-utils.ts` is ported from Dify
+- [dify](https://github.com/langgenius/dify) - LaTeX preprocessing logic in `src/preprocess/vendored/markdown-utils.ts` is ported from Dify
 
 ## Acknowledgments
 

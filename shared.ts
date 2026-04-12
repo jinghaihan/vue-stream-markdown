@@ -10,9 +10,9 @@ function r(p: string) {
 
 export const alias: Record<string, string> = {
   '@root': r('.'),
-  '@markmend/ast': r('packages/markmend-ast/src/index.ts'),
-  '@markmend/core': r('packages/markmend/src/index.ts'),
-  '@markmend': r('packages/markmend/src'),
+  '@markmend/ast': r('packages/markmend/ast/src/index.ts'),
+  '@markmend/core': r('packages/markmend/core/src/index.ts'),
+  '@markmend': r('packages/markmend/core/src'),
   '@shared': r('playground/app/'),
   '@stream-markdown/code': r('packages/internal/code/src/index.ts'),
   '@stream-markdown/math': r('packages/internal/math/src/index.ts'),

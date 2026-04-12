@@ -5,8 +5,8 @@ import { fileURLToPath } from 'node:url'
 const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const readmePath = resolve(rootDir, 'README.md')
 const packages = [
-  resolve(rootDir, 'packages/markmend'),
-  resolve(rootDir, 'packages/markmend-ast'),
+  resolve(rootDir, 'packages/markmend/core'),
+  resolve(rootDir, 'packages/markmend/ast'),
   resolve(rootDir, 'packages/vue-stream-markdown'),
 ]
 

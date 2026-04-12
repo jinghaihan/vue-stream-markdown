@@ -375,27 +375,17 @@ importers:
     dependencies:
       '@markmend/ast':
         specifier: workspace:*
-        version: link:../../markmend-ast
+        version: link:../../markmend/ast
     devDependencies:
       tsdown:
         specifier: catalog:build
         version: 0.21.7(@tsdown/css@0.21.7)(@typescript/native-preview@7.0.0-dev.20260412.1)(synckit@0.11.12)(typescript@6.0.2)(vue-tsc@3.2.6(typescript@6.0.2))
 
-  packages/markmend:
-    dependencies:
-      marked:
-        specifier: catalog:parser
-        version: 18.0.0
-    devDependencies:
-      tsdown:
-        specifier: catalog:build
-        version: 0.21.7(@tsdown/css@0.21.7)(@typescript/native-preview@7.0.0-dev.20260412.1)(synckit@0.11.12)(typescript@6.0.2)(vue-tsc@3.2.6(typescript@6.0.2))
-
-  packages/markmend-ast:
+  packages/markmend/ast:
     dependencies:
       '@markmend/core':
         specifier: workspace:*
-        version: link:../markmend
+        version: link:../core
       '@types/mdast':
         specifier: catalog:types
         version: 4.0.4
@@ -443,6 +433,16 @@ importers:
         specifier: catalog:build
         version: 0.21.7(@tsdown/css@0.21.7)(@typescript/native-preview@7.0.0-dev.20260412.1)(synckit@0.11.12)(typescript@6.0.2)(vue-tsc@3.2.6(typescript@6.0.2))
 
+  packages/markmend/core:
+    dependencies:
+      marked:
+        specifier: catalog:parser
+        version: 18.0.0
+    devDependencies:
+      tsdown:
+        specifier: catalog:build
+        version: 0.21.7(@tsdown/css@0.21.7)(@typescript/native-preview@7.0.0-dev.20260412.1)(synckit@0.11.12)(typescript@6.0.2)(vue-tsc@3.2.6(typescript@6.0.2))
+
   packages/vue-stream-markdown:
     dependencies:
       '@floating-ui/dom':
@@ -450,10 +450,10 @@ importers:
         version: 1.7.6
       '@markmend/ast':
         specifier: workspace:*
-        version: link:../markmend-ast
+        version: link:../markmend/ast
       '@markmend/core':
         specifier: workspace:*
-        version: link:../markmend
+        version: link:../markmend/core
       '@vueuse/core':
         specifier: catalog:frontend
         version: 14.2.1(vue@3.5.32(typescript@6.0.2))

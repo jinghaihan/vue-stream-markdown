@@ -17,7 +17,7 @@
   },
   "scripts": {
     "dev": "pnpm playground:dev",
-    "build": "turbo run build \"--filter=./packages/*\" \"--filter=./packages/internal/*\"",
+    "build": "turbo run build \"--filter=./packages/*\" \"--filter=./packages/internal/*\" \"--filter=./packages/markmend/*\"",
     "playground:dev": "pnpm -F playground dev",
     "playground:build": "pnpm -F playground generate",
     "playground:typecheck": "pnpm -F playground typecheck",
