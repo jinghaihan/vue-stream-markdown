@@ -8,7 +8,7 @@ import {
   tableDataToMarkdown,
   tableDataToTSV,
 } from '@stream-markdown/shared'
-import { useClipboard } from '@vueuse/core'
+import { useClipboard, useClipboardItems } from '@vueuse/core'
 import { computed, ref } from 'vue'
 import { useContext, useControls, useI18n } from '../../composables'
 import NodeList from '../node-list.vue'
@@ -24,9 +24,17 @@ const {
 
 const { t } = useI18n()
 
-const { copy, copied } = useClipboard({
+const { copy: copyText, copied: textCopied } = useClipboard({
   legacy: true,
 })
+
+const {
+  copy: copyItems,
+  copied: itemsCopied,
+  isSupported: isClipboardItemsSupported,
+} = useClipboardItems()
+
+const copied = computed(() => textCopied.value || itemsCopied.value)
 
 const { isControlEnabled, resolveControls } = useControls({
   controls: controlsConfig,
@@ -75,6 +83,27 @@ function getTableContent(format: TableFormat): {
   }
 }
 
+async function copyTableContent(content: string) {
+  const tableElement = getTableElement()
+
+  if (!tableElement || !isClipboardItemsSupported.value || typeof ClipboardItem === 'undefined') {
+    await copyText(content)
+    return
+  }
+
+  try {
+    await copyItems([
+      new ClipboardItem({
+        'text/plain': new Blob([content], { type: 'text/plain' }),
+        'text/html': new Blob([tableElement.outerHTML], { type: 'text/html' }),
+      }),
+    ])
+  }
+  catch {
+    await copyText(content)
+  }
+}
+
 const options: SelectOption[] = [
   { label: 'CSV', value: 'csv' },
   { label: 'TSV', value: 'tsv' },
@@ -88,13 +117,13 @@ const builtinControls = computed((): Control[] => [
     icon: copied.value ? 'check' : 'copy',
     options,
     visible: () => showCopy.value,
-    onClick: (_event: MouseEvent, item?: SelectOption) => {
+    onClick: async (_event: MouseEvent, item?: SelectOption) => {
       const format = (item?.value || 'csv') as TableFormat
       const data = getTableContent(format)
       if (!data)
         return
 
-      copy(data.content)
+      await copyTableContent(data.content)
       onCopied(data.content)
     },
   },
