@@ -131,6 +131,8 @@ const controls = computed(
   () => resolveControls<TableNodeRendererProps>('table', builtinControls.value, props),
 )
 
+const hasControls = computed(() => controls.value.length > 0)
+
 function getNodes(cell: unknown) {
   const children = (cell as TableRowNode | TableCellNode).children
   if (children)
@@ -142,9 +144,11 @@ function getNodes(cell: unknown) {
 <template>
   <div
     data-stream-markdown="table-wrapper"
-    class="my-4 flex flex-col gap-2 items-center"
+    class="my-4 flex flex-col gap-2"
+    :class="hasControls && 'p-2 border border-border rounded-lg bg-muted/20'"
   >
     <div
+      v-if="hasControls"
       data-stream-markdown="table-controls"
       class="flex gap-1 w-full items-center justify-end"
     >

@@ -229,12 +229,6 @@ Enable download button for code blocks.
 
 Enable fullscreen mode for code blocks.
 
-##### lineNumbers
-
-- **Type:** `boolean`
-
-Enable line numbers display for code blocks.
-
 #### image
 
 - **Type:** `boolean | ImageControlsConfig`
