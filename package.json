@@ -7,6 +7,7 @@
   "description": "Streaming markdown output, Useful for text streams like LLM outputs.",
   "author": "jinghaihan",
   "license": "MIT",
+  "funding": "https://github.com/sponsors/jinghaihan",
   "homepage": "https://github.com/jinghaihan/vue-stream-markdown#readme",
   "repository": {
     "type": "git",
