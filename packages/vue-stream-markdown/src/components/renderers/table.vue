@@ -204,7 +204,12 @@ function getNodes(cell: unknown) {
       </component>
     </div>
 
-    <component :is="UI.Spin" v-if="loading" />
+    <div
+      v-if="loading"
+      class="flex justify-center"
+    >
+      <component :is="UI.Spin" />
+    </div>
 
     <component
       :is="UI.Modal"
