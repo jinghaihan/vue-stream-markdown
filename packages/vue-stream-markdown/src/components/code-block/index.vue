@@ -307,7 +307,10 @@ watch(
   >
     <header
       data-stream-markdown="code-block-header"
-      class="code-block-header text-sm text-muted-foreground px-4 py-1.5 border-b border-border bg-muted/80 flex items-center top-0 justify-between sticky z-[5] max-lg:px-3 [&>*:last-child]:flex [&>*:first-child]:flex-1 [&>*:last-child]:flex-1 [&>*:nth-child(2)]:left-1/2 [&>*:last-child]:justify-end [&>*:nth-child(2)]:absolute [&>*:nth-child(2)]:-translate-x-1/2"
+      :class="[
+        { 'border-b': !collapsed },
+      ]"
+      class="code-block-header text-sm text-muted-foreground px-4 py-1.5 border-border bg-muted/80 flex items-center top-0 justify-between sticky z-[5] max-lg:px-3 [&>*:last-child]:flex [&>*:first-child]:flex-1 [&>*:last-child]:flex-1 [&>*:nth-child(2)]:left-1/2 [&>*:last-child]:justify-end [&>*:nth-child(2)]:absolute [&>*:nth-child(2)]:-translate-x-1/2"
     >
       <slot name="title">
         <ReuseTemplate :show-preview="previewPlacement === 'left'" />
