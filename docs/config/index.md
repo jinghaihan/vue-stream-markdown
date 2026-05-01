@@ -42,6 +42,15 @@ Whether to enable node enter animations. When set to `undefined` (default), anim
 
 Node enter animation. Custom values map to `stream-markdown-${animation}` transition classes.
 
+### animationDuration
+
+- **Type:** `number | string | undefined`
+- **Default:** `undefined` (uses the CSS default: `500ms`)
+
+Animation duration for streaming enter animations. Numbers are treated as milliseconds, while strings are passed through as CSS values such as `'0.5s'`, `'500ms'`, or `'var(--my-duration)'`.
+
+When omitted, the renderer uses the CSS value of `--stream-markdown-animation-duration`.
+
 ### caret
 
 - **Type:** `'block' | 'circle' | undefined`

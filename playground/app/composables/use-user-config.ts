@@ -17,6 +17,7 @@ const DEFAULT_USER_CONFIG: UserConfig = {
   mermaidBeautifulDarkTheme: 'github-dark',
   caret: 'block',
   animation: 'fade-in',
+  animationDuration: 500,
 }
 
 export function useUserConfig() {

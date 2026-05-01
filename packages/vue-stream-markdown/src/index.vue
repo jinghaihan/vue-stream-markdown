@@ -100,6 +100,19 @@ const blocks = computed(() => processed.value?.asts ?? [])
 const parsedNodes = computed(() => blocks.value.flatMap(block => block.children))
 const processedContent = computed(() => (processed.value?.contents ?? []).join(''))
 
+const rootStyle = computed(() => {
+  const style = { ...cssVariables.value }
+  const duration = props.animationDuration
+
+  if (duration !== undefined) {
+    style['--stream-markdown-animation-duration'] = typeof duration === 'number'
+      ? `${duration}ms`
+      : duration
+  }
+
+  return style
+})
+
 const nodeRenderers = computed((): NodeRenderers => ({
   ...NODE_RENDERERS,
   ...props.nodeRenderers,
@@ -206,7 +219,7 @@ defineExpose<StreamMarkdownExpose>({
     ref="containerRef"
     class="stream-markdown"
     :class="[isDark ? 'dark' : 'light']"
-    :style="cssVariables"
+    :style="rootStyle"
   >
     <template v-for="(block, index) in blocks" :key="index">
       <NodeList

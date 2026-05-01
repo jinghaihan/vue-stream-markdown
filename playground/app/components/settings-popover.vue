@@ -27,6 +27,15 @@ const mermaidBeautifulDarkTheme = defineModel<string>('mermaidBeautifulDarkTheme
 
 const caret = defineModel<StreamMarkdownProps['caret']>('caret', { required: false, default: 'block' })
 const animation = defineModel<NonNullable<StreamMarkdownProps['animation']>>('animation', { required: false, default: 'fade-in' })
+const animationDuration = defineModel<number>('animationDuration', { required: false, default: 500 })
+
+const animationDurationInput = computed({
+  get: () => animationDuration.value,
+  set: (value: number | string) => {
+    const nextValue = Number(value)
+    animationDuration.value = Number.isFinite(nextValue) ? nextValue : 500
+  },
+})
 
 const BLOCK_CLASSES = [
   'h-10',
@@ -257,6 +266,18 @@ watch(() => staticMode.value, () => {
             v-model:value="animation"
             :class="CONTROL_CLASSES"
             :options="ANIMATION_OPTIONS"
+          />
+        </div>
+
+        <div :class="BLOCK_CLASSES">
+          <Label :class="LABEL_CLASSES">Duration</Label>
+          <Input
+            v-model:value="animationDurationInput"
+            :class="CONTROL_CLASSES"
+            type="number"
+            min="0"
+            step="50"
+            placeholder="Duration (ms)"
           />
         </div>
       </div>

@@ -4,7 +4,6 @@ import { alias } from '../shared'
 export default defineNuxtConfig({
   modules: [
     'unplugin-icons/nuxt',
-    '@vueuse/nuxt',
     '@unocss/nuxt',
     '@nuxtjs/color-mode',
     '@nuxt/eslint',

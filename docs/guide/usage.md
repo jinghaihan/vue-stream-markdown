@@ -80,6 +80,7 @@ export default defineNuxtConfig({
 - `mode` ('streaming' | 'static'): Rendering mode, defaults to `'streaming'`
 - `enableAnimate` (boolean | undefined): Enable node enter animations. When `undefined`, follows the rendering mode
 - `animation` ('fade-in' | 'blur-in' | 'slide-up' | string): Node enter animation, defaults to `'fade-in'`
+- `animationDuration` (number | string): Animation duration. Numbers are treated as milliseconds; strings are passed through as CSS values. When omitted, uses the CSS default of `500ms`.
 - `isDark` (boolean): Enable dark mode
 - `locale` (string | LocaleConfig): Locale for internationalization, defaults to `'en-US'`
 - `preload` (PreloadConfig): Configure which node renderers to preload for better initial rendering performance

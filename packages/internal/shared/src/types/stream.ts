@@ -51,6 +51,7 @@ export interface StreamMarkdownViewProps<
   locale?: string | LocaleConfig
   enableAnimate?: boolean
   animation?: AnimationType
+  animationDuration?: number | string
   caret?: TCaret
   themeElement?: () => HTMLElement | undefined
 }
