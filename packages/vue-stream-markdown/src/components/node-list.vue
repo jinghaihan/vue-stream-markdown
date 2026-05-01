@@ -57,8 +57,8 @@ const items = computed(() => props.nodes.map((node, index) => ({
   nextNode: getNextNode(index),
 })))
 
-// exclude nodes that should not be transitioned
-const excludeTransition: NodeType[] = ['code']
+// text nodes handle word-level animation in their renderer.
+const excludeTransition: NodeType[] = ['code', 'text']
 
 const transitionName = computed(() => `stream-markdown-${animation.value}`)
 
