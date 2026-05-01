@@ -1,9 +1,5 @@
 import type { Component } from 'vue'
 
-function isAsyncComponent(component: Component): boolean {
-  return typeof component === 'object' && '__asyncLoader' in component
-}
-
 export async function preloadAsyncComponents(
   components: Record<string, Component | undefined>,
   include: string[] = [],
@@ -26,4 +22,8 @@ export async function preloadAsyncComponents(
   })
 
   await Promise.all(loaders)
+}
+
+function isAsyncComponent(component: Component): boolean {
+  return typeof component === 'object' && '__asyncLoader' in component
 }
