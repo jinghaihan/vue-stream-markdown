@@ -8,47 +8,47 @@ overrides:
   vue: catalog:frontend
 catalogs:
   build:
-    '@tsdown/css': ^0.21.7
-    '@vitejs/plugin-vue': ^6.0.5
-    tsdown: ^0.21.7
+    '@tsdown/css': ^0.21.10
+    '@vitejs/plugin-vue': ^6.0.6
+    tsdown: ^0.21.10
     unplugin-icons: ^23.0.1
     vite: ^8.0.8
   dev:
-    '@typescript/native-preview': ^7.0.0-dev.20260412.1
+    '@typescript/native-preview': ^7.0.0-dev.20260501.1
     bumpp: ^11.0.1
     lightningcss: ^1.32.0
     nano-staged: ^1.0.2
-    pncat: ^0.11.1
+    pncat: ^0.12.0
     simple-git-hooks: ^2.13.1
     taze: ^19.11.0
     tinyglobby: ^0.2.16
     tsx: ^4.21.0
-    turbo: ^2.9.6
+    turbo: ^2.9.7
     typescript: ^6.0.2
   docs:
     vitepress: ^1.6.4
-    vitepress-plugin-llms: ^1.12.0
+    vitepress-plugin-llms: ^1.12.1
   frontend:
     '@floating-ui/dom': ^1.7.6
-    '@vueuse/core': ^14.2.1
+    '@vueuse/core': ^14.3.0
     unocss: ^66.6.8
-    vue: ^3.5.32
+    vue: ^3.5.33
   icons:
     '@iconify-json/catppuccin': ^1.2.17
-    '@iconify-json/lucide': ^1.2.102
+    '@iconify-json/lucide': ^1.2.105
   inlined:
     '@antfu/utils': ^9.3.0
     quick-lru: ^7.3.0
     treechop: ^0.1.2
   lint:
     '@nuxt/eslint': ^1.15.2
-    '@octohash/eslint-config': ^0.3.1
+    '@octohash/eslint-config': ^0.3.2
     '@unocss/eslint-plugin': 66.5.9
-    eslint: ^10.2.0
+    eslint: ^10.2.1
     eslint-plugin-format: ^2.0.1
-    vue-tsc: ^3.2.6
+    vue-tsc: ^3.2.7
   parser:
-    marked: ^18.0.0
+    marked: ^18.0.3
     mdast-util-from-markdown: ^2.0.3
     mdast-util-frontmatter: ^2.0.1
     mdast-util-gfm: ^3.1.0
@@ -67,19 +67,19 @@ catalogs:
     '@shikijs/monaco': ^4.0.2
     '@unocss/nuxt': ^66.6.8
     '@unocss/reset': ^66.6.8
-    '@vueuse/nuxt': ^14.2.1
+    '@vueuse/nuxt': ^14.3.0
     clsx: ^2.1.1
-    dompurify: ^3.3.3
+    dompurify: ^3.4.2
     echarts: ^6.0.0
     htmlparser2: ^12.0.0
     lz-string: ^1.5.0
-    nuxt: ^4.4.2
+    nuxt: ^4.4.4
     tailwind-merge: ^3.5.0
     vue-json-pretty: ^2.6.0
   test:
-    '@vitest/coverage-v8': ^4.1.4
-    '@vue/test-utils': ^2.4.6
-    vitest: ^4.1.4
+    '@vitest/coverage-v8': ^4.1.5
+    '@vue/test-utils': ^2.4.10
+    vitest: ^4.1.5
   types:
     '@types/mdast': ^4.0.4
     '@types/node': ^25.6.0
