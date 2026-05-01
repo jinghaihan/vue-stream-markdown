@@ -109,6 +109,7 @@ function getNodeKey(node: ParsedNode, index: number) {
         :prev-node="item.prevNode"
         :next-node="item.nextNode"
         :node-key="item.key"
+        :hide-caret="hideCaret"
       />
     </Transition>
 
@@ -123,6 +124,7 @@ function getNodeKey(node: ParsedNode, index: number) {
       :prev-node="item.prevNode"
       :next-node="item.nextNode"
       :node-key="item.key"
+      :hide-caret="hideCaret"
     />
   </template>
 </template>

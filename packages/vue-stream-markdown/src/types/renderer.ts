@@ -48,6 +48,7 @@ export interface NodeRendererProps {
   nextNode?: ParsedNode
   nodeKey: string
   deep: number
+  hideCaret?: boolean
 }
 
 export interface BlockquoteNodeRendererProps extends NodeRendererProps {

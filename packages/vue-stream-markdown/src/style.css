@@ -1,6 +1,6 @@
 .stream-markdown {
   --default-transition-duration: 150ms;
-  --stream-markdown-animation-duration: 900ms;
+  --stream-markdown-animation-duration: 500ms;
 
   color: var(--foreground);
   line-height: 1.5;

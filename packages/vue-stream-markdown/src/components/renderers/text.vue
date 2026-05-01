@@ -21,6 +21,7 @@ interface TextPart {
 const { enableAnimate, animation } = useContext()
 
 const loading = computed(() => props.node.loading)
+const showCaret = computed(() => loading.value && !props.hideCaret)
 const shouldAnimate = computed(() => enableAnimate.value && props.node.value.trim().length > 0)
 const transitionName = computed(() => `stream-markdown-${animation.value}`)
 
@@ -75,7 +76,7 @@ function splitByWord(text: string): string[] {
       :data-stream-markdown="part.whitespace ? 'text-space' : 'text-word'"
       :class="part.whitespace ? '' : 'inline-block max-w-full whitespace-pre-wrap break-words'"
     >{{ part.value }}</span>
-    <Caret v-if="loading" key="stream-markdown-caret" />
+    <Caret v-if="showCaret" key="stream-markdown-caret" />
   </TransitionGroup>
 
   <span
@@ -83,6 +84,6 @@ function splitByWord(text: string): string[] {
     data-stream-markdown="text"
     class="whitespace-pre-wrap break-words"
   >
-    {{ node.value }}<Caret v-if="loading" />
+    {{ node.value }}<Caret v-if="showCaret" />
   </span>
 </template>

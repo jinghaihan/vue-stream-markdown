@@ -196,10 +196,10 @@ function getNodes(cell: unknown) {
     >
       <component :is="UI.Table" ref="tableRef" :headers="headerCells" :rows="bodyRows" :get-align="getAlign">
         <template #header-cell="{ cell }">
-          <NodeList v-bind="props" :parent-node="node" :nodes="getNodes(cell)" :deep="deep + 1" />
+          <NodeList v-bind="props" :parent-node="node" :nodes="getNodes(cell)" :deep="deep + 1" hide-caret />
         </template>
         <template #body-cell="{ cell }">
-          <NodeList v-bind="props" :parent-node="node" :nodes="getNodes(cell)" :deep="deep + 1" />
+          <NodeList v-bind="props" :parent-node="node" :nodes="getNodes(cell)" :deep="deep + 1" hide-caret />
         </template>
       </component>
     </div>
@@ -246,10 +246,10 @@ function getNodes(cell: unknown) {
       >
         <component :is="UI.Table" ref="fullscreenTableRef" :headers="headerCells" :rows="bodyRows" :get-align="getAlign">
           <template #header-cell="{ cell }">
-            <NodeList v-bind="props" :parent-node="node" :nodes="getNodes(cell)" :deep="deep + 1" />
+            <NodeList v-bind="props" :parent-node="node" :nodes="getNodes(cell)" :deep="deep + 1" hide-caret />
           </template>
           <template #body-cell="{ cell }">
-            <NodeList v-bind="props" :parent-node="node" :nodes="getNodes(cell)" :deep="deep + 1" />
+            <NodeList v-bind="props" :parent-node="node" :nodes="getNodes(cell)" :deep="deep + 1" hide-caret />
           </template>
         </component>
       </div>
