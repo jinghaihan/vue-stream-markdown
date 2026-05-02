@@ -8,7 +8,12 @@ import type {
   UIComponents,
 } from './types'
 import { MarkdownAstParser } from '@markmend/ast'
-import { DEFAULT_ANIMATION, PRELOAD_NODE_RENDERER } from '@stream-markdown/shared'
+import {
+  DEFAULT_ANIMATION,
+  normalizeAnimationDuration,
+  PRELOAD_NODE_RENDERER,
+  STREAM_MARKDOWN_CSS_VARIABLES,
+} from '@stream-markdown/shared'
 import { computed, onBeforeUnmount, onMounted, ref, toRefs, watch } from 'vue'
 import { NODE_RENDERERS, UI } from './components'
 import { ICONS } from './components/icons'
@@ -102,14 +107,9 @@ const processedContent = computed(() => (processed.value?.contents ?? []).join('
 
 const rootStyle = computed(() => {
   const style = { ...cssVariables.value }
-  const duration = props.animationDuration
-
-  if (duration !== undefined) {
-    style['--stream-markdown-animation-duration'] = typeof duration === 'number'
-      ? `${duration}ms`
-      : duration
-  }
-
+  const duration = normalizeAnimationDuration(props.animationDuration)
+  if (duration !== undefined)
+    style[STREAM_MARKDOWN_CSS_VARIABLES.animationDuration] = duration
   return style
 })
 

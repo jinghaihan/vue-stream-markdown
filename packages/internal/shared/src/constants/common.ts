@@ -8,6 +8,18 @@ export const ANIMATION_TYPES = [
 
 export const DEFAULT_ANIMATION = ANIMATION_TYPES[0]
 
+export const STREAM_MARKDOWN_PREFIX = 'stream-markdown'
+
+export const STREAM_MARKDOWN_CSS_VARIABLES = {
+  animationDuration: '--stream-markdown-animation-duration',
+  defaultTransitionDuration: '--default-transition-duration',
+} as const
+
+export const NODE_TRANSITION_EXCLUDED_TYPES = [
+  'code',
+  'text',
+] as const satisfies readonly BuiltinNodeRenderers[]
+
 export const CARETS = {
   block: ' ▋',
   circle: ' ●',

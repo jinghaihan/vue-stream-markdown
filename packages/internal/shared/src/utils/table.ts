@@ -1,6 +1,24 @@
 import type { TableData } from '../types'
 
+export type TableAlign = 'left' | 'center' | 'right'
+
 const CSV_QUOTE_PATTERN = /"/g
+
+export function resolveTableAlign(
+  align: Array<TableAlign | null | undefined> | undefined,
+  index: number,
+): TableAlign {
+  return align?.[index] || 'left'
+}
+
+export function getTableCellNodes<TNode = unknown>(
+  cell: TNode | { children?: TNode[] },
+): TNode[] {
+  const children = (cell as { children?: TNode[] }).children
+  if (Array.isArray(children))
+    return children
+  return [cell as TNode]
+}
 
 export function extractTableDataFromElement(tableElement: HTMLElement): TableData {
   const headers: string[] = []

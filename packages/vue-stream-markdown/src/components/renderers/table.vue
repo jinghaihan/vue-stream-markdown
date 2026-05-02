@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { TableFormat } from '@stream-markdown/shared'
-import type { Control, ParsedNode, SelectOption, TableCellNode, TableNodeRendererProps, TableRowNode } from '../../types'
+import type { Control, ParsedNode, SelectOption, TableNodeRendererProps } from '../../types'
 import {
   extractTableDataFromElement,
+  getTableCellNodes,
+  resolveTableAlign,
   save,
   tableDataToCSV,
   tableDataToMarkdown,
@@ -55,7 +57,7 @@ const bodyRows = computed(() => props.node.children.slice(1))
 const loading = computed(() => props.markdownParser.hasLoadingNode(props.node.children))
 
 function getAlign(index: number) {
-  return align.value[index] || 'left'
+  return resolveTableAlign(align.value, index)
 }
 
 function getTableElement() {
@@ -163,10 +165,7 @@ const controls = computed(
 const hasControls = computed(() => controls.value.length > 0)
 
 function getNodes(cell: unknown) {
-  const children = (cell as TableRowNode | TableCellNode).children
-  if (children)
-    return children
-  return [cell] as ParsedNode[]
+  return getTableCellNodes<ParsedNode>(cell as ParsedNode | { children?: ParsedNode[] })
 }
 </script>
 

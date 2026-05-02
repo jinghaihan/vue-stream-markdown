@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { NodeRendererListProps, NodeType, ParsedNode } from '../types'
+import type { NodeRendererListProps, ParsedNode } from '../types'
+import { getNodeKey, getTransitionName, shouldAnimateNode } from '@stream-markdown/shared'
 import { computed } from 'vue'
 import { useContext } from '../composables'
 
@@ -51,16 +52,13 @@ const nextBlock = computed(() => {
 const items = computed(() => props.nodes.map((node, index) => ({
   node,
   index,
-  key: getNodeKey(node, index),
+  key: getNodeKey(node, index, props.nodeKey),
   component: getNodeComponent(node),
   prevNode: getPrevNode(index),
   nextNode: getNextNode(index),
 })))
 
-// text nodes handle word-level animation in their renderer.
-const excludeTransition: NodeType[] = ['code', 'text']
-
-const transitionName = computed(() => `stream-markdown-${animation.value}`)
+const transitionName = computed(() => getTransitionName(animation.value))
 
 function getNodeComponent(node: ParsedNode) {
   return activeNodeRenderers.value[node.type] || null
@@ -83,19 +81,12 @@ function getNextNode(index: number) {
     return undefined
   return nextBlock.value?.children[0]
 }
-
-function getNodeKey(node: ParsedNode, index: number) {
-  const nodeKey = `${props.nodeKey || 'stream-markdown'}-${node.type}`
-  if (node.type === 'footnoteReference' || node.type === 'footnoteDefinition')
-    return `${nodeKey}-${node.identifier}`
-  return `${nodeKey}-${index}`
-}
 </script>
 
 <template>
   <template v-for="item in items" :key="item.key">
     <Transition
-      v-if="enableAnimate && !excludeTransition.includes(item.node.type)"
+      v-if="enableAnimate && shouldAnimateNode(item.node.type)"
       :name="transitionName"
       appear
     >

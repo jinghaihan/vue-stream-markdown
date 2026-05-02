@@ -3,7 +3,7 @@ import type { BuiltinLanguage } from 'shiki'
 import type { Component } from 'vue'
 import type { CodeNodeRendererProps, Control, PreviewSegmentedPlacement, SelectOption } from '../../types'
 import { LANGUAGE_ALIAS, LANGUAGE_EXTENSIONS } from '@stream-markdown/code'
-import { save } from '@stream-markdown/shared'
+import { normalizeCssSize, save } from '@stream-markdown/shared'
 import { createReusableTemplate, useClipboard } from '@vueuse/core'
 import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useCodeOptions, useContext, useControls, useI18n, useMermaid } from '../../composables'
@@ -166,21 +166,17 @@ const PreviewComponent = computed((): Component | undefined => {
 
 const inlineInteractive = computed(() => getControlValue('mermaid.inlineInteractive') ?? true)
 
-function normalizeHeight(height: string | number) {
-  return typeof height === 'number' ? `${height}px` : height
-}
-
 const maxHeight = computed((): string | undefined => {
   if (mode.value === 'preview')
     return undefined
 
   const specific = codeOptions.value?.language?.[language.value]?.maxHeight
   if (specific)
-    return normalizeHeight(specific)
+    return normalizeCssSize(specific)
 
   const height = codeOptions.value?.maxHeight
   if (height)
-    return normalizeHeight(height)
+    return normalizeCssSize(height)
 
   return undefined
 })
