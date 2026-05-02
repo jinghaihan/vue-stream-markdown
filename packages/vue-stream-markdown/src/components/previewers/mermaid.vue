@@ -2,9 +2,11 @@
 import type { CodeNodeRendererProps, Control } from '../../types'
 import { throttle } from '@antfu/utils'
 import {
+  applyMermaidRenderResult,
+  createMermaidPreviewControllerState,
   createMermaidPreviewModel,
-  createMermaidRenderState,
   measureSvgContainerHeight,
+  setMermaidMeasuredHeight,
   shouldEagerRenderMermaidAfterLoading,
   startMermaidRenderAttempt,
 } from '@stream-markdown/core'
@@ -38,30 +40,27 @@ const { resolveControls } = useControls({
   controls,
 })
 
-const renderFlag = ref<boolean>(false)
-const renderAttempt = ref<boolean>(false)
-
-const svg = ref<string>()
-const error = ref<string>()
+const previewState = ref(createMermaidPreviewControllerState())
 const containerRef = ref<HTMLDivElement>()
 
 const nodeLoading = computed(() => !!props.node.loading)
 
 const Error = computed(() => mermaidOptions.value?.errorComponent ?? UI.value.ErrorComponent)
 
-const containerHeight = ref<number>(0)
 const model = computed(() => createMermaidPreviewModel({
   code: props.node.value,
   nodeLoading: nodeLoading.value,
-  svg: svg.value,
-  renderFlag: renderFlag.value,
+  svg: previewState.value.svg,
+  renderFlag: previewState.value.renderFlag,
   minHeight: props.minHeight,
   containerHeight: props.containerHeight,
-  measuredHeight: containerHeight.value,
+  measuredHeight: previewState.value.measuredHeight,
   controls: controls.value,
 }))
 
 const code = computed(() => model.value.code)
+const svg = computed(() => previewState.value.svg)
+const error = computed(() => previewState.value.error)
 const loading = computed(() => model.value.loading)
 const showControl = computed(() => model.value.showControl)
 const controlPosition = computed(() => model.value.controlPosition)
@@ -88,7 +87,7 @@ function updateHeight() {
 
   const height = measureSvgContainerHeight(containerRef.value)
   if (height)
-    containerHeight.value = height
+    previewState.value = setMermaidMeasuredHeight(previewState.value, height)
 }
 
 const render = throttle(
@@ -97,27 +96,18 @@ const render = throttle(
     if (!shouldRender.value)
       return
 
-    const { valid, svg: data, error: err } = await renderMermaid(code.value)
-    if (valid) {
-      svg.value = data
+    const result = await renderMermaid(code.value)
+    previewState.value = applyMermaidRenderResult(previewState.value, result)
+    if (result.valid) {
       nextTick(() => {
         updateHeight()
       })
     }
-    else {
-      error.value = err
-    }
-    renderFlag.value = true
   },
 )
 
 function eagerRender() {
-  const state = startMermaidRenderAttempt(createMermaidRenderState({
-    renderAttempt: renderAttempt.value,
-    renderFlag: renderFlag.value,
-  }))
-  renderAttempt.value = state.renderAttempt
-  renderFlag.value = state.renderFlag
+  previewState.value = startMermaidRenderAttempt(previewState.value)
   render()
 }
 
@@ -140,10 +130,7 @@ watch(
   loading,
   (curr, prev) => {
     if (shouldEagerRenderMermaidAfterLoading(
-      createMermaidRenderState({
-        renderAttempt: renderAttempt.value,
-        renderFlag: renderFlag.value,
-      }),
+      previewState.value,
       curr,
       prev,
     )) {
@@ -190,7 +177,12 @@ if (!props.containerHeight) {
       />
     </template>
 
-    <component :is="UI.ZoomContainer" :show-control="showControl" :position="controlPosition" :interactive="interactive">
+    <component
+      :is="UI.ZoomContainer"
+      :show-control="showControl"
+      :position="controlPosition"
+      :interactive="interactive"
+    >
       <template #controls="buttonProps">
         <component
           :is="UI.Button"

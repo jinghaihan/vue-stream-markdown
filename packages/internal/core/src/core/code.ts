@@ -3,6 +3,8 @@ import type {
   CodeOptions,
   CodeOptionsLanguage,
   ControlDescriptor,
+  DownloadEvent,
+  MaybePromise,
   PreviewerConfig,
   PreviewSegmentedPlacement,
   SelectOption,
@@ -242,6 +244,24 @@ export interface CodeBlockControlDescriptorOptions {
   downloadOptions?: SelectOption[]
 }
 
+export interface CodeBlockControlState {
+  collapsed: boolean
+  fullscreen: boolean
+}
+
+export interface CodeBlockControlActionOptions {
+  key: string
+  select?: SelectOption
+  state: CodeBlockControlState
+  node: CodeNode
+  language: string
+  beforeDownload?: (event: DownloadEvent) => MaybePromise<boolean>
+  copyText?: (content: string) => MaybePromise<void>
+  onCopied?: (content: string) => void
+  saveFile?: (filename: string, content: string | Blob, mimeType: string) => MaybePromise<void>
+  saveMermaid?: (format: 'svg' | 'png', code: string) => MaybePromise<void>
+}
+
 export function createCodeBlockControlDescriptors(
   options: CodeBlockControlDescriptorOptions,
 ): ControlDescriptor[] {
@@ -298,6 +318,81 @@ export function syncCodeBlockMode(state: CodeBlockModeState, previewable: boolea
   if (!previewable || state.mode === 'preview')
     return state
   return { mode: 'preview' }
+}
+
+export async function handleCodeBlockControlAction(
+  options: CodeBlockControlActionOptions,
+): Promise<CodeBlockControlState> {
+  const state = { ...options.state }
+
+  if (options.key === 'collapse') {
+    state.collapsed = !state.collapsed
+    return state
+  }
+
+  if (options.key === 'fullscreen') {
+    state.fullscreen = !state.fullscreen
+    return state
+  }
+
+  if (options.key === 'copy') {
+    if (!options.node.value)
+      return state
+
+    await options.copyText?.(options.node.value)
+    options.onCopied?.(options.node.value)
+    return state
+  }
+
+  if (options.key !== 'download' || options.node.loading)
+    return state
+
+  const selected = options.select
+  if (!selected || selected.value === 'code') {
+    await downloadCode(options)
+    return state
+  }
+
+  if (selected.value === 'svg' || selected.value === 'png')
+    await downloadMermaid(options, selected.value)
+
+  return state
+}
+
+async function downloadCode(options: CodeBlockControlActionOptions) {
+  const extension = getCodeFileExtension(options.language)
+  if (!extension)
+    return
+
+  const result = await resolveBeforeDownload(options.beforeDownload, {
+    type: 'code',
+    content: options.node.value,
+  })
+  if (!result)
+    return
+
+  await options.saveFile?.(`file.${extension}`, options.node.value, 'text/plain')
+}
+
+async function downloadMermaid(
+  options: CodeBlockControlActionOptions,
+  format: 'svg' | 'png',
+) {
+  const result = await resolveBeforeDownload(options.beforeDownload, {
+    type: 'mermaid',
+    content: options.node.value,
+  })
+  if (result)
+    await options.saveMermaid?.(format, options.node.value)
+}
+
+async function resolveBeforeDownload(
+  beforeDownload: CodeBlockControlActionOptions['beforeDownload'],
+  event: DownloadEvent,
+): Promise<boolean> {
+  if (!beforeDownload)
+    return true
+  return await beforeDownload(event)
 }
 
 function isCustomPreviewComponent(

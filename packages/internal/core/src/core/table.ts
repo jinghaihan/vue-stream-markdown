@@ -4,7 +4,14 @@ import type {
   TableNode,
   TableRowNode,
 } from '@markmend/ast'
-import type { ControlDescriptor, SelectOption, TableData, TableFormat } from '../types'
+import type {
+  ControlDescriptor,
+  DownloadEvent,
+  MaybePromise,
+  SelectOption,
+  TableData,
+  TableFormat,
+} from '../types'
 import {
   getTableCellNodes,
   resolveTableAlign,
@@ -23,6 +30,21 @@ export interface TableContent {
   content: string
   mimeType: string
   extension: string
+}
+
+export interface TableControlState {
+  fullscreen: boolean
+}
+
+export interface TableControlActionOptions {
+  key: string
+  select?: SelectOption
+  state: TableControlState
+  getContent: (format: TableFormat) => TableContent | null
+  beforeDownload?: (event: DownloadEvent) => MaybePromise<boolean>
+  copyContent?: (content: string) => MaybePromise<void>
+  onCopied?: (content: string) => void
+  saveFile?: (filename: string, content: string | Blob, mimeType: string) => MaybePromise<void>
 }
 
 export interface TableModelOptions {
@@ -96,4 +118,46 @@ export function createTableControlDescriptors(
       visible: options.showFullscreen,
     },
   ]
+}
+
+export async function handleTableControlAction(
+  options: TableControlActionOptions,
+): Promise<TableControlState> {
+  const state = { ...options.state }
+
+  if (options.key === 'fullscreen') {
+    state.fullscreen = !state.fullscreen
+    return state
+  }
+
+  const format = (options.select?.value || 'csv') as TableFormat
+  const data = options.getContent(format)
+  if (!data)
+    return state
+
+  if (options.key === 'copy') {
+    await options.copyContent?.(data.content)
+    options.onCopied?.(data.content)
+    return state
+  }
+
+  if (options.key === 'download') {
+    const result = await resolveBeforeDownload(options.beforeDownload, {
+      type: 'table',
+      content: data.content,
+    })
+    if (result)
+      await options.saveFile?.(`table.${data.extension}`, data.content, data.mimeType)
+  }
+
+  return state
+}
+
+async function resolveBeforeDownload(
+  beforeDownload: TableControlActionOptions['beforeDownload'],
+  event: DownloadEvent,
+): Promise<boolean> {
+  if (!beforeDownload)
+    return true
+  return await beforeDownload(event)
 }

@@ -13,7 +13,8 @@ const id = computed(() => model.value.id)
 
 <template>
   <component
-    :is="tag" :data-stream-markdown="id"
+    :is="tag"
+    :data-stream-markdown="id"
     class="leading-6 pl-5 whitespace-normal"
     :class="{
       'list-decimal': id === 'ordered-list',

@@ -12,6 +12,18 @@ export interface MathRendererModelOptions {
   errorMessage?: string
 }
 
+export interface MathRendererState {
+  html: string
+  errorMessage: string
+  renderFlag: boolean
+  renderingCode: string
+}
+
+export interface MathRendererResult {
+  html?: string
+  error?: string
+}
+
 export function createMathRendererModel(options: MathRendererModelOptions) {
   const code = options.node.value
   const loading = !!options.node.loading
@@ -27,5 +39,49 @@ export function createMathRendererModel(options: MathRendererModelOptions) {
     loading,
     isDisplayMode,
     error,
+  }
+}
+
+export function createMathRendererState(
+  state: Partial<MathRendererState> = {},
+): MathRendererState {
+  return {
+    html: '',
+    errorMessage: '',
+    renderFlag: false,
+    renderingCode: '',
+    ...state,
+  }
+}
+
+export function applyMathRendererResult(
+  state: MathRendererState,
+  code: string,
+  result: MathRendererResult,
+): MathRendererState {
+  if (result.html !== undefined) {
+    return {
+      ...state,
+      html: result.html,
+      errorMessage: '',
+      renderFlag: true,
+      renderingCode: '',
+    }
+  }
+
+  if (result.error !== undefined) {
+    return {
+      ...state,
+      errorMessage: result.error,
+      renderFlag: true,
+      renderingCode: code,
+    }
+  }
+
+  return {
+    ...state,
+    errorMessage: '',
+    renderFlag: true,
+    renderingCode: '',
   }
 }

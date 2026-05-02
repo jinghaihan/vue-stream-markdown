@@ -2,7 +2,11 @@ import type { CdnOptions } from '@stream-markdown/core'
 import type { MaybeRefOrGetter } from 'vue'
 import type { InlineMathNode, KatexOptions, MathNode } from '../types'
 import { throttle } from '@antfu/utils'
-import { createMathRendererModel } from '@stream-markdown/core'
+import {
+  applyMathRendererResult,
+  createMathRendererModel,
+  createMathRendererState,
+} from '@stream-markdown/core'
 import { computed, ref, toValue, watch } from 'vue'
 import { useKatex } from './use-katex'
 
@@ -18,11 +22,7 @@ export function useMathRenderer(options: UseMathRendererOptions) {
     cdnOptions: options.cdnOptions,
   })
 
-  const renderFlag = ref<boolean>(false)
-  const renderingCode = ref<string>('')
-
-  const html = ref<string>('')
-  const errorMessage = ref<string>('')
+  const state = ref(createMathRendererState())
 
   const node = computed(() => toValue(options.node))
   const katexOptions = computed(() => toValue(options.katexOptions)?.config ?? {})
@@ -31,40 +31,26 @@ export function useMathRenderer(options: UseMathRendererOptions) {
   const model = computed(() => createMathRendererModel({
     node: node.value,
     installed: installed.value,
-    renderFlag: renderFlag.value,
-    renderingCode: renderingCode.value,
-    errorMessage: errorMessage.value,
+    renderFlag: state.value.renderFlag,
+    renderingCode: state.value.renderingCode,
+    errorMessage: state.value.errorMessage,
   }))
   const code = computed(() => model.value.code)
   const loading = computed(() => model.value.loading)
   const isDisplayMode = computed(() => model.value.isDisplayMode)
   const error = computed(() => model.value.error)
+  const html = computed(() => state.value.html)
+  const errorMessage = computed(() => state.value.errorMessage)
 
   const render = throttle(throttleTime, async () => {
-    const { html: data, error } = await renderKatex(
+    const result = await renderKatex(
       code.value,
       {
         ...katexOptions,
         displayMode: isDisplayMode.value,
       },
     )
-    renderFlag.value = true
-
-    if (data) {
-      html.value = data
-      renderingCode.value = ''
-      errorMessage.value = ''
-      return
-    }
-
-    if (error) {
-      renderingCode.value = code.value
-      errorMessage.value = error
-    }
-    else {
-      renderingCode.value = ''
-      errorMessage.value = ''
-    }
+    state.value = applyMathRendererResult(state.value, code.value, result)
   })
 
   watch(

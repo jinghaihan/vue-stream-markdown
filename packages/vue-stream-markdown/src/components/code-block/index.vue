@@ -4,7 +4,7 @@ import type { CodeNodeRendererProps, Control, SelectOption } from '../../types'
 import {
   createCodeBlockControlDescriptors,
   createCodeBlockModel,
-  getCodeFileExtension,
+  handleCodeBlockControlAction,
   resolveCodePreviewComponent,
   save,
 } from '@stream-markdown/core'
@@ -146,50 +146,24 @@ function isVueComponent(component: unknown) {
 }
 
 async function handleControlClick(key: string, item?: SelectOption) {
-  if (key === 'collapse') {
-    collapsed.value = !collapsed.value
-    return
-  }
+  const state = await handleCodeBlockControlAction({
+    key,
+    select: item,
+    state: {
+      collapsed: collapsed.value,
+      fullscreen: fullscreen.value,
+    },
+    node: props.node,
+    language: language.value,
+    beforeDownload,
+    copyText: copy,
+    onCopied,
+    saveFile: save,
+    saveMermaid,
+  })
 
-  if (key === 'copy') {
-    if (!props.node.value)
-      return
-    copy(props.node.value)
-    onCopied(props.node.value)
-    return
-  }
-
-  if (key === 'fullscreen') {
-    fullscreen.value = !fullscreen.value
-    return
-  }
-
-  if (key !== 'download' || props.node.loading)
-    return
-
-  // Download code as plain text
-  if (!item || item.value === 'code') {
-    const extension = getCodeFileExtension(language.value)
-    if (!extension)
-      return
-    const result = await beforeDownload({
-      type: 'code',
-      content: props.node.value,
-    })
-    if (result)
-      save(`file.${extension}`, props.node.value, 'text/plain')
-    return
-  }
-
-  // Download mermaid diagram as SVG or PNG
-  if (item?.value === 'svg' || item?.value === 'png') {
-    const result = await beforeDownload({
-      type: 'mermaid',
-      content: props.node.value,
-    })
-    if (result)
-      saveMermaid(item?.value as 'svg' | 'png', props.node.value)
-  }
+  collapsed.value = state.collapsed
+  fullscreen.value = state.fullscreen
 }
 </script>
 

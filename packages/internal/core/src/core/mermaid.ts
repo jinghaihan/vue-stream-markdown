@@ -51,6 +51,18 @@ export interface MermaidRenderState {
   renderAttempt: boolean
 }
 
+export interface MermaidPreviewControllerState extends MermaidRenderState {
+  svg?: string
+  error?: string
+  measuredHeight: number
+}
+
+export interface MermaidRenderResult {
+  valid: boolean
+  svg?: string
+  error?: string
+}
+
 export function createMermaidRenderState(
   state: Partial<MermaidRenderState> = {},
 ): MermaidRenderState {
@@ -61,6 +73,24 @@ export function createMermaidRenderState(
   }
 }
 
+export function createMermaidPreviewControllerState(
+  state: Partial<MermaidPreviewControllerState> = {},
+): MermaidPreviewControllerState {
+  return {
+    ...createMermaidRenderState(state),
+    svg: undefined,
+    error: undefined,
+    measuredHeight: 0,
+    ...state,
+  }
+}
+
+export function startMermaidRenderAttempt(
+  state: MermaidPreviewControllerState,
+): MermaidPreviewControllerState
+export function startMermaidRenderAttempt(
+  state: MermaidRenderState,
+): MermaidRenderState
 export function startMermaidRenderAttempt(
   state: MermaidRenderState,
 ): MermaidRenderState {
@@ -68,6 +98,36 @@ export function startMermaidRenderAttempt(
     ...state,
     renderAttempt: true,
     renderFlag: false,
+  }
+}
+
+export function applyMermaidRenderResult(
+  state: MermaidPreviewControllerState,
+  result: MermaidRenderResult,
+): MermaidPreviewControllerState {
+  if (result.valid) {
+    return {
+      ...state,
+      svg: result.svg,
+      error: undefined,
+      renderFlag: true,
+    }
+  }
+
+  return {
+    ...state,
+    error: result.error,
+    renderFlag: true,
+  }
+}
+
+export function setMermaidMeasuredHeight(
+  state: MermaidPreviewControllerState,
+  measuredHeight: number,
+): MermaidPreviewControllerState {
+  return {
+    ...state,
+    measuredHeight,
   }
 }
 

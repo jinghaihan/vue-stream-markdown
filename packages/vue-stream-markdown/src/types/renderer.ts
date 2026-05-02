@@ -34,8 +34,7 @@ import type { NodeRenderers } from './core'
 
 export type NodeRendererListProps = CoreNodeRendererListProps<NodeRenderers>
 
-export type NodeRendererProps<TNode extends ParsedNode = ParsedNode>
-  = CoreNodeRendererProps<TNode, NodeRenderers>
+export type NodeRendererProps<TNode extends ParsedNode = ParsedNode> = CoreNodeRendererProps<TNode, NodeRenderers>
 
 export type BlockquoteNodeRendererProps = NodeRendererProps<BlockquoteNode>
 

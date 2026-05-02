@@ -54,8 +54,7 @@ export type Icons = CoreIcons<Component, IconName, OptionalIconName>
 
 export type Control = CoreControl<UIButtonProps>
 
-export type ControlTransformer<T extends NodeRendererProps = NodeRendererProps>
-  = CoreControlTransformer<Control, T>
+export type ControlTransformer<T extends NodeRendererProps = NodeRendererProps> = CoreControlTransformer<Control, T>
 
 export type TableControlsConfig = CoreTableControlsConfig<ControlTransformer<TableNodeRendererProps>>
 

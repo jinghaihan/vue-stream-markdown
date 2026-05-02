@@ -31,7 +31,6 @@ const {
   onDrag,
   stopDrag,
   handleWheel,
-
   handleTouchStart,
   handleTouchMove,
   handleTouchEnd,

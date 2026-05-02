@@ -1,5 +1,7 @@
 import type { ParsedNode, SyntaxTree } from '@markmend/ast'
 import {
+  applyMathRendererResult,
+  applyMermaidRenderResult,
   createCodeBlockControlDescriptors,
   createCodeBlockModel,
   createCodeRendererModel,
@@ -13,6 +15,8 @@ import {
   createListItemModel,
   createListModel,
   createMathRendererModel,
+  createMathRendererState,
+  createMermaidPreviewControllerState,
   createNodeListModel,
   createParagraphModel,
   createRootStyle,
@@ -24,11 +28,14 @@ import {
   flipImagePreviewHorizontal,
   getCodeFileExtension,
   getTableContent,
+  handleCodeBlockControlAction,
+  handleTableControlAction,
   resolveEnableAnimate,
   resolveEnableCaret,
   resolveFloatingDelay,
   resolvePreloadNodeRenderers,
   rotateImagePreviewRight,
+  setMermaidMeasuredHeight,
   syncCodeBlockMode,
 } from '@stream-markdown/core'
 import { describe, expect, it } from 'vitest'
@@ -321,5 +328,67 @@ describe('core models', () => {
       top: '2px',
       left: '1px',
     })
+  })
+
+  it('updates headless controller state for framework adapters', async () => {
+    expect(applyMathRendererResult(
+      createMathRendererState(),
+      'x',
+      { html: '<span>x</span>' },
+    )).toMatchObject({
+      html: '<span>x</span>',
+      errorMessage: '',
+      renderFlag: true,
+      renderingCode: '',
+    })
+    expect(applyMathRendererResult(
+      createMathRendererState(),
+      '\\frac{1}{',
+      { error: 'Unexpected end of input' },
+    )).toMatchObject({
+      errorMessage: 'Unexpected end of input',
+      renderFlag: true,
+      renderingCode: '\\frac{1}{',
+    })
+
+    const mermaidState = setMermaidMeasuredHeight(
+      applyMermaidRenderResult(
+        createMermaidPreviewControllerState({ renderAttempt: true }),
+        { valid: true, svg: '<svg />' },
+      ),
+      120,
+    )
+    expect(mermaidState).toMatchObject({
+      svg: '<svg />',
+      error: undefined,
+      measuredHeight: 120,
+      renderAttempt: true,
+      renderFlag: true,
+    })
+
+    const codeDownloads: string[] = []
+    const codeState = await handleCodeBlockControlAction({
+      key: 'download',
+      state: { collapsed: false, fullscreen: false },
+      node: { type: 'code', lang: 'ts', value: 'const a = 1' },
+      language: 'typescript',
+      saveFile: (filename) => {
+        codeDownloads.push(filename)
+      },
+    })
+    expect(codeState).toEqual({ collapsed: false, fullscreen: false })
+    expect(codeDownloads).toEqual(['file.ts'])
+
+    const copied: string[] = []
+    const tableState = await handleTableControlAction({
+      key: 'copy',
+      state: { fullscreen: false },
+      getContent: () => ({ content: 'A\nB', extension: 'csv', mimeType: 'text/csv' }),
+      copyContent: (content) => {
+        copied.push(content)
+      },
+    })
+    expect(tableState).toEqual({ fullscreen: false })
+    expect(copied).toEqual(['A\nB'])
   })
 })

@@ -6,6 +6,7 @@ import {
   createTableModel,
   extractTableDataFromElement,
   getTableContent as getSerializedTableContent,
+  handleTableControlAction,
   save,
 } from '@stream-markdown/core'
 import { useClipboard, useClipboardItems } from '@vueuse/core'
@@ -125,30 +126,20 @@ function getNodes(cell: unknown) {
 }
 
 async function handleControlClick(key: string, item?: SelectOption) {
-  if (key === 'fullscreen') {
-    fullscreen.value = !fullscreen.value
-    return
-  }
+  const state = await handleTableControlAction({
+    key,
+    select: item,
+    state: {
+      fullscreen: fullscreen.value,
+    },
+    getContent: getTableContent,
+    beforeDownload,
+    copyContent: copyTableContent,
+    onCopied,
+    saveFile: save,
+  })
 
-  const format = (item?.value || 'csv') as TableFormat
-  const data = getTableContent(format)
-  if (!data)
-    return
-
-  if (key === 'copy') {
-    await copyTableContent(data.content)
-    onCopied(data.content)
-    return
-  }
-
-  if (key === 'download') {
-    const result = await beforeDownload({
-      type: 'table',
-      content: data.content,
-    })
-    if (result)
-      save(`table.${data.extension}`, data.content, data.mimeType)
-  }
+  fullscreen.value = state.fullscreen
 }
 </script>
 
