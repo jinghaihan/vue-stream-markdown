@@ -1,5 +1,10 @@
 <script setup lang="ts">
 import type { FootnoteReferenceNodeRendererProps } from '../../types'
+import {
+  createFootnoteReferenceModel,
+  getDocumentBody,
+  scrollToElement,
+} from '@stream-markdown/core'
 import { computed } from 'vue'
 import { useContext } from '../../composables'
 
@@ -7,15 +12,16 @@ const props = withDefaults(defineProps<FootnoteReferenceNodeRendererProps>(), {}
 
 const { getContainer } = useContext()
 
-const id = computed(() => props.node.identifier)
-const label = computed(() => props.node.label ?? id.value)
+const model = computed(() => createFootnoteReferenceModel(props.node))
+const id = computed(() => model.value.id)
+const label = computed(() => model.value.label)
 
 function scrollToFootnote() {
-  const container = getContainer() || document.body
-  const footnoteElement = container.querySelector(`#footnote-definition-${id.value}`)
-  if (!footnoteElement)
+  const container = getContainer() || getDocumentBody()
+  if (!container)
     return
-  footnoteElement.scrollIntoView({ behavior: 'smooth' })
+
+  scrollToElement(container, `#footnote-definition-${id.value}`)
 }
 </script>
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
-import type { UIErrorComponentProps, UIErrorVariant } from '../types'
+import type { UIErrorComponentProps } from '../types'
+import { createErrorModel } from '@stream-markdown/core'
 import { computed } from 'vue'
 import { useContext, useI18n } from '../composables'
 
@@ -17,31 +18,16 @@ const { icons, uiComponents: UI } = useContext()
 
 const { t } = useI18n()
 
-const messages = computed((): Record<UIErrorVariant, string> => ({
-  'vanilla': t('error.vanilla'),
-  'image': t('error.image'),
-  'mermaid': t('error.mermaid'),
-  'katex': t('error.katex'),
-  'harden-image': t('error.harden'),
-  'harden-link': t('error.harden'),
+const model = computed(() => createErrorModel({
+  variant: props.variant,
+  message: props.message,
+  icon: props.icon,
+  hasIcon: name => !!icons.value[name],
 }))
 
-const icon = computed((): string | Component => {
-  if (props.icon)
-    return props.icon
-  if (icons.value[props.variant])
-    return props.variant
-  const name = props.variant.replace('harden-', '')
-  if (icons.value[name])
-    return name
-  return 'error'
-})
-
-const message = computed(() => props.message
-  ? props.message
-  : messages.value[props.variant!] || messages.value.vanilla)
-
-const isHarden = computed(() => props.variant?.startsWith?.('harden-'))
+const icon = computed(() => model.value.icon as string | Component)
+const message = computed(() => model.value.message ?? t(model.value.messageKey))
+const isHarden = computed(() => model.value.isHarden)
 </script>
 
 <template>

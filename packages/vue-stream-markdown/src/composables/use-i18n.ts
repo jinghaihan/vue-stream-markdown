@@ -1,4 +1,4 @@
-import { getI18nText } from '@stream-markdown/shared'
+import { getI18nText } from '@stream-markdown/core'
 import { localeMessages } from '../locales'
 
 export function useI18n() {

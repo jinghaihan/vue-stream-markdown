@@ -1,4 +1,4 @@
-import type { SharedCdnOptions } from '@stream-markdown/shared'
+import type { SharedCdnOptions } from '@stream-markdown/core'
 import type { MaybeGetter } from './types'
 import {
   dynamicImport,
@@ -8,7 +8,7 @@ import {
   isSupportESM,
   removeTrailingSlash,
   resolveGetter,
-} from '@stream-markdown/shared'
+} from '@stream-markdown/core'
 import { MERMAID_VERSION } from './constants'
 
 let mermaidModule: typeof import('mermaid') | null = null

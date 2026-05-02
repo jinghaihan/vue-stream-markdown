@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import type { ListItemNodeRendererProps } from '../../types'
+import { createListItemModel } from '@stream-markdown/core'
 import { computed } from 'vue'
 import NodeList from '../node-list.vue'
 
 const props = withDefaults(defineProps<ListItemNodeRendererProps>(), {})
 
-const isTaskListItem = computed(() => typeof props.node.checked === 'boolean')
-const checked = computed(() => !!props.node.checked)
+const model = computed(() => createListItemModel(props.node))
+const isTaskListItem = computed(() => model.value.isTaskListItem)
+const checked = computed(() => model.value.checked)
 </script>
 
 <template>

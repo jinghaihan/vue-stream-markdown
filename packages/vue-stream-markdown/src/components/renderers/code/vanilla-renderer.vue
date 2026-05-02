@@ -1,6 +1,7 @@
 <script lang="ts">
 import type { PropType } from 'vue'
 import type { CodeNodeRendererProps } from '../../../types'
+import { createCodeRendererModel } from '@stream-markdown/core'
 import { computed, defineComponent, h, renderList } from 'vue'
 import { useCodeOptions, useContext } from '../../../composables'
 
@@ -15,15 +16,15 @@ export default defineComponent({
   setup(props) {
     const { codeOptions } = useContext()
 
-    const code = computed(() => props.node.value.trim())
-    const lang = computed(() => props.node.lang || '')
+    const model = computed(() => createCodeRendererModel(props.node))
+    const lang = computed(() => model.value.lang)
 
     const { showLineNumbers } = useCodeOptions({
       codeOptions,
       language: lang,
     })
 
-    const lines = computed(() => code.value.split('\n'))
+    const lines = computed(() => model.value.lines)
 
     return () =>
       h(

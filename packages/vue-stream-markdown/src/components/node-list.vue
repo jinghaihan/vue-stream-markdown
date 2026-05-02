@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { NodeRendererListProps, ParsedNode } from '../types'
-import { getNodeKey, getTransitionName, shouldAnimateNode } from '@stream-markdown/shared'
+import type { NodeRendererListProps } from '../types'
+import { createNodeListModel } from '@stream-markdown/core'
 import { computed } from 'vue'
 import { useContext } from '../composables'
 
@@ -29,69 +29,30 @@ const activeNodeRenderers = computed(() => {
 
 const activeMarkdownParser = computed(() => props.markdownParser ?? contextMarkdownParser)
 
-const prevBlock = computed(() => {
-  const find = (index: number) => {
-    const data = blocks.value[index]
-    if (data && !data.children.length)
-      return find(index - 1)
-    return data
-  }
-  return find(props.blockIndex - 1)
-})
+const model = computed(() => createNodeListModel({
+  nodes: props.nodes,
+  blocks: blocks.value,
+  blockIndex: props.blockIndex,
+  deep: props.deep,
+  nodeKey: props.nodeKey,
+  nodeRenderers: activeNodeRenderers.value,
+  enableAnimate: enableAnimate.value,
+  animation: animation.value,
+}))
 
-const nextBlock = computed(() => {
-  const find = (index: number) => {
-    const data = blocks.value[index]
-    if (data && !data.children.length)
-      return find(index + 1)
-    return data
-  }
-  return find(props.blockIndex + 1)
-})
-
-const items = computed(() => props.nodes.map((node, index) => ({
-  node,
-  index,
-  key: getNodeKey(node, index, props.nodeKey),
-  component: getNodeComponent(node),
-  prevNode: getPrevNode(index),
-  nextNode: getNextNode(index),
-})))
-
-const transitionName = computed(() => getTransitionName(animation.value))
-
-function getNodeComponent(node: ParsedNode) {
-  return activeNodeRenderers.value[node.type] || null
-}
-
-function getPrevNode(index: number) {
-  const current = props.nodes[index - 1]
-  if (current)
-    return current
-  if (props.deep > 0)
-    return undefined
-  return prevBlock.value?.children[prevBlock.value.children.length - 1]
-}
-
-function getNextNode(index: number) {
-  const current = props.nodes[index + 1]
-  if (current)
-    return current
-  if (props.deep > 0)
-    return undefined
-  return nextBlock.value?.children[0]
-}
+const items = computed(() => model.value.items)
+const transitionName = computed(() => model.value.transitionName)
 </script>
 
 <template>
   <template v-for="item in items" :key="item.key">
     <Transition
-      v-if="enableAnimate && shouldAnimateNode(item.node.type)"
+      v-if="item.shouldTransition"
       :name="transitionName"
       appear
     >
       <component
-        :is="item.component"
+        :is="item.renderer"
         :markdown-parser="activeMarkdownParser"
         :node-renderers="activeNodeRenderers"
         :deep="deep"
@@ -105,7 +66,7 @@ function getNextNode(index: number) {
     </Transition>
 
     <component
-      :is="item.component"
+      :is="item.renderer"
       v-else
       :markdown-parser="activeMarkdownParser"
       :node-renderers="activeNodeRenderers"

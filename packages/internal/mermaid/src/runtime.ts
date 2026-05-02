@@ -5,7 +5,7 @@ import type {
   MermaidRuntime,
   MermaidRuntimeOptions,
 } from './types'
-import { resolveGetter, save, svgToPngBlob } from '@stream-markdown/shared'
+import { resolveGetter, save, svgToPngBlob } from '@stream-markdown/core'
 import { createBeautifulMermaidCdnLoader } from './beautiful-cdn'
 import { BeautifulMermaidRenderer } from './runtime/beautiful'
 import { VanillaMermaidRenderer } from './runtime/vanilla'

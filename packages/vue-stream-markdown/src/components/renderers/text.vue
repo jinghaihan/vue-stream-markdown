@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TextNodeRendererProps } from '../../types'
-import { createTextParts, getTransitionName } from '@stream-markdown/shared'
+import { createTextModel } from '@stream-markdown/core'
 import { computed } from 'vue'
 import { useContext } from '../../composables'
 import Caret from '../caret.vue'
@@ -13,12 +13,18 @@ const props = withDefaults(defineProps<TextNodeRendererProps>(), {})
 
 const { enableAnimate, animation } = useContext()
 
-const loading = computed(() => props.node.loading)
-const showCaret = computed(() => loading.value && !props.hideCaret)
-const shouldAnimate = computed(() => enableAnimate.value && props.node.value.trim().length > 0)
-const transitionName = computed(() => getTransitionName(animation.value))
+const model = computed(() => createTextModel({
+  node: props.node,
+  nodeKey: props.nodeKey,
+  enableAnimate: enableAnimate.value,
+  animation: animation.value,
+  hideCaret: props.hideCaret,
+}))
 
-const parts = computed(() => createTextParts(props.node.value, props.nodeKey))
+const showCaret = computed(() => model.value.showCaret)
+const shouldAnimate = computed(() => model.value.shouldAnimate)
+const transitionName = computed(() => model.value.transitionName)
+const parts = computed(() => model.value.parts)
 </script>
 
 <template>

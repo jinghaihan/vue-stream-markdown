@@ -1,100 +1,45 @@
-import type { SelectOption, UIErrorVariant, ZoomControlPosition } from '@stream-markdown/shared'
+import type {
+  SelectOption,
+  UIAlertProps as SharedUIAlertProps,
+  UIButtonProps as SharedUIButtonProps,
+  UIDropdownProps as SharedUIDropdownProps,
+  UIErrorComponentProps as SharedUIErrorComponentProps,
+  UIIconProps as SharedUIIconProps,
+  UIImageProps as SharedUIImageProps,
+  UIModalProps as SharedUIModalProps,
+  UISegmentedProps as SharedUISegmentedProps,
+  UITableProps as SharedUITableProps,
+  UITooltipProps as SharedUITooltipProps,
+  UIZoomContainerProps as SharedUIZoomContainerProps,
+  UIErrorVariant,
+  ZoomControlPosition,
+} from '@stream-markdown/core'
 import type { Component, CSSProperties } from 'vue'
 import type { ImageNodeRendererProps } from './renderer'
 import type { ControlsConfig } from './shared'
 
 export type { SelectOption, UIErrorVariant }
 
-export interface UIButtonProps {
-  variant?: 'icon' | 'text'
-  name: string
-  buttonClass?: string | string[] | Record<string, unknown>
-  buttonStyle?: CSSProperties
-  icon?: string | Component
-  iconWidth?: number
-  iconHeight?: number
-  iconClass?: string | string[] | Record<string, unknown>
-  iconStyle?: CSSProperties
-  options?: SelectOption[]
-}
+export type UIButtonProps = SharedUIButtonProps<Component, CSSProperties>
 
-export interface UIAlertProps {
-  icon?: string
-  title?: string
-  description?: string
-  zIndex?: number
-  confirmText?: string
-  cancelText?: string
-  open?: boolean
-}
+export type UIAlertProps = SharedUIAlertProps
 
-export interface UIDropdownProps {
-  title?: string
-  options?: SelectOption[]
-}
+export type UIDropdownProps = SharedUIDropdownProps
 
-export interface UIErrorComponentProps {
-  variant?: UIErrorVariant
-  showIcon?: boolean
-  icon?: string | Component
-  message?: string
-}
+export type UIErrorComponentProps = SharedUIErrorComponentProps<Component>
 
-export interface UIIconProps {
-  icon: string | Component
-  width?: number
-  height?: number
-  class?: string | string[] | Record<string, unknown>
-  style?: CSSProperties
-}
+export type UIIconProps = SharedUIIconProps<Component, CSSProperties>
 
-export interface UIImageProps {
-  src?: string
-  alt?: string
-  title?: string
-  preview?: boolean
-  margin?: number
-  controls?: ControlsConfig
-  transformHardenUrl?: (url: string) => string | null
-  nodeProps: ImageNodeRendererProps
-  handleDownload?: (url: string) => Promise<void>
-}
+export type UIImageProps = SharedUIImageProps<ImageNodeRendererProps, ControlsConfig>
 
-export interface UIModalProps {
-  title?: string
-  zIndex?: number
-  modalStyle?: CSSProperties
-  headerStyle?: CSSProperties
-  transition?: string
-  close?: () => void
-  open?: boolean
-}
+export type UIModalProps = SharedUIModalProps<CSSProperties>
 
-export interface UISegmentedProps {
-  options?: SelectOption[]
-  buttonStyle?: CSSProperties
-  value?: string
-}
+export type UISegmentedProps = SharedUISegmentedProps<CSSProperties>
 
-export interface UITableProps {
-  getAlign?: (index: number) => 'left' | 'center' | 'right'
-  headers?: unknown[]
-  rows?: Array<{ children: unknown[] }>
-}
+export type UITableProps = SharedUITableProps
 
-export interface UITooltipProps {
-  content?: string
-  trigger?: 'hover' | 'click'
-  placement?: 'top' | 'bottom' | 'left' | 'right' | 'top-start' | 'top-end' | 'bottom-start' | 'bottom-end' | 'left-start' | 'left-end' | 'right-start' | 'right-end'
-  delay?: number | [number, number]
-}
+export type UITooltipProps = SharedUITooltipProps
 
 export type UIZoomControlPosition = ZoomControlPosition
 
-export interface UIZoomContainerProps {
-  interactive?: boolean
-  showControl?: boolean
-  controlSize?: 'vanilla' | 'large'
-  position?: UIZoomControlPosition
-  containerStyle?: CSSProperties
-}
+export type UIZoomContainerProps = SharedUIZoomContainerProps<CSSProperties>

@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import type { UIModalProps } from '../types'
-import { getOverlayContainer } from '@stream-markdown/shared'
+import {
+  getDocument,
+  getDocumentBody,
+  getOverlayContainer,
+  isEscapeKeyEvent,
+} from '@stream-markdown/core'
 import { createReusableTemplate, useEventListener } from '@vueuse/core'
 import { computed, onMounted, ref, useSlots } from 'vue'
 
@@ -24,9 +29,9 @@ const modalStyle = computed(() => ({
 const showHeader = computed(() => !!props.title || !!slots.title || !!slots.extra)
 
 onMounted(() => {
-  container.value = getOverlayContainer() || document.body
-  useEventListener(document, 'keyup', (event) => {
-    if (event.key === 'Escape' || event.key === 'Esc') {
+  container.value = getOverlayContainer() || getDocumentBody() || undefined
+  useEventListener(getDocument(), 'keyup', (event) => {
+    if (isEscapeKeyEvent(event)) {
       if (props.close)
         props.close()
       else

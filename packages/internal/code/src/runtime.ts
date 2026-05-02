@@ -6,7 +6,7 @@ import type {
   TokensResult,
 } from 'shiki'
 import type { CodeRuntimeOptions, ShikiRuntime } from './types'
-import { resolveGetter } from '@stream-markdown/shared'
+import { resolveGetter } from '@stream-markdown/core'
 import { createShikiCdnLoader } from './cdn'
 import { DEFAULT_SHIKI_DARK_THEME, DEFAULT_SHIKI_LIGHT_THEME, LANGUAGE_ALIAS } from './constants'
 

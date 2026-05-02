@@ -1,4 +1,4 @@
-import type { MaybeGetter, SharedCdnOptions } from '@stream-markdown/shared'
+import type { MaybeGetter, SharedCdnOptions } from '@stream-markdown/core'
 import type {
   BuiltinLanguage,
   BuiltinTheme,

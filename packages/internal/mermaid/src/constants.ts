@@ -1,5 +1,5 @@
 import type { RenderOptions as BeautifulMermaidConfig, ThemeName } from 'beautiful-mermaid'
-import { stripVersionRangePrefix } from '@stream-markdown/shared'
+import { stripVersionRangePrefix } from '@stream-markdown/core'
 import { dependencies } from '../package.json'
 
 export const MERMAID_VERSION = stripVersionRangePrefix(dependencies.mermaid)

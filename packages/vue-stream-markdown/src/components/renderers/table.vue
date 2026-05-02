@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import type { TableFormat } from '@stream-markdown/shared'
+import type { TableFormat } from '@stream-markdown/core'
 import type { Control, ParsedNode, SelectOption, TableNodeRendererProps } from '../../types'
 import {
+  createTableControlDescriptors,
+  createTableModel,
   extractTableDataFromElement,
-  getTableCellNodes,
-  resolveTableAlign,
+  getTableContent as getSerializedTableContent,
   save,
-  tableDataToCSV,
-  tableDataToMarkdown,
-  tableDataToTSV,
-} from '@stream-markdown/shared'
+} from '@stream-markdown/core'
 import { useClipboard, useClipboardItems } from '@vueuse/core'
 import { computed, ref } from 'vue'
 import { useContext, useControls, useI18n } from '../../composables'
@@ -49,15 +47,19 @@ const showFullscreen = computed(() => isControlEnabled('table.fullscreen'))
 const tableRef = ref<{ $el?: HTMLElement }>()
 const fullscreenTableRef = ref<{ $el?: HTMLElement }>()
 const fullscreen = ref(false)
-const align = computed(() => props.node.align || [])
 
-const headerCells = computed(() => props.node.children?.[0]?.children ?? [])
-const bodyRows = computed(() => props.node.children.slice(1))
+const tableModel = computed(() => createTableModel({
+  node: props.node,
+  hasLoadingNode: nodes => props.markdownParser.hasLoadingNode(nodes),
+}))
 
-const loading = computed(() => props.markdownParser.hasLoadingNode(props.node.children))
+const headerCells = computed(() => tableModel.value.headerCells)
+const bodyRows = computed(() => tableModel.value.bodyRows)
+const loading = computed(() => tableModel.value.loading)
+const options = computed(() => tableModel.value.options)
 
 function getAlign(index: number) {
-  return resolveTableAlign(align.value, index)
+  return tableModel.value.getAlign(index)
 }
 
 function getTableElement() {
@@ -74,15 +76,7 @@ function getTableContent(format: TableFormat): {
   if (!tableElement)
     return null
   const tableData = extractTableDataFromElement(tableElement)
-  switch (format) {
-    case 'markdown':
-      return { content: tableDataToMarkdown(tableData), mimeType: 'text/markdown', extension: 'md' }
-    case 'tsv':
-      return { content: tableDataToTSV(tableData), mimeType: 'text/tsv', extension: 'tsv' }
-    case 'csv':
-    default:
-      return { content: tableDataToCSV(tableData), mimeType: 'text/csv', extension: 'csv' }
-  }
+  return getSerializedTableContent(format, tableData)
 }
 
 async function copyTableContent(content: string) {
@@ -106,57 +100,19 @@ async function copyTableContent(content: string) {
   }
 }
 
-const options: SelectOption[] = [
-  { label: 'CSV', value: 'csv' },
-  { label: 'TSV', value: 'tsv' },
-  { label: 'Markdown', value: 'markdown' },
-]
-
-const builtinControls = computed((): Control[] => [
-  {
-    name: t('button.copy'),
-    key: 'copy',
-    icon: copied.value ? 'check' : 'copy',
-    options,
-    visible: () => showCopy.value,
-    onClick: async (_event: MouseEvent, item?: SelectOption) => {
-      const format = (item?.value || 'csv') as TableFormat
-      const data = getTableContent(format)
-      if (!data)
-        return
-
-      await copyTableContent(data.content)
-      onCopied(data.content)
-    },
-  },
-  {
-    name: t('button.download'),
-    key: 'download',
-    icon: 'download',
-    options,
-    visible: () => showDownload.value,
-    onClick: async (_event: MouseEvent, item?: SelectOption) => {
-      const format = (item?.value || 'csv') as TableFormat
-      const data = getTableContent(format)
-      if (!data)
-        return
-
-      const result = await beforeDownload({
-        type: 'table',
-        content: data.content,
-      })
-      if (result)
-        save(`table.${data.extension}`, data.content, data.mimeType)
-    },
-  },
-  {
-    name: fullscreen.value ? t('button.minimize') : t('button.maximize'),
-    key: 'fullscreen',
-    icon: fullscreen.value ? 'minimize' : 'maximize',
-    visible: () => showFullscreen.value,
-    onClick: () => fullscreen.value = !fullscreen.value,
-  },
-])
+const builtinControls = computed((): Control[] => createTableControlDescriptors({
+  copied: copied.value,
+  fullscreen: fullscreen.value,
+  showCopy: showCopy.value,
+  showDownload: showDownload.value,
+  showFullscreen: showFullscreen.value,
+  options: options.value,
+}).map(item => ({
+  ...item,
+  name: t(item.labelKey ?? ''),
+  onClick: (_event: MouseEvent, select?: SelectOption) => handleControlClick(item.key, select),
+  visible: () => item.visible ?? true,
+})))
 
 const controls = computed(
   () => resolveControls<TableNodeRendererProps>('table', builtinControls.value, props),
@@ -165,7 +121,34 @@ const controls = computed(
 const hasControls = computed(() => controls.value.length > 0)
 
 function getNodes(cell: unknown) {
-  return getTableCellNodes<ParsedNode>(cell as ParsedNode | { children?: ParsedNode[] })
+  return tableModel.value.getNodes(cell as ParsedNode)
+}
+
+async function handleControlClick(key: string, item?: SelectOption) {
+  if (key === 'fullscreen') {
+    fullscreen.value = !fullscreen.value
+    return
+  }
+
+  const format = (item?.value || 'csv') as TableFormat
+  const data = getTableContent(format)
+  if (!data)
+    return
+
+  if (key === 'copy') {
+    await copyTableContent(data.content)
+    onCopied(data.content)
+    return
+  }
+
+  if (key === 'download') {
+    const result = await beforeDownload({
+      type: 'table',
+      content: data.content,
+    })
+    if (result)
+      save(`table.${data.extension}`, data.content, data.mimeType)
+  }
 }
 </script>
 

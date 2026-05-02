@@ -1,7 +1,19 @@
 <script setup lang="ts">
-import type { Control, ImageNode, ImageNodeRendererProps, ParsedNode, UIImageProps } from '../types'
+import type {
+  ImagePreviewControlKey,
+  ImagePreviewTransformState,
+} from '@stream-markdown/core'
+import type { Control, ImageNodeRendererProps, UIImageProps } from '../types'
+import {
+  createImagePreviewModel,
+  createImagePreviewSources,
+  flipImagePreviewHorizontal,
+  flipImagePreviewVertical,
+  resetImagePreviewTransformState,
+  rotateImagePreviewLeft,
+  rotateImagePreviewRight,
+} from '@stream-markdown/core'
 import { useCycleList } from '@vueuse/core'
-import { treeFlatFilter } from 'treechop'
 import { computed, ref, toRefs, watch } from 'vue'
 import { useContext, useControls, useI18n, useMediumZoom } from '../composables'
 
@@ -21,33 +33,8 @@ const { icons, parsedNodes, uiComponents: UI } = useContext()
 const { margin, controls: controlsConfig } = toRefs(props)
 
 const { t } = useI18n()
-const { isControlEnabled, getControlValue, resolveControls } = useControls({
+const { resolveControls } = useControls({
   controls: controlsConfig,
-})
-
-const imageNodes = computed(
-  () => treeFlatFilter(parsedNodes.value, (node: ParsedNode) => node.type === 'image' && !node.loading),
-)
-// Make sure the image list is unique and filtered by the security checks
-const imageList = computed(() => {
-  const data = [...new Set(imageNodes.value.map((node: ParsedNode) => (node as ImageNode).url))]
-  return data.filter(url => props.transformHardenUrl ? props.transformHardenUrl(url) : url).filter(Boolean)
-})
-const { state: imageSrc, prev, next } = useCycleList(imageList, {
-  initialValue: props.src,
-  fallbackIndex: 0,
-})
-
-const enableDownload = computed(() => isControlEnabled('image.download') && !!props.handleDownload)
-const enableCarousel = computed(() => isControlEnabled('image.carousel'))
-const enableFlip = computed(() => isControlEnabled('image.flip'))
-const enableRotate = computed(() => isControlEnabled('image.rotate'))
-
-const controlPosition = computed(() => {
-  const position = getControlValue('image.controlPosition')
-  if (typeof position === 'boolean')
-    return 'bottom-center'
-  return position || 'bottom-center'
 })
 
 const loaded = ref<boolean>(false)
@@ -56,6 +43,12 @@ const open = ref<boolean>(false)
 const scaleX = ref<number>(1)
 const scaleY = ref<number>(1)
 const rotate = ref<number>(0)
+
+const transformState = computed<ImagePreviewTransformState>(() => ({
+  scaleX: scaleX.value,
+  scaleY: scaleY.value,
+  rotate: rotate.value,
+}))
 
 const {
   isAnimating,
@@ -70,76 +63,39 @@ const {
   close: () => open.value = false,
 })
 
-const imageStyle = computed(() => ({
-  transform: `
-    scaleX(${scaleX.value})
-    scaleY(${scaleY.value})
-    rotate(${rotate.value}deg)
-  `,
-  transition: 'transform 0.3s ease',
-  ...elementStyle.value,
+const imageList = computed(() => createImagePreviewSources(parsedNodes.value, props.transformHardenUrl))
+const { state: imageSrc, prev, next } = useCycleList(imageList, {
+  initialValue: props.src,
+  fallbackIndex: 0,
+})
+
+const model = computed(() => createImagePreviewModel({
+  parsedNodes: parsedNodes.value,
+  src: imageSrc.value,
+  controls: controlsConfig.value,
+  transformHardenUrl: props.transformHardenUrl,
+  hasDownload: !!props.handleDownload,
+  preview: props.preview,
+  loaded: loaded.value,
+  hasElement: !!elementRef.value,
+  state: transformState.value,
+  elementStyle: elementStyle.value,
+  icons: {
+    arrowRight: !!icons.value.arrowRight,
+    flipVertical: !!icons.value.flipVertical,
+    rotateRight: !!icons.value.rotateRight,
+  },
 }))
 
-const builtinControls = computed((): Control[] => [
-  {
-    key: 'download',
-    icon: 'download',
-    name: t('button.download'),
-    onClick: () => props.handleDownload?.(imageSrc.value),
-    visible: () => !!imageSrc.value && enableDownload.value,
-  },
-  {
-    key: 'previous',
-    icon: 'arrowLeft',
-    name: t('button.previous'),
-    onClick: () => prev(),
-    visible: () => imageList.value.length > 1 && enableCarousel.value,
-  },
-  {
-    key: 'next',
-    icon: icons.value.arrowRight ? 'arrowRight' : 'arrowLeft',
-    name: t('button.next'),
-    onClick: () => next(),
-    buttonStyle: icons.value.arrowRight
-      ? undefined
-      : { transform: 'scaleX(-1)' },
-    visible: () => imageList.value.length > 1 && enableCarousel.value,
-  },
-  {
-    key: 'flipX',
-    icon: 'flipHorizontal',
-    name: t('button.flipX'),
-    onClick: flipHorizontal,
-    visible: () => enableFlip.value,
-  },
-  {
-    key: 'flipY',
-    icon: icons.value.flipVertical ? 'flipVertical' : 'flipHorizontal',
-    name: t('button.flipY'),
-    onClick: flipVertical,
-    buttonStyle: icons.value.flipVertical
-      ? undefined
-      : { rotate: '90deg' },
-    visible: () => enableFlip.value,
-  },
-  {
-    key: 'rotateLeft',
-    icon: 'rotateLeft',
-    name: t('button.rotateLeft'),
-    onClick: rotateLeft,
-    visible: () => enableRotate.value,
-  },
-  {
-    key: 'rotateRight',
-    icon: icons.value.rotateRight ? 'rotateRight' : 'rotateLeft',
-    name: t('button.rotateRight'),
-    onClick: rotateRight,
-    buttonStyle: icons.value.rotateRight
-      ? undefined
-      : { transform: 'scaleX(-1)' },
-    visible: () => enableRotate.value,
-  },
-])
+const controlPosition = computed(() => model.value.controlPosition)
+const imageStyle = computed(() => model.value.imageStyle)
+
+const builtinControls = computed((): Control[] => model.value.controls.map(item => ({
+  ...item,
+  name: t(item.labelKey ?? ''),
+  onClick: () => handleControlClick(item.key),
+  visible: () => item.visible ?? true,
+})))
 
 const zoomControls = computed(
   () => resolveControls<ImageNodeRendererProps>('image', builtinControls.value, props.nodeProps),
@@ -155,7 +111,7 @@ function handleError(event: Event) {
 }
 
 function handleOpen() {
-  if (!props.preview || !elementRef.value || !loaded.value)
+  if (!model.value.canOpen)
     return
   zoomIn()
 }
@@ -167,26 +123,44 @@ function handleClose() {
 }
 
 function flipHorizontal() {
-  scaleX.value *= -1
+  setTransformState(flipImagePreviewHorizontal(transformState.value))
 }
 
 function flipVertical() {
-  scaleY.value *= -1
+  setTransformState(flipImagePreviewVertical(transformState.value))
 }
 
 function rotateLeft() {
-  rotate.value -= 90
+  setTransformState(rotateImagePreviewLeft(transformState.value))
 }
 
 function rotateRight() {
-  rotate.value += 90
+  setTransformState(rotateImagePreviewRight(transformState.value))
+}
+
+function handleControlClick(key: ImagePreviewControlKey) {
+  const actions: Record<ImagePreviewControlKey, () => void> = {
+    download: () => props.handleDownload?.(imageSrc.value),
+    previous: prev,
+    next,
+    flipX: flipHorizontal,
+    flipY: flipVertical,
+    rotateLeft,
+    rotateRight,
+  }
+
+  actions[key]()
+}
+
+function setTransformState(state: ImagePreviewTransformState) {
+  scaleX.value = state.scaleX
+  scaleY.value = state.scaleY
+  rotate.value = state.rotate
 }
 
 watch(open, (data) => {
   if (!data) {
-    scaleX.value = 1
-    scaleY.value = 1
-    rotate.value = 0
+    setTransformState(resetImagePreviewTransformState())
 
     // restore the initial image src
     if (props.src)

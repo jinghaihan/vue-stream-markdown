@@ -1,5 +1,11 @@
 import type { MaybeRefOrGetter } from 'vue'
-import { getOverlayContainer, OVERLAY_CONTAINER_ID } from '@stream-markdown/shared'
+import {
+  ensureOverlayContainer as ensureCoreOverlayContainer,
+  getDocumentElement,
+  getOverlayContainer,
+  isDocumentElementDark,
+  syncOverlayContainerTheme,
+} from '@stream-markdown/core'
 import { useMutationObserver } from '@vueuse/core'
 import { computed, onMounted, ref, toValue, watch } from 'vue'
 
@@ -15,34 +21,20 @@ export function useDarkDetector(
   const isDark = computed(() => isDarkProvided.value ? toValue(darkProp)! : detectedDark.value)
 
   function detect() {
-    detectedDark.value = document.documentElement.classList.contains('dark')
+    detectedDark.value = isDocumentElementDark()
   }
 
   function ensureOverlayContainer() {
-    const overlayContainer = getOverlayContainer()
-    if (!overlayContainer) {
-      createOverlayContainer()
-      updateOverlayContainerTheme()
-    }
-  }
-
-  function createOverlayContainer() {
-    const div = document.createElement('div')
-    div.id = OVERLAY_CONTAINER_ID
-    div.classList.add('stream-markdown')
-    div.classList.add(isDark.value ? 'dark' : 'light')
-    document.body.appendChild(div)
+    ensureCoreOverlayContainer({
+      isDark: isDark.value,
+      cssVariables: resolvedCssVariables.value,
+    })
   }
 
   function updateOverlayContainerTheme() {
-    const overlayContainer = getOverlayContainer()
-    if (!overlayContainer)
-      return
-
-    overlayContainer.classList.toggle('dark', isDark.value)
-    overlayContainer.classList.toggle('light', !isDark.value)
-    Object.entries(resolvedCssVariables.value).forEach(([key, value]) => {
-      overlayContainer.style.setProperty(key, value)
+    syncOverlayContainerTheme(getOverlayContainer(), {
+      isDark: isDark.value,
+      cssVariables: resolvedCssVariables.value,
     })
   }
 
@@ -68,7 +60,7 @@ export function useDarkDetector(
 
     if (!isDarkProvided.value) {
       detect()
-      target.value = document.documentElement
+      target.value = getDocumentElement()
     }
   })
 

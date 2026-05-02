@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
 import type { CodeNodeRendererProps } from '../../../types'
+import { createCodeRendererModel } from '@stream-markdown/core'
 import { computed, defineAsyncComponent } from 'vue'
 import { useContext, useShiki } from '../../../composables'
 
@@ -12,7 +13,8 @@ const props = withDefaults(defineProps<CodeNodeRendererProps & {
 
 const { cdnOptions, uiComponents: UI } = useContext()
 
-const languageClass = computed(() => `language-${props.node.lang}`)
+const model = computed(() => createCodeRendererModel(props.node))
+const languageClass = computed(() => model.value.languageClass)
 
 const { installed: hasShiki } = useShiki({
   cdnOptions,

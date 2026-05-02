@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CSSProperties } from 'vue'
 import type { Control, SelectOption, UIZoomContainerProps } from '../types'
-import { resolveZoomControlPosition } from '@stream-markdown/shared'
+import { createZoomContainerModel } from '@stream-markdown/core'
 import { computed, ref } from 'vue'
 import { useContext, useI18n, useZoom } from '../composables'
 
@@ -37,53 +37,38 @@ const {
   handleTouchEnd,
 } = useZoom()
 
-const zoomPercent = computed(() => `${Math.round(zoom.value * 100)}%`)
+const model = computed(() => createZoomContainerModel({
+  zoom: zoom.value,
+  position: props.position,
+  controlSize: props.controlSize,
+}))
 
-const controlsPosition = computed(() => resolveZoomControlPosition(props.position) as CSSProperties)
+const controlsPosition = computed(() => model.value.controlsPosition as CSSProperties)
+const controlButtonProps = computed(() => model.value.controlButtonProps)
 
-const controlButtonProps = computed(() => {
-  if (props.controlSize === 'vanilla')
-    return {}
-
+const controls = computed((): Control[] => model.value.controls.map((item) => {
+  const { visible: _visible, ...rest } = item
   return {
-    iconWidth: 18,
-    iconHeight: 18,
-    buttonStyle: {
-      fontSize: '0.875rem',
+    ...rest,
+    name: item.label ?? t(item.labelKey ?? ''),
+    onClick: (_event: MouseEvent, select?: SelectOption) => {
+      if (item.key === 'zoomIn')
+        zoomIn()
+      else if (item.key === 'zoomOut')
+        zoomOut()
+      else if (item.key === 'updateZoom')
+        updateZoom(select)
     },
   }
-})
+}))
 
-const controls = computed((): Control[] => [
-  {
-    ...controlButtonProps.value,
-    key: 'zoomIn',
-    icon: 'zoomIn',
-    name: t('button.zoomIn'),
-    onClick: zoomIn,
-  },
-  {
-    ...controlButtonProps.value,
-    key: 'zoomOut',
-    icon: 'zoomOut',
-    name: t('button.zoomOut'),
-    onClick: zoomOut,
-  },
-  {
-    ...controlButtonProps.value,
-    key: 'updateZoom',
-    variant: 'text',
-    name: zoomPercent.value,
-    options: [200, 150, 100, 75, 50].map(value => ({ label: `${value}%`, value })),
-    onClick: (_event: MouseEvent, item?: SelectOption) => {
-      const value = item?.value || 100
-      if (value === 100)
-        resetZoom()
-      else
-        setZoom(Number(value) / 100)
-    },
-  },
-])
+function updateZoom(item?: SelectOption) {
+  const value = item?.value || 100
+  if (value === 100)
+    resetZoom()
+  else
+    setZoom(Number(value) / 100)
+}
 
 function onWheel(event: WheelEvent) {
   if (containerRef.value)

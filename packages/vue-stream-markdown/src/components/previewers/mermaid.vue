@@ -1,6 +1,13 @@
 <script setup lang="ts">
-import type { CodeNodeRendererProps, Control, ZoomControlPosition } from '../../types'
+import type { CodeNodeRendererProps, Control } from '../../types'
 import { throttle } from '@antfu/utils'
+import {
+  createMermaidPreviewModel,
+  createMermaidRenderState,
+  measureSvgContainerHeight,
+  shouldEagerRenderMermaidAfterLoading,
+  startMermaidRenderAttempt,
+} from '@stream-markdown/core'
 import { useResizeObserver } from '@vueuse/core'
 import { computed, nextTick, ref, watch } from 'vue'
 import { useContext, useControls, useDeferredRender, useMermaid } from '../../composables'
@@ -27,16 +34,8 @@ const {
   uiComponents: UI,
 } = useContext()
 
-const { isControlEnabled, getControlValue, resolveControls } = useControls({
+const { resolveControls } = useControls({
   controls,
-})
-
-const showControl = computed(() => isControlEnabled('mermaid.position'))
-const controlPosition = computed((): ZoomControlPosition | undefined => {
-  const position = getControlValue('mermaid.position')
-  if (typeof position === 'string')
-    return position as ZoomControlPosition
-  return 'bottom-right'
 })
 
 const renderFlag = ref<boolean>(false)
@@ -46,22 +45,27 @@ const svg = ref<string>()
 const error = ref<string>()
 const containerRef = ref<HTMLDivElement>()
 
-const code = computed(() => props.node.value.trim())
 const nodeLoading = computed(() => !!props.node.loading)
-const loading = computed(() => !svg.value && (nodeLoading.value || !renderFlag.value))
 
 const Error = computed(() => mermaidOptions.value?.errorComponent ?? UI.value.ErrorComponent)
 
 const containerHeight = ref<number>(0)
-const height = computed(() => {
-  if (typeof props.containerHeight === 'string')
-    return props.containerHeight
+const model = computed(() => createMermaidPreviewModel({
+  code: props.node.value,
+  nodeLoading: nodeLoading.value,
+  svg: svg.value,
+  renderFlag: renderFlag.value,
+  minHeight: props.minHeight,
+  containerHeight: props.containerHeight,
+  measuredHeight: containerHeight.value,
+  controls: controls.value,
+}))
 
-  if (typeof props.containerHeight === 'number')
-    return props.containerHeight
-
-  return containerHeight.value ? `${containerHeight.value}px` : 'auto'
-})
+const code = computed(() => model.value.code)
+const loading = computed(() => model.value.loading)
+const showControl = computed(() => model.value.showControl)
+const controlPosition = computed(() => model.value.controlPosition)
+const height = computed(() => model.value.height)
 
 const { shouldRender } = useDeferredRender({
   targetRef: containerRef,
@@ -82,49 +86,9 @@ function updateHeight() {
   if (!containerRef.value)
     return
 
-  const svgElement = containerRef.value.querySelector('[data-stream-markdown="mermaid"] svg') as SVGSVGElement
-  if (!svgElement)
-    return
-
-  let w: number = 0
-  let h: number = 0
-
-  const viewBox = svgElement.getAttribute('viewBox')
-  const width = svgElement.getAttribute('width')
-  const height = svgElement.getAttribute('height')
-
-  if (viewBox) {
-    const parts = viewBox.split(' ')
-    if (parts.length === 4) {
-      w = Number.parseFloat(parts[2]!)
-      h = Number.parseFloat(parts[3]!)
-    }
-  }
-
-  if (!w || !h) {
-    if (width && height) {
-      w = Number.parseFloat(width)
-      h = Number.parseFloat(height)
-    }
-  }
-
-  if (Number.isNaN(w) || Number.isNaN(h) || w <= 0 || h <= 0) {
-    const bbox = svgElement.getBBox()
-    if (bbox && bbox.width > 0 && bbox.height > 0) {
-      w = bbox.width
-      h = bbox.height
-    }
-  }
-
-  if (w > 0 && h > 0) {
-    const aspectRatio = h / w
-    const { width } = containerRef.value.getBoundingClientRect()
-    const data = width * aspectRatio
-    if (data > h)
-      containerHeight.value = h
-    else
-      containerHeight.value = data
-  }
+  const height = measureSvgContainerHeight(containerRef.value)
+  if (height)
+    containerHeight.value = height
 }
 
 const render = throttle(
@@ -148,8 +112,12 @@ const render = throttle(
 )
 
 function eagerRender() {
-  renderAttempt.value = true
-  renderFlag.value = false
+  const state = startMermaidRenderAttempt(createMermaidRenderState({
+    renderAttempt: renderAttempt.value,
+    renderFlag: renderFlag.value,
+  }))
+  renderAttempt.value = state.renderAttempt
+  renderFlag.value = state.renderFlag
   render()
 }
 
@@ -171,13 +139,16 @@ watch(
 watch(
   loading,
   (curr, prev) => {
-    if (renderAttempt.value)
-      return
-
-    // if loading changed from true to false, set `renderFla` to false
-    // avoid render error component when svg is not rendered yet
-    if (!curr && prev)
+    if (shouldEagerRenderMermaidAfterLoading(
+      createMermaidRenderState({
+        renderAttempt: renderAttempt.value,
+        renderFlag: renderFlag.value,
+      }),
+      curr,
+      prev,
+    )) {
       eagerRender()
+    }
   },
   { immediate: true },
 )

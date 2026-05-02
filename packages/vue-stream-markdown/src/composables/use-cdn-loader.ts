@@ -1,7 +1,10 @@
-import type { CdnOptions } from '@stream-markdown/shared'
+import type { CdnOptions } from '@stream-markdown/core'
 import { createShikiCdnLoader } from '@stream-markdown/code'
 import { createKatexCdnLoader } from '@stream-markdown/math'
-import { createBeautifulMermaidCdnLoader, createMermaidCdnLoader } from '@stream-markdown/mermaid'
+import {
+  createBeautifulMermaidCdnLoader,
+  createMermaidCdnLoader,
+} from '@stream-markdown/mermaid'
 
 interface UseCdnLoaderOptions {
   cdnOptions?: CdnOptions

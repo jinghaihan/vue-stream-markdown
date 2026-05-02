@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { SelectOption, UISegmentedProps } from '../types'
+import { createSegmentedModel } from '@stream-markdown/core'
+import { computed } from 'vue'
 import { useContext } from '../composables'
 
 const props = withDefaults(defineProps<UISegmentedProps>(), {
@@ -18,16 +20,18 @@ const modelValue = defineModel<string>('value', { required: false, default: '' }
 if (props.options.length && !modelValue.value)
   modelValue.value = String(props.options[0]!.value)
 
+const model = computed(() => createSegmentedModel({
+  options: props.options,
+  value: modelValue.value,
+  buttonStyle: props.buttonStyle,
+}))
+
 function isButtonActive(item: SelectOption) {
-  return modelValue.value === item.value
+  return model.value.isActive(item)
 }
 
 function getButtonStyle(item: SelectOption) {
-  return {
-    paddingBlock: '0.25rem',
-    backgroundColor: isButtonActive(item) ? 'var(--accent)' : undefined,
-    ...props.buttonStyle,
-  }
+  return model.value.getButtonStyle(item)
 }
 
 function onClick(item: SelectOption) {

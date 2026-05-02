@@ -8,4 +8,4 @@ export {
   PRELOAD_NODE_RENDERER,
   SHADCN_SCHEMAS,
   SUPPORT_LANGUAGES,
-} from '@stream-markdown/shared'
+} from '@stream-markdown/core'

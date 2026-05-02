@@ -1,7 +1,7 @@
-import type { LocaleConfig } from '@stream-markdown/shared'
+import type { LocaleConfig } from '@stream-markdown/core'
 import type { MaybeRefOrGetter } from 'vue'
 import type { StreamMarkdownProps } from '../types'
-import { isClient, resolveLocaleInput } from '@stream-markdown/shared'
+import { readDocumentLanguage, resolveLocaleInput } from '@stream-markdown/core'
 import { useNavigatorLanguage } from '@vueuse/core'
 import { computed, onMounted, ref, toValue } from 'vue'
 
@@ -17,10 +17,7 @@ export function useLocaleDetector(localeProp: MaybeRefOrGetter<StreamMarkdownPro
   })
 
   function readHtmlLang() {
-    if (!isClient())
-      return ''
-    const html = document.documentElement
-    return html.lang
+    return readDocumentLanguage()
   }
 
   onMounted(() => {

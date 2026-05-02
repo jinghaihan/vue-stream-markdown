@@ -13,7 +13,7 @@ import type {
   StreamMarkdownContext as SharedStreamMarkdownContext,
   StreamMarkdownHooks as SharedStreamMarkdownHooks,
   StreamMarkdownProps as SharedStreamMarkdownProps,
-} from '@stream-markdown/shared'
+} from '@stream-markdown/core'
 import type { ComputedRef, MaybeRefOrGetter } from 'vue'
 import type { NodeRenderers, ParsedNode, SyntaxTree } from './core'
 import type {

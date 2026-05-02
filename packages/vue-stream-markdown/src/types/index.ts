@@ -17,4 +17,4 @@ export type {
   MaybeArray,
   MaybePromise,
   SupportedLanguage,
-} from '@stream-markdown/shared'
+} from '@stream-markdown/core'

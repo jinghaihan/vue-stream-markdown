@@ -1,4 +1,3 @@
-import type { MarkdownAstParser } from '@markmend/ast'
 import type {
   BlockquoteNode,
   BreakNode,
@@ -19,9 +18,10 @@ import type {
   ListItemNode,
   ListNode,
   MathNode,
-  NodeRenderers,
   ParagraphNode,
   ParsedNode,
+  NodeRendererListProps as SharedNodeRendererListProps,
+  NodeRendererProps as SharedNodeRendererProps,
   StrongNode,
   TableCellNode,
   TableNode,
@@ -29,132 +29,64 @@ import type {
   TextNode,
   ThematicBreakNode,
   YamlNode,
-} from './core'
+} from '@stream-markdown/core'
+import type { NodeRenderers } from './core'
 
-export interface NodeRendererListProps extends Omit<NodeRendererProps, 'node' | 'nodeKey' | 'markdownParser' | 'nodeRenderers'> {
-  markdownParser?: MarkdownAstParser
-  nodeRenderers?: NodeRenderers
-  nodes?: ParsedNode[]
-  nodeKey?: string
-}
+export type NodeRendererListProps = SharedNodeRendererListProps<NodeRenderers>
 
-export interface NodeRendererProps {
-  markdownParser: MarkdownAstParser
-  nodeRenderers: NodeRenderers
-  blockIndex?: number
-  node: ParsedNode
-  parentNode?: ParsedNode
-  prevNode?: ParsedNode
-  nextNode?: ParsedNode
-  nodeKey: string
-  deep: number
-  hideCaret?: boolean
-}
+export type NodeRendererProps<TNode extends ParsedNode = ParsedNode>
+  = SharedNodeRendererProps<TNode, NodeRenderers>
 
-export interface BlockquoteNodeRendererProps extends NodeRendererProps {
-  node: BlockquoteNode
-}
+export interface BlockquoteNodeRendererProps extends NodeRendererProps<BlockquoteNode> {}
 
-export interface BreakNodeRendererProps extends NodeRendererProps {
-  node: BreakNode
-}
+export interface BreakNodeRendererProps extends NodeRendererProps<BreakNode> {}
 
-export interface CodeNodeRendererProps extends NodeRendererProps {
-  node: CodeNode
-}
+export interface CodeNodeRendererProps extends NodeRendererProps<CodeNode> {}
 
-export interface DefinitionNodeRendererProps extends NodeRendererProps {
-  node: DefinitionNode
-}
+export interface DefinitionNodeRendererProps extends NodeRendererProps<DefinitionNode> {}
 
-export interface DeleteNodeRendererProps extends NodeRendererProps {
-  node: DeleteNode
-}
+export interface DeleteNodeRendererProps extends NodeRendererProps<DeleteNode> {}
 
-export interface EmphasisNodeRendererProps extends NodeRendererProps {
-  node: EmphasisNode
-}
+export interface EmphasisNodeRendererProps extends NodeRendererProps<EmphasisNode> {}
 
-export interface FootnoteDefinitionNodeRendererProps extends NodeRendererProps {
-  node: FootnoteDefinitionNode
-}
+export interface FootnoteDefinitionNodeRendererProps extends NodeRendererProps<FootnoteDefinitionNode> {}
 
-export interface FootnoteReferenceNodeRendererProps extends NodeRendererProps {
-  node: FootnoteReferenceNode
-}
+export interface FootnoteReferenceNodeRendererProps extends NodeRendererProps<FootnoteReferenceNode> {}
 
-export interface HeadingNodeRendererProps extends NodeRendererProps {
-  node: HeadingNode
-}
+export interface HeadingNodeRendererProps extends NodeRendererProps<HeadingNode> {}
 
-export interface HtmlNodeRendererProps extends NodeRendererProps {
-  node: HtmlNode
-}
+export interface HtmlNodeRendererProps extends NodeRendererProps<HtmlNode> {}
 
-export interface ImageNodeRendererProps extends NodeRendererProps {
-  node: ImageNode
-}
+export interface ImageNodeRendererProps extends NodeRendererProps<ImageNode> {}
 
-export interface ImageReferenceNodeRendererProps extends NodeRendererProps {
-  node: ImageReferenceNode
-}
+export interface ImageReferenceNodeRendererProps extends NodeRendererProps<ImageReferenceNode> {}
 
-export interface InlineCodeNodeRendererProps extends NodeRendererProps {
-  node: InlineCodeNode
-}
+export interface InlineCodeNodeRendererProps extends NodeRendererProps<InlineCodeNode> {}
 
-export interface LinkNodeRendererProps extends NodeRendererProps {
-  node: LinkNode
-}
+export interface LinkNodeRendererProps extends NodeRendererProps<LinkNode> {}
 
-export interface LinkReferenceNodeRendererProps extends NodeRendererProps {
-  node: LinkReferenceNode
-}
+export interface LinkReferenceNodeRendererProps extends NodeRendererProps<LinkReferenceNode> {}
 
-export interface ListNodeRendererProps extends NodeRendererProps {
-  node: ListNode
-}
+export interface ListNodeRendererProps extends NodeRendererProps<ListNode> {}
 
-export interface ListItemNodeRendererProps extends NodeRendererProps {
-  node: ListItemNode
-}
+export interface ListItemNodeRendererProps extends NodeRendererProps<ListItemNode> {}
 
-export interface ParagraphNodeRendererProps extends NodeRendererProps {
-  node: ParagraphNode
-}
+export interface ParagraphNodeRendererProps extends NodeRendererProps<ParagraphNode> {}
 
-export interface StrongNodeRendererProps extends NodeRendererProps {
-  node: StrongNode
-}
+export interface StrongNodeRendererProps extends NodeRendererProps<StrongNode> {}
 
-export interface TableNodeRendererProps extends NodeRendererProps {
-  node: TableNode
-}
+export interface TableNodeRendererProps extends NodeRendererProps<TableNode> {}
 
-export interface TableRowNodeRendererProps extends NodeRendererProps {
-  node: TableRowNode
-}
+export interface TableRowNodeRendererProps extends NodeRendererProps<TableRowNode> {}
 
-export interface TableCellNodeRendererProps extends NodeRendererProps {
-  node: TableCellNode
-}
+export interface TableCellNodeRendererProps extends NodeRendererProps<TableCellNode> {}
 
-export interface TextNodeRendererProps extends NodeRendererProps {
-  node: TextNode
-}
+export interface TextNodeRendererProps extends NodeRendererProps<TextNode> {}
 
-export interface ThematicBreakNodeRendererProps extends NodeRendererProps {
-  node: ThematicBreakNode
-}
+export interface ThematicBreakNodeRendererProps extends NodeRendererProps<ThematicBreakNode> {}
 
-export interface YamlNodeRendererProps extends NodeRendererProps {
-  node: YamlNode
-}
+export interface YamlNodeRendererProps extends NodeRendererProps<YamlNode> {}
 
-export interface MathNodeRendererProps extends NodeRendererProps {
-  node: MathNode
-}
+export interface MathNodeRendererProps extends NodeRendererProps<MathNode> {}
 
-export interface InlineMathNodeRendererProps extends NodeRendererProps {
-  node: InlineMathNode
-}
+export interface InlineMathNodeRendererProps extends NodeRendererProps<InlineMathNode> {}

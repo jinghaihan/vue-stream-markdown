@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { YamlNodeRendererProps } from '../../types'
+import { createYamlTableModel } from '@stream-markdown/core'
 import { computed } from 'vue'
 import { useContext } from '../../composables'
 
@@ -7,16 +8,9 @@ const props = withDefaults(defineProps<YamlNodeRendererProps>(), {})
 
 const { uiComponents: UI } = useContext()
 
-const reg = /\s*:\s*/
-const data = computed(
-  () => props.node.value
-    .trim()
-    .split('\n')
-    .map((line: string) => line.split(reg)),
-)
-
-const headers = computed(() => data.value.map((line: string[]) => line[0]))
-const rows = computed(() => [{ children: data.value.map((line: string[]) => line[1]) }])
+const model = computed(() => createYamlTableModel(props.node))
+const headers = computed(() => model.value.headers)
+const rows = computed(() => model.value.rows)
 </script>
 
 <template>

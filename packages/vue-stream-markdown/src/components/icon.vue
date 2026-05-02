@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { UIIconProps } from '../types'
+import { createIconModel } from '@stream-markdown/core'
 import { computed } from 'vue'
 import { useContext } from '../composables'
 
@@ -10,11 +11,11 @@ const props = withDefaults(defineProps<UIIconProps>(), {
 
 const { icons } = useContext()
 
-const Icon = computed(() => typeof props.icon === 'string' ? icons.value[props.icon] : props.icon)
-const iconStyle = computed(() => ({
-  width: `${props.width}px`,
-  height: `${props.height}px`,
-}))
+const Icon = computed(() =>
+  typeof props.icon === 'string' ? icons.value[props.icon] : props.icon,
+)
+const model = computed(() => createIconModel(props))
+const iconStyle = computed(() => model.value.style)
 </script>
 
 <template>

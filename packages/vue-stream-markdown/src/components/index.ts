@@ -1,4 +1,4 @@
-import type { BuiltinUIComponents } from '@stream-markdown/shared'
+import type { BuiltinUIComponents } from '@stream-markdown/core'
 import type { Component } from 'vue'
 import { defineAsyncComponent } from 'vue'
 

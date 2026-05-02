@@ -2,18 +2,21 @@
 import type {
   BuiltinNodeRenderers,
   Icons,
+  MarkdownAstParser,
   NodeRenderers,
   ParsedNode,
   StreamMarkdownProps,
   UIComponents,
 } from './types'
-import { MarkdownAstParser } from '@markmend/ast'
 import {
+  createProcessedMarkdownModel,
+  createRootStyle,
+  createStreamMarkdownEngine,
   DEFAULT_ANIMATION,
-  normalizeAnimationDuration,
-  PRELOAD_NODE_RENDERER,
-  STREAM_MARKDOWN_CSS_VARIABLES,
-} from '@stream-markdown/shared'
+  resolveEnableAnimate,
+  resolveEnableCaret,
+  resolvePreloadNodeRenderers,
+} from '@stream-markdown/core'
 import { computed, onBeforeUnmount, onMounted, ref, toRefs, watch } from 'vue'
 import { NODE_RENDERERS, UI } from './components'
 import { ICONS } from './components/icons'
@@ -89,40 +92,29 @@ const { preload: preloadKatex, dispose: disposeKatex } = useKatex({
 
 const containerRef = ref<HTMLDivElement>()
 
-const markdownParser = new MarkdownAstParser(props)
-
-const enableAnimate = computed(() => {
-  if (typeof props.enableAnimate === 'boolean')
-    return props.enableAnimate
-  return mode.value === 'streaming'
+const { markdownParser, parse, updateMode } = createStreamMarkdownEngine({
+  ...props,
+  mode: props.mode,
 })
 
-const enableCaret = computed(() => !!props.caret && mode.value === 'streaming')
+const enableAnimate = computed(() => resolveEnableAnimate(mode.value, props.enableAnimate))
 
-const processed = computed(() => markdownParser.parseMarkdown(props.content))
+const enableCaret = computed(() => resolveEnableCaret(mode.value, props.caret))
 
-const blocks = computed(() => processed.value?.asts ?? [])
-const parsedNodes = computed(() => blocks.value.flatMap(block => block.children))
-const processedContent = computed(() => (processed.value?.contents ?? []).join(''))
+const processed = computed(() => createProcessedMarkdownModel(parse(props.content)))
 
-const rootStyle = computed(() => {
-  const style = { ...cssVariables.value }
-  const duration = normalizeAnimationDuration(props.animationDuration)
-  if (duration !== undefined)
-    style[STREAM_MARKDOWN_CSS_VARIABLES.animationDuration] = duration
-  return style
-})
+const blocks = computed(() => processed.value.blocks)
+const parsedNodes = computed(() => processed.value.parsedNodes)
+const processedContent = computed(() => processed.value.processedContent)
+
+const rootStyle = computed(() => createRootStyle(cssVariables.value, props.animationDuration))
 
 const nodeRenderers = computed((): NodeRenderers => ({
   ...NODE_RENDERERS,
   ...props.nodeRenderers,
 }))
 
-const preloadNodeRenderers = computed((): BuiltinNodeRenderers[] => {
-  if (!props.preload || !props.preload.nodeRenderers)
-    return PRELOAD_NODE_RENDERER
-  return props.preload.nodeRenderers
-})
+const preloadNodeRenderers = computed((): BuiltinNodeRenderers[] => resolvePreloadNodeRenderers(props.preload))
 
 const icons = computed((): Icons => ({
   ...ICONS,
@@ -164,7 +156,7 @@ async function bootstrap() {
 
 onMounted(bootstrap)
 
-watch(mode, () => markdownParser.updateMode(mode.value))
+watch(mode, () => updateMode(mode.value))
 watch(locale, () => loadLocaleMessages(locale.value))
 
 provideContext({

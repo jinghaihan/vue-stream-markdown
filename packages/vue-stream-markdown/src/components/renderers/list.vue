@@ -1,28 +1,24 @@
 <script setup lang="ts">
-import type { ListItemNode, ListNodeRendererProps } from '../../types'
+import type { ListNodeRendererProps } from '../../types'
+import { createListModel } from '@stream-markdown/core'
 import { computed } from 'vue'
 import NodeList from '../node-list.vue'
 
 const props = withDefaults(defineProps<ListNodeRendererProps>(), {})
 
-const isTaskList = computed(() => props.node.children.some((child: ListItemNode) => typeof child.checked === 'boolean'))
-
-const tag = computed(() => props.node.ordered ? 'ol' : 'ul')
-const id = computed(() => isTaskList.value
-  ? 'task-list'
-  : props.node.ordered ? 'ordered-list' : 'unordered-list')
-const listClass = computed(() => {
-  const shared = 'pl-5 leading-6 whitespace-normal'
-  if (id.value === 'ordered-list')
-    return `${shared} list-decimal`
-  return `${shared} list-disc`
-})
+const model = computed(() => createListModel(props.node))
+const tag = computed(() => model.value.tag)
+const id = computed(() => model.value.id)
 </script>
 
 <template>
   <component
     :is="tag" :data-stream-markdown="id"
-    :class="listClass"
+    class="leading-6 pl-5 whitespace-normal"
+    :class="{
+      'list-decimal': id === 'ordered-list',
+      'list-disc': id !== 'ordered-list',
+    }"
   >
     <NodeList v-bind="props" :parent-node="node" :nodes="node.children" :deep="deep + 1" />
   </component>

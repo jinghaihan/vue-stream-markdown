@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { createPreviewSegmentedOptions } from '@stream-markdown/core'
 import { computed } from 'vue'
 import { useI18n } from '../../composables'
 import Segmented from '../segmented.vue'
@@ -8,10 +9,7 @@ const collapsed = defineModel<boolean>('collapsed', { required: false, default: 
 
 const { t } = useI18n()
 
-const SEGMENTED_OPTIONS = computed(() => [
-  { label: t('button.preview'), value: 'preview', icon: 'preview' },
-  { label: t('button.source'), value: 'source', icon: 'code' },
-])
+const SEGMENTED_OPTIONS = computed(() => createPreviewSegmentedOptions(t))
 </script>
 
 <template>

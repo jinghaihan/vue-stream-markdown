@@ -1,6 +1,6 @@
 import type { MaybeRefOrGetter } from 'vue'
 import type { CodeOptions } from '../types'
-import { isCodeOptionEnabled, resolveCodeOptions } from '@stream-markdown/shared'
+import { createCodeOptionsModel } from '@stream-markdown/core'
 import { computed, toValue } from 'vue'
 
 interface UseCodeOptionsOptions {
@@ -12,13 +12,11 @@ export function useCodeOptions(options: UseCodeOptionsOptions) {
   const language = computed(() => toValue(options.language) || '')
   const codeOptions = computed(() => toValue(options.codeOptions))
 
-  const languageCodeOptions = computed(() => resolveCodeOptions(codeOptions.value, language.value))
-
-  const showLanguageIcon = computed(() => isCodeOptionEnabled(languageCodeOptions.value?.languageIcon))
-
-  const showLanguageName = computed(() => isCodeOptionEnabled(languageCodeOptions.value?.languageName))
-
-  const showLineNumbers = computed(() => isCodeOptionEnabled(languageCodeOptions.value?.lineNumbers))
+  const model = computed(() => createCodeOptionsModel(codeOptions.value, language.value))
+  const languageCodeOptions = computed(() => model.value.languageCodeOptions)
+  const showLanguageIcon = computed(() => model.value.showLanguageIcon)
+  const showLanguageName = computed(() => model.value.showLanguageName)
+  const showLineNumbers = computed(() => model.value.showLineNumbers)
 
   return {
     languageCodeOptions,

@@ -1,6 +1,6 @@
-import type { SharedCdnOptions } from '@stream-markdown/shared'
+import type { SharedCdnOptions } from '@stream-markdown/core'
 import type { MaybeGetter } from './types'
-import { dynamicImport, isModuleEnabled, removeTrailingSlash, resolveGetter } from '@stream-markdown/shared'
+import { dynamicImport, isModuleEnabled, removeTrailingSlash, resolveGetter } from '@stream-markdown/core'
 import { SHIKI_VERSION } from './constants'
 
 let shikiModule: typeof import('shiki') | null = null

@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import type { BuiltinLanguage } from 'shiki'
 import type { Component } from 'vue'
-import type { CodeNodeRendererProps, Control, PreviewSegmentedPlacement, SelectOption } from '../../types'
-import { LANGUAGE_ALIAS, LANGUAGE_EXTENSIONS } from '@stream-markdown/code'
-import { normalizeCssSize, save } from '@stream-markdown/shared'
+import type { CodeNodeRendererProps, Control, SelectOption } from '../../types'
+import {
+  createCodeBlockControlDescriptors,
+  createCodeBlockModel,
+  getCodeFileExtension,
+  resolveCodePreviewComponent,
+  save,
+} from '@stream-markdown/core'
 import { createReusableTemplate, useClipboard } from '@vueuse/core'
 import { computed, defineAsyncComponent, ref, watch } from 'vue'
-import { useCodeOptions, useContext, useControls, useI18n, useMermaid } from '../../composables'
+import { useContext, useControls, useI18n, useMermaid } from '../../composables'
 import { CODE_PREVIEWERS } from '../previewers'
 import Actions from './actions.vue'
 import { LANGUAGE_ICONS } from './language-icons'
@@ -39,7 +43,7 @@ const [DefineTemplate, ReuseTemplate] = createReusableTemplate()
 
 const { t } = useI18n()
 
-const { isControlEnabled, getControlValue, resolveControls } = useControls({
+const { isControlEnabled, resolveControls } = useControls({
   controls,
 })
 
@@ -58,21 +62,20 @@ const collapsed = ref<boolean>(false)
 const fullscreen = ref<boolean>(false)
 const mode = ref<'preview' | 'source'>('source')
 
-const language = computed((): BuiltinLanguage => {
-  const lang = props.node.lang
-  if (!lang)
-    return 'plaintext' as unknown as BuiltinLanguage
-  if (LANGUAGE_ALIAS[lang])
-    return LANGUAGE_ALIAS[lang]
-  return lang as BuiltinLanguage
-})
+const codeBlockModel = computed(() => createCodeBlockModel<Component>({
+  node: props.node,
+  codeOptions: codeOptions.value,
+  controls: controls.value,
+  previewers: previewers.value,
+  hasMermaid: hasMermaid.value,
+  mode: mode.value,
+  isPreviewComponent: isVueComponent,
+}))
 
-const { showLanguageIcon, showLanguageName } = useCodeOptions({
-  codeOptions,
-  language,
-})
-
-const showLanguageTitle = computed(() => showLanguageIcon.value || showLanguageName.value)
+const language = computed(() => codeBlockModel.value.language)
+const showLanguageIcon = computed(() => codeBlockModel.value.showLanguageIcon)
+const showLanguageName = computed(() => codeBlockModel.value.showLanguageName)
+const showLanguageTitle = computed(() => codeBlockModel.value.showLanguageTitle)
 
 const showCollapse = computed(() => isControlEnabled('code.collapse'))
 const showCopy = computed(() => isControlEnabled('code.copy'))
@@ -84,178 +87,41 @@ const icon = computed(() => {
   // Custom language icon component
   if (typeof custom === 'object')
     return custom
-  return LANGUAGE_ICONS[language.value] || commonIcons.value.code
+  return LANGUAGE_ICONS[language.value as keyof typeof LANGUAGE_ICONS] || commonIcons.value.code
 })
 
-const progressiveRender = computed(() => {
-  if (typeof previewers.value === 'boolean') {
-    if (language.value === 'mermaid')
-      return true
-    return false
-  }
-
-  const data = previewers.value?.progressive?.[language.value]
-  if (typeof data === 'boolean')
-    return data
-  if (language.value === 'mermaid')
-    return true
-  return false
-})
-
-const previewPlacement = computed((): PreviewSegmentedPlacement => {
-  if (typeof previewers.value === 'boolean'
-    || !previewers.value?.placement
-    || previewers.value?.placement === 'auto') {
-    return showLanguageTitle.value ? 'center' : 'left'
-  }
-  return previewers.value.placement
-})
-
-const previewable = computed((): boolean => {
-  if (previewers.value === false)
-    return false
-
-  if (!progressiveRender.value && props.node.loading)
-    return false
-
-  const html = language.value === 'html' && !props.node.loading
-  const mermaid = language.value === 'mermaid' && hasMermaid.value
-
-  if (previewers.value === true) {
-    if (language.value === 'html' && html)
-      return true
-    if (language.value === 'mermaid' && mermaid)
-      return true
-    return false
-  }
-
-  if (typeof previewers.value === 'object') {
-    if (previewers.value.components?.[language.value] === false)
-      return false
-
-    if (language.value === 'html' && html)
-      return true
-    if (language.value === 'mermaid' && mermaid)
-      return true
-
-    // Custom previewer component
-    const component = previewers.value.components?.[language.value]
-    if (typeof component === 'object' && (progressiveRender.value || !props.node.loading))
-      return !!component
-
-    return false
-  }
-
-  return false
-})
+const previewPlacement = computed(() => codeBlockModel.value.previewPlacement)
+const previewable = computed(() => codeBlockModel.value.previewable)
 
 const PreviewComponent = computed((): Component | undefined => {
-  const previewer = CODE_PREVIEWERS[language.value]
-  if (!previewers.value || typeof previewers.value === 'boolean')
-    return previewer
-
-  const data = previewers.value.components?.[language.value]
-  if (data === false)
-    return previewer
-
-  if (data && typeof data !== 'boolean')
-    return data as Component
-
-  return previewer
+  return resolveCodePreviewComponent<Component>(
+    language.value,
+    previewers.value,
+    CODE_PREVIEWERS,
+    isVueComponent,
+  )
 })
 
-const inlineInteractive = computed(() => getControlValue('mermaid.inlineInteractive') ?? true)
+const inlineInteractive = computed(() => codeBlockModel.value.inlineInteractive)
+const maxHeight = computed(() => codeBlockModel.value.maxHeight)
+const downloadOptions = computed(() => codeBlockModel.value.downloadOptions)
 
-const maxHeight = computed((): string | undefined => {
-  if (mode.value === 'preview')
-    return undefined
-
-  const specific = codeOptions.value?.language?.[language.value]?.maxHeight
-  if (specific)
-    return normalizeCssSize(specific)
-
-  const height = codeOptions.value?.maxHeight
-  if (height)
-    return normalizeCssSize(height)
-
-  return undefined
-})
-
-const downloadOptions = computed(() => {
-  if (language.value !== 'mermaid' || !hasMermaid.value)
-    return []
-  return [
-    { label: 'SVG', value: 'svg' },
-    { label: 'PNG', value: 'png' },
-    { label: 'MMD', value: 'code' },
-  ]
-})
-
-const builtinControls = computed((): Control[] => [
-  {
-    name: t('button.collapse'),
-    key: 'collapse',
-    icon: 'collapse',
-    iconStyle: {
-      transform: collapsed.value ? 'rotate(180deg)' : undefined,
-      transition: 'transform var(--default-transition-duration)',
-    },
-    visible: () => showCollapse.value,
-    onClick: () => collapsed.value = !collapsed.value,
-  },
-  {
-    name: t('button.copy'),
-    key: 'copy',
-    icon: copied.value ? 'check' : 'copy',
-    visible: () => showCopy.value,
-    onClick: () => {
-      if (!props.node.value)
-        return
-      copy(props.node.value)
-      onCopied(props.node.value)
-    },
-  },
-  {
-    name: t('button.download'),
-    key: 'download',
-    icon: 'download',
-    options: downloadOptions.value.length > 0 ? downloadOptions.value : undefined,
-    visible: () => showDownload.value && !!LANGUAGE_EXTENSIONS[language.value],
-    onClick: async (_event: MouseEvent, item?: SelectOption) => {
-      if (props.node.loading)
-        return
-
-      // Download code as plain text
-      if (!item || item.value === 'code') {
-        const extension = LANGUAGE_EXTENSIONS[language.value]
-        const result = await beforeDownload({
-          type: 'code',
-          content: props.node.value,
-        })
-        if (result)
-          save(`file.${extension}`, props.node.value, 'text/plain')
-        return
-      }
-
-      // Download mermaid diagram as SVG or PNG
-      if (item?.value === 'svg' || item?.value === 'png') {
-        const result = await beforeDownload({
-          type: 'mermaid',
-          content: props.node.value,
-        })
-        if (result)
-          saveMermaid(item?.value as 'svg' | 'png', props.node.value)
-      }
-    },
-  },
-  {
-    name: fullscreen.value ? t('button.minimize') : t('button.maximize'),
-    key: 'fullscreen',
-    icon: fullscreen.value ? 'minimize' : 'maximize',
-    visible: () => showFullscreen.value,
-    onClick: () => fullscreen.value = !fullscreen.value,
-  },
-])
+const builtinControls = computed((): Control[] => createCodeBlockControlDescriptors({
+  collapsed: collapsed.value,
+  fullscreen: fullscreen.value,
+  copied: copied.value,
+  language: language.value,
+  showCollapse: showCollapse.value,
+  showCopy: showCopy.value,
+  showDownload: showDownload.value,
+  showFullscreen: showFullscreen.value,
+  downloadOptions: downloadOptions.value,
+}).map(item => ({
+  ...item,
+  name: t(item.labelKey ?? ''),
+  onClick: (_event: MouseEvent, select?: SelectOption) => handleControlClick(item.key, select),
+  visible: () => item.visible ?? true,
+})))
 
 const headerControls = computed(
   () => resolveControls<CodeNodeRendererProps>('code', builtinControls.value, props),
@@ -274,6 +140,57 @@ watch(
   },
   { immediate: true },
 )
+
+function isVueComponent(component: unknown) {
+  return !!component && typeof component !== 'boolean'
+}
+
+async function handleControlClick(key: string, item?: SelectOption) {
+  if (key === 'collapse') {
+    collapsed.value = !collapsed.value
+    return
+  }
+
+  if (key === 'copy') {
+    if (!props.node.value)
+      return
+    copy(props.node.value)
+    onCopied(props.node.value)
+    return
+  }
+
+  if (key === 'fullscreen') {
+    fullscreen.value = !fullscreen.value
+    return
+  }
+
+  if (key !== 'download' || props.node.loading)
+    return
+
+  // Download code as plain text
+  if (!item || item.value === 'code') {
+    const extension = getCodeFileExtension(language.value)
+    if (!extension)
+      return
+    const result = await beforeDownload({
+      type: 'code',
+      content: props.node.value,
+    })
+    if (result)
+      save(`file.${extension}`, props.node.value, 'text/plain')
+    return
+  }
+
+  // Download mermaid diagram as SVG or PNG
+  if (item?.value === 'svg' || item?.value === 'png') {
+    const result = await beforeDownload({
+      type: 'mermaid',
+      content: props.node.value,
+    })
+    if (result)
+      saveMermaid(item?.value as 'svg' | 'png', props.node.value)
+  }
+}
 </script>
 
 <template>

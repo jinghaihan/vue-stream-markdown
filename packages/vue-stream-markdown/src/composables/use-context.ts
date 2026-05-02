@@ -5,7 +5,7 @@ import type {
   StreamMarkdownResolvedContext,
   UIComponents,
 } from '../types'
-import { CARETS, DEFAULT_ANIMATION } from '@stream-markdown/shared'
+import { resolveAnimation, resolveCaret, resolveEnableAnimate } from '@stream-markdown/core'
 import { computed, inject, provide, toValue } from 'vue'
 import { UI as DEFAULT_UI } from '../components'
 
@@ -34,21 +34,11 @@ export function useContext(): StreamMarkdownResolvedContext {
   const hideTooltip = computed(() => uiOptions.value.hideTooltip ?? false)
 
   const isDark = computed(() => toValue(context.isDark) ?? false)
-  const enableAnimate = computed(() => {
-    const enable = toValue(context.enableAnimate)
-    if (typeof enable === 'boolean')
-      return enable
-    return mode.value === 'streaming'
-  })
-  const animation = computed(() => toValue(context.animation) ?? DEFAULT_ANIMATION)
+  const enableAnimate = computed(() => resolveEnableAnimate(mode.value, toValue(context.enableAnimate)))
+  const animation = computed(() => resolveAnimation(toValue(context.animation)))
 
   const enableCaret = computed(() => toValue(context.enableCaret))
-  const caret = computed(() => {
-    const currentCaret = toValue(context.caret)
-    return currentCaret
-      ? CARETS[currentCaret]
-      : undefined
-  })
+  const caret = computed(() => resolveCaret(toValue(context.caret)))
 
   const parsedNodes = computed(() => toValue(context.parsedNodes) ?? [])
   const blocks = computed(() => toValue(context.blocks) ?? [])

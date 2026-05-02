@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ImageNodeRendererProps } from '../../types'
-import { saveImage } from '@stream-markdown/shared'
+import { createImageModel, saveImage } from '@stream-markdown/core'
 import { computed, ref } from 'vue'
 import { useContext, useControls, useI18n, useSanitizers } from '../../composables'
 
@@ -26,14 +26,20 @@ const loadError = ref<boolean>(false)
 const imageLoaded = ref<boolean>(false)
 const fallbackAttempted = ref<boolean>(false)
 
-const isLoading = computed(() => props.node.loading || !props.node.url)
+const baseImageModel = computed(() => createImageModel({
+  node: props.node,
+  imageOptions: imageOptions.value,
+  fallbackAttempted: fallbackAttempted.value,
+  imageLoaded: imageLoaded.value,
+}))
+
+const isLoading = computed(() => baseImageModel.value.isLoading)
 
 const enableDownload = computed(() => isControlEnabled('image.download'))
 const enablePreview = computed(() => isControlEnabled('image.preview'))
 
-const fallback = computed(() => imageOptions.value?.fallback ?? '')
-
-const imageSrc = computed(() => fallbackAttempted.value && fallback.value ? fallback.value : props.node.url)
+const fallback = computed(() => baseImageModel.value.fallback)
+const imageSrc = computed(() => baseImageModel.value.imageSrc)
 
 const { transformedUrl, isHardenUrl, transformHardenUrl } = useSanitizers({
   url: imageSrc,
@@ -42,13 +48,18 @@ const { transformedUrl, isHardenUrl, transformHardenUrl } = useSanitizers({
   isImage: true,
 })
 
-const alt = computed(() => String(props.node.alt ?? props.node.title ?? ''))
-const title = computed(() => String(props.node.title ?? props.node.alt ?? ''))
+const imageModel = computed(() => createImageModel({
+  node: props.node,
+  imageOptions: imageOptions.value,
+  fallbackAttempted: fallbackAttempted.value,
+  imageLoaded: imageLoaded.value,
+  isHardenUrl: isHardenUrl.value,
+  loadError: loadError.value,
+}))
 
-const showCaption = computed((): boolean =>
-  (typeof imageOptions.value?.caption === 'boolean' ? imageOptions.value.caption : true)
-  && !isLoading.value && !!title.value,
-)
+const alt = computed(() => imageModel.value.alt)
+const title = computed(() => imageModel.value.title)
+const showCaption = computed(() => imageModel.value.showCaption)
 
 const Error = computed(() => isHardenUrl.value
   ? (hardenOptions.value?.errorComponent ?? UI.value.ErrorComponent)
@@ -93,7 +104,7 @@ function handleMouseLeave() {
     data-stream-markdown="image-figure"
     class="inline-block"
     :style="{
-      width: isLoading || !imageLoaded ? '100%' : 'auto',
+      width: imageModel.figureWidth,
     }"
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
@@ -125,11 +136,11 @@ function handleMouseLeave() {
         />
       </div>
 
-      <component :is="UI.Spin" v-if="(isLoading || !imageLoaded) && !isHardenUrl" />
+      <component :is="UI.Spin" v-if="imageModel.showSpin" />
 
       <component
         :is="UI.Image"
-        v-if="!isLoading && !isHardenUrl && typeof transformedUrl === 'string'"
+        v-if="imageModel.showImage && typeof transformedUrl === 'string'"
         :key="transformedUrl"
         :src="transformedUrl"
         :alt="alt"
@@ -144,8 +155,8 @@ function handleMouseLeave() {
       />
       <component
         :is="Error"
-        v-else-if="isHardenUrl || loadError"
-        :variant="isHardenUrl ? 'harden-image' : 'image'"
+        v-else-if="imageModel.showError"
+        :variant="imageModel.errorVariant"
       >
         {{ title }}
       </component>

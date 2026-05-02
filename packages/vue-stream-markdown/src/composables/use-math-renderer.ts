@@ -1,7 +1,8 @@
-import type { CdnOptions } from '@stream-markdown/shared'
+import type { CdnOptions } from '@stream-markdown/core'
 import type { MaybeRefOrGetter } from 'vue'
 import type { InlineMathNode, KatexOptions, MathNode } from '../types'
 import { throttle } from '@antfu/utils'
+import { createMathRendererModel } from '@stream-markdown/core'
 import { computed, ref, toValue, watch } from 'vue'
 import { useKatex } from './use-katex'
 
@@ -27,25 +28,20 @@ export function useMathRenderer(options: UseMathRendererOptions) {
   const katexOptions = computed(() => toValue(options.katexOptions)?.config ?? {})
   const throttleTime = computed(() => toValue(options.throttle) ?? 150)
 
-  const code = computed(() => node.value.value)
-  const loading = computed(() => node.value.loading)
-
-  const isDisplayMode = computed(() => node.value.type !== 'inlineMath')
-
-  const error = computed(() => {
-    if (!installed.value)
-      return true
-
-    if (errorMessage.value
-      && renderFlag.value
-      && renderingCode.value === code.value) {
-      return true
-    }
-
-    return false
-  })
+  const model = computed(() => createMathRendererModel({
+    node: node.value,
+    installed: installed.value,
+    renderFlag: renderFlag.value,
+    renderingCode: renderingCode.value,
+    errorMessage: errorMessage.value,
+  }))
+  const code = computed(() => model.value.code)
+  const loading = computed(() => model.value.loading)
+  const isDisplayMode = computed(() => model.value.isDisplayMode)
+  const error = computed(() => model.value.error)
 
   const render = throttle(throttleTime, async () => {
+    renderingCode.value = code.value
     const { html: data, error } = await renderKatex(
       code.value,
       {

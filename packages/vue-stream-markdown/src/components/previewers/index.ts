@@ -1,4 +1,4 @@
-import type { BuiltinPreviewers } from '@stream-markdown/shared'
+import type { BuiltinPreviewers } from '@stream-markdown/core'
 import type { Component } from 'vue'
 import { defineAsyncComponent } from 'vue'
 

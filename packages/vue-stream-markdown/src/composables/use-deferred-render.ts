@@ -1,5 +1,5 @@
 import type { MaybeRefOrGetter } from 'vue'
-import { createIdleCallback } from '@stream-markdown/shared'
+import { createIdleCallback } from '@stream-markdown/core'
 import { useIntersectionObserver } from '@vueuse/core'
 import { computed, onUnmounted, ref, toValue } from 'vue'
 

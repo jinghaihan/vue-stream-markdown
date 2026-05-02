@@ -1,22 +1,22 @@
 import type {
   TouchZoomState,
   ZoomOptions,
-  ZoomPoint,
   ZoomState,
-} from '@stream-markdown/shared'
+} from '@stream-markdown/core'
 import {
-  createDraggedState,
-  createDragStart,
-  createTouchMovedState,
-  createTouchZoomState,
-  createWheelZoomState,
+  capturePointerForNonMouseEvent,
+  createBrowserTouchMovedState,
+  createBrowserTouchZoomState,
+  createBrowserWheelZoomState,
+  createPointerDraggedState,
+  createPointerDragStart,
   createZoomState,
   createZoomTransformStyle,
   resetZoomState,
   setZoomState,
   zoomInState,
   zoomOutState,
-} from '@stream-markdown/shared'
+} from '@stream-markdown/core'
 import { computed, ref } from 'vue'
 
 export function useZoom(options: ZoomOptions = {}) {
@@ -32,10 +32,6 @@ export function useZoom(options: ZoomOptions = {}) {
   const touchZoomState = ref<TouchZoomState | null>(null)
 
   const transformStyle = computed(() => createZoomTransformStyle(getState()))
-
-  function getPointer(clientX: number, clientY: number): ZoomPoint {
-    return { x: clientX, y: clientY }
-  }
 
   function zoomIn() {
     updateState(zoomInState(getState(), options))
@@ -64,19 +60,15 @@ export function useZoom(options: ZoomOptions = {}) {
       return
 
     isDragging.value = true
-    dragStart.value = createDragStart(getPointer(e.clientX, e.clientY), getState())
-
-    if (e.pointerType !== 'mouse') {
-      if (e.target instanceof HTMLElement)
-        e.target.setPointerCapture(e.pointerId)
-    }
+    dragStart.value = createPointerDragStart(e, getState())
+    capturePointerForNonMouseEvent(e)
   }
 
   function onDrag(e: PointerEvent) {
     if (!isDragging.value || isPinching.value)
       return
 
-    const nextState = createDraggedState(getPointer(e.clientX, e.clientY), dragStart.value)
+    const nextState = createPointerDraggedState(e, dragStart.value)
     translateX.value = nextState.translateX
     translateY.value = nextState.translateY
   }
@@ -86,13 +78,10 @@ export function useZoom(options: ZoomOptions = {}) {
   }
 
   function handleWheel(event: WheelEvent, containerElement: HTMLElement) {
-    const nextState = createWheelZoomState({
+    const nextState = createBrowserWheelZoomState({
+      event,
+      element: containerElement,
       state: getState(),
-      point: getPointer(event.clientX, event.clientY),
-      rect: containerElement.getBoundingClientRect(),
-      deltaY: event.deltaY,
-      ctrlKey: event.ctrlKey,
-      metaKey: event.metaKey,
       options,
     })
     if (!nextState)
@@ -104,31 +93,33 @@ export function useZoom(options: ZoomOptions = {}) {
 
   function handleTouchStart(event: TouchEvent, containerElement: HTMLElement) {
     if (event.touches.length === 2) {
+      const nextTouchZoomState = createBrowserTouchZoomState({
+        event,
+        element: containerElement,
+        state: getState(),
+      })
+      if (!nextTouchZoomState)
+        return
+
       event.preventDefault()
       isPinching.value = true
-      touchZoomState.value = createTouchZoomState({
-        state: getState(),
-        rect: containerElement.getBoundingClientRect(),
-        touches: [
-          getPointer(event.touches[0]!.clientX, event.touches[0]!.clientY),
-          getPointer(event.touches[1]!.clientX, event.touches[1]!.clientY),
-        ],
-      })
+      touchZoomState.value = nextTouchZoomState
     }
   }
 
   function handleTouchMove(event: TouchEvent, containerElement: HTMLElement) {
     if (event.touches.length === 2 && touchZoomState.value) {
-      event.preventDefault()
-      updateState(createTouchMovedState({
-        rect: containerElement.getBoundingClientRect(),
-        touches: [
-          getPointer(event.touches[0]!.clientX, event.touches[0]!.clientY),
-          getPointer(event.touches[1]!.clientX, event.touches[1]!.clientY),
-        ],
+      const nextState = createBrowserTouchMovedState({
+        event,
+        element: containerElement,
         touchState: touchZoomState.value,
         options,
-      }))
+      })
+      if (!nextState)
+        return
+
+      event.preventDefault()
+      updateState(nextState)
     }
   }
 
@@ -164,7 +155,6 @@ export function useZoom(options: ZoomOptions = {}) {
     translateY,
     isDragging,
     transformStyle,
-
     zoomIn,
     zoomOut,
     resetZoom,
@@ -175,7 +165,6 @@ export function useZoom(options: ZoomOptions = {}) {
     handleWheel,
     getState,
     setState,
-
     handleTouchStart,
     handleTouchMove,
     handleTouchEnd,

@@ -1,18 +1,17 @@
 <script setup lang="ts">
 import type { CodeNodeRendererProps } from '../../types'
+import { createHtmlPreviewModel, getIframeBodyHeight } from '@stream-markdown/core'
 import { computed, ref } from 'vue'
 
 const props = withDefaults(defineProps<CodeNodeRendererProps>(), {})
 
 const iframeRef = ref<HTMLIFrameElement>()
 const height = ref<number>(0)
-const code = computed(() => props.node.value.trim())
+const model = computed(() => createHtmlPreviewModel(props.node))
+const code = computed(() => model.value.code)
 
 function updateHeight() {
-  const doc = iframeRef.value?.contentDocument
-  if (!doc)
-    return
-  height.value = doc.body.scrollHeight + 16
+  height.value = getIframeBodyHeight(iframeRef.value)
 }
 </script>
 

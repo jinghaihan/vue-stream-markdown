@@ -5,6 +5,7 @@ import type {
   CodeControlsConfig as SharedCodeControlsConfig,
   CodeOptions as SharedCodeOptions,
   CodeOptionsLanguage as SharedCodeOptionsLanguage,
+  Control as SharedControl,
   ControlsConfig as SharedControlsConfig,
   ControlTransformer as SharedControlTransformer,
   HardenOptions as SharedHardenOptions,
@@ -23,7 +24,7 @@ import type {
   UIComponents as SharedUIComponents,
   UIOptions as SharedUIOptions,
   ZoomControlPosition as SharedZoomControlPosition,
-} from '@stream-markdown/shared'
+} from '@stream-markdown/core'
 import type { RenderOptions as BeautifulMermaidConfig, ThemeName } from 'beautiful-mermaid'
 import type { KatexOptions as KatexConfig } from 'katex'
 import type { MermaidConfig } from 'mermaid'
@@ -36,7 +37,7 @@ import type {
   NodeRendererProps,
   TableNodeRendererProps,
 } from './renderer'
-import type { SelectOption, UIButtonProps } from './ui'
+import type { UIButtonProps } from './ui'
 
 export type BuiltinNodeRenderers = SharedBuiltinNodeRenderers
 export type BuiltinPreviewers = SharedBuiltinPreviewers
@@ -52,11 +53,7 @@ export type IconName = keyof typeof ICONS
 
 export type Icons = SharedIcons<Component, IconName, OptionalIconName>
 
-export interface Control extends UIButtonProps {
-  key: string
-  visible?: () => boolean
-  onClick: (event: MouseEvent, item?: SelectOption) => void
-}
+export type Control = SharedControl<UIButtonProps>
 
 export type ControlTransformer<T extends NodeRendererProps = NodeRendererProps>
   = SharedControlTransformer<Control, T>

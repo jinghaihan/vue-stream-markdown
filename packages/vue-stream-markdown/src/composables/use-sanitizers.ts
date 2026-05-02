@@ -1,6 +1,6 @@
 import type { MaybeRefOrGetter } from 'vue'
 import type { HardenOptions } from '../types'
-import { DEFAULT_HARDEN_OPTIONS, transformHardenedUrl } from '@stream-markdown/shared'
+import { DEFAULT_HARDEN_OPTIONS, transformHardenedUrl } from '@stream-markdown/core'
 import { computed, toValue } from 'vue'
 
 interface UseSanitizersOptions {

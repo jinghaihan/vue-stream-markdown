@@ -1,4 +1,4 @@
-import type { SharedCdnOptions } from '@stream-markdown/shared'
+import type { SharedCdnOptions } from '@stream-markdown/core'
 import type { MaybeGetter } from './types'
 import {
   dynamicImport,
@@ -7,7 +7,7 @@ import {
   isModuleEnabled,
   removeTrailingSlash,
   resolveGetter,
-} from '@stream-markdown/shared'
+} from '@stream-markdown/core'
 import { KATEX_VERSION } from './constants'
 
 let katexModule: typeof import('katex') | null = null

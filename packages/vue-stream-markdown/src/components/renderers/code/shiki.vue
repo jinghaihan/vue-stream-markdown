@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { TokensResult } from 'shiki'
 import type { CodeNodeRendererProps } from '../../../types'
+import { createCodeRendererModel } from '@stream-markdown/core'
 import { useResizeObserver } from '@vueuse/core'
 import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useCodeOptions, useContext, useShiki } from '../../../composables'
@@ -12,8 +13,9 @@ const { cdnOptions, codeOptions, isDark, shikiOptions } = useContext()
 
 const ShikiTokensRenderer = defineAsyncComponent(() => import('./shiki-token-renderer.vue'))
 
-const code = computed(() => props.node.value.trim())
-const lang = computed(() => props.node.lang || '')
+const model = computed(() => createCodeRendererModel(props.node))
+const code = computed(() => model.value.code)
+const lang = computed(() => model.value.lang)
 
 const { showLineNumbers } = useCodeOptions({
   codeOptions,

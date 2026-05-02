@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { LinkNodeRendererProps } from '../../types'
+import { checkTrustedLink, createLinkModel, openExternalUrl } from '@stream-markdown/core'
 import { useClipboard } from '@vueuse/core'
 import { computed, ref } from 'vue'
 import { useContext, useI18n, useSanitizers } from '../../composables'
@@ -20,12 +21,14 @@ const { copy, copied } = useClipboard({
   legacy: true,
 })
 
-const url = computed(() => props.node.url)
-const loading = computed(
-  () => props.node.loading
-    || props.markdownParser.hasLoadingNode(props.node.children)
-    || !url.value,
-)
+const baseModel = computed(() => createLinkModel({
+  node: props.node,
+  linkOptions: linkOptions.value,
+  hasLoadingNode: nodes => props.markdownParser.hasLoadingNode(nodes),
+}))
+
+const url = computed(() => baseModel.value.url)
+const loading = computed(() => baseModel.value.loading)
 
 const { transformedUrl, isHardenUrl } = useSanitizers({
   url,
@@ -33,19 +36,18 @@ const { transformedUrl, isHardenUrl } = useSanitizers({
   loading,
 })
 
+const model = computed(() => createLinkModel({
+  node: props.node,
+  transformedUrl: transformedUrl.value,
+  isHardenUrl: isHardenUrl.value,
+  linkOptions: linkOptions.value,
+  hasLoadingNode: nodes => props.markdownParser.hasLoadingNode(nodes),
+}))
+
 const Error = computed(() => hardenOptions.value?.errorComponent ?? UI.value.ErrorComponent)
 
-const safetyCheck = computed(() => linkOptions.value?.safetyCheck ?? true)
-
 async function checkTrusted(): Promise<boolean> {
-  if (!safetyCheck.value)
-    return true
-  const fn = linkOptions.value?.isTrusted
-  if (typeof fn !== 'function')
-    return false
-  const url = transformedUrl.value ?? ''
-  const result = fn(url)
-  return await Promise.resolve(result)
+  return await checkTrustedLink(transformedUrl.value ?? '', linkOptions.value)
 }
 
 async function handleClick(event: MouseEvent) {
@@ -57,7 +59,7 @@ async function handleClick(event: MouseEvent) {
   const trusted = await checkTrusted()
 
   if (trusted) {
-    window.open(transformedUrl.value, '_blank')
+    openExternalUrl(transformedUrl.value)
     return
   }
 
@@ -66,7 +68,7 @@ async function handleClick(event: MouseEvent) {
 
 function handleConfirm() {
   if (transformedUrl.value)
-    window.open(transformedUrl.value, '_blank')
+    openExternalUrl(transformedUrl.value)
   handleClose()
 }
 
@@ -83,7 +85,7 @@ function handleClose() {
 <template>
   <span data-stream-markdown="link-container" class="inline">
     <a
-      v-if="!isHardenUrl && typeof transformedUrl === 'string'"
+      v-if="model.showLink"
       data-stream-markdown="link"
       :data-stream-markdown-loading="loading"
       class="text-primary underline cursor-pointer [overflow-wrap:anywhere] data-[stream-markdown-loading=true]:no-underline data-[stream-markdown-loading=true]:cursor-default data-[stream-markdown-loading=true]:pointer-events-none data-[stream-markdown-loading=true]:relative"
@@ -94,7 +96,7 @@ function handleClose() {
       <NodeList v-bind="props" :parent-node="node" :nodes="node.children" :deep="deep + 1" />
     </a>
 
-    <component :is="Error" v-else variant="harden-link">
+    <component :is="Error" v-else :variant="model.errorVariant">
       <NodeList v-bind="props" :parent-node="node" :nodes="node.children" :deep="deep + 1" />
     </component>
 

@@ -1,4 +1,4 @@
-import type { BuiltinNodeRenderers } from '@stream-markdown/shared'
+import type { BuiltinNodeRenderers } from '@stream-markdown/core'
 import type { Component } from 'vue'
 import type { NodeRenderers } from '../../types'
 import { defineAsyncComponent } from 'vue'

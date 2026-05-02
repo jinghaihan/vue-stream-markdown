@@ -1,4 +1,8 @@
-import { isClient, resolveThemeVariables, SHADCN_SCHEMAS } from '@stream-markdown/shared'
+import {
+  getDocumentElement,
+  readThemeVariables,
+  resolveThemeElement,
+} from '@stream-markdown/core'
 import { useMutationObserver } from '@vueuse/core'
 import { computed, ref, watchEffect } from 'vue'
 
@@ -9,28 +13,19 @@ interface UseTailwindV3ThemeOptions {
 export function useTailwindV3Theme(options: UseTailwindV3ThemeOptions) {
   const cssVariables = ref<Record<string, string>>({})
   const element = computed((): HTMLElement | undefined => {
-    if (!isClient())
-      return
-    const el = typeof options.element === 'function' ? options.element() : null
-    return el || document.body
+    return resolveThemeElement(options.element)
   })
 
   function generateCSS() {
-    if (!isClient() || !element.value)
-      return
-
-    const computedStyle = window.getComputedStyle(element.value)
-    const variables = resolveThemeVariables(SHADCN_SCHEMAS, name => computedStyle.getPropertyValue(name))
-
-    if (Object.keys(variables).length > 0)
-      cssVariables.value = variables
-    else
-      cssVariables.value = {}
+    cssVariables.value = readThemeVariables(element.value)
   }
 
   watchEffect(generateCSS)
   const { stop } = useMutationObserver(
-    () => element.value ? [element.value, document.documentElement] : [],
+    () => {
+      const documentElement = getDocumentElement()
+      return element.value && documentElement ? [element.value, documentElement] : []
+    },
     generateCSS,
     {
       attributes: true,

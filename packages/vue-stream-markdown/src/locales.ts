@@ -1,5 +1,9 @@
-import type { LocaleConfig, SupportedLanguage } from '@stream-markdown/shared'
-import { DEFAULT_LANGUAGE, loadLocaleConfig, resolveLocaleLanguage } from '@stream-markdown/shared'
+import type { LocaleConfig, SupportedLanguage } from '@stream-markdown/core'
+import {
+  DEFAULT_LANGUAGE,
+  loadLocaleConfig,
+  resolveLocaleLanguage,
+} from '@stream-markdown/core'
 import { ref } from 'vue'
 
 export const localeMessages = ref<LocaleConfig>()

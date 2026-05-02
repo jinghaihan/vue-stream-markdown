@@ -15,7 +15,7 @@
     "build": "tsdown"
   },
   "dependencies": {
-    "@stream-markdown/shared": "workspace:*",
+    "@stream-markdown/core": "workspace:*",
     "katex": "^0.16.38"
   },
   "devDependencies": {

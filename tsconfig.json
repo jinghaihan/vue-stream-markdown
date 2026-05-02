@@ -8,7 +8,7 @@
     "moduleResolution": "bundler",
     "paths": {
       "@root/*": ["./*"],
-      "@stream-markdown/shared": ["./packages/internal/shared/src/index.ts"],
+      "@stream-markdown/core": ["./packages/internal/core/src/index.ts"],
       "@stream-markdown/code": ["./packages/internal/code/src/index.ts"],
       "@stream-markdown/mermaid": ["./packages/internal/mermaid/src/index.ts"],
       "@stream-markdown/math": ["./packages/internal/math/src/index.ts"],

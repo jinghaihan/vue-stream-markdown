@@ -9,10 +9,10 @@ import {
   shouldAnimateNode,
   splitTextByWord,
   STREAM_MARKDOWN_CSS_VARIABLES,
-} from '@stream-markdown/shared'
+} from '@stream-markdown/core'
 import { describe, expect, it } from 'vitest'
 
-describe('shared renderer utilities', () => {
+describe('core utilities', () => {
   it('splits text into word and whitespace parts with stable offsets', () => {
     expect(splitTextByWord('Hello  world')).toEqual(['Hello', '  ', 'world'])
     expect(createTextParts('Hello  world', 'node-key')).toEqual([

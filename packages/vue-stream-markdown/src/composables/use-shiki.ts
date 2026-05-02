@@ -1,5 +1,4 @@
-import type { CdnOptions } from '@stream-markdown/shared'
-
+import type { CdnOptions } from '@stream-markdown/core'
 import type { MaybeRefOrGetter } from 'vue'
 import type { ShikiOptions } from '../types'
 import {
@@ -9,7 +8,7 @@ import {
   disposeSharedShikiHighlighter,
   LANGUAGE_ALIAS,
 } from '@stream-markdown/code'
-import { isClient } from '@stream-markdown/shared'
+import { isClient } from '@stream-markdown/core'
 import { computed, ref, toValue } from 'vue'
 
 interface UseShikiOptions {

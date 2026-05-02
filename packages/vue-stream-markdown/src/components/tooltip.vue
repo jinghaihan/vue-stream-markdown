@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { UITooltipProps } from '../types'
-import { getOverlayContainer } from '@stream-markdown/shared'
+import { getOverlayContainer } from '@stream-markdown/core'
 import { toRefs } from 'vue'
 import { useContext, useFloating } from '../composables'
 

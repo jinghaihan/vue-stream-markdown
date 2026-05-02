@@ -7,7 +7,14 @@ import {
   offset,
   shift,
 } from '@floating-ui/dom'
-import { isClient } from '@stream-markdown/shared'
+import {
+  createFloatingStyle,
+  getDocument,
+  isClickInsideFloating,
+  isClient,
+  isElementInDocumentBody,
+  resolveFloatingDelay,
+} from '@stream-markdown/core'
 import { useEventListener } from '@vueuse/core'
 import { computed, onMounted, ref, toValue, watch, watchEffect } from 'vue'
 
@@ -100,20 +107,20 @@ export function useFloating(options: UseFloatingOptions) {
     if (!isClient())
       return options.getContainer?.() || 'body'
     const target = options.getContainer?.() || parentEl.value
-    if (target instanceof HTMLElement && !document.body.contains(target))
+    if (target instanceof HTMLElement && !isElementInDocumentBody(target))
       return 'body'
     return target || 'body'
   }
 
-  const floatingStyle = computed(() => ({
-    position: strategy.value,
-    top: `${y.value ?? 0}px`,
-    left: `${x.value ?? 0}px`,
+  const floatingStyle = computed(() => createFloatingStyle({
+    x: x.value,
+    y: y.value,
+    strategy: strategy.value,
   }))
 
   function show() {
     clearTimers()
-    const { show: showDelay } = getDelay()
+    const { show: showDelay } = resolveFloatingDelay(delay.value)
 
     showTimer = window.setTimeout(() => {
       open.value = true
@@ -123,7 +130,7 @@ export function useFloating(options: UseFloatingOptions) {
 
   function hide() {
     clearTimers()
-    const { hide: hideDelay } = getDelay()
+    const { hide: hideDelay } = resolveFloatingDelay(delay.value)
 
     hideTimer = window.setTimeout(() => {
       open.value = false
@@ -152,30 +159,13 @@ export function useFloating(options: UseFloatingOptions) {
       toggle()
   }
 
-  function getDelay() {
-    if (Array.isArray(delay.value)) {
-      return {
-        show: delay.value[0] ?? 0,
-        hide: delay.value[1] ?? 0,
-      }
-    }
-    return {
-      show: delay.value ?? 0,
-      hide: delay.value ?? 0,
-    }
-  }
-
   function handleClickOutside(event: MouseEvent) {
     if (!open.value)
       return
 
     const target = event.target as Node
-    const isClickInside = referenceEl.value?.contains(target)
-      || floatingEl.value?.contains(target)
-
-    if (!isClickInside) {
+    if (!isClickInsideFloating(target, referenceEl.value, floatingEl.value))
       open.value = false
-    }
   }
 
   function onFloatingEnter() {
@@ -186,7 +176,7 @@ export function useFloating(options: UseFloatingOptions) {
   }
 
   function onFloatingLeave() {
-    const { hide: hideDelay } = getDelay()
+    const { hide: hideDelay } = resolveFloatingDelay(delay.value)
     if (trigger.value === 'hover') {
       hideTimer = window.setTimeout(() => {
         hide()
@@ -207,7 +197,7 @@ export function useFloating(options: UseFloatingOptions) {
 
   onMounted(() => {
     appendTo.value = getAppendTo()
-    useEventListener(document, 'click', handleClickOutside)
+    useEventListener(getDocument(), 'click', handleClickOutside)
   })
 
   return {

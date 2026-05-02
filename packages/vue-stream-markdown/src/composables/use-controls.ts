@@ -1,6 +1,10 @@
 import type { MaybeRefOrGetter } from 'vue'
 import type { Control, ControlsConfig, NodeRendererProps } from '../types'
-import { getConfigValue, isConfigEnabled, resolveVisibleControls } from '@stream-markdown/shared'
+import {
+  getConfigValue,
+  isConfigEnabled,
+  resolveVisibleControls,
+} from '@stream-markdown/core'
 import { computed, toValue } from 'vue'
 
 interface UseControlsOptions {

@@ -1,4 +1,4 @@
-import type { CdnOptions } from '@stream-markdown/shared'
+import type { CdnOptions } from '@stream-markdown/core'
 import type { MaybeRefOrGetter } from 'vue'
 import type { MermaidOptions, ShikiOptions } from '../types'
 import {
@@ -6,8 +6,8 @@ import {
   DEFAULT_SHIKI_DARK_THEME,
   DEFAULT_SHIKI_LIGHT_THEME,
 } from '@stream-markdown/code'
+import { isClient } from '@stream-markdown/core'
 import { createMermaidRuntime } from '@stream-markdown/mermaid'
-import { isClient } from '@stream-markdown/shared'
 import { ref, toValue } from 'vue'
 
 interface UseMermaidOptions {

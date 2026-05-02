@@ -1,9 +1,17 @@
 import type { MaybeRefOrGetter } from 'vue'
 import {
-  calculateMediumZoomOutTransform,
-  calculateMediumZoomTransforms,
+  calculateMediumZoomInTransforms,
+  cloneMediumZoomElement,
   isClient,
-} from '@stream-markdown/shared'
+  mountMediumZoomClone,
+  playMediumZoomInClone,
+  playMediumZoomOutClone,
+  prepareMediumZoomInClone,
+  prepareMediumZoomOutClone,
+  readMediumZoomElementTransform,
+  setMediumZoomOriginalVisibility,
+  unmountMediumZoomClone,
+} from '@stream-markdown/core'
 import { computed, nextTick, ref, toValue } from 'vue'
 
 interface UseMediumZoomOptions {
@@ -39,26 +47,7 @@ export function useMediumZoom(options: UseMediumZoomOptions) {
     if (!original)
       return
 
-    const cloned = original.cloneNode(true) as HTMLImageElement
-    const rect = original.getBoundingClientRect()
-
-    cloned.style.position = 'fixed'
-    cloned.style.top = `${rect.top}px`
-    cloned.style.left = `${rect.left}px`
-    cloned.style.width = `${rect.width}px`
-    cloned.style.height = `${rect.height}px`
-    cloned.style.margin = '0'
-    cloned.style.padding = '0'
-    cloned.style.pointerEvents = 'none'
-    cloned.style.zIndex = '10000'
-    cloned.style.willChange = 'transform'
-    cloned.style.transformOrigin = 'top left'
-
-    // For images, we can use the currentSrc property to get the original source
-    if (original instanceof HTMLImageElement && original.currentSrc)
-      cloned.src = original.currentSrc
-
-    return cloned
+    return cloneMediumZoomElement(original)
   }
 
   function calculateTransforms() {
@@ -66,19 +55,9 @@ export function useMediumZoom(options: UseMediumZoomOptions) {
     if (!original || !clonedElementRef.value)
       return
 
-    const rect = original.getBoundingClientRect()
-    const viewportWidth = window.innerWidth
-    const viewportHeight = window.innerHeight
-
-    const naturalWidth = (original as HTMLImageElement).naturalWidth || rect.width
-    const naturalHeight = (original as HTMLImageElement).naturalHeight || rect.height
-
-    const transforms = calculateMediumZoomTransforms({
-      rect,
-      naturalWidth,
-      naturalHeight,
-      viewportWidth,
-      viewportHeight,
+    const transforms = calculateMediumZoomInTransforms({
+      original,
+      cloned: clonedElementRef.value,
       margin: margin.value,
     })
 
@@ -95,9 +74,13 @@ export function useMediumZoom(options: UseMediumZoomOptions) {
     if (!cloned)
       return
 
-    el.style.visibility = 'hidden'
+    setMediumZoomOriginalVisibility(el, false)
 
-    document.body.appendChild(cloned)
+    if (!mountMediumZoomClone(cloned)) {
+      setMediumZoomOriginalVisibility(el, true)
+      return
+    }
+
     clonedElementRef.value = cloned
     showClonedElement.value = true
 
@@ -105,20 +88,16 @@ export function useMediumZoom(options: UseMediumZoomOptions) {
 
     calculateTransforms()
 
-    if (clonedElementRef.value) {
-      clonedElementRef.value.style.transform = initialTransform.value
-      clonedElementRef.value.style.transition = 'none'
-    }
+    if (clonedElementRef.value)
+      prepareMediumZoomInClone(clonedElementRef.value, initialTransform.value)
 
     void clonedElementRef.value?.offsetHeight
 
     await nextTick()
 
     isAnimating.value = true
-    if (clonedElementRef.value) {
-      clonedElementRef.value.style.transition = 'transform 0.3s cubic-bezier(0.2, 0, 0.2, 1)'
-      clonedElementRef.value.style.transform = targetTransform.value
-    }
+    if (clonedElementRef.value)
+      playMediumZoomInClone(clonedElementRef.value, targetTransform.value)
 
     options.open?.()
 
@@ -155,26 +134,15 @@ export function useMediumZoom(options: UseMediumZoomOptions) {
     if (!el || !zoomEl)
       return
 
-    const originalRect = el.getBoundingClientRect()
-    const zoomRect = zoomEl.getBoundingClientRect()
     const cloned = clonedElementRef.value
 
-    // Get the computed transform of the zoomed element
-    const computedStyle = window.getComputedStyle(zoomEl)
-    const currentTransform = computedStyle.transform || 'none'
+    const currentTransform = readMediumZoomElementTransform(zoomEl)
 
-    // Set up cloned element to match current zoomed state
-    cloned.style.top = `${zoomRect.top}px`
-    cloned.style.left = `${zoomRect.left}px`
-    cloned.style.width = `${zoomRect.width}px`
-    cloned.style.height = `${zoomRect.height}px`
-
-    // Apply the current transform to match the visual state
-    cloned.style.transform = currentTransform !== 'none'
-      ? currentTransform
-      : 'translate3d(0, 0, 0) scale(1)'
-    cloned.style.transformOrigin = 'center center'
-    cloned.style.transition = 'none'
+    prepareMediumZoomOutClone({
+      cloned,
+      zoomElement: zoomEl,
+      currentTransform,
+    })
 
     // Force reflow
     void cloned.offsetHeight
@@ -183,22 +151,22 @@ export function useMediumZoom(options: UseMediumZoomOptions) {
 
     isAnimating.value = true
 
-    cloned.style.transition = 'transform 0.3s cubic-bezier(0.2, 0, 0.2, 1)'
-    cloned.style.transform = calculateMediumZoomOutTransform({
-      originalRect,
-      zoomRect,
+    playMediumZoomOutClone({
+      cloned,
+      original: el,
+      zoomElement: zoomEl,
       currentTransform,
     })
 
     const handleAnimationEnd = () => {
       const cloned = clonedElementRef.value
-      if (cloned && cloned.parentNode)
-        cloned.parentNode.removeChild(cloned)
+      if (cloned)
+        unmountMediumZoomClone(cloned)
 
       clonedElementRef.value = undefined
 
       if (elementRef.value)
-        elementRef.value.style.visibility = 'visible'
+        setMediumZoomOriginalVisibility(elementRef.value, true)
 
       options.close?.()
       isAnimating.value = false

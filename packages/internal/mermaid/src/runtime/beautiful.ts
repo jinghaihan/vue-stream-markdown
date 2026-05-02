@@ -1,5 +1,5 @@
 import type { MermaidParseResult, MermaidRenderResult } from '../types'
-import { resolveGetter } from '@stream-markdown/shared'
+import { resolveGetter } from '@stream-markdown/core'
 import { createBeautifulMermaidCdnLoader } from '../beautiful-cdn'
 import {
   BEAUTIFUL_MERMAID_SUPPORTED_PATTERNS,
