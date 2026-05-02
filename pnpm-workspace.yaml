@@ -34,8 +34,8 @@ catalogs:
     unocss: ^66.6.8
     vue: ^3.5.33
   icons:
-    '@iconify-json/catppuccin': ^1.2.17
     '@iconify-json/lucide': ^1.2.105
+    '@iconify-json/simple-icons': ^1.2.80
   inlined:
     '@antfu/utils': ^9.3.0
     quick-lru: ^7.3.0

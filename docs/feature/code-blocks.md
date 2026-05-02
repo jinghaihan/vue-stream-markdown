@@ -210,7 +210,7 @@ When you provide a `Component` for `languageIcon` in language-specific options, 
 
 ### Language Icons
 
-The language icons displayed in code blocks are provided by [Catppuccin](https://github.com/catppuccin/catppuccin). Special thanks to the Catppuccin team for their beautiful icon collection that enhances the visual experience of code blocks.
+The built-in language icons use a small default set from [Simple Icons](https://simpleicons.org/). For languages outside this default set, code blocks fall back to the generic code icon. You can provide custom icons through `codeOptions.language`.
 
 ## Interactive Features
 
