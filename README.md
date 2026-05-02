@@ -63,7 +63,7 @@ const content = ref('# Hello World\n\nThis is a markdown content.')
 I am grateful to the teams and builders who trust this library in their products:
 
 - [AI Elements Vue](https://github.com/vuepont/ai-elements-vue)
-- [ElevenLabs UI Vue](https://elevenlabs-ui-vue.com/)
+- [ElevenLabs UI Vue](https://github.com/vuepont/elevenlabs-ui-vue)
 
 Thank you for your trust and support.
 

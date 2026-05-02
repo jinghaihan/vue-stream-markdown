@@ -2,7 +2,7 @@ packages:
   - packages/*
   - packages/internal/*
   - packages/markmend/*
-  - playground
+  - playground/*
   - docs
 overrides:
   vue: catalog:frontend

@@ -70,6 +70,7 @@ Inline code uses backticks and receives subtle styling:
 Use the `useState` hook to manage state in React.
 
 Inline code is styled with:
+
 - Monospace font family
 - Subtle background color
 - Rounded corners
@@ -78,6 +79,7 @@ Inline code is styled with:
 ## Code Block Styling
 
 Code blocks include:
+
 - **Line Numbers** - Optional line numbers for reference
 - **Rounded Corners** - Modern, polished appearance
 - **Proper Padding** - Comfortable spacing

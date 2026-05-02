@@ -15,10 +15,10 @@
       "@markmend/ast": ["./packages/markmend/ast/src/index.ts"],
       "@markmend/core": ["./packages/markmend/core/src/index.ts"],
       "@markmend/*": ["./packages/markmend/core/src/*"],
-      "vue-stream-markdown": ["./packages/vue-stream-markdown/src/index.ts"],
-      "@vue-stream-markdown/*": ["./packages/vue-stream-markdown/src/*"],
-      "@shared/*": ["./playground/app/*"],
-      "@shared/components/*": ["./playground/app/components/*"]
+      "vue-stream-markdown": ["./packages/vue/src/index.ts"],
+      "@vue-stream-markdown/*": ["./packages/vue/src/*"],
+      "@shared/*": ["./playground/nuxt/app/*"],
+      "@shared/components/*": ["./playground/nuxt/app/components/*"]
     },
     "resolveJsonModule": true,
     "types": [

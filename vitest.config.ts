@@ -11,7 +11,7 @@ export default defineConfig({
   resolve: {
     alias: {
       ...alias,
-      shiki: resolve(__dirname, './packages/vue-stream-markdown/node_modules/shiki'),
+      shiki: resolve(__dirname, './packages/vue/node_modules/shiki'),
     },
   },
   test: {

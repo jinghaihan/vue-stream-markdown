@@ -2,8 +2,8 @@
 import type { MarkdownAstParser, NodeRenderers, TextNode } from 'vue-stream-markdown'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
-import Caret from '../../packages/vue-stream-markdown/src/components/caret.vue'
-import TextRenderer from '../../packages/vue-stream-markdown/src/components/renderers/text.vue'
+import Caret from '../../packages/vue/src/components/caret.vue'
+import TextRenderer from '../../packages/vue/src/components/renderers/text.vue'
 
 function mountText(value: string, options: { hideCaret?: boolean, loading?: boolean } = {}) {
   return mount(TextRenderer, {

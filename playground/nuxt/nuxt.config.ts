@@ -1,5 +1,5 @@
 import { description } from 'vue-stream-markdown/package.json'
-import { alias } from '../shared'
+import { alias } from '../../shared'
 
 export default defineNuxtConfig({
   modules: [
@@ -23,7 +23,7 @@ export default defineNuxtConfig({
     },
   },
   css: [
-    '../packages/vue-stream-markdown/src/style.css',
+    '../../packages/vue/src/style.css',
     './app/assets/reset.css',
     './app/assets/main.css',
     './app/assets/theme.css',
@@ -37,13 +37,13 @@ export default defineNuxtConfig({
     tsConfig: {
       compilerOptions: {
         paths: {
-          '@markmend/ast': ['../packages/markmend/ast/src/index.ts'],
-          '@markmend/core': ['../packages/markmend/core/src/index.ts'],
-          'vue-stream-markdown': ['../packages/vue-stream-markdown/src/'],
+          '@markmend/ast': ['../../packages/markmend/ast/src/index.ts'],
+          '@markmend/core': ['../../packages/markmend/core/src/index.ts'],
+          'vue-stream-markdown': ['../../packages/vue/src/'],
         },
       },
       include: [
-        '../../shims.d.ts',
+        '../../../shims.d.ts',
       ],
     },
   },

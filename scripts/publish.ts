@@ -7,7 +7,7 @@ const readmePath = resolve(rootDir, 'README.md')
 const packages = [
   resolve(rootDir, 'packages/markmend/core'),
   resolve(rootDir, 'packages/markmend/ast'),
-  resolve(rootDir, 'packages/vue-stream-markdown'),
+  resolve(rootDir, 'packages/vue'),
 ]
 
 async function syncReadme(packageDir: string, readme: string) {

@@ -13,15 +13,15 @@ export const alias: Record<string, string> = {
   '@markmend/ast': r('packages/markmend/ast/src/index.ts'),
   '@markmend/core': r('packages/markmend/core/src/index.ts'),
   '@markmend': r('packages/markmend/core/src'),
-  '@shared': r('playground/app/'),
+  '@shared': r('playground/nuxt/app/'),
   '@stream-markdown/core': r('packages/internal/core/src/index.ts'),
   '@stream-markdown/code': r('packages/internal/code/src/index.ts'),
   '@stream-markdown/math': r('packages/internal/math/src/index.ts'),
   '@stream-markdown/mermaid': r('packages/internal/mermaid/src/index.ts'),
-  '@vue-stream-markdown': r('packages/vue-stream-markdown/src'),
-  'vue-stream-markdown/package.json': r('packages/vue-stream-markdown/package.json'),
-  'vue-stream-markdown/style.css': r('packages/vue-stream-markdown/src/style.css'),
-  'vue-stream-markdown': r('packages/vue-stream-markdown/src/index.ts'),
+  '@vue-stream-markdown': r('packages/vue/src'),
+  'vue-stream-markdown/package.json': r('packages/vue/package.json'),
+  'vue-stream-markdown/style.css': r('packages/vue/src/style.css'),
+  'vue-stream-markdown': r('packages/vue/src/index.ts'),
 }
 
 export function getPlugins<T = Plugin>(): T[] {

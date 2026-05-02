@@ -1,5 +1,7 @@
 import { defineConfig, mergeCatalogRules } from 'pncat'
-import { dependencies } from './playground/package.json'
+import { dependencies } from './playground/nuxt/package.json'
+
+const RUNTIME_DEPS = ['vue', '@vueuse/core', '@floating-ui/dom']
 
 export default defineConfig({
   exclude: [
@@ -21,7 +23,7 @@ export default defineConfig({
     },
     {
       name: 'playground',
-      match: Object.keys(dependencies).filter(i => !['vue', '@vueuse/core', '@floating-ui/dom'].includes(i)),
+      match: Object.keys(dependencies).filter(i => !RUNTIME_DEPS.includes(i)),
       priority: 20,
     },
     {
