@@ -263,6 +263,28 @@ describe('core models', () => {
       isDisplayMode: false,
       error: true,
     })
+    expect(createMathRendererModel({
+      node: { type: 'math', value: '\\frac{1}{', loading: true },
+      installed: true,
+      renderFlag: true,
+      renderingCode: '\\frac{1}{',
+      errorMessage: 'Unexpected end of input',
+    })).toMatchObject({
+      code: '\\frac{1}{',
+      loading: true,
+      error: false,
+    })
+    expect(createMathRendererModel({
+      node: { type: 'math', value: '\\frac{1}{', loading: false },
+      installed: true,
+      renderFlag: true,
+      renderingCode: '\\frac{1}{',
+      errorMessage: 'Unexpected end of input',
+    })).toMatchObject({
+      code: '\\frac{1}{',
+      loading: false,
+      error: true,
+    })
     expect(createTableControlDescriptors({
       copied: true,
       fullscreen: true,

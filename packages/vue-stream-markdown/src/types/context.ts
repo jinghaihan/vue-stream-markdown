@@ -10,9 +10,8 @@ import type {
 import type { PreprocessContext } from '@markmend/core'
 import type {
   CaretType,
-  StreamMarkdownContext as SharedStreamMarkdownContext,
-  StreamMarkdownHooks as SharedStreamMarkdownHooks,
-  StreamMarkdownProps as SharedStreamMarkdownProps,
+  StreamMarkdownContext as CoreStreamMarkdownContext,
+  StreamMarkdownProps as CoreStreamMarkdownProps,
 } from '@stream-markdown/core'
 import type { ComputedRef, MaybeRefOrGetter } from 'vue'
 import type { NodeRenderers, ParsedNode, SyntaxTree } from './core'
@@ -32,7 +31,9 @@ import type {
   UIOptions,
 } from './shared'
 
-export type StreamMarkdownContext = SharedStreamMarkdownContext<
+export type { StreamMarkdownHooks } from '@stream-markdown/core'
+
+export type StreamMarkdownContext = CoreStreamMarkdownContext<
   ControlsConfig,
   PreviewerConfig,
   ShikiOptions,
@@ -45,9 +46,7 @@ export type StreamMarkdownContext = SharedStreamMarkdownContext<
   UIOptions
 >
 
-export type StreamMarkdownHooks = SharedStreamMarkdownHooks
-
-export type StreamMarkdownProps = SharedStreamMarkdownProps<
+export type StreamMarkdownProps = CoreStreamMarkdownProps<
   NodeRenderers,
   Icons,
   UIComponents,

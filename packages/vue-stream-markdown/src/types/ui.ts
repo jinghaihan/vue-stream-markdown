@@ -1,45 +1,35 @@
 import type {
-  SelectOption,
-  UIAlertProps as SharedUIAlertProps,
-  UIButtonProps as SharedUIButtonProps,
-  UIDropdownProps as SharedUIDropdownProps,
-  UIErrorComponentProps as SharedUIErrorComponentProps,
-  UIIconProps as SharedUIIconProps,
-  UIImageProps as SharedUIImageProps,
-  UIModalProps as SharedUIModalProps,
-  UISegmentedProps as SharedUISegmentedProps,
-  UITableProps as SharedUITableProps,
-  UITooltipProps as SharedUITooltipProps,
-  UIZoomContainerProps as SharedUIZoomContainerProps,
-  UIErrorVariant,
-  ZoomControlPosition,
+  UIButtonProps as CoreUIButtonProps,
+  UIErrorComponentProps as CoreUIErrorComponentProps,
+  UIIconProps as CoreUIIconProps,
+  UIImageProps as CoreUIImageProps,
+  UIModalProps as CoreUIModalProps,
+  UISegmentedProps as CoreUISegmentedProps,
+  UIZoomContainerProps as CoreUIZoomContainerProps,
 } from '@stream-markdown/core'
 import type { Component, CSSProperties } from 'vue'
 import type { ImageNodeRendererProps } from './renderer'
 import type { ControlsConfig } from './shared'
 
-export type { SelectOption, UIErrorVariant }
+export type {
+  SelectOption,
+  UIAlertProps,
+  UIDropdownProps,
+  UIErrorVariant,
+  UITableProps,
+  UITooltipProps,
+} from '@stream-markdown/core'
 
-export type UIButtonProps = SharedUIButtonProps<Component, CSSProperties>
+export type UIButtonProps = CoreUIButtonProps<Component, CSSProperties>
 
-export type UIAlertProps = SharedUIAlertProps
+export type UIErrorComponentProps = CoreUIErrorComponentProps<Component>
 
-export type UIDropdownProps = SharedUIDropdownProps
+export type UIIconProps = CoreUIIconProps<Component, CSSProperties>
 
-export type UIErrorComponentProps = SharedUIErrorComponentProps<Component>
+export type UIImageProps = CoreUIImageProps<ImageNodeRendererProps, ControlsConfig>
 
-export type UIIconProps = SharedUIIconProps<Component, CSSProperties>
+export type UIModalProps = CoreUIModalProps<CSSProperties>
 
-export type UIImageProps = SharedUIImageProps<ImageNodeRendererProps, ControlsConfig>
+export type UISegmentedProps = CoreUISegmentedProps<CSSProperties>
 
-export type UIModalProps = SharedUIModalProps<CSSProperties>
-
-export type UISegmentedProps = SharedUISegmentedProps<CSSProperties>
-
-export type UITableProps = SharedUITableProps
-
-export type UITooltipProps = SharedUITooltipProps
-
-export type UIZoomControlPosition = ZoomControlPosition
-
-export type UIZoomContainerProps = SharedUIZoomContainerProps<CSSProperties>
+export type UIZoomContainerProps = CoreUIZoomContainerProps<CSSProperties>

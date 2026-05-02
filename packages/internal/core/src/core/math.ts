@@ -17,7 +17,8 @@ export function createMathRendererModel(options: MathRendererModelOptions) {
   const loading = !!options.node.loading
   const isDisplayMode = isDisplayMathNode(options.node)
   const error = !options.installed
-    || (!!options.errorMessage
+    || (!loading
+      && !!options.errorMessage
       && !!options.renderFlag
       && options.renderingCode === code)
 

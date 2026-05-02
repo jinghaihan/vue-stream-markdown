@@ -1,29 +1,24 @@
 import type {
-  BuiltinNodeRenderers as SharedBuiltinNodeRenderers,
-  BuiltinPreviewers as SharedBuiltinPreviewers,
-  BuiltinUIComponents as SharedBuiltinUIComponents,
-  CodeControlsConfig as SharedCodeControlsConfig,
-  CodeOptions as SharedCodeOptions,
-  CodeOptionsLanguage as SharedCodeOptionsLanguage,
-  Control as SharedControl,
-  ControlsConfig as SharedControlsConfig,
-  ControlTransformer as SharedControlTransformer,
-  HardenOptions as SharedHardenOptions,
-  Icons as SharedIcons,
-  ImageControlsConfig as SharedImageControlsConfig,
-  ImageOptions as SharedImageOptions,
-  KatexOptions as SharedKatexOptions,
-  LinkOptions as SharedLinkOptions,
-  MermaidControlsConfig as SharedMermaidControlsConfig,
-  MermaidOptions as SharedMermaidOptions,
-  PreloadConfig as SharedPreloadConfig,
-  PreviewerConfig as SharedPreviewerConfig,
-  PreviewSegmentedPlacement as SharedPreviewSegmentedPlacement,
-  ShikiOptions as SharedShikiOptions,
-  TableControlsConfig as SharedTableControlsConfig,
-  UIComponents as SharedUIComponents,
-  UIOptions as SharedUIOptions,
-  ZoomControlPosition as SharedZoomControlPosition,
+  BuiltinNodeRenderers,
+  BuiltinUIComponents,
+  CodeControlsConfig as CoreCodeControlsConfig,
+  CodeOptions as CoreCodeOptions,
+  CodeOptionsLanguage as CoreCodeOptionsLanguage,
+  Control as CoreControl,
+  ControlsConfig as CoreControlsConfig,
+  ControlTransformer as CoreControlTransformer,
+  HardenOptions as CoreHardenOptions,
+  Icons as CoreIcons,
+  ImageControlsConfig as CoreImageControlsConfig,
+  ImageOptions as CoreImageOptions,
+  KatexOptions as CoreKatexOptions,
+  MermaidControlsConfig as CoreMermaidControlsConfig,
+  MermaidOptions as CoreMermaidOptions,
+  PreloadConfig as CorePreloadConfig,
+  PreviewerConfig as CorePreviewerConfig,
+  ShikiOptions as CoreShikiOptions,
+  TableControlsConfig as CoreTableControlsConfig,
+  UIComponents as CoreUIComponents,
 } from '@stream-markdown/core'
 import type { RenderOptions as BeautifulMermaidConfig, ThemeName } from 'beautiful-mermaid'
 import type { KatexOptions as KatexConfig } from 'katex'
@@ -39,71 +34,67 @@ import type {
 } from './renderer'
 import type { UIButtonProps } from './ui'
 
-export type BuiltinNodeRenderers = SharedBuiltinNodeRenderers
-export type BuiltinPreviewers = SharedBuiltinPreviewers
-export type BuiltinUIComponents = SharedBuiltinUIComponents
+export type {
+  BuiltinNodeRenderers,
+  BuiltinPreviewers,
+  BuiltinUIComponents,
+  LinkOptions,
+  PreviewSegmentedPlacement,
+  UIOptions,
+  ZoomControlPosition,
+} from '@stream-markdown/core'
 
-export type UIComponentName = BuiltinUIComponents
-
-export type UIComponents = SharedUIComponents<Component, BuiltinUIComponents>
+export type UIComponents = CoreUIComponents<Component, BuiltinUIComponents>
 
 export type OptionalIconName = 'flipVertical' | 'rotateRight' | 'arrowRight'
 
 export type IconName = keyof typeof ICONS
 
-export type Icons = SharedIcons<Component, IconName, OptionalIconName>
+export type Icons = CoreIcons<Component, IconName, OptionalIconName>
 
-export type Control = SharedControl<UIButtonProps>
+export type Control = CoreControl<UIButtonProps>
 
 export type ControlTransformer<T extends NodeRendererProps = NodeRendererProps>
-  = SharedControlTransformer<Control, T>
+  = CoreControlTransformer<Control, T>
 
-export type TableControlsConfig = SharedTableControlsConfig<ControlTransformer<TableNodeRendererProps>>
+export type TableControlsConfig = CoreTableControlsConfig<ControlTransformer<TableNodeRendererProps>>
 
-export type CodeControlsConfig = SharedCodeControlsConfig<ControlTransformer<CodeNodeRendererProps>>
+export type CodeControlsConfig = CoreCodeControlsConfig<ControlTransformer<CodeNodeRendererProps>>
 
-export type ImageControlsConfig = SharedImageControlsConfig<ControlTransformer<ImageNodeRendererProps>>
+export type ImageControlsConfig = CoreImageControlsConfig<ControlTransformer<ImageNodeRendererProps>>
 
-export type MermaidControlsConfig = SharedMermaidControlsConfig<ControlTransformer<CodeNodeRendererProps>>
+export type MermaidControlsConfig = CoreMermaidControlsConfig<ControlTransformer<CodeNodeRendererProps>>
 
-export type ZoomControlPosition = SharedZoomControlPosition
-
-export type ControlsConfig = SharedControlsConfig<
+export type ControlsConfig = CoreControlsConfig<
   ControlTransformer<TableNodeRendererProps>,
   ControlTransformer<CodeNodeRendererProps>,
   ControlTransformer<ImageNodeRendererProps>,
   ControlTransformer<CodeNodeRendererProps>
 >
 
-export type PreviewSegmentedPlacement = SharedPreviewSegmentedPlacement
+export type PreviewerConfig = CorePreviewerConfig<Component>
 
-export type PreviewerConfig = SharedPreviewerConfig<Component>
-
-export type ShikiOptions = SharedShikiOptions<
+export type ShikiOptions = CoreShikiOptions<
   BuiltinTheme,
   BundledLanguage,
   CodeToTokensOptions<BundledLanguage, BundledTheme>
 >
 
-export type MermaidOptions = SharedMermaidOptions<
+export type MermaidOptions = CoreMermaidOptions<
   Component,
   MermaidConfig,
   ThemeName,
   BeautifulMermaidConfig
 >
 
-export type KatexOptions = SharedKatexOptions<Component, KatexConfig>
+export type KatexOptions = CoreKatexOptions<Component, KatexConfig>
 
-export type ImageOptions = SharedImageOptions<Component>
+export type ImageOptions = CoreImageOptions<Component>
 
-export type LinkOptions = SharedLinkOptions
+export type CodeOptions = CoreCodeOptions<Component>
 
-export type CodeOptions = SharedCodeOptions<Component>
+export type CodeOptionsLanguage = CoreCodeOptionsLanguage<Component>
 
-export type CodeOptionsLanguage = SharedCodeOptionsLanguage<Component>
+export type HardenOptions = CoreHardenOptions<Component>
 
-export type HardenOptions = SharedHardenOptions<Component>
-
-export type UIOptions = SharedUIOptions
-
-export type PreloadConfig = SharedPreloadConfig<BuiltinNodeRenderers>
+export type PreloadConfig = CorePreloadConfig<BuiltinNodeRenderers>

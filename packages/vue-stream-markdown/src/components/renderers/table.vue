@@ -155,8 +155,7 @@ async function handleControlClick(key: string, item?: SelectOption) {
 <template>
   <div
     data-stream-markdown="table-wrapper"
-    class="my-4 flex flex-col gap-2"
-    :class="hasControls && 'p-2 border border-border rounded-lg bg-muted/20'"
+    class="my-4 flex flex-col gap-2 items-center"
   >
     <div
       v-if="hasControls"

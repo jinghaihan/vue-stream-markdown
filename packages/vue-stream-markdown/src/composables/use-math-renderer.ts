@@ -41,7 +41,6 @@ export function useMathRenderer(options: UseMathRendererOptions) {
   const error = computed(() => model.value.error)
 
   const render = throttle(throttleTime, async () => {
-    renderingCode.value = code.value
     const { html: data, error } = await renderKatex(
       code.value,
       {
@@ -53,14 +52,19 @@ export function useMathRenderer(options: UseMathRendererOptions) {
 
     if (data) {
       html.value = data
+      renderingCode.value = ''
       errorMessage.value = ''
       return
     }
 
-    if (error)
+    if (error) {
+      renderingCode.value = code.value
       errorMessage.value = error
-    else
+    }
+    else {
+      renderingCode.value = ''
       errorMessage.value = ''
+    }
   })
 
   watch(

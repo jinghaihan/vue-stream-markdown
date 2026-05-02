@@ -1,5 +1,5 @@
 import type { NodeType as ParserNodeType } from '@markmend/ast'
-import type { NodeRenderers as SharedNodeRenderers } from '@stream-markdown/core'
+import type { NodeRenderers as CoreNodeRenderers } from '@stream-markdown/core'
 import type { Component } from 'vue'
 
 export type {
@@ -37,4 +37,4 @@ export type {
   YamlNode,
 } from '@markmend/ast'
 
-export type NodeRenderers = SharedNodeRenderers<Component, ParserNodeType>
+export type NodeRenderers = CoreNodeRenderers<Component, ParserNodeType>

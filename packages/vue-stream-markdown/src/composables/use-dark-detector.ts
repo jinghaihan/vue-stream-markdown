@@ -1,6 +1,6 @@
 import type { MaybeRefOrGetter } from 'vue'
 import {
-  ensureOverlayContainer as ensureCoreOverlayContainer,
+  ensureOverlayContainer,
   getDocumentElement,
   getOverlayContainer,
   isDocumentElementDark,
@@ -22,13 +22,6 @@ export function useDarkDetector(
 
   function detect() {
     detectedDark.value = isDocumentElementDark()
-  }
-
-  function ensureOverlayContainer() {
-    ensureCoreOverlayContainer({
-      isDark: isDark.value,
-      cssVariables: resolvedCssVariables.value,
-    })
   }
 
   function updateOverlayContainerTheme() {
@@ -56,7 +49,10 @@ export function useDarkDetector(
   })
 
   onMounted(() => {
-    ensureOverlayContainer()
+    ensureOverlayContainer({
+      isDark: isDark.value,
+      cssVariables: resolvedCssVariables.value,
+    })
 
     if (!isDarkProvided.value) {
       detect()
