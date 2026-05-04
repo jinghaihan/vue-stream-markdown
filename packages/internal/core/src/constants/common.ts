@@ -8,6 +8,13 @@ export const ANIMATION_TYPES = [
 
 export const DEFAULT_ANIMATION = ANIMATION_TYPES[0]
 
+export const ANIMATION_SPLITS = [
+  'word',
+  'char',
+] as const
+
+export const DEFAULT_ANIMATION_SPLIT = ANIMATION_SPLITS[0]
+
 export const STREAM_MARKDOWN_PREFIX = 'stream-markdown'
 
 export const STREAM_MARKDOWN_CSS_VARIABLES = {

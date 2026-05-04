@@ -97,12 +97,25 @@ describe('core models', () => {
       nodeKey: 'text-0',
       enableAnimate: true,
       animation: 'slide-up',
+      animationSplit: 'word',
     })
 
     expect(model.showCaret).toBe(true)
     expect(model.shouldAnimate).toBe(true)
     expect(model.transitionName).toBe('stream-markdown-slide-up')
     expect(model.parts.map(part => part.value)).toEqual(['Hello', '  ', 'world'])
+  })
+
+  it('creates text model for character animation', () => {
+    const model = createTextModel({
+      node: { type: 'text', value: '你好 world' },
+      nodeKey: 'text-0',
+      enableAnimate: true,
+      animation: 'fade-in',
+      animationSplit: 'char',
+    })
+
+    expect(model.parts.map(part => part.value)).toEqual(['你', '好', ' ', 'w', 'o', 'r', 'l', 'd'])
   })
 
   it('creates table model and serializes table data', () => {

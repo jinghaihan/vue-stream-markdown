@@ -1,5 +1,5 @@
 import type { TextNode } from '@markmend/ast'
-import type { AnimationType } from '../types'
+import type { AnimationSplit, AnimationType } from '../types'
 import {
   createTextParts,
   getTransitionName,
@@ -10,6 +10,7 @@ export interface TextModelOptions {
   nodeKey: string
   enableAnimate: boolean
   animation: AnimationType
+  animationSplit?: AnimationSplit
   hideCaret?: boolean
 }
 
@@ -22,6 +23,6 @@ export function createTextModel(options: TextModelOptions) {
     showCaret,
     shouldAnimate: options.enableAnimate && options.node.value.trim().length > 0,
     transitionName: getTransitionName(options.animation),
-    parts: createTextParts(options.node.value, options.nodeKey),
+    parts: createTextParts(options.node.value, options.nodeKey, options.animationSplit),
   }
 }

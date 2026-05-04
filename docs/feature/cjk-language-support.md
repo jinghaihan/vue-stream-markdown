@@ -43,6 +43,17 @@ Without CJK-friendly parsing, the text above would render as plain text instead 
 
 vue-stream-markdown uses the `micromark-extension-cjk-friendly` and `micromark-extension-cjk-friendly-gfm-strikethrough` plugins to handle CJK text properly. These plugins implement an improved parsing approach that correctly recognizes emphasis markers adjacent to ideographic punctuation.
 
+## Character Animation
+
+Streaming animations split text by word by default. For CJK content, set `animationSplit` to `'char'` so each non-whitespace character can animate independently:
+
+```vue
+<StreamMarkdown
+  content="CJK text can animate character by character."
+  animation-split="char"
+/>
+```
+
 ## Supported Features
 
 ### Bold Text with Punctuation

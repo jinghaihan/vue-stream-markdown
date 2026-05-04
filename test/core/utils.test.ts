@@ -7,6 +7,8 @@ import {
   normalizeCssSize,
   resolveTableAlign,
   shouldAnimateNode,
+  splitText,
+  splitTextByChar,
   splitTextByWord,
   STREAM_MARKDOWN_CSS_VARIABLES,
 } from '@stream-markdown/core'
@@ -19,6 +21,21 @@ describe('core utilities', () => {
       { key: 'node-key-0', value: 'Hello', whitespace: false },
       { key: 'node-key-5', value: '  ', whitespace: true },
       { key: 'node-key-7', value: 'world', whitespace: false },
+    ])
+  })
+
+  it('splits text into character parts while preserving whitespace runs', () => {
+    expect(splitTextByChar('你好  world')).toEqual(['你', '好', '  ', 'w', 'o', 'r', 'l', 'd'])
+    expect(splitText('日本語\ntext', 'char')).toEqual(['日', '本', '語', '\n', 't', 'e', 'x', 't'])
+    expect(createTextParts('你好 world', 'node-key', 'char')).toEqual([
+      { key: 'node-key-0', value: '你', whitespace: false },
+      { key: 'node-key-1', value: '好', whitespace: false },
+      { key: 'node-key-2', value: ' ', whitespace: true },
+      { key: 'node-key-3', value: 'w', whitespace: false },
+      { key: 'node-key-4', value: 'o', whitespace: false },
+      { key: 'node-key-5', value: 'r', whitespace: false },
+      { key: 'node-key-6', value: 'l', whitespace: false },
+      { key: 'node-key-7', value: 'd', whitespace: false },
     ])
   })
 

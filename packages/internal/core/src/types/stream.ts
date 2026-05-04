@@ -1,5 +1,5 @@
 import type { MarkdownAstParserOptions } from '@markmend/ast'
-import type { AnimationType } from '../types'
+import type { AnimationSplit, AnimationType } from '../types'
 import type { CdnOptions } from './cdn'
 import type { MaybePromise } from './common'
 import type { DownloadEvent } from './events'
@@ -51,6 +51,7 @@ export interface StreamMarkdownViewProps<
   locale?: string | LocaleConfig
   enableAnimate?: boolean
   animation?: AnimationType
+  animationSplit?: AnimationSplit
   animationDuration?: number | string
   caret?: TCaret
   themeElement?: () => HTMLElement | undefined

@@ -5,6 +5,7 @@ export * from './shared'
 export * from './ui'
 
 export type {
+  AnimationSplit,
   AnimationType,
   BuiltinNodeRenderers,
   BuiltinPreviewers,

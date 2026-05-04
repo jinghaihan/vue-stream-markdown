@@ -5,7 +5,12 @@ import type {
   StreamMarkdownResolvedContext,
   UIComponents,
 } from '../types'
-import { resolveAnimation, resolveCaret, resolveEnableAnimate } from '@stream-markdown/core'
+import {
+  resolveAnimation,
+  resolveAnimationSplit,
+  resolveCaret,
+  resolveEnableAnimate,
+} from '@stream-markdown/core'
 import { computed, inject, provide, toValue } from 'vue'
 import { UI as DEFAULT_UI } from '../components'
 
@@ -36,6 +41,7 @@ export function useContext(): StreamMarkdownResolvedContext {
   const isDark = computed(() => toValue(context.isDark) ?? false)
   const enableAnimate = computed(() => resolveEnableAnimate(mode.value, toValue(context.enableAnimate)))
   const animation = computed(() => resolveAnimation(toValue(context.animation)))
+  const animationSplit = computed(() => resolveAnimationSplit(toValue(context.animationSplit)))
 
   const enableCaret = computed(() => toValue(context.enableCaret))
   const caret = computed(() => resolveCaret(toValue(context.caret)))
@@ -75,6 +81,7 @@ export function useContext(): StreamMarkdownResolvedContext {
     isDark,
     enableAnimate,
     animation,
+    animationSplit,
     enableCaret,
     caret,
     parsedNodes,

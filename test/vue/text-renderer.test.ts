@@ -1,25 +1,45 @@
 // @vitest-environment happy-dom
-import type { MarkdownAstParser, NodeRenderers, TextNode } from 'vue-stream-markdown'
+import type { MarkdownAstParser, NodeRenderers, StreamMarkdownProvideContext, TextNode } from 'vue-stream-markdown'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
+import { defineComponent, h } from 'vue'
 import Caret from '../../packages/vue/src/components/caret.vue'
 import TextRenderer from '../../packages/vue/src/components/renderers/text.vue'
+import { useContext } from '../../packages/vue/src/composables'
 
-function mountText(value: string, options: { hideCaret?: boolean, loading?: boolean } = {}) {
-  return mount(TextRenderer, {
-    props: {
-      markdownParser: {} as MarkdownAstParser,
-      nodeRenderers: {} as NodeRenderers,
-      node: {
-        type: 'text',
-        value,
-        loading: options.loading,
-      } as TextNode,
-      nodeKey: 'stream-markdown-block-0-text-0',
-      deep: 1,
-      hideCaret: options.hideCaret,
+function mountText(
+  value: string,
+  options: {
+    animationSplit?: NonNullable<StreamMarkdownProvideContext['animationSplit']>
+    hideCaret?: boolean
+    loading?: boolean
+  } = {},
+) {
+  const textRendererProps = {
+    markdownParser: {} as MarkdownAstParser,
+    nodeRenderers: {} as NodeRenderers,
+    node: {
+      type: 'text',
+      value,
+      loading: options.loading,
+    } as TextNode,
+    nodeKey: 'stream-markdown-block-0-text-0',
+    deep: 1,
+    hideCaret: options.hideCaret,
+  }
+
+  const WrappedTextRenderer = defineComponent({
+    setup() {
+      const { provideContext } = useContext()
+      provideContext({
+        animationSplit: options.animationSplit,
+      })
+
+      return () => h(TextRenderer, textRendererProps)
     },
   })
+
+  return mount(WrappedTextRenderer)
 }
 
 describe('text renderer', () => {
@@ -31,6 +51,21 @@ describe('text renderer', () => {
       'world',
     ])
     expect(wrapper.find('[data-stream-markdown="text-space"]').element.textContent).toBe('  ')
+  })
+
+  it('splits animated text into character and whitespace parts', () => {
+    const wrapper = mountText('你好 world', { animationSplit: 'char' })
+
+    expect(wrapper.findAll('[data-stream-markdown="text-char"]').map(node => node.text())).toEqual([
+      '你',
+      '好',
+      'w',
+      'o',
+      'r',
+      'l',
+      'd',
+    ])
+    expect(wrapper.find('[data-stream-markdown="text-space"]').element.textContent).toBe(' ')
   })
 
   it('does not render the caret when hidden by a parent renderer', () => {

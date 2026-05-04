@@ -13,6 +13,7 @@ import {
   createRootStyle,
   createStreamMarkdownEngine,
   DEFAULT_ANIMATION,
+  DEFAULT_ANIMATION_SPLIT,
   resolveEnableAnimate,
   resolveEnableCaret,
   resolvePreloadNodeRenderers,
@@ -43,6 +44,7 @@ const props = withDefaults(defineProps<StreamMarkdownProps>(), {
   previewers: true,
   enableAnimate: undefined,
   animation: DEFAULT_ANIMATION,
+  animationSplit: DEFAULT_ANIMATION_SPLIT,
   isDark: undefined,
 })
 
@@ -67,6 +69,7 @@ const {
   uiOptions,
   cdnOptions,
   animation,
+  animationSplit,
   caret,
 } = toRefs(props)
 
@@ -178,6 +181,7 @@ provideContext({
   isDark,
   enableAnimate,
   animation,
+  animationSplit,
   enableCaret,
   caret,
   blocks,

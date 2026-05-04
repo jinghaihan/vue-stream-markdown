@@ -11,13 +11,14 @@ defineOptions({
 
 const props = withDefaults(defineProps<TextNodeRendererProps>(), {})
 
-const { enableAnimate, animation } = useContext()
+const { enableAnimate, animation, animationSplit } = useContext()
 
 const model = computed(() => createTextModel({
   node: props.node,
   nodeKey: props.nodeKey,
   enableAnimate: enableAnimate.value,
   animation: animation.value,
+  animationSplit: animationSplit.value,
   hideCaret: props.hideCaret,
 }))
 
@@ -38,7 +39,7 @@ const parts = computed(() => model.value.parts)
     <span
       v-for="part in parts"
       :key="part.key"
-      :data-stream-markdown="part.whitespace ? 'text-space' : 'text-word'"
+      :data-stream-markdown="part.whitespace ? 'text-space' : `text-${animationSplit}`"
       :class="part.whitespace ? '' : 'inline-block max-w-full whitespace-pre-wrap break-words'"
     >{{ part.value }}</span>
     <Caret v-if="showCaret" key="stream-markdown-caret" />

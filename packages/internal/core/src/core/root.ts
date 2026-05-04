@@ -4,6 +4,7 @@ import type {
   ParsedNode,
 } from '@markmend/ast'
 import type {
+  AnimationSplit,
   AnimationType,
   BuiltinNodeRenderers,
   PreloadConfig,
@@ -18,6 +19,7 @@ import {
 import {
   CARETS,
   DEFAULT_ANIMATION,
+  DEFAULT_ANIMATION_SPLIT,
   PRELOAD_NODE_RENDERER,
   STREAM_MARKDOWN_CSS_VARIABLES,
 } from '../constants'
@@ -34,6 +36,7 @@ export interface RootStateOptions {
   enableAnimate?: boolean
   caret?: string
   animation?: AnimationType
+  animationSplit?: AnimationSplit
   animationDuration?: number | string
 }
 
@@ -75,6 +78,10 @@ export function resolveEnableCaret(mode: StreamMarkdownMode, caret?: string): bo
 
 export function resolveAnimation(animation?: AnimationType): AnimationType {
   return animation ?? DEFAULT_ANIMATION
+}
+
+export function resolveAnimationSplit(animationSplit?: AnimationSplit): AnimationSplit {
+  return animationSplit ?? DEFAULT_ANIMATION_SPLIT
 }
 
 export function resolveCaret(caret?: string): string | undefined {

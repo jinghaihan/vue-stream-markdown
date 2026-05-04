@@ -51,6 +51,13 @@ Animation duration for streaming enter animations. Numbers are treated as millis
 
 When omitted, the renderer uses the CSS value of `--stream-markdown-animation-duration`.
 
+### animationSplit
+
+- **Type:** `'word' | 'char'`
+- **Default:** `'word'`
+
+Text animation split strategy. Use `'word'` to animate whole words and whitespace runs, or `'char'` to animate non-whitespace characters one by one. Character splitting is useful for CJK text where word-based splitting can animate an entire sentence at once.
+
 ### caret
 
 - **Type:** `'block' | 'circle' | undefined`

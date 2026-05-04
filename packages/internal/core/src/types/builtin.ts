@@ -1,4 +1,4 @@
-import type { ANIMATION_TYPES } from '../constants'
+import type { ANIMATION_SPLITS, ANIMATION_TYPES } from '../constants'
 
 export type BuiltinNodeRenderers
   = | 'blockquote'
@@ -45,6 +45,8 @@ export type BuiltinUIComponents
 export type CaretType = 'block' | 'circle'
 
 export type AnimationType = typeof ANIMATION_TYPES[number] | (string & {})
+
+export type AnimationSplit = typeof ANIMATION_SPLITS[number]
 
 export type PlainTextNodeTypes
   = | 'text'

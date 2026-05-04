@@ -1,3 +1,4 @@
+import type { AnimationSplit } from '../types'
 import { STREAM_MARKDOWN_PREFIX } from '../constants'
 
 const WHITESPACE_RE = /\s/
@@ -30,9 +31,41 @@ export function splitTextByWord(text: string): string[] {
   return parts
 }
 
-export function createTextParts(text: string, keyPrefix: string = `${STREAM_MARKDOWN_PREFIX}-text`): TextPart[] {
+export function splitTextByChar(text: string): string[] {
+  const parts: string[] = []
+  let whitespaceBuffer = ''
+
+  for (const char of text) {
+    if (WHITESPACE_RE.test(char)) {
+      whitespaceBuffer += char
+      continue
+    }
+
+    if (whitespaceBuffer) {
+      parts.push(whitespaceBuffer)
+      whitespaceBuffer = ''
+    }
+
+    parts.push(char)
+  }
+
+  if (whitespaceBuffer)
+    parts.push(whitespaceBuffer)
+
+  return parts
+}
+
+export function splitText(text: string, split: AnimationSplit = 'word'): string[] {
+  return split === 'char' ? splitTextByChar(text) : splitTextByWord(text)
+}
+
+export function createTextParts(
+  text: string,
+  keyPrefix: string = `${STREAM_MARKDOWN_PREFIX}-text`,
+  split: AnimationSplit = 'word',
+): TextPart[] {
   let offset = 0
-  return splitTextByWord(text).map((value) => {
+  return splitText(text, split).map((value) => {
     const start = offset
     offset += value.length
 

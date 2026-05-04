@@ -2,7 +2,7 @@
 import type { SelectOption, StreamMarkdownProps } from 'vue-stream-markdown'
 import { THEMES } from 'beautiful-mermaid'
 import { bundledThemesInfo } from 'shiki'
-import { ANIMATION_TYPES, CARETS } from 'vue-stream-markdown'
+import { ANIMATION_SPLITS, ANIMATION_TYPES, CARETS } from 'vue-stream-markdown'
 import { Settings } from '../icons'
 
 const props = withDefaults(defineProps<{
@@ -27,6 +27,7 @@ const mermaidBeautifulDarkTheme = defineModel<string>('mermaidBeautifulDarkTheme
 
 const caret = defineModel<StreamMarkdownProps['caret']>('caret', { required: false, default: 'block' })
 const animation = defineModel<NonNullable<StreamMarkdownProps['animation']>>('animation', { required: false, default: 'fade-in' })
+const animationSplit = defineModel<NonNullable<StreamMarkdownProps['animationSplit']>>('animationSplit', { required: false, default: 'word' })
 const animationDuration = defineModel<number>('animationDuration', { required: false, default: 500 })
 
 const animationDurationInput = computed({
@@ -107,6 +108,11 @@ const ANIMATION_OPTIONS: SelectOption[] = ANIMATION_TYPES.map(value => ({
   value,
 }))
 
+const ANIMATION_SPLIT_OPTIONS: SelectOption[] = ANIMATION_SPLITS.map(value => ({
+  label: value === 'char' ? 'Character' : 'Word',
+  value,
+}))
+
 function onTypingIndexChange() {
   props.toStep(typingIndex.value)
 }
@@ -127,7 +133,7 @@ watch(() => staticMode.value, () => {
     <IconButton :icon="Settings" />
 
     <template #content>
-      <div class="px-2 py-3 flex flex-col">
+      <div class="px-2 py-3 overscroll-contain flex flex-col max-h-[80vh] overflow-x-hidden overflow-y-auto">
         <h3 :class="BLOCK_TITLE_CLASSES">
           General
         </h3>
@@ -266,6 +272,15 @@ watch(() => staticMode.value, () => {
             v-model:value="animation"
             :class="CONTROL_CLASSES"
             :options="ANIMATION_OPTIONS"
+          />
+        </div>
+
+        <div :class="BLOCK_CLASSES">
+          <Label :class="LABEL_CLASSES">Split</Label>
+          <Select
+            v-model:value="animationSplit"
+            :class="CONTROL_CLASSES"
+            :options="ANIMATION_SPLIT_OPTIONS"
           />
         </div>
 
