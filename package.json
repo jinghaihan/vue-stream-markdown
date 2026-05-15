@@ -18,7 +18,7 @@
   },
   "scripts": {
     "dev": "pnpm playground:dev",
-    "build": "turbo run build \"--filter=./packages/*\" \"--filter=./packages/internal/*\" \"--filter=./packages/markmend/*\"",
+    "build": "turbo run build \"--filter=./packages/*\" \"--filter=./packages/extensions/*\" \"--filter=./packages/markmend/*\"",
     "playground:dev": "pnpm -F nuxt-playground dev",
     "playground:build": "pnpm -F nuxt-playground generate",
     "playground:typecheck": "pnpm -F nuxt-playground typecheck",
