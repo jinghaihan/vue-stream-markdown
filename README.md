@@ -22,6 +22,7 @@ A markdown renderer specially optimized for streaming scenarios, inspired by [st
 - **Incremental rendering** - Leverages [Shiki](https://shiki.style/)'s `codeToTokens` API for token-level updates, reducing DOM recreation overhead
 - **Progressive Mermaid rendering** - Throttled, streaming-friendly diagram rendering with loading states, supporting both vanilla Mermaid.js and beautiful-mermaid renderers with automatic fallback for unsupported diagram types
 - **Streaming LaTeX rendering** - Progressive math equation rendering with KaTeX support
+- **Optional HTML rendering** - Opt in with `@stream-markdown/html` and map safe custom tags to Vue components
 - **Interactive controls** - Copy and download buttons for images, tables, and code blocks
 - **Fully customizable** - Replace any AST node or UI component with your own Vue components
 - **Theme-aware scoped styles** - Scoped styles under `.stream-markdown` with semantic `data-stream-markdown` attributes, following [shadcn/ui](https://ui.shadcn.com/) design system

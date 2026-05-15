@@ -4,11 +4,13 @@
     "paths": {
       "@stream-markdown/core": ["../../packages/core/src/index.ts"],
       "@stream-markdown/code": ["../../packages/extensions/code/src/index.ts"],
+      "@stream-markdown/html": ["../../packages/extensions/html/src/index.ts"],
       "@stream-markdown/mermaid": ["../../packages/extensions/mermaid/src/index.ts"],
       "@stream-markdown/math": ["../../packages/extensions/math/src/index.ts"],
       "@markmend/ast": ["../../packages/markmend/ast/src/index.ts"],
       "@markmend/core": ["../../packages/markmend/core/src/index.ts"],
-      "vue-stream-markdown": ["../../packages/vue/src/index.ts"]
+      "vue-stream-markdown": ["../../packages/vue/src/index.ts"],
+      "vue-stream-markdown/html": ["../../packages/vue/src/html.ts"]
     }
   }
 }

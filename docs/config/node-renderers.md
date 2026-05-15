@@ -197,11 +197,6 @@ If `preload.nodeRenderers` is not specified, the default list above is used. Set
 
 ## Special Considerations: HTML Nodes
 
-The `html` node type has special security considerations in streaming rendering scenarios. By default, the built-in HTML renderer renders HTML nodes as empty to prevent XSS attacks, since HTML content in streaming scenarios is unpredictable.
+The built-in `html` renderer stays empty by default.
 
-If you need to render HTML content, you should implement a custom HTML renderer with proper sanitization and filtering. See the [HTML Node Rendering](/feature/html-rendering) guide for detailed information on:
-
-- Security considerations and XSS prevention
-- How to implement custom HTML renderers with filtering
-- Handling unclosed tags in streaming scenarios
-- Best practices for safe HTML rendering
+When you need HTML output, use the optional `@stream-markdown/html` package with the `vue-stream-markdown/html` wrapper instead of rendering raw HTML directly. See [HTML Rendering](/feature/html-rendering).

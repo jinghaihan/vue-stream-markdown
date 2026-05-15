@@ -11,17 +11,44 @@ import type {
   UIOptions,
 } from 'vue-stream-markdown'
 import { throttle } from '@antfu/utils'
+import { createHtmlPlugin } from '@stream-markdown/html'
 import { useCycleList, useResizeObserver } from '@vueuse/core'
 import * as LZString from 'lz-string'
 import { hydrateOnVisible } from 'vue'
 import { Markdown, SUPPORT_LANGUAGES, useTailwindV3Theme } from 'vue-stream-markdown'
+import { createHtmlNodeRenderer } from 'vue-stream-markdown/html'
 import { ChartPie } from './icons'
 import { DEFAULT_MARKDOWN_PATH, getPresetContent } from './markdown'
 import { getContentFromUrl } from './utils'
 
-const HtmlNodeRenderer = defineAsyncComponent({
-  loader: () => import('./components/html.vue'),
+const GitHubComponent = defineAsyncComponent({
+  loader: () => import('./components/github-card.vue'),
   hydrate: hydrateOnVisible(),
+})
+const html = createHtmlPlugin({
+  allowedTags: [
+    'div',
+    'p',
+    'strong',
+    'em',
+    'ul',
+    'li',
+    'a',
+    'figure',
+    'figcaption',
+    'img',
+  ],
+  componentTags: ['github'],
+  allowedAttributes: {
+    '*': ['class'],
+    'github': ['name', 'description'],
+  },
+})
+const HtmlNodeRenderer = createHtmlNodeRenderer({
+  transform: html.transform,
+  components: {
+    GitHub: GitHubComponent,
+  },
 })
 
 const { cssVariables } = useTailwindV3Theme({})

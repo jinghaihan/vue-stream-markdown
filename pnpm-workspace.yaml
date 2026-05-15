@@ -60,6 +60,8 @@ catalogs:
     micromark-extension-gfm: ^3.0.0
     micromark-extension-math: ^3.1.0
     micromark-util-types: ^2.0.2
+    parse5: ^8.0.1
+    sanitize-html: ^2.17.4
   playground:
     '@monaco-editor/loader': ^1.7.0
     '@nuxt/devtools': ^3.2.4
@@ -69,9 +71,7 @@ catalogs:
     '@unocss/reset': ^66.6.8
     '@vueuse/nuxt': ^14.3.0
     clsx: ^2.1.1
-    dompurify: ^3.4.2
     echarts: ^6.0.0
-    htmlparser2: ^12.0.0
     lz-string: ^1.5.0
     nuxt: ^4.4.4
     tailwind-merge: ^3.5.0
@@ -83,6 +83,7 @@ catalogs:
   types:
     '@types/mdast': ^4.0.4
     '@types/node': ^25.6.0
+    '@types/sanitize-html': ^2.16.1
 onlyBuiltDependencies:
   - esbuild
   - simple-git-hooks

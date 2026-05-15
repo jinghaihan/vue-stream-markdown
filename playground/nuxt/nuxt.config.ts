@@ -33,6 +33,11 @@ export default defineNuxtConfig({
   alias,
   future: { compatibilityVersion: 4 },
   compatibilityDate: 'latest',
+  vite: {
+    ssr: {
+      noExternal: ['sanitize-html'],
+    },
+  },
   typescript: {
     tsConfig: {
       compilerOptions: {

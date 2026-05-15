@@ -3,7 +3,7 @@ import { defineConfig } from 'tsdown'
 import Icons from 'unplugin-icons/vite'
 
 export default defineConfig({
-  entry: ['./src/index'],
+  entry: ['./src/index', './src/html'],
   platform: 'neutral',
   dts: {
     vue: true,

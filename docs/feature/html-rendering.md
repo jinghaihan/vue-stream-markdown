@@ -1,224 +1,91 @@
 ---
-title: HTML Node Rendering
-description: Security considerations and implementation guidelines for custom HTML node rendering with proper filtering.
+title: HTML Rendering
+description: Opt in to sanitized HTML rendering and map custom tags to Vue components.
 ---
 
-# HTML Node Rendering
+# HTML Rendering
 
-In streaming markdown rendering scenarios, HTML nodes present unique security challenges. This document explains the security considerations and how to implement custom HTML node rendering with proper filtering.
+Raw HTML nodes render empty by default. This keeps the main package small and avoids rendering untrusted markup by accident.
 
-## Security Considerations
+Use the optional `@stream-markdown/html` package when you need HTML support:
 
-### The Problem
-
-In streaming rendering scenarios, HTML nodes are **unpredictable**. Directly rendering raw HTML content can lead to serious security vulnerabilities, particularly **XSS (Cross-Site Scripting) attacks**, which can compromise system security.
-
-Consider this example:
-
-```markdown
-<script>alert('XSS Attack')</script>
-<img src="x" onerror="alert('XSS')">
-<div onclick="maliciousFunction()">Click me</div>
+```sh
+pnpm add @stream-markdown/html
 ```
 
-If rendered directly without sanitization, these could execute malicious JavaScript in the user's browser.
+This renderer works best when the llm can emit complete HTML fragments at once. For heavily streamed HTML, you may want to provide your own HTML preprocess logic so incomplete tags are handled in a way that matches your UI.
 
-### Default Behavior
-
-To protect against these security risks, the built-in `HtmlNodeRenderer` **renders HTML nodes as empty** by default, effectively skipping HTML syntax rendering:
+## Basic Usage
 
 ```vue
 <script setup lang="ts">
-import type { HtmlNodeRendererProps } from '../../types'
-
-withDefaults(defineProps<HtmlNodeRendererProps>(), {})
-</script>
-```
-
-Since there's no `<template>` section, nothing is rendered, providing a safe default that prevents XSS attacks.
-
-## Custom HTML Rendering
-
-While the default behavior is secure, you may need to render specific HTML content in a controlled manner. vue-stream-markdown provides the `nodeRenderers` API to customize HTML node rendering with proper filtering and sanitization.
-
-### Basic Example
-
-::: warning
-Using `v-html` directly is still dangerous! You should always sanitize the HTML content first.
-:::
-
-Here's a simple example that renders HTML content:
-
-```vue
-<script setup lang="ts">
-import type { HtmlNodeRendererProps } from 'vue-stream-markdown'
-
-const props = withDefaults(defineProps<HtmlNodeRendererProps>(), {})
-
-const htmlContent = computed(() => props.node.value)
-</script>
-
-<template>
-  <div v-html="htmlContent" />
-</template>
-```
-
-### Recommended Approach: Parse and Filter
-
-The recommended approach is to parse the HTML and filter it before rendering. Here's an example from the playground:
-
-```vue
-<script setup lang="ts">
-import type { HtmlNodeRendererProps } from 'vue-stream-markdown'
-import DOMPurify from 'dompurify'
-import { parseDocument } from 'htmlparser2'
-import { treeFind } from 'treechop'
-import { homepage } from 'vue-stream-markdown/package.json'
-import { GitHub } from '../icons'
-
-const props = withDefaults(defineProps<HtmlNodeRendererProps>(), {})
-const PURIFY_CONFIG = {
-  ADD_TAGS: ['github'],
-  ADD_ATTR: ['name', 'description'],
-}
-
-const raw = computed(() => props.node.value)
-const code = computed(() => DOMPurify.sanitize(raw.value, PURIFY_CONFIG))
-const document = computed(() => parseDocument(code.value))
-const github = computed(() => {
-  const children = document.value.children
-  if (!children || !children.length)
-    return null
-  return treeFind(
-    children,
-    item => item.name.toLowerCase() === 'github'
-  )
-})
-const attrs = computed(() => github.value?.attribs ?? {})
-
-function onClick() {
-  window.open(homepage, '_blank')
-}
-</script>
-
-<template>
-  <div
-    v-if="github"
-    class="px-4 py-2 border border-border rounded-md bg-card flex flex-col gap-1 cursor-pointer duration-150 self-start hover:bg-accent"
-    @click="onClick"
-  >
-    <h3 class="flex gap-2 items-center">
-      <GitHub />
-      {{ attrs.name }}
-    </h3>
-    <p class="text-sm text-muted-foreground">
-      {{ attrs.description }}
-    </p>
-  </div>
-</template>
-```
-
-The core approach here is:
-
-1. **Sanitize HTML first** using `DOMPurify` (or another sanitizer), and explicitly allow the tags/attributes you need
-2. **Parse the HTML** using an HTML parser (like `htmlparser2`) to safely extract the structure
-3. **Filter for safe nodes** - Extract only the specific tags you want to render (customizable per your needs)
-4. **Extract attributes** - The parser will safely extract attributes without executing any code
-5. **Render custom components** - Map the parsed and filtered nodes to your custom Vue components
-
-### Using the Custom Renderer
-
-Register your custom HTML renderer:
-
-```vue
-<script setup lang="ts">
+import { createHtmlPlugin } from '@stream-markdown/html'
 import { Markdown } from 'vue-stream-markdown'
-import CustomHtmlRenderer from './CustomHtmlRenderer.vue'
+import { createHtmlNodeRenderer } from 'vue-stream-markdown/html'
+import GitHubCard from './GitHubCard.vue'
+
+const html = createHtmlPlugin({
+  componentTags: ['github'],
+  allowedAttributes: {
+    github: ['name', 'description'],
+  },
+})
+
+const HtmlNodeRenderer = createHtmlNodeRenderer({
+  transform: html.transform,
+  components: {
+    GitHub: GitHubCard,
+  },
+})
 
 const content = `
-## Custom Html Render
-<GitHub name="vue-stream-markdown" description="Streaming-optimized Markdown Renderer" />
+<div>
+  <GitHub name="vue-stream-markdown" description="Streaming markdown renderer" />
+</div>
 `
 </script>
 
 <template>
   <Markdown
     :content="content"
-    :node-renderers="{
-      html: CustomHtmlRenderer,
-    }"
+    :node-renderers="{ html: HtmlNodeRenderer }"
   />
 </template>
 ```
 
-## Handling Unclosed Tags in Streaming
+Safe native tags such as `<div>` are rendered normally. Registered custom tags such as `<GitHub>` are sanitized, parsed, and then mapped to the matching Vue component.
 
-### The Problem
+## Options
 
-During streaming output, **unclosed HTML tags are not recognized as HTML nodes** by the markdown parser. This means incomplete tags like `<GitHub` (without the closing `>`) won't be parsed as HTML nodes and may cause parsing errors or unexpected rendering.
+`createHtmlPlugin()` accepts:
 
-### Solution: Filter in `normalize`
+- `componentTags`: Extra custom tags to keep, such as `github`
+- `allowedTags`: Replace the default native tag allowlist
+- `allowedAttributes`: Allowed attributes, globally or per tag
+- `sanitizeOptions`: Extra `sanitize-html` options
 
-You need to filter unclosed tags in the `normalize` method. The basic approach is:
+Custom tag names are normalized to lower case during parsing, so `GitHub` and `github` resolve to the same component entry.
 
-1. Check if the content contains opening tags for your custom HTML elements
-2. Verify whether these tags are properly closed (either self-closing with `/>` or have a corresponding closing tag)
-3. If a tag is unclosed, remove it from the content before parsing
+## Advanced Use
 
-You can implement this logic in your custom `normalize` function and pass it to the `Markdown` component:
+`@stream-markdown/html` also exports lower-level helpers:
 
-```vue
-<script setup lang="ts">
-import { Markdown, normalize } from 'vue-stream-markdown'
-import CustomHtmlRenderer from './CustomHtmlRenderer.vue'
+```ts
+import { parseHtml, sanitizeHtml, transformHtml } from '@stream-markdown/html'
+```
 
-function normalizeContent(content: string) {
-  // First apply default normalization
-  const normalized = normalize(content)
-  // Then filter unclosed tags
-  // ... your filtering logic here
-  return normalized
-}
+Use them when you need to compose the pipeline yourself. The Vue wrapper only needs a `transform(raw) => HtmlAstNode[]` function.
 
-const content = ref('')
+## Security
+
+Always keep sanitization in the path. The optional package removes unsafe tags, unsafe attributes, and dangerous URLs before rendering.
+
+```html
+<script>
+  alert('xss')
 </script>
-
-<template>
-  <Markdown
-    :content="content"
-    :normalize="normalizeContent"
-    :node-renderers="{
-      html: CustomHtmlRenderer,
-    }"
-  />
-</template>
+<img src="x" onerror="alert('xss')" />
+<div onclick="alert('xss')">Click me</div>
 ```
 
-If you have better approaches for handling unclosed tags in streaming scenarios, I welcome your discussions and contributions!
-
-## Best Practices
-
-### Always Sanitize HTML Content
-
-Never render raw HTML directly. Always parse and filter:
-
-```typescript
-import DOMPurify from 'dompurify' // or another sanitization library
-
-const sanitized = DOMPurify.sanitize(htmlContent, {
-  ADD_TAGS: ['github'],
-  ADD_ATTR: ['name', 'description'],
-})
-```
-
-### Test with Malicious Content
-
-Test your custom renderer with potentially malicious content:
-
-```markdown
-<script>alert('XSS')</script>
-<img src="x" onerror="alert('XSS')">
-<iframe src="javascript:alert('XSS')"></iframe>
-```
-
-Your renderer should safely ignore or sanitize these.
+The built-in empty renderer is still the safest choice when your product does not need HTML output.

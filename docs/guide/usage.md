@@ -72,6 +72,40 @@ export default defineNuxtConfig({
 })
 ```
 
+## Optional HTML Rendering
+
+HTML rendering is opt-in:
+
+```sh
+pnpm add @stream-markdown/html
+```
+
+```ts
+import { createHtmlPlugin } from '@stream-markdown/html'
+import { createHtmlNodeRenderer } from 'vue-stream-markdown/html'
+import GitHubCard from './GitHubCard.vue'
+
+const html = createHtmlPlugin({
+  componentTags: ['github'],
+  allowedAttributes: {
+    github: ['name', 'description'],
+  },
+})
+
+const HtmlNodeRenderer = createHtmlNodeRenderer({
+  transform: html.transform,
+  components: {
+    GitHub: GitHubCard,
+  },
+})
+```
+
+```vue
+<Markdown :node-renderers="{ html: HtmlNodeRenderer }" />
+```
+
+See [HTML Rendering](/feature/html-rendering) for the full example.
+
 ## Configuration
 
 ### Core Props

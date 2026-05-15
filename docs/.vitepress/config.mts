@@ -19,7 +19,7 @@ const Features: DefaultTheme.NavItemWithLink[] = [
   { text: 'Code Blocks', link: '/feature/code-blocks' },
   { text: 'Custom UI Components', link: '/feature/custom-ui-components' },
   { text: 'Github Flavored Markdown', link: '/feature/gfm' },
-  { text: 'HTML Node Rendering', link: '/feature/html-rendering' },
+  { text: 'HTML Rendering', link: '/feature/html-rendering' },
   { text: 'Mathematics', link: '/feature/mathematics' },
   { text: 'Mermaid Diagrams', link: '/feature/mermaid' },
   { text: 'Link Safety', link: '/feature/link-safety' },

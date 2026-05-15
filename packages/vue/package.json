@@ -24,6 +24,10 @@
   ],
   "exports": {
     ".": "./dist/index.js",
+    "./html": {
+      "types": "./dist/html.d.ts",
+      "default": "./dist/html.js"
+    },
     "./package.json": "./package.json",
     "./index.css": "./dist/index.css",
     "./theme.css": "./dist/theme.css"

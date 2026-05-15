@@ -1,0 +1,26 @@
+{
+  "name": "@stream-markdown/html",
+  "type": "module",
+  "version": "0.7.2",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "prepublishOnly": "pnpm build"
+  },
+  "dependencies": {
+    "parse5": "catalog:parser",
+    "sanitize-html": "catalog:parser",
+    "@stream-markdown/core": "workspace:*"
+  },
+  "devDependencies": {
+    "tsdown": "catalog:build",
+    "@types/sanitize-html": "catalog:types"
+  }
+}
