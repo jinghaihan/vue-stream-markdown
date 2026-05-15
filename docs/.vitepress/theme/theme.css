@@ -99,6 +99,12 @@
   border-bottom: none;
 }
 
+.VPNavBarTitle .logo {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.45rem;
+}
+
 .VPNav,
 .VPNavBar .wrapper,
 .VPNavBar .content,

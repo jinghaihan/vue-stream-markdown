@@ -7,7 +7,7 @@ import { computed, ref, useAttrs } from 'vue'
 import { Markdown } from 'vue-stream-markdown'
 import CirclePause from '~icons/lucide/circle-pause'
 import CirclePlay from '~icons/lucide/circle-play'
-import SwatchBook from '~icons/lucide/swatch-book'
+import LoaderPinwheel from '~icons/lucide/loader-pinwheel'
 
 const props = withDefaults(defineProps<{
   mode?: 'streaming' | 'static'
@@ -108,7 +108,7 @@ function cleanup() {
 }
 
 const isMermaid = computed(() => props.content.includes('```mermaid'))
-const mermaidRenderer = ref<'vanilla' | 'beautiful'>('vanilla')
+const mermaidRenderer = ref<'vanilla' | 'beautiful'>('beautiful')
 function toggleMermaidRenderer() {
   mermaidRenderer.value = mermaidRenderer.value === 'vanilla' ? 'beautiful' : 'vanilla'
 }
@@ -142,14 +142,14 @@ function toggleMermaidRenderer() {
         v-if="playable"
         :name="name"
         :icon="icon"
-        :button-class="['rounded-full', 'bg-background', 'p-1']"
+        :button-class="['rounded-full', 'bg-transparent', 'p-1']"
         @click="() => toggle()"
       />
       <IconButton
         v-if="isMermaid"
         name="Change Renderer"
-        :icon="SwatchBook"
-        :button-class="['rounded-full', 'bg-background', 'p-1']"
+        :icon="LoaderPinwheel"
+        :button-class="['rounded-full', 'bg-transparent', 'p-1']"
         @click="() => toggleMermaidRenderer()"
       />
     </div>

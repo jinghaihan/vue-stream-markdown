@@ -2,7 +2,10 @@ import type { DefaultTheme, UserConfig } from 'vitepress'
 import { defineConfig } from 'vitepress'
 import LLMsTxt from 'vitepress-plugin-llms'
 import { version } from '../../package.json'
+import { dependencies as mathDependencies } from '../../packages/extensions/math/package.json'
 import { alias, getPlugins } from '../../shared'
+
+const katexVersion = mathDependencies.katex.replace(/^\D*/, '')
 
 const Guides: DefaultTheme.NavItemWithLink[] = [
   { text: 'Getting Started', link: '/guide/' },
@@ -126,6 +129,7 @@ const SidebarConfig: DefaultTheme.SidebarItem[] = [
 ]
 
 const themeConfig: DefaultTheme.Config = {
+  logo: '/favicon.svg',
   nav: Nav,
   search: {
     provider: 'local',
@@ -162,6 +166,7 @@ const config: UserConfig<DefaultTheme.Config> = {
   outDir: './dist',
   head: [
     ['link', { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }],
+    ['link', { rel: 'stylesheet', href: `https://cdn.jsdelivr.net/npm/katex@${katexVersion}/dist/katex.min.css` }],
   ],
   lastUpdated: true,
   cleanUrls: true,
