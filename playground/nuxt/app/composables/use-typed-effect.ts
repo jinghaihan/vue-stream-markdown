@@ -9,6 +9,11 @@ interface UseTypedEffectOptions {
   delay?: MaybeRefOrGetter<number>
 }
 
+interface TypingPlan {
+  index: number
+  weight: number
+}
+
 export function useTypedEffect(options: UseTypedEffectOptions) {
   const enabled = computed(() => toValue(options.enabled) ?? true)
 
@@ -35,10 +40,11 @@ export function useTypedEffect(options: UseTypedEffectOptions) {
 
       isTyping.value = true
       prevContent.value = content.value.slice(0, typingIndex.value)
+      const plan = createForwardTypingPlan(content.value, typingIndex.value, step.value)
 
       intervalId.value = setTimeout(() => {
-        typingIndex.value = typingIndex.value + step.value
-      }, delay.value)
+        typingIndex.value = plan.index
+      }, resolveTypingDelay(delay.value, plan, step.value))
 
       onWatcherCleanup(() => intervalId.value && clearTimeout(intervalId.value))
     },
@@ -75,12 +81,14 @@ export function useTypedEffect(options: UseTypedEffectOptions) {
   )
 
   function prevStep(count: number = 1) {
-    typingIndex.value = Math.max(0, typingIndex.value - count * step.value)
+    const plan = createBackwardTypingPlan(content.value, typingIndex.value, count * step.value)
+    typingIndex.value = plan.index
     prevContent.value = content.value.slice(0, typingIndex.value)
   }
 
   function nextStep(count: number = 1) {
-    typingIndex.value = Math.min(content.value.length, typingIndex.value + count * step.value)
+    const plan = createForwardTypingPlan(content.value, typingIndex.value, count * step.value)
+    typingIndex.value = plan.index
     prevContent.value = content.value.slice(0, typingIndex.value)
   }
 
@@ -111,4 +119,95 @@ export function useTypedEffect(options: UseTypedEffectOptions) {
     stop,
     terminate,
   }
+}
+
+const CJK_RE = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u
+const MARKDOWN_SYNTAX_RE = /^[\\`*_~[\](){}<>#+\-.!|:$]$/
+const WHITESPACE_RE = /^\s+$/
+
+const graphemeSegmenter = typeof Intl !== 'undefined' && 'Segmenter' in Intl
+  ? new Intl.Segmenter(undefined, { granularity: 'grapheme' })
+  : undefined
+
+function getNextSegment(content: string, index: number): string {
+  if (graphemeSegmenter) {
+    const segment = graphemeSegmenter.segment(content.slice(index))[Symbol.iterator]().next().value?.segment
+    if (segment)
+      return segment
+  }
+
+  const codePoint = content.codePointAt(index)
+  return codePoint === undefined ? '' : String.fromCodePoint(codePoint)
+}
+
+function getPreviousSegment(content: string, index: number): { index: number, segment: string } {
+  let currentIndex = 0
+  let previous = { index: 0, segment: '' }
+
+  while (currentIndex < index) {
+    const segment = getNextSegment(content, currentIndex)
+    if (!segment)
+      break
+
+    previous = { index: currentIndex, segment }
+    currentIndex += segment.length
+  }
+
+  return previous
+}
+
+function getSegmentWeight(segment: string): number {
+  if (!segment)
+    return 0
+  if (WHITESPACE_RE.test(segment))
+    return 0.35
+  if (MARKDOWN_SYNTAX_RE.test(segment))
+    return 0.45
+  if (CJK_RE.test(segment))
+    return 1.55
+  return 1
+}
+
+function createForwardTypingPlan(content: string, start: number, visualStep: number): TypingPlan {
+  const targetWeight = Math.max(1, visualStep)
+  let index = start
+  let weight = 0
+
+  while (index < content.length && (weight < targetWeight || index === start)) {
+    const segment = getNextSegment(content, index)
+    if (!segment)
+      break
+
+    index += segment.length
+    weight += getSegmentWeight(segment)
+  }
+
+  return {
+    index,
+    weight: Math.max(weight, targetWeight),
+  }
+}
+
+function createBackwardTypingPlan(content: string, start: number, visualStep: number): TypingPlan {
+  const targetWeight = Math.max(1, visualStep)
+  let index = start
+  let weight = 0
+
+  while (index > 0 && (weight < targetWeight || index === start)) {
+    const previous = getPreviousSegment(content, index)
+    if (!previous.segment)
+      break
+
+    index = previous.index
+    weight += getSegmentWeight(previous.segment)
+  }
+
+  return {
+    index,
+    weight: Math.max(weight, targetWeight),
+  }
+}
+
+function resolveTypingDelay(baseDelay: number, plan: TypingPlan, visualStep: number): number {
+  return Math.max(0, baseDelay * (plan.weight / Math.max(1, visualStep)))
 }
