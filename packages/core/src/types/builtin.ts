@@ -47,6 +47,7 @@ export type CaretType = 'block' | 'circle'
 export type AnimationType = typeof ANIMATION_TYPES[number] | (string & {})
 
 export type AnimationSplit = typeof ANIMATION_SPLITS[number]
+export type ResolvedAnimationSplit = Exclude<AnimationSplit, 'auto'>
 
 export type PlainTextNodeTypes
   = | 'text'

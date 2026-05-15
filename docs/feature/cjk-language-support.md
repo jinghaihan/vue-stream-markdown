@@ -45,7 +45,7 @@ vue-stream-markdown uses the `micromark-extension-cjk-friendly` and `micromark-e
 
 ## Character Animation
 
-Streaming animations split text by word by default. For CJK content, set `animationSplit` to `'char'` so each non-whitespace character can animate independently:
+Streaming animations use `animationSplit="auto"` by default. CJK characters are split individually, while nearby non-CJK text keeps word-based animation. Set `animationSplit` to `'char'` when you want to force character animation:
 
 ```vue
 <StreamMarkdown

@@ -53,10 +53,10 @@ When omitted, the renderer uses the CSS value of `--stream-markdown-animation-du
 
 ### animationSplit
 
-- **Type:** `'word' | 'char'`
-- **Default:** `'word'`
+- **Type:** `'auto' | 'word' | 'char'`
+- **Default:** `'auto'`
 
-Text animation split strategy. Use `'word'` to animate whole words and whitespace runs, or `'char'` to animate non-whitespace characters one by one. Character splitting is useful for CJK text where word-based splitting can animate an entire sentence at once.
+Text animation split strategy. `'auto'` splits CJK characters individually while keeping non-CJK text word-based. Use `'word'` or `'char'` when you want to force one behavior.
 
 ### caret
 

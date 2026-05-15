@@ -6,8 +6,10 @@ import {
   normalizeAnimationDuration,
   normalizeCssSize,
   resolveTableAlign,
+  resolveTextAnimationSplit,
   shouldAnimateNode,
   splitText,
+  splitTextByAuto,
   splitTextByChar,
   splitTextByWord,
   STREAM_MARKDOWN_CSS_VARIABLES,
@@ -18,9 +20,9 @@ describe('core utilities', () => {
   it('splits text into word and whitespace parts with stable offsets', () => {
     expect(splitTextByWord('Hello  world')).toEqual(['Hello', '  ', 'world'])
     expect(createTextParts('Hello  world', 'node-key')).toEqual([
-      { key: 'node-key-0', value: 'Hello', whitespace: false },
-      { key: 'node-key-5', value: '  ', whitespace: true },
-      { key: 'node-key-7', value: 'world', whitespace: false },
+      { key: 'node-key-0', value: 'Hello', whitespace: false, animationSplit: 'word' },
+      { key: 'node-key-5', value: '  ', whitespace: true, animationSplit: 'word' },
+      { key: 'node-key-7', value: 'world', whitespace: false, animationSplit: 'word' },
     ])
   })
 
@@ -28,14 +30,27 @@ describe('core utilities', () => {
     expect(splitTextByChar('你好  world')).toEqual(['你', '好', '  ', 'w', 'o', 'r', 'l', 'd'])
     expect(splitText('日本語\ntext', 'char')).toEqual(['日', '本', '語', '\n', 't', 'e', 'x', 't'])
     expect(createTextParts('你好 world', 'node-key', 'char')).toEqual([
-      { key: 'node-key-0', value: '你', whitespace: false },
-      { key: 'node-key-1', value: '好', whitespace: false },
-      { key: 'node-key-2', value: ' ', whitespace: true },
-      { key: 'node-key-3', value: 'w', whitespace: false },
-      { key: 'node-key-4', value: 'o', whitespace: false },
-      { key: 'node-key-5', value: 'r', whitespace: false },
-      { key: 'node-key-6', value: 'l', whitespace: false },
-      { key: 'node-key-7', value: 'd', whitespace: false },
+      { key: 'node-key-0', value: '你', whitespace: false, animationSplit: 'char' },
+      { key: 'node-key-1', value: '好', whitespace: false, animationSplit: 'char' },
+      { key: 'node-key-2', value: ' ', whitespace: true, animationSplit: 'char' },
+      { key: 'node-key-3', value: 'w', whitespace: false, animationSplit: 'char' },
+      { key: 'node-key-4', value: 'o', whitespace: false, animationSplit: 'char' },
+      { key: 'node-key-5', value: 'r', whitespace: false, animationSplit: 'char' },
+      { key: 'node-key-6', value: 'l', whitespace: false, animationSplit: 'char' },
+      { key: 'node-key-7', value: 'd', whitespace: false, animationSplit: 'char' },
+    ])
+  })
+
+  it('automatically uses character splitting for CJK text', () => {
+    expect(resolveTextAnimationSplit('Hello world')).toBe('word')
+    expect(resolveTextAnimationSplit('你好 world')).toBe('char')
+    expect(splitTextByAuto('你好 world')).toEqual(['你', '好', ' ', 'world'])
+    expect(splitText('你好 world')).toEqual(['你', '好', ' ', 'world'])
+    expect(createTextParts('你好 world', 'node-key')).toEqual([
+      { key: 'node-key-0', value: '你', whitespace: false, animationSplit: 'char' },
+      { key: 'node-key-1', value: '好', whitespace: false, animationSplit: 'char' },
+      { key: 'node-key-2', value: ' ', whitespace: true, animationSplit: 'word' },
+      { key: 'node-key-3', value: 'world', whitespace: false, animationSplit: 'word' },
     ])
   })
 

@@ -114,7 +114,7 @@ See [HTML Rendering](/feature/html-rendering) for the full example.
 - `mode` ('streaming' | 'static'): Rendering mode, defaults to `'streaming'`
 - `enableAnimate` (boolean | undefined): Enable node enter animations. When `undefined`, follows the rendering mode
 - `animation` ('fade-in' | 'blur-in' | 'slide-up' | string): Node enter animation, defaults to `'fade-in'`
-- `animationSplit` ('word' | 'char'): Text animation split strategy, defaults to `'word'`. Use `'char'` for CJK or other text that reads better with character-by-character animation.
+- `animationSplit` ('auto' | 'word' | 'char'): Text animation split strategy, defaults to `'auto'`. Auto mode splits CJK characters individually while keeping non-CJK text word-based.
 - `animationDuration` (number | string): Animation duration. Numbers are treated as milliseconds; strings are passed through as CSS values. When omitted, uses the CSS default of `500ms`.
 - `isDark` (boolean): Enable dark mode
 - `locale` (string | LocaleConfig): Locale for internationalization, defaults to `'en-US'`

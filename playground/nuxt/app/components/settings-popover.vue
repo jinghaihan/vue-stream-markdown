@@ -27,7 +27,7 @@ const mermaidBeautifulDarkTheme = defineModel<string>('mermaidBeautifulDarkTheme
 
 const caret = defineModel<StreamMarkdownProps['caret']>('caret', { required: false, default: 'block' })
 const animation = defineModel<NonNullable<StreamMarkdownProps['animation']>>('animation', { required: false, default: 'fade-in' })
-const animationSplit = defineModel<NonNullable<StreamMarkdownProps['animationSplit']>>('animationSplit', { required: false, default: 'word' })
+const animationSplit = defineModel<NonNullable<StreamMarkdownProps['animationSplit']>>('animationSplit', { required: false, default: 'auto' })
 const animationDuration = defineModel<number>('animationDuration', { required: false, default: 500 })
 
 const animationDurationInput = computed({
@@ -109,7 +109,11 @@ const ANIMATION_OPTIONS: SelectOption[] = ANIMATION_TYPES.map(value => ({
 }))
 
 const ANIMATION_SPLIT_OPTIONS: SelectOption[] = ANIMATION_SPLITS.map(value => ({
-  label: value === 'char' ? 'Character' : 'Word',
+  label: {
+    auto: 'Auto',
+    word: 'Word',
+    char: 'Character',
+  }[value],
   value,
 }))
 

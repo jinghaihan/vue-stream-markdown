@@ -1,4 +1,9 @@
-import { createHtmlPlugin, parseHtml, sanitizeHtml, transformHtml } from '@stream-markdown/html'
+import {
+  createHtmlPlugin,
+  parseHtml,
+  sanitizeHtml,
+  transformHtml,
+} from '@stream-markdown/html'
 import { describe, expect, it } from 'vitest'
 
 describe('@stream-markdown/html', () => {

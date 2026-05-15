@@ -9,6 +9,7 @@ export const ANIMATION_TYPES = [
 export const DEFAULT_ANIMATION = ANIMATION_TYPES[0]
 
 export const ANIMATION_SPLITS = [
+  'auto',
   'word',
   'char',
 ] as const

@@ -118,6 +118,18 @@ describe('core models', () => {
     expect(model.parts.map(part => part.value)).toEqual(['你', '好', ' ', 'w', 'o', 'r', 'l', 'd'])
   })
 
+  it('creates text model with automatic character animation for CJK text', () => {
+    const model = createTextModel({
+      node: { type: 'text', value: '你好 world' },
+      nodeKey: 'text-0',
+      enableAnimate: true,
+      animation: 'fade-in',
+    })
+
+    expect(model.parts.map(part => part.value)).toEqual(['你', '好', ' ', 'world'])
+    expect(model.parts.map(part => part.animationSplit)).toEqual(['char', 'char', 'word', 'word'])
+  })
+
   it('creates table model and serializes table data', () => {
     const text = { type: 'text', value: 'Name' } as ParsedNode
     const cell = { type: 'tableCell', children: [text] } as ParsedNode

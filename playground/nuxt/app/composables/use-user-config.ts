@@ -17,7 +17,7 @@ const DEFAULT_USER_CONFIG: UserConfig = {
   mermaidBeautifulDarkTheme: 'github-dark',
   caret: 'block',
   animation: 'fade-in',
-  animationSplit: 'word',
+  animationSplit: 'auto',
   animationDuration: 500,
 }
 

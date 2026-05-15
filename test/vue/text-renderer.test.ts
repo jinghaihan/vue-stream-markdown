@@ -1,5 +1,10 @@
 // @vitest-environment happy-dom
-import type { MarkdownAstParser, NodeRenderers, StreamMarkdownProvideContext, TextNode } from 'vue-stream-markdown'
+import type {
+  MarkdownAstParser,
+  NodeRenderers,
+  StreamMarkdownProvideContext,
+  TextNode,
+} from 'vue-stream-markdown'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import { defineComponent, h } from 'vue'
@@ -66,6 +71,16 @@ describe('text renderer', () => {
       'd',
     ])
     expect(wrapper.find('[data-stream-markdown="text-space"]').element.textContent).toBe(' ')
+  })
+
+  it('automatically splits CJK text into characters by default', () => {
+    const wrapper = mountText('你好 world')
+
+    expect(wrapper.findAll('[data-stream-markdown="text-char"]').map(node => node.text())).toEqual([
+      '你',
+      '好',
+    ])
+    expect(wrapper.findAll('[data-stream-markdown="text-word"]').map(node => node.text())).toEqual(['world'])
   })
 
   it('does not render the caret when hidden by a parent renderer', () => {
