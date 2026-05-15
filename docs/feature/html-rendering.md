@@ -13,7 +13,24 @@ Use the optional `@stream-markdown/html` package when you need HTML support:
 pnpm add @stream-markdown/html
 ```
 
-This renderer works best when the llm can emit complete HTML fragments at once. For heavily streamed HTML, you may want to provide your own HTML preprocess logic so incomplete tags are handled in a way that matches your UI.
+This renderer works best when the llm can emit complete HTML fragments at once. For heavily streamed HTML, you may want to replace the `html` preprocess step so incomplete tags are handled in a way that matches your UI.
+
+```vue
+<script setup lang="ts">
+function fixHtml(content: string) {
+  // Your streaming HTML policy
+  return content
+}
+
+const preprocessSteps = {
+  html: fixHtml,
+}
+</script>
+
+<template>
+  <Markdown :preprocess-steps="preprocessSteps" />
+</template>
+```
 
 ## Basic Usage
 

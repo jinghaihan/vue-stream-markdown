@@ -235,6 +235,39 @@ describe('markdown-parser', () => {
     expect(result.contents[0]).toBe('normalized\n')
   })
 
+  it('should allow overriding a single preprocess step', () => {
+    const html = vi.fn((content: string) => `${content}>`)
+    const parser = new MarkdownAstParser({
+      mode: 'streaming',
+      preprocessSteps: {
+        html,
+      },
+    })
+
+    const result = parser.parseMarkdown('<div')
+
+    expect(html).toHaveBeenCalledTimes(1)
+    expect(result.contents[0]).toBe('<div>')
+  })
+
+  it('should ignore preprocessSteps when preprocess is replaced entirely', () => {
+    const preprocess = vi.fn((content: string) => `${content}!`)
+    const html = vi.fn((content: string) => `${content}>`)
+    const parser = new MarkdownAstParser({
+      mode: 'streaming',
+      preprocess,
+      preprocessSteps: {
+        html,
+      },
+    })
+
+    const result = parser.parseMarkdown('<div')
+
+    expect(preprocess).toHaveBeenCalledTimes(1)
+    expect(html).not.toHaveBeenCalled()
+    expect(result.contents[0]).toBe('<div!')
+  })
+
   it('should reuse cached ast within the same parser instance', () => {
     const parser = new MarkdownAstParser({
       mode: 'streaming',

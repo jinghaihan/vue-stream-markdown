@@ -26,4 +26,10 @@ describe('preprocess', () => {
       await expect(result).toMatchFileSnapshot(snapshotPath)
     })
   }
+
+  it('should allow overriding a single built-in step', () => {
+    expect(preprocess('Hello <div', undefined, {
+      html: content => `${content}>custom</div>`,
+    })).toBe('Hello <div>custom</div>')
+  })
 })

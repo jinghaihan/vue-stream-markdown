@@ -64,13 +64,35 @@ The `preprocess` function is responsible for **syntax completion**. It takes the
 
 ### Customization
 
-If you want full customization, you can combine `preprocess` functions yourself. All built-in `preprocess` functions are available and can be combined in any order you want:
+Use `preprocessSteps` when you only need to replace one built-in step:
+
+```vue
+<script setup lang="ts">
+import { Markdown } from 'vue-stream-markdown'
+
+function fixHtml(content: string) {
+  // Your HTML-specific handling
+  return content
+}
+
+const preprocessSteps = {
+  html: fixHtml,
+}
+</script>
+
+<template>
+  <Markdown :content="content" :preprocess-steps="preprocessSteps" />
+</template>
+```
+
+The default order is still handled by the library. If you need full customization, provide `preprocess` and compose the whole pipeline yourself:
 
 ```vue
 <script setup lang="ts">
 import {
   fixCode,
   fixEmphasis,
+  fixHtml,
   fixStrong,
   flow,
   Markdown
@@ -79,6 +101,7 @@ import {
 // Custom preprocess with selective functions
 const preprocess = flow([
   fixCode, // Fix incomplete code blocks
+  fixHtml, // Handle trailing incomplete HTML fragments
   fixStrong, // Fix incomplete strong (**bold**)
   fixEmphasis, // Fix incomplete emphasis (*italic*)
   // Skip other functions or add your own
@@ -95,6 +118,7 @@ const preprocess = flow([
 The following functions are available for use in `preprocess`:
 
 - `fixCode`: Completes incomplete code block syntax (`code`)
+- `fixHtml`: Removes trailing incomplete HTML-like fragments
 - `fixFootnote`: Removes incomplete footnote references (`[^label]`) that don't have corresponding definitions (`[^label]:`)
 - `fixStrong`: Completes incomplete strong syntax (`**bold**`). Also removes standalone list markers (`- `) left after removing incomplete `**` to prevent parsing issues
 - `fixEmphasis`: Completes incomplete emphasis syntax (`*italic*`). Also removes standalone list markers (`- `) left after removing incomplete `*` to prevent parsing issues
@@ -112,6 +136,7 @@ The order of preprocess functions is **critical** to prevent parsing conflicts. 
 ```typescript
 flow([
   fixCode,
+  fixHtml,
   fixFootnote,
   fixStrong,
   fixEmphasis,
@@ -127,6 +152,8 @@ flow([
 **Key ordering rules:**
 
 - **`fixCode` runs first**: Code blocks should be handled early to prevent code syntax from interfering with other syntax completion.
+
+- **`fixHtml` runs after `fixCode`**: HTML-like text inside code blocks should not be treated as live HTML.
 
 - **`fixTaskList` must run before `fixLink`**: This prevents incomplete task list syntax like `- [` from being misinterpreted as an incomplete link marker. If `fixLink` runs first, it will remove the `[`, leaving `- ` which could be parsed as a setext heading underline.
 

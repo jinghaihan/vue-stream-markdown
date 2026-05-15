@@ -173,6 +173,12 @@ Function to normalize the markdown content before parsing.
 
 Function to preprocess the markdown content before parsing.
 
+### preprocessSteps
+
+- **Type:** `Partial<Record<PreprocessStepName, PreprocessStep>>`
+
+Override individual built-in preprocess steps while keeping the default order.
+
 ### postNormalize
 
 - **Type:** `(data: SyntaxTree) => SyntaxTree`
