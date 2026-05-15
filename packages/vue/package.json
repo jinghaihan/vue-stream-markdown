@@ -66,15 +66,15 @@
     "@floating-ui/dom": "catalog:frontend",
     "@vueuse/core": "catalog:frontend",
     "@markmend/ast": "workspace:*",
-    "@markmend/core": "workspace:*"
+    "@markmend/core": "workspace:*",
+    "@stream-markdown/code": "workspace:*",
+    "@stream-markdown/core": "workspace:*",
+    "@stream-markdown/math": "workspace:*",
+    "@stream-markdown/mermaid": "workspace:*"
   },
   "devDependencies": {
     "@antfu/utils": "catalog:inlined",
     "treechop": "catalog:inlined",
-    "@stream-markdown/code": "workspace:*",
-    "@stream-markdown/core": "workspace:*",
-    "@stream-markdown/math": "workspace:*",
-    "@stream-markdown/mermaid": "workspace:*",
     "beautiful-mermaid": "^1.1.3",
     "katex": "^0.16.38",
     "mermaid": "^11.13.0",

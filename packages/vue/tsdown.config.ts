@@ -9,7 +9,6 @@ export default defineConfig({
     vue: true,
   },
   deps: {
-    alwaysBundle: [/^@stream-markdown\//],
     onlyBundle: false,
     neverBundle: [
       'shiki',

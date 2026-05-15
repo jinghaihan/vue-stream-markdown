@@ -2,6 +2,9 @@
   "name": "@stream-markdown/html",
   "type": "module",
   "version": "0.7.2",
+  "publishConfig": {
+    "access": "public"
+  },
   "exports": {
     ".": "./dist/index.mjs",
     "./package.json": "./package.json"

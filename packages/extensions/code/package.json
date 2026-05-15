@@ -2,7 +2,9 @@
   "name": "@stream-markdown/code",
   "type": "module",
   "version": "0.7.2",
-  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
   "exports": {
     ".": "./dist/index.mjs",
     "./package.json": "./package.json"
@@ -12,7 +14,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsdown"
+    "build": "tsdown",
+    "prepublishOnly": "pnpm build"
   },
   "dependencies": {
     "@stream-markdown/core": "workspace:*",
