@@ -5,6 +5,19 @@
   "publishConfig": {
     "access": "public"
   },
+  "homepage": "https://github.com/jinghaihan/vue-stream-markdown#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jinghaihan/vue-stream-markdown.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jinghaihan/vue-stream-markdown/issues"
+  },
+  "keywords": [
+    "stream-markdown",
+    "mermaid",
+    "beautiful-mermaid"
+  ],
   "exports": {
     ".": "./dist/index.mjs",
     "./package.json": "./package.json"

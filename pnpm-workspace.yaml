@@ -16,6 +16,7 @@ catalogs:
   dev:
     '@typescript/native-preview': ^7.0.0-dev.20260516.1
     bumpp: ^11.1.0
+    happy-dom: ^20.9.0
     lightningcss: ^1.32.0
     nano-staged: ^1.0.2
     pncat: ^0.12.0
