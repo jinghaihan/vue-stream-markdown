@@ -8,34 +8,34 @@ overrides:
   vue: catalog:frontend
 catalogs:
   build:
-    '@tsdown/css': ^0.21.10
-    '@vitejs/plugin-vue': ^6.0.6
-    tsdown: ^0.21.10
+    '@tsdown/css': ^0.22.0
+    '@vitejs/plugin-vue': ^6.0.7
+    tsdown: ^0.22.0
     unplugin-icons: ^23.0.1
     vite: ^8.0.8
   dev:
-    '@typescript/native-preview': ^7.0.0-dev.20260501.1
-    bumpp: ^11.0.1
+    '@typescript/native-preview': ^7.0.0-dev.20260516.1
+    bumpp: ^11.1.0
     lightningcss: ^1.32.0
     nano-staged: ^1.0.2
     pncat: ^0.12.0
     simple-git-hooks: ^2.13.1
-    taze: ^19.11.0
+    taze: ^19.12.0
     tinyglobby: ^0.2.16
-    tsx: ^4.21.0
-    turbo: ^2.9.7
-    typescript: ^6.0.2
+    tsx: ^4.22.0
+    turbo: ^2.9.14
+    typescript: ^6.0.3
   docs:
     vitepress: ^1.6.4
-    vitepress-plugin-llms: ^1.12.1
+    vitepress-plugin-llms: ^1.12.2
   frontend:
     '@floating-ui/dom': ^1.7.6
     '@vueuse/core': ^14.3.0
     unocss: ^66.6.8
-    vue: ^3.5.33
+    vue: ^3.5.34
   icons:
-    '@iconify-json/lucide': ^1.2.105
-    '@iconify-json/simple-icons': ^1.2.80
+    '@iconify-json/lucide': ^1.2.108
+    '@iconify-json/simple-icons': ^1.2.82
   inlined:
     '@antfu/utils': ^9.3.0
     quick-lru: ^7.3.0
@@ -44,9 +44,9 @@ catalogs:
     '@nuxt/eslint': ^1.15.2
     '@octohash/eslint-config': ^0.3.2
     '@unocss/eslint-plugin': 66.5.9
-    eslint: ^10.2.1
+    eslint: ^10.4.0
     eslint-plugin-format: ^2.0.1
-    vue-tsc: ^3.2.7
+    vue-tsc: ^3.2.9
   parser:
     marked: ^18.0.3
     mdast-util-from-markdown: ^2.0.3
@@ -73,19 +73,24 @@ catalogs:
     clsx: ^2.1.1
     echarts: ^6.0.0
     lz-string: ^1.5.0
-    nuxt: ^4.4.4
-    tailwind-merge: ^3.5.0
+    nuxt: ^4.4.5
+    tailwind-merge: ^3.6.0
     vue-json-pretty: ^2.6.0
   test:
-    '@vitest/coverage-v8': ^4.1.5
+    '@vitest/coverage-v8': ^4.1.6
     '@vue/test-utils': ^2.4.10
-    vitest: ^4.1.5
+    vitest: ^4.1.6
   types:
     '@types/mdast': ^4.0.4
-    '@types/node': ^25.6.0
+    '@types/node': ^25.8.0
     '@types/sanitize-html': ^2.16.1
 onlyBuiltDependencies:
   - esbuild
   - simple-git-hooks
   - '@parcel/watcher'
   - unrs-resolver
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  simple-git-hooks: true
+  unrs-resolver: true
