@@ -13,6 +13,7 @@ import {
 } from '@stream-markdown/core'
 import { computed, inject, provide, toValue } from 'vue'
 import { UI as DEFAULT_UI } from '../components'
+import { ICONS as DEFAULT_ICONS } from '../components/icons'
 
 const CONTEXT_KEY = Symbol('stream-markdown-context')
 
@@ -30,7 +31,7 @@ export function useContext(): StreamMarkdownResolvedContext {
   const imageOptions = computed(() => toValue(context.imageOptions))
   const linkOptions = computed(() => toValue(context.linkOptions))
   const cdnOptions = computed(() => toValue(context.cdnOptions))
-  const icons = computed((): Partial<Icons> => toValue(context.icons) ?? {})
+  const icons = computed((): Partial<Icons> => toValue(context.icons) ?? DEFAULT_ICONS)
   const nodeRenderers = computed((): NodeRenderers => toValue(context.nodeRenderers) ?? {})
 
   const uiComponents = computed((): UIComponents => toValue(context.uiComponents) ?? DEFAULT_UI)
