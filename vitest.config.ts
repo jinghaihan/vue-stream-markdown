@@ -1,10 +1,14 @@
 import { resolve } from 'node:path'
 import Vue from '@vitejs/plugin-vue'
+import Icons from 'unplugin-icons/vite'
 import { defineConfig } from 'vitest/config'
 import { alias } from './shared'
 
 export default defineConfig({
-  plugins: [Vue()],
+  plugins: [
+    Vue(),
+    Icons({ compiler: 'vue3' }),
+  ],
   optimizeDeps: {
     exclude: ['shiki'],
   },
