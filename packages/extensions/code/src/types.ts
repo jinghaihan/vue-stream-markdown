@@ -1,4 +1,4 @@
-import type { MaybeGetter, SharedCdnOptions } from '@stream-markdown/core'
+import type { MaybeGetter, MaybePromise, SharedCdnOptions } from '@stream-markdown/core'
 import type {
   BuiltinLanguage,
   BuiltinTheme,
@@ -6,10 +6,12 @@ import type {
   BundledTheme,
   CodeToTokensOptions,
   Highlighter,
+  RegexEngine,
   TokensResult,
 } from 'shiki'
 
 export type { MaybeGetter }
+export type ShikiEngine = MaybePromise<RegexEngine>
 
 export interface CodeRuntimeOptions {
   lang?: MaybeGetter<string | undefined>
@@ -18,6 +20,7 @@ export interface CodeRuntimeOptions {
   theme?: MaybeGetter<[BuiltinTheme, BuiltinTheme] | undefined>
   langs?: MaybeGetter<BundledLanguage[] | undefined>
   langAlias?: MaybeGetter<Record<string, string> | undefined>
+  engine?: MaybeGetter<ShikiEngine | undefined>
   codeToTokenOptions?: MaybeGetter<CodeToTokensOptions<BundledLanguage, BundledTheme> | undefined>
 }
 

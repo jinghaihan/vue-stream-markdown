@@ -28,6 +28,7 @@ export function useMermaid(options?: UseMermaidOptions) {
         theme: () => shikiTheme,
         langs: () => toValue(options?.shikiOptions)?.langs ?? [],
         langAlias: () => toValue(options?.shikiOptions)?.langAlias ?? {},
+        engine: () => toValue(options?.shikiOptions)?.engine,
         codeToTokenOptions: () => toValue(options?.shikiOptions)?.codeToTokenOptions,
       })
       const [{ fromShikiTheme }, highlighter] = await Promise.all([

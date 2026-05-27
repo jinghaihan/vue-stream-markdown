@@ -18,6 +18,7 @@ interface ShikiOptions {
   theme?: [BuiltinTheme, BuiltinTheme]
   langs?: BundledLanguage[]
   langAlias?: Record<string, string>
+  engine?: RegexEngine | Promise<RegexEngine>
   codeToTokenOptions?: CodeToTokensOptions<BundledLanguage, BundledTheme>
 }
 ```
@@ -103,6 +104,13 @@ const shikiOptions: ShikiOptions = {
   <Markdown :content="content" :shiki-options="shikiOptions" />
 </template>
 ```
+
+### engine
+
+- **Type:** `RegexEngine | Promise<RegexEngine>`
+- **Default:** `createJavaScriptRegexEngine({ forgiving: true })`
+
+Custom Shiki regex engine. The default JavaScript engine avoids WebAssembly CSP restrictions.
 
 ### codeToTokenOptions
 
