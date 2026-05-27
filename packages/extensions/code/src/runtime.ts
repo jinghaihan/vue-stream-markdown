@@ -5,6 +5,7 @@ import type {
   Highlighter,
   TokensResult,
 } from 'shiki'
+import { createJavaScriptRegexEngine } from 'shiki/engine/javascript'
 import type { CodeRuntimeOptions, ShikiRuntime } from './types'
 import { resolveGetter } from '@stream-markdown/core'
 import { createShikiCdnLoader } from './cdn'
@@ -126,10 +127,12 @@ export function createShikiRuntime(options: CodeRuntimeOptions = {}): ShikiRunti
       if (!createHighlighterPromise) {
         createHighlighterPromise = (async () => {
           const { createHighlighter } = await getShiki()
+          const jsEngine = createJavaScriptRegexEngine({ forgiving: true })
           return createHighlighter({
             themes: await getThemes(),
             langs: getLangs(),
             langAlias: getLangAlias(),
+            engine: jsEngine,
           })
         })()
       }
