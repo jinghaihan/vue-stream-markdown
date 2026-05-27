@@ -99,6 +99,9 @@ type PreviewerConfig
     | {
       placement?: PreviewSegmentedPlacement
       progressive?: Record<string, boolean>
+      html?: {
+        sandbox?: string
+      }
       components?: {
         mermaid?: boolean | Component
         html?: boolean | Component
@@ -110,6 +113,7 @@ The `PreviewerConfig` is an object that can contain:
 
 - **placement**: Optional placement configuration for preview components (see [placement](#placement) section below)
 - **progressive**: Optional configuration for progressive rendering (see [progressive](#progressive) section below)
+- **html**: Optional configuration for the built-in HTML previewer, including the iframe sandbox permissions
 - **components**: Optional object containing language-specific previewer configurations
   - For `html` and `mermaid`: `boolean` (to enable/disable default previewer) or `Component` (custom previewer)
   - For all other languages: `Component` only (no built-in previewers available)
@@ -168,18 +172,17 @@ const previewers: PreviewerConfig = {
 
 ## html
 
-- **Type:** `boolean | Component | undefined` (within `components` object)
-- **Default:** `true` (HTML previewer enabled when `previewers` is `true`)
+- **Sandbox type:** `string`
+- **Default sandbox:** `'allow-scripts'`
+- **Component type:** `boolean | Component | undefined` (within `components.html`)
 
-Controls the HTML previewer for HTML code blocks. This option must be specified within the `components` object. When set to `true`, the default HTML previewer is used, which renders HTML content in a sandboxed iframe. When set to `false`, the previewer is disabled and only the code is shown. When set to a Vue component, that component is used as the custom previewer.
-
-The default HTML previewer renders HTML content in a sandboxed iframe with `allow-scripts` and `allow-same-origin` permissions, allowing the HTML to execute JavaScript while maintaining security isolation. The iframe automatically adjusts its height based on the content.
+HTML code blocks use the built-in iframe previewer by default. Configure `html.sandbox` to change the iframe `sandbox` attribute, or use `components.html` to disable or replace the previewer.
 
 **HTML code block with preview:**
 
 <StreamMarkdown :content="htmlExample" />
 
-**Disable HTML previewer:**
+**Configure HTML previewer:**
 
 ```vue
 <script setup lang="ts">
@@ -187,8 +190,11 @@ import type { PreviewerConfig } from 'vue-stream-markdown'
 import { Markdown } from 'vue-stream-markdown'
 
 const previewers: PreviewerConfig = {
+  html: {
+    sandbox: 'allow-scripts allow-same-origin allow-forms',
+  },
   components: {
-    html: false,
+    html: true, // Set to false to disable the HTML previewer
   },
 }
 </script>

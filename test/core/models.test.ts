@@ -33,6 +33,7 @@ import {
   resolveEnableAnimate,
   resolveEnableCaret,
   resolveFloatingDelay,
+  resolveHtmlPreviewSandbox,
   resolvePreloadNodeRenderers,
   rotateImagePreviewRight,
   setMermaidMeasuredHeight,
@@ -347,6 +348,13 @@ describe('core models', () => {
     expect(createHtmlPreviewModel({ type: 'code', value: ' <div /> ' } as never)).toEqual({
       code: '<div />',
     })
+    expect(resolveHtmlPreviewSandbox(undefined)).toBe('allow-scripts')
+    expect(resolveHtmlPreviewSandbox(true)).toBe('allow-scripts')
+    expect(resolveHtmlPreviewSandbox({
+      html: {
+        sandbox: 'allow-scripts allow-same-origin allow-forms',
+      },
+    })).toBe('allow-scripts allow-same-origin allow-forms')
     expect(resolveFloatingDelay([10, 20])).toEqual({ show: 10, hide: 20 })
     expect(createFloatingStyle({ x: 1, y: 2, strategy: 'fixed' })).toEqual({
       position: 'fixed',
