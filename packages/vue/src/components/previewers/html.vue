@@ -25,7 +25,7 @@ function updateHeight() {
       data-stream-markdown="html-previewer"
       class="size-full"
       :srcdoc="code"
-      sandbox="allow-scripts allow-same-origin"
+      sandbox="allow-scripts"
       :frameborder="0"
       @load="updateHeight"
     />
