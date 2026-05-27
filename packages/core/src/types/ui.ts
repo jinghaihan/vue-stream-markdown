@@ -64,6 +64,7 @@ export interface UIImageProps<
   alt?: string
   title?: string
   preview?: boolean
+  referrerPolicy?: ReferrerPolicy
   margin?: number
   controls?: TControls
   transformHardenUrl?: (url: string) => string | null

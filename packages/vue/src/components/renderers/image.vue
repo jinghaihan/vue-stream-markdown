@@ -146,6 +146,7 @@ function handleMouseLeave() {
         :alt="alt"
         :title="title"
         :preview="!fallbackAttempted && enablePreview"
+        :referrer-policy="imageOptions?.referrerPolicy"
         :controls="controls"
         :transform-harden-url="transformHardenUrl"
         :node-props="props"

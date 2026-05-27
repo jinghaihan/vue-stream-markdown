@@ -257,6 +257,7 @@ Configuration for image display options, including fallback images, captions, an
 interface ImageOptions {
   fallback?: string
   caption?: boolean
+  referrerPolicy?: ReferrerPolicy
   errorComponent?: Component
 }
 ```
@@ -286,6 +287,28 @@ Fallback image URL to display when an image fails to load. If provided, the fall
 **With fallback:**
 
 <StreamMarkdown :content="imageWithFallback" :image-options="{ fallback: 'https://placehold.co/600x400' }" />
+
+### referrerPolicy
+
+- **Type:** `ReferrerPolicy | undefined`
+- **Default:** `undefined` (browser default)
+
+Controls the referrer policy used by rendered image requests. This is useful when external image hosts should not receive the current page URL as the referrer.
+
+```vue
+<script setup lang="ts">
+import type { ImageOptions } from 'vue-stream-markdown'
+import { Markdown } from 'vue-stream-markdown'
+
+const imageOptions: ImageOptions = {
+  referrerPolicy: 'no-referrer',
+}
+</script>
+
+<template>
+  <Markdown :content="content" :image-options="imageOptions" />
+</template>
+```
 
 ### errorComponent
 
@@ -322,6 +345,7 @@ import { Markdown } from 'vue-stream-markdown'
 const imageOptions: ImageOptions = {
   fallback: 'https://placehold.co/600x400',
   caption: true,
+  referrerPolicy: 'no-referrer',
 }
 </script>
 
