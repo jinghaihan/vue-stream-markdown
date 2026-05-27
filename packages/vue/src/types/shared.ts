@@ -23,7 +23,7 @@ import type {
 import type { RenderOptions as BeautifulMermaidConfig, ThemeName } from 'beautiful-mermaid'
 import type { KatexOptions as KatexConfig } from 'katex'
 import type { MermaidConfig } from 'mermaid'
-import type { BuiltinTheme, BundledLanguage, BundledTheme, CodeToTokensOptions } from 'shiki'
+import type { BuiltinTheme, BundledLanguage, BundledTheme, CodeToTokensOptions, RegexEngine } from 'shiki'
 import type { Component } from 'vue'
 import type { ICONS } from '../components/icons'
 import type {
@@ -76,7 +76,8 @@ export type PreviewerConfig = CorePreviewerConfig<Component>
 export type ShikiOptions = CoreShikiOptions<
   BuiltinTheme,
   BundledLanguage,
-  CodeToTokensOptions<BundledLanguage, BundledTheme>
+  CodeToTokensOptions<BundledLanguage, BundledTheme>,
+  RegexEngine | Promise<RegexEngine>
 >
 
 export type MermaidOptions = CoreMermaidOptions<

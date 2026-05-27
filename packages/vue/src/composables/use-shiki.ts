@@ -36,6 +36,7 @@ export function useShiki(options?: UseShikiOptions) {
       ...LANGUAGE_ALIAS,
       ...(toValue(options?.shikiOptions)?.langAlias ?? {}),
     }),
+    engine: () => toValue(options?.shikiOptions)?.engine,
     codeToTokenOptions: () => toValue(options?.shikiOptions)?.codeToTokenOptions,
   })
 

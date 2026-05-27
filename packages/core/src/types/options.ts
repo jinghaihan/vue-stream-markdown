@@ -24,10 +24,12 @@ export interface ShikiOptions<
   TTheme = string,
   TLanguage = string,
   TCodeToTokenOptions = unknown,
+  TEngine = unknown,
 > {
   theme?: [TTheme, TTheme]
   langs?: TLanguage[]
   langAlias?: Record<string, string>
+  engine?: TEngine
   codeToTokenOptions?: TCodeToTokenOptions
 }
 

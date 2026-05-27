@@ -3,15 +3,29 @@ import type {
   BundledLanguage,
   BundledTheme,
   Highlighter,
+  RegexEngine,
   TokensResult,
 } from 'shiki'
 import type { CodeRuntimeOptions, ShikiRuntime } from './types'
 import { resolveGetter } from '@stream-markdown/core'
+import { createJavaScriptRegexEngine } from 'shiki'
 import { createShikiCdnLoader } from './cdn'
 import { DEFAULT_SHIKI_DARK_THEME, DEFAULT_SHIKI_LIGHT_THEME, LANGUAGE_ALIAS } from './constants'
 
 let highlighter: Highlighter | null = null
 let createHighlighterPromise: Promise<Highlighter> | null = null
+let defaultShikiEngine: RegexEngine | null = null
+
+function createDefaultShikiEngine(): RegexEngine {
+  defaultShikiEngine ??= createJavaScriptRegexEngine({ forgiving: true })
+  return defaultShikiEngine
+}
+
+export async function resolveShikiEngine(
+  engine: CodeRuntimeOptions['engine'],
+): Promise<RegexEngine> {
+  return await (resolveGetter(engine) ?? createDefaultShikiEngine())
+}
 
 function normalizeShikiModule(module: typeof import('shiki')): typeof import('shiki') {
   let defaultExport: typeof import('shiki') | undefined
@@ -126,10 +140,12 @@ export function createShikiRuntime(options: CodeRuntimeOptions = {}): ShikiRunti
       if (!createHighlighterPromise) {
         createHighlighterPromise = (async () => {
           const { createHighlighter } = await getShiki()
+          const engine = await resolveShikiEngine(options.engine)
           return createHighlighter({
             themes: await getThemes(),
             langs: getLangs(),
             langAlias: getLangAlias(),
+            engine,
           })
         })()
       }
