@@ -48,6 +48,7 @@ export interface KatexOptions<TComponent = unknown, TConfig = unknown> {
 export interface ImageOptions<TComponent = unknown> {
   fallback?: string
   caption?: boolean
+  referrerPolicy?: ReferrerPolicy
   errorComponent?: TComponent
 }
 

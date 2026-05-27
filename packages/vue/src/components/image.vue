@@ -174,6 +174,7 @@ watch(open, (data) => {
     ref="elementRef"
     data-stream-markdown="image"
     class="rounded-lg h-auto max-w-full block cursor-pointer object-contain"
+    :referrerpolicy="referrerPolicy"
     :src="src"
     :alt="alt"
     :title="title"
@@ -219,6 +220,7 @@ watch(open, (data) => {
 
       <img
         ref="_zoomElementRef"
+        :referrerpolicy="referrerPolicy"
         :src="imageSrc"
         :alt="alt"
         :title="title"

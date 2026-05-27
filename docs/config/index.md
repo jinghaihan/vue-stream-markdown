@@ -538,6 +538,12 @@ Fallback image URL when image fails to load.
 
 Whether to display image captions.
 
+#### referrerPolicy
+
+- **Type:** `ReferrerPolicy`
+
+Referrer policy to apply to rendered image requests, including image previews. For example, use `'no-referrer'` to prevent external image hosts from receiving the current page URL.
+
 #### errorComponent
 
 - **Type:** `Component`
