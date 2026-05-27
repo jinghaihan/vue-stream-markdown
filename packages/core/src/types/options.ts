@@ -4,11 +4,16 @@ export interface PreloadConfig<TBuiltinNodeRenderer extends string = string> {
 
 export type PreviewSegmentedPlacement = 'left' | 'center' | 'right' | 'auto'
 
+export interface HtmlPreviewerOptions {
+  sandbox?: string
+}
+
 export type PreviewerConfig<TComponent = unknown>
   = | boolean
     | {
       placement?: PreviewSegmentedPlacement
       progressive?: Record<string, boolean>
+      html?: HtmlPreviewerOptions
       components?: {
         mermaid?: boolean | TComponent
         html?: boolean | TComponent
