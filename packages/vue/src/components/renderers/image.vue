@@ -119,21 +119,24 @@ function handleMouseLeave() {
         data-stream-markdown="image-mask"
         class="rounded-lg bg-[rgb(0_0_0_/_0.1)] opacity-0 pointer-events-none transition-opacity duration-[var(--default-transition-duration)] ease inset-0 absolute"
       >
-        <component
-          :is="UI.Button"
+        <div
           v-if="!isLoading && enableDownload"
-          data-stream-markdown="image-download-button"
           class="pointer-events-auto bottom-2 right-2 absolute"
-          icon="download"
-          :name="t('button.download')"
-          icon-class="test"
-          :icon-width="16"
-          :icon-height="16"
-          :button-style="{
-            backgroundColor: 'color-mix(in oklab, var(--background) 90%, transparent)',
-          }"
-          @click="() => handleDownload(imageSrc)"
-        />
+        >
+          <component
+            :is="UI.Button"
+            data-stream-markdown="image-download-button"
+            icon="download"
+            :name="t('button.download')"
+            icon-class="test"
+            :icon-width="16"
+            :icon-height="16"
+            :button-style="{
+              backgroundColor: 'color-mix(in oklab, var(--background) 90%, transparent)',
+            }"
+            @click="() => handleDownload(imageSrc)"
+          />
+        </div>
       </div>
 
       <component :is="UI.Spin" v-if="imageModel.showSpin" />
