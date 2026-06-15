@@ -1,7 +1,7 @@
 {
   "name": "@stream-markdown/code",
   "type": "module",
-  "version": "1.0.0-beta.5",
+  "version": "1.0.0",
   "publishConfig": {
     "access": "public"
   },
