@@ -39,6 +39,13 @@ describe('html previewer', () => {
     expect(wrapper.find('iframe').attributes('sandbox')).toBe('allow-scripts')
   })
 
+  it('uses a fallback height and injected measurement script by default', () => {
+    const wrapper = mountHtmlPreviewer()
+
+    expect(wrapper.find('.html-previewer').attributes('style')).toContain('height: 360px')
+    expect(wrapper.find('iframe').attributes('srcdoc')).toContain('stream-markdown:html-preview-height')
+  })
+
   it('allows configuring the iframe sandbox', () => {
     const wrapper = mountHtmlPreviewer({
       html: {
@@ -47,5 +54,29 @@ describe('html previewer', () => {
     })
 
     expect(wrapper.find('iframe').attributes('sandbox')).toBe('allow-scripts allow-same-origin allow-forms')
+  })
+
+  it('keeps same-origin previews on direct DOM measurement', () => {
+    const wrapper = mountHtmlPreviewer({
+      html: {
+        sandbox: 'allow-scripts allow-same-origin',
+      },
+    })
+
+    expect(wrapper.find('iframe').attributes('srcdoc')).not.toContain('stream-markdown:html-preview-height')
+  })
+
+  it('allows configuring the fallback height and max height', () => {
+    const wrapper = mountHtmlPreviewer({
+      html: {
+        height: 480,
+        maxHeight: '80vh',
+        sandbox: '',
+      },
+    })
+
+    expect(wrapper.find('.html-previewer').attributes('style')).toContain('height: 480px')
+    expect(wrapper.find('.html-previewer').attributes('style')).toContain('max-height: 80vh')
+    expect(wrapper.find('iframe').attributes('srcdoc')).not.toContain('stream-markdown:html-preview-height')
   })
 })

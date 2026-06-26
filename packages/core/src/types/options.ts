@@ -5,6 +5,9 @@ export interface PreloadConfig<TBuiltinNodeRenderer extends string = string> {
 export type PreviewSegmentedPlacement = 'left' | 'center' | 'right' | 'auto'
 
 export interface HtmlPreviewerOptions {
+  autoHeight?: boolean
+  height?: number | string
+  maxHeight?: number | string
   sandbox?: string
 }
 

@@ -100,6 +100,9 @@ type PreviewerConfig
       placement?: PreviewSegmentedPlacement
       progressive?: Record<string, boolean>
       html?: {
+        autoHeight?: boolean
+        height?: number | string
+        maxHeight?: number | string
         sandbox?: string
       }
       components?: {
@@ -174,9 +177,20 @@ const previewers: PreviewerConfig = {
 
 - **Sandbox type:** `string`
 - **Default sandbox:** `'allow-scripts'`
+- **Height type:** `number | string`
+- **Default height:** `360`
+- **Auto height cap:** `1000` by default; numeric or `px` `maxHeight` overrides this cap
+- **Auto height type:** `boolean`
+- **Default auto height:** `true`
 - **Component type:** `boolean | Component | undefined` (within `components.html`)
 
-HTML code blocks use the built-in iframe previewer by default. Configure `html.sandbox` to change the iframe `sandbox` attribute, or use `components.html` to disable or replace the previewer.
+HTML code blocks use the built-in iframe previewer by default. Configure `html.sandbox` to change the iframe `sandbox` attribute, `html.height`/`html.maxHeight` to control fallback sizing, or `components.html` to disable or replace the previewer.
+
+The built-in previewer auto-sizes in layers:
+
+- With `allow-same-origin`, it measures the iframe document directly.
+- With `allow-scripts`, it injects an internal measurement script that reports height to the parent frame.
+- When auto-sizing is unavailable or disabled, it falls back to `html.height`.
 
 **HTML code block with preview:**
 
@@ -191,6 +205,8 @@ import { Markdown } from 'vue-stream-markdown'
 
 const previewers: PreviewerConfig = {
   html: {
+    height: 420,
+    maxHeight: '80vh',
     sandbox: 'allow-scripts allow-same-origin allow-forms',
   },
   components: {

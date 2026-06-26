@@ -2,6 +2,7 @@ import type { ParsedNode, SyntaxTree } from '@markmend/ast'
 import {
   applyMathRendererResult,
   applyMermaidRenderResult,
+  clampHtmlPreviewHeight,
   createCodeBlockControlDescriptors,
   createCodeBlockModel,
   createCodeRendererModel,
@@ -9,6 +10,7 @@ import {
   createFloatingStyle,
   createHeadingModel,
   createHtmlPreviewModel,
+  createHtmlPreviewSrcdoc,
   createImageModel,
   createImagePreviewModel,
   createLinkModel,
@@ -27,12 +29,18 @@ import {
   createZoomContainerModel,
   flipImagePreviewHorizontal,
   getCodeFileExtension,
+  getHtmlPreviewMessageHeight,
   getTableContent,
   handleCodeBlockControlAction,
   handleTableControlAction,
   resolveEnableAnimate,
   resolveEnableCaret,
   resolveFloatingDelay,
+  resolveHtmlPreviewAutoHeight,
+  resolveHtmlPreviewHeight,
+  resolveHtmlPreviewMaxHeight,
+  resolveHtmlPreviewMaxHeightValue,
+  resolveHtmlPreviewMeasurementMode,
   resolveHtmlPreviewSandbox,
   resolvePreloadNodeRenderers,
   rotateImagePreviewRight,
@@ -355,6 +363,62 @@ describe('core models', () => {
         sandbox: 'allow-scripts allow-same-origin allow-forms',
       },
     })).toBe('allow-scripts allow-same-origin allow-forms')
+    expect(resolveHtmlPreviewAutoHeight(undefined)).toBe(true)
+    expect(resolveHtmlPreviewAutoHeight({
+      html: {
+        autoHeight: false,
+      },
+    })).toBe(false)
+    expect(resolveHtmlPreviewHeight(undefined)).toBe('360px')
+    expect(resolveHtmlPreviewHeight({
+      html: {
+        height: 480,
+      },
+    })).toBe('480px')
+    expect(resolveHtmlPreviewMaxHeight({
+      html: {
+        maxHeight: '80vh',
+      },
+    })).toBe('80vh')
+    expect(resolveHtmlPreviewMaxHeightValue({
+      html: {
+        maxHeight: 800,
+      },
+    })).toBe(800)
+    expect(resolveHtmlPreviewMaxHeightValue({
+      html: {
+        maxHeight: '800px',
+      },
+    })).toBe(800)
+    expect(resolveHtmlPreviewMaxHeightValue({
+      html: {
+        maxHeight: '80vh',
+      },
+    })).toBeUndefined()
+    expect(resolveHtmlPreviewMeasurementMode('allow-scripts allow-same-origin', true)).toBe('dom')
+    expect(resolveHtmlPreviewMeasurementMode('allow-scripts', true)).toBe('message')
+    expect(resolveHtmlPreviewMeasurementMode('', true)).toBe('fallback')
+    expect(resolveHtmlPreviewMeasurementMode('allow-scripts allow-same-origin', false)).toBe('fallback')
+    expect(createHtmlPreviewSrcdoc('<body><div>Hello</div></body>')).toContain('stream-markdown:html-preview-height')
+    expect(createHtmlPreviewSrcdoc('<body><div>Hello</div></body>')).toContain('<script>')
+    expect(getHtmlPreviewMessageHeight({
+      type: 'stream-markdown:html-preview-height',
+      height: 120.2,
+    })).toBe(137)
+    expect(getHtmlPreviewMessageHeight({
+      type: 'stream-markdown:html-preview-height',
+      height: 8000,
+    })).toBe(1000)
+    expect(getHtmlPreviewMessageHeight({
+      type: 'stream-markdown:html-preview-height',
+      height: 8000,
+    }, 16, 800)).toBe(800)
+    expect(clampHtmlPreviewHeight(8000)).toBe(1000)
+    expect(clampHtmlPreviewHeight(8000, 800)).toBe(800)
+    expect(getHtmlPreviewMessageHeight({
+      type: 'other',
+      height: 120,
+    })).toBeUndefined()
     expect(resolveFloatingDelay([10, 20])).toEqual({ show: 10, hide: 20 })
     expect(createFloatingStyle({ x: 1, y: 2, strategy: 'fixed' })).toEqual({
       position: 'fixed',
