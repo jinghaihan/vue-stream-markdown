@@ -4,6 +4,7 @@ import nuxt from './playground/nuxt/.nuxt/eslint.config.mjs'
 export default defineConfig({
   unocss: true,
   formatters: true,
+  markdown: false,
   ignores: [
     '**/__fixtures__/**',
     'playground/nuxt/app/markdown/**/landing-page.md',

@@ -2,9 +2,6 @@
   "name": "@stream-markdown/math",
   "type": "module",
   "version": "1.0.1-beta.1",
-  "publishConfig": {
-    "access": "public"
-  },
   "homepage": "https://github.com/jinghaihan/vue-stream-markdown#readme",
   "repository": {
     "type": "git",
@@ -22,6 +19,9 @@
   "exports": {
     ".": "./dist/index.mjs",
     "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "types": "./dist/index.d.mts",
   "files": [

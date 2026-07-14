@@ -2,9 +2,6 @@
   "name": "@markmend/ast",
   "type": "module",
   "version": "1.0.1-beta.1",
-  "publishConfig": {
-    "access": "public"
-  },
   "description": "MDAST parser adapter for markmend.",
   "author": "jinghaihan",
   "license": "MIT",
@@ -25,6 +22,9 @@
   "exports": {
     ".": "./dist/index.mjs",
     "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "types": "./dist/index.d.mts",
   "files": [

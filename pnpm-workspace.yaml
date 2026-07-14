@@ -5,51 +5,52 @@ packages:
   - playground/*
   - docs
 overrides:
+  typescript: catalog:dev
   vue: catalog:frontend
 catalogs:
   build:
-    '@tsdown/css': ^0.22.0
+    '@tsdown/css': ^0.22.7
     '@vitejs/plugin-vue': ^6.0.7
-    tsdown: ^0.22.0
+    tsdown: ^0.22.7
     unplugin-icons: ^23.0.1
-    vite: ^8.0.8
+    vite: ^8.1.4
   dev:
-    '@typescript/native-preview': ^7.0.0-dev.20260516.1
+    '@typescript/native-preview': ^7.0.0-dev.20260707.2
     bumpp: ^11.1.0
-    happy-dom: ^20.9.0
+    happy-dom: ^20.10.6
     lightningcss: ^1.32.0
     nano-staged: ^1.0.2
     pncat: ^0.12.0
     simple-git-hooks: ^2.13.1
-    taze: ^19.12.0
-    tinyglobby: ^0.2.16
-    tsx: ^4.22.0
-    turbo: ^2.9.14
-    typescript: ^6.0.3
+    taze: ^19.14.1
+    tinyglobby: ^0.2.17
+    tsx: ^4.23.1
+    turbo: ^2.10.4
+    typescript: ~6.0.3
   docs:
     vitepress: ^1.6.4
-    vitepress-plugin-llms: ^1.12.2
+    vitepress-plugin-llms: ^1.13.3
   frontend:
-    '@floating-ui/dom': ^1.7.6
+    '@floating-ui/dom': ^1.8.0
     '@vueuse/core': ^14.3.0
-    unocss: ^66.6.8
-    vue: ^3.5.34
+    unocss: ^66.7.5
+    vue: ^3.5.39
   icons:
-    '@iconify-json/lucide': ^1.2.108
-    '@iconify-json/simple-icons': ^1.2.82
+    '@iconify-json/lucide': ^1.2.117
+    '@iconify-json/simple-icons': ^1.2.90
   inlined:
     '@antfu/utils': ^9.3.0
     quick-lru: ^7.3.0
     treechop: ^0.1.2
   lint:
-    '@nuxt/eslint': ^1.15.2
-    '@octohash/eslint-config': ^0.3.2
+    '@nuxt/eslint': ^1.16.0
+    '@octohash/eslint-config': ^0.4.1
     '@unocss/eslint-plugin': 66.5.9
-    eslint: ^10.4.0
+    eslint: ^10.7.0
     eslint-plugin-format: ^2.0.1
-    vue-tsc: ^3.2.9
+    vue-tsc: ^3.3.7
   parser:
-    marked: ^18.0.3
+    marked: ^18.0.6
     mdast-util-from-markdown: ^2.0.3
     mdast-util-frontmatter: ^2.0.1
     mdast-util-gfm: ^3.1.0
@@ -62,28 +63,28 @@ catalogs:
     micromark-extension-math: ^3.1.0
     micromark-util-types: ^2.0.2
     parse5: ^8.0.1
-    sanitize-html: ^2.17.4
+    sanitize-html: ^2.17.6
   playground:
     '@monaco-editor/loader': ^1.7.0
     '@nuxt/devtools': ^3.2.4
-    '@nuxtjs/color-mode': ^4.0.0
-    '@shikijs/monaco': ^4.0.2
-    '@unocss/nuxt': ^66.6.8
-    '@unocss/reset': ^66.6.8
+    '@nuxtjs/color-mode': ^4.0.1
+    '@shikijs/monaco': ^4.3.1
+    '@unocss/nuxt': ^66.7.5
+    '@unocss/reset': ^66.7.5
     '@vueuse/nuxt': ^14.3.0
     clsx: ^2.1.1
-    echarts: ^6.0.0
+    echarts: ^6.1.0
     lz-string: ^1.5.0
-    nuxt: ^4.4.5
+    nuxt: ^4.4.8
     tailwind-merge: ^3.6.0
     vue-json-pretty: ^2.6.0
   test:
-    '@vitest/coverage-v8': ^4.1.6
-    '@vue/test-utils': ^2.4.10
-    vitest: ^4.1.6
+    '@vitest/coverage-v8': ^4.1.10
+    '@vue/test-utils': ^2.4.11
+    vitest: ^4.1.10
   types:
     '@types/mdast': ^4.0.4
-    '@types/node': ^25.8.0
+    '@types/node': ^26.1.1
     '@types/sanitize-html': ^2.16.1
 onlyBuiltDependencies:
   - esbuild

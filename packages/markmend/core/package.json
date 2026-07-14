@@ -2,9 +2,6 @@
   "name": "@markmend/core",
   "type": "module",
   "version": "1.0.1-beta.1",
-  "publishConfig": {
-    "access": "public"
-  },
   "description": "Streaming-friendly Markdown processor with syntax completion.",
   "author": "jinghaihan",
   "license": "MIT",
@@ -24,6 +21,9 @@
   "exports": {
     ".": "./dist/index.mjs",
     "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "types": "./dist/index.d.mts",
   "files": [

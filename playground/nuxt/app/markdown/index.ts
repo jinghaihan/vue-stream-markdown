@@ -1,6 +1,9 @@
 import type { SelectOption } from 'vue-stream-markdown'
 
-export const markdownGlob = import.meta.glob('./*.md', { query: '?raw' })
+export const markdownGlob = import.meta.glob('./*.md', {
+  import: 'default',
+  query: '?raw',
+})
 
 export const DEFAULT_MARKDOWN_PATH = './landing-page.md'
 
@@ -32,6 +35,5 @@ export function getPresetOptions(): SelectOption[] {
 export async function getPresetContent(path: string): Promise<string> {
   if (!markdownGlob[path])
     return ''
-  const data = await markdownGlob[path]() as { default: string }
-  return data.default
+  return markdownGlob[path]()
 }
