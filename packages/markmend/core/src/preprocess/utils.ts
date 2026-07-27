@@ -264,6 +264,29 @@ export function findInlineCodeRanges(
 }
 
 /**
+ * Mask Markdown marker characters inside inline code while preserving all
+ * other characters and the original string offsets.
+ */
+export function maskInlineCodeMarkdownMarkers(
+  content: string,
+  inlineCodeRanges: TextRange[] = findInlineCodeRanges(content),
+): string {
+  if (!inlineCodeRanges.length)
+    return content
+
+  const characters = content.split('')
+  for (const range of inlineCodeRanges) {
+    for (let index = range.start; index < range.end; index++) {
+      const character = characters[index]
+      if (character === '*' || character === '_' || character === '~')
+        characters[index] = ' '
+    }
+  }
+
+  return characters.join('')
+}
+
+/**
  * Check if a position is within a math block (between $ or $$ delimiters)
  *
  * Note: we intentionally ignore single `$` here so that currency values
