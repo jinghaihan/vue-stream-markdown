@@ -286,6 +286,89 @@ export function maskInlineCodeMarkdownMarkers(
   return characters.join('')
 }
 
+const unicodeWordCharacterPattern = /[\p{L}\p{N}\p{M}]/u
+
+function isUnicodeWordCharacterAt(content: string, index: number): boolean {
+  if (index < 0 || index >= content.length)
+    return false
+
+  let characterIndex = index
+  const characterCode = content.charCodeAt(characterIndex)
+  // If the position points to the low surrogate of a supplementary
+  // character, move to the code point's starting position.
+  if (characterCode >= 0xDC00 && characterCode <= 0xDFFF)
+    characterIndex -= 1
+
+  const codePoint = content.codePointAt(characterIndex)
+  return codePoint !== undefined
+    && unicodeWordCharacterPattern.test(String.fromCodePoint(codePoint))
+}
+
+/**
+ * Check whether a character is escaped by an odd number of backslashes.
+ */
+export function isEscapedCharacter(content: string, index: number): boolean {
+  let backslashCount = 0
+  for (let i = index - 1; i >= 0 && content[i] === '\\'; i -= 1)
+    backslashCount += 1
+
+  return backslashCount % 2 === 1
+}
+
+/**
+ * Check whether an underscore run is inside a word.
+ *
+ * CommonMark does not allow underscore emphasis to open or close inside a
+ * word. Keeping this check separate lets streaming preprocessors use the
+ * same rule for both `_` and `__` markers.
+ */
+export function isUnderscoreInsideWord(
+  content: string,
+  start: number,
+  length = 1,
+): boolean {
+  return isUnicodeWordCharacterAt(content, start - 1)
+    && isUnicodeWordCharacterAt(content, start + length)
+}
+
+/**
+ * Check whether an underscore run should be ignored as an emphasis marker.
+ */
+export function shouldIgnoreUnderscoreMarker(
+  content: string,
+  start: number,
+  length = 1,
+): boolean {
+  return isEscapedCharacter(content, start)
+    || isUnderscoreInsideWord(content, start, length)
+}
+
+/**
+ * Mask escaped and intraword underscore runs while preserving string offsets.
+ */
+export function maskInvalidUnderscoreMarkers(content: string): string {
+  const characters = content.split('')
+
+  for (let index = 0; index < content.length;) {
+    if (content[index] !== '_') {
+      index += 1
+      continue
+    }
+
+    const runStart = index
+    while (index < content.length && content[index] === '_')
+      index += 1
+
+    const runLength = index - runStart
+    if (shouldIgnoreUnderscoreMarker(content, runStart, runLength)) {
+      for (let markerIndex = runStart; markerIndex < index; markerIndex += 1)
+        characters[markerIndex] = ' '
+    }
+  }
+
+  return characters.join('')
+}
+
 /**
  * Check if a position is within a math block (between $ or $$ delimiters)
  *
