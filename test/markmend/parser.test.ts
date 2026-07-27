@@ -280,6 +280,45 @@ describe('markdown-parser', () => {
     expect(spy).toHaveBeenCalledTimes(1)
   })
 
+  it('should use the content cache when a block moves to another position', () => {
+    const parser = new MarkdownAstParser({
+      mode: 'streaming',
+      parseMarkdownIntoBlocks: content => content.split('\n'),
+    })
+    const spy = vi.spyOn(parser as unknown as { markdownToAst: (content: string) => SyntaxTree }, 'markdownToAst')
+
+    parser.parseMarkdown('first\nsecond')
+    parser.parseMarkdown('new\nfirst\nsecond')
+
+    expect(spy).toHaveBeenCalledTimes(3)
+  })
+
+  it('should reuse the previous ast for unchanged blocks beyond cache capacity', () => {
+    const blocks = Array.from(
+      { length: 150 },
+      (_, index) => `block-${index}`,
+    )
+    const parser = new MarkdownAstParser({
+      mode: 'streaming',
+      parseMarkdownIntoBlocks: content => content.split('\n'),
+    })
+    const spy = vi.spyOn(parser as unknown as { markdownToAst: (content: string) => SyntaxTree }, 'markdownToAst')
+
+    const initial = parser.parseMarkdown(blocks.join('\n'))
+
+    spy.mockClear()
+    blocks[149] += '-tail'
+    const updated = parser.parseMarkdown(blocks.join('\n'))
+
+    const changedCompletedBlocks = initial.asts
+      .slice(0, -1)
+      .filter((ast, index) => ast !== updated.asts[index])
+      .length
+
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(changedCompletedBlocks).toBe(0)
+  })
+
   it('should skip postprocess when mode is static', () => {
     const parser = new MarkdownAstParser({
       mode: 'static',

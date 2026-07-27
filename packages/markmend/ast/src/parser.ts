@@ -142,7 +142,19 @@ export class MarkdownAstParser {
       const syntaxLoading = isLastBlock && blocks[index] !== content
       const tailTextLoading = isLastBlock && this.mode === 'streaming'
 
-      // check if the ast is cached
+      // Reuse the AST from the previous parse when the block stayed at the
+      // same position and its processed content did not change. This is the
+      // primary reuse path for streaming documents and does not depend on the
+      // bounded content-keyed cache retaining the whole stable prefix.
+      const previousContent = this.contents[index]
+      const previousAst = this.asts[index]
+      if (previousAst && previousContent === content) {
+        asts.push(applyLoadingState(previousAst, syntaxLoading, tailTextLoading))
+        continue
+      }
+
+      // Fall back to the content-keyed cache for blocks that moved or
+      // reappeared at a different position.
       if (this.astCache.has(content)) {
         const ast = this.astCache.get(content)!
         asts.push(applyLoadingState(ast, syntaxLoading, tailTextLoading))
