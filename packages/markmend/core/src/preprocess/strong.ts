@@ -10,11 +10,15 @@ import {
 import {
   appendBeforeTrailingWhitespace,
   calculateParagraphOffset,
+  findClosedCodeBlockRanges,
+  findInlineCodeRanges,
   getLastParagraphWithIndex,
   isInsideUnclosedCodeBlock,
+  isPositionInRanges,
   isWithinHtmlTag,
   isWithinLinkOrImageUrl,
   isWithinMathBlock,
+  maskInlineCodeMarkdownMarkers,
   removeMathBlocksFromText,
   removeUrlsFromText,
 } from './utils'
@@ -65,9 +69,13 @@ export function fixStrong(
   // paragraph that contains the unclosed strong markers.
   const lines = content.split('\n')
   const { lastParagraph, startIndex: paragraphStartIndex } = getLastParagraphWithIndex(content, true)
+  const codeBlockRanges = findClosedCodeBlockRanges(lastParagraph)
+  const inlineCodeRanges = findInlineCodeRanges(lastParagraph, codeBlockRanges)
 
-  // Remove code blocks from the last paragraph to avoid processing strong inside them
-  const lastParagraphWithoutCodeBlocks = lastParagraph.replace(codeBlockPattern, '')
+  // Remove code blocks and mask Markdown markers inside inline code to avoid
+  // treating code content as incomplete strong emphasis.
+  const lastParagraphWithoutInlineCodeMarkers = maskInlineCodeMarkdownMarkers(lastParagraph, inlineCodeRanges)
+  const lastParagraphWithoutCodeBlocks = lastParagraphWithoutInlineCodeMarkers.replace(codeBlockPattern, '')
   // Remove URLs to avoid counting markdown syntax inside URLs (URLs may contain _, *, ~)
   const lastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(lastParagraphWithoutCodeBlocks)
   // Remove math blocks to avoid counting markdown syntax inside math (math may contain **, __, etc.)
@@ -103,6 +111,8 @@ export function fixStrong(
         i += 2 // Skip the next two backticks
         continue
       }
+      if (isPositionInRanges(i, inlineCodeRanges))
+        continue
       // Skip if inside code block
       if (inCodeBlock) {
         continue
@@ -144,6 +154,8 @@ export function fixStrong(
         i += 2 // Skip the next two backticks
         continue
       }
+      if (isPositionInRanges(i, inlineCodeRanges))
+        continue
       // Skip if inside code block
       if (inCodeBlock) {
         continue
@@ -182,7 +194,7 @@ export function fixStrong(
     // Recalculate after removal. Again, skip any trailing empty line so we
     // still operate on the actual last non-empty paragraph.
     const { lastParagraph: newLastParagraph } = getLastParagraphWithIndex(content, true)
-    const newLastParagraphWithoutCodeBlocks = newLastParagraph.replace(codeBlockPattern, '')
+    const newLastParagraphWithoutCodeBlocks = maskInlineCodeMarkdownMarkers(newLastParagraph).replace(codeBlockPattern, '')
     const newLastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(newLastParagraphWithoutCodeBlocks)
     const newLastParagraphWithoutCodeBlocksAndUrlsAndMath = removeMathBlocksFromText(newLastParagraphWithoutCodeBlocksAndUrls, options)
     const newAsteriskMatches = newLastParagraphWithoutCodeBlocksAndUrlsAndMath.match(doubleAsteriskPattern)
@@ -208,7 +220,7 @@ export function fixStrong(
     // Recalculate after removal. Again, skip any trailing empty line so we
     // still operate on the actual last non-empty paragraph.
     const { lastParagraph: newLastParagraph } = getLastParagraphWithIndex(content, true)
-    const newLastParagraphWithoutCodeBlocks = newLastParagraph.replace(codeBlockPattern, '')
+    const newLastParagraphWithoutCodeBlocks = maskInlineCodeMarkdownMarkers(newLastParagraph).replace(codeBlockPattern, '')
     const newLastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(newLastParagraphWithoutCodeBlocks)
     const newLastParagraphWithoutCodeBlocksAndUrlsAndMath = removeMathBlocksFromText(newLastParagraphWithoutCodeBlocksAndUrls, options)
     const newUnderscoreMatches = newLastParagraphWithoutCodeBlocksAndUrlsAndMath.match(doubleUnderscorePattern)
@@ -268,7 +280,7 @@ export function fixStrong(
     // But only if we didn't just remove a trailing single *
     if (!removedTrailingSingle) {
       const { lastParagraph: currentLastParagraph } = getLastParagraphWithIndex(content, true)
-      const currentLastParagraphWithoutCodeBlocks = currentLastParagraph.replace(codeBlockPattern, '')
+      const currentLastParagraphWithoutCodeBlocks = maskInlineCodeMarkdownMarkers(currentLastParagraph).replace(codeBlockPattern, '')
       const currentLastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(currentLastParagraphWithoutCodeBlocks)
       const currentLastParagraphWithoutCodeBlocksAndUrlsAndMath = removeMathBlocksFromText(currentLastParagraphWithoutCodeBlocksAndUrls, options)
       const withoutDoubleAsterisk = currentLastParagraphWithoutCodeBlocksAndUrlsAndMath.replace(doubleAsteriskPattern, '')
@@ -288,7 +300,7 @@ export function fixStrong(
     // But only if we didn't just remove a trailing single _
     if (!removedTrailingSingle) {
       const { lastParagraph: currentLastParagraph } = getLastParagraphWithIndex(content)
-      const currentLastParagraphWithoutCodeBlocks = currentLastParagraph.replace(codeBlockPattern, '')
+      const currentLastParagraphWithoutCodeBlocks = maskInlineCodeMarkdownMarkers(currentLastParagraph).replace(codeBlockPattern, '')
       const currentLastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(currentLastParagraphWithoutCodeBlocks)
       const currentLastParagraphWithoutCodeBlocksAndUrlsAndMath = removeMathBlocksFromText(currentLastParagraphWithoutCodeBlocksAndUrls, options)
       const withoutDoubleUnderscore = currentLastParagraphWithoutCodeBlocksAndUrlsAndMath.replace(doubleUnderscorePattern, '')

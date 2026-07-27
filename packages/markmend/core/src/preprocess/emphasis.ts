@@ -8,11 +8,15 @@ import {
 } from './pattern'
 import {
   calculateParagraphOffset,
+  findClosedCodeBlockRanges,
+  findInlineCodeRanges,
   getLastParagraphWithIndex,
   isInsideUnclosedCodeBlock,
+  isPositionInRanges,
   isWithinHtmlTag,
   isWithinLinkOrImageUrl,
   isWithinMathBlock,
+  maskInlineCodeMarkdownMarkers,
   removeUrlsFromText,
 } from './utils'
 
@@ -31,9 +35,13 @@ export function fixEmphasis(content: string): string {
   // Find the last paragraph
   const lines = content.split('\n')
   const { lastParagraph, startIndex: paragraphStartIndex } = getLastParagraphWithIndex(content)
+  const codeBlockRanges = findClosedCodeBlockRanges(lastParagraph)
+  const inlineCodeRanges = findInlineCodeRanges(lastParagraph, codeBlockRanges)
 
-  // Remove code blocks from the last paragraph to avoid processing emphasis inside them
-  const lastParagraphWithoutCodeBlocks = lastParagraph.replace(codeBlockPattern, '')
+  // Remove code blocks and mask Markdown markers inside inline code to avoid
+  // treating code content as incomplete emphasis.
+  const lastParagraphWithoutInlineCodeMarkers = maskInlineCodeMarkdownMarkers(lastParagraph, inlineCodeRanges)
+  const lastParagraphWithoutCodeBlocks = lastParagraphWithoutInlineCodeMarkers.replace(codeBlockPattern, '')
   // Remove URLs to avoid counting markdown syntax inside URLs (URLs may contain _, *, ~)
   const lastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(lastParagraphWithoutCodeBlocks)
 
@@ -64,6 +72,9 @@ export function fixEmphasis(content: string): string {
 
     // Search backwards in the original lastParagraph to find the last * that's not in a URL
     for (let i = lastParagraph.length - 1; i >= 0; i--) {
+      if (isPositionInRanges(i, codeBlockRanges) || isPositionInRanges(i, inlineCodeRanges))
+        continue
+
       if (lastParagraph[i] === '*') {
         const absolutePos = paragraphOffset + i
         // Skip if it's part of ** (we already removed those)
@@ -108,6 +119,9 @@ export function fixEmphasis(content: string): string {
 
     // Search backwards in the original lastParagraph to find the last _ that's not in a URL
     for (let i = lastParagraph.length - 1; i >= 0; i--) {
+      if (isPositionInRanges(i, codeBlockRanges) || isPositionInRanges(i, inlineCodeRanges))
+        continue
+
       if (lastParagraph[i] === '_') {
         const absolutePos = paragraphOffset + i
         // Skip if it's part of __ (we already removed those)
@@ -161,6 +175,9 @@ export function fixEmphasis(content: string): string {
     const paragraphOffset = calculateParagraphOffset(paragraphStartIndex, lines)
     let lastUnderscorePosInOriginal = -1
     for (let i = lastParagraph.length - 1; i >= 0; i--) {
+      if (isPositionInRanges(i, codeBlockRanges) || isPositionInRanges(i, inlineCodeRanges))
+        continue
+
       if (lastParagraph[i] === '_' && (i === 0 || lastParagraph[i - 1] !== '_')) {
         const absolutePos = paragraphOffset + i
         if (!isWithinMathBlock(content, absolutePos) && !isWithinLinkOrImageUrl(content, absolutePos) && !isWithinHtmlTag(content, absolutePos)) {

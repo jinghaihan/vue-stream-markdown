@@ -388,6 +388,16 @@ export const emphasisTestCases: TestCasesByCategory = {
       expected: '__bold__ and _italic_',
     },
     {
+      description: 'should ignore _ inside inline code',
+      input: '`a_b`',
+      expected: '`a_b`',
+    },
+    {
+      description: 'should still complete _ outside inline code',
+      input: '`a_b` and _italic',
+      expected: '`a_b` and _italic_',
+    },
+    {
       description: 'should only process last paragraph',
       input: 'Para1 _unclosed\n\nPara2 _text',
       expected: 'Para1 _unclosed\n\nPara2 _text_',
@@ -570,6 +580,16 @@ export const strongTestCases: TestCasesByCategory = {
       description: 'should complete __ with trailing _',
       input: 'Hello __world_',
       expected: 'Hello __world__',
+    },
+    {
+      description: 'should ignore __ inside inline code',
+      input: '`a__b`',
+      expected: '`a__b`',
+    },
+    {
+      description: 'should still complete __ outside inline code',
+      input: '`a__b` and __bold',
+      expected: '`a__b` and __bold__',
     },
     {
       description: 'should not modify closed __',
