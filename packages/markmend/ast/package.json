@@ -1,7 +1,7 @@
 {
   "name": "@markmend/ast",
   "type": "module",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "MDAST parser adapter for markmend.",
   "author": "jinghaihan",
   "license": "MIT",
