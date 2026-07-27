@@ -17,7 +17,9 @@ import {
   isWithinLinkOrImageUrl,
   isWithinMathBlock,
   maskInlineCodeMarkdownMarkers,
+  maskInvalidUnderscoreMarkers,
   removeUrlsFromText,
+  shouldIgnoreUnderscoreMarker,
 } from './utils'
 
 /**
@@ -44,16 +46,17 @@ export function fixEmphasis(content: string): string {
   const lastParagraphWithoutCodeBlocks = lastParagraphWithoutInlineCodeMarkers.replace(codeBlockPattern, '')
   // Remove URLs to avoid counting markdown syntax inside URLs (URLs may contain _, *, ~)
   const lastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(lastParagraphWithoutCodeBlocks)
+  const lastParagraphForMarkerCounting = maskInvalidUnderscoreMarkers(lastParagraphWithoutCodeBlocksAndUrls)
 
   // Check asterisk emphasis first (original behavior)
   // Remove ** to count only single *
-  const withoutDoubleAsterisk = lastParagraphWithoutCodeBlocksAndUrls.replace(doubleAsteriskPattern, '')
+  const withoutDoubleAsterisk = lastParagraphForMarkerCounting.replace(doubleAsteriskPattern, '')
   const asteriskMatches = withoutDoubleAsterisk.match(singleAsteriskPattern)
   const asteriskCount = asteriskMatches ? asteriskMatches.length : 0
 
   // Check underscore emphasis
   // Remove __ to count only single _
-  const withoutDoubleUnderscore = lastParagraphWithoutCodeBlocksAndUrls.replace(doubleUnderscorePattern, '')
+  const withoutDoubleUnderscore = lastParagraphForMarkerCounting.replace(doubleUnderscorePattern, '')
   const underscoreMatches = withoutDoubleUnderscore.match(singleUnderscorePattern)
   const underscoreCount = underscoreMatches ? underscoreMatches.length : 0
 
@@ -128,6 +131,8 @@ export function fixEmphasis(content: string): string {
         if (i > 0 && lastParagraph[i - 1] === '_') {
           continue
         }
+        if (shouldIgnoreUnderscoreMarker(lastParagraph, i))
+          continue
         // Skip if it's in a URL, math block, or HTML tag
         if (!isWithinMathBlock(content, absolutePos) && !isWithinLinkOrImageUrl(content, absolutePos) && !isWithinHtmlTag(content, absolutePos)) {
           lastUnderscorePos = i
@@ -179,6 +184,8 @@ export function fixEmphasis(content: string): string {
         continue
 
       if (lastParagraph[i] === '_' && (i === 0 || lastParagraph[i - 1] !== '_')) {
+        if (shouldIgnoreUnderscoreMarker(lastParagraph, i))
+          continue
         const absolutePos = paragraphOffset + i
         if (!isWithinMathBlock(content, absolutePos) && !isWithinLinkOrImageUrl(content, absolutePos) && !isWithinHtmlTag(content, absolutePos)) {
           lastUnderscorePosInOriginal = absolutePos

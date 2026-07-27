@@ -388,6 +388,16 @@ export const emphasisTestCases: TestCasesByCategory = {
       expected: '__bold__ and _italic_',
     },
     {
+      description: 'should not complete an underscore inside a word',
+      input: 'a_b',
+      expected: 'a_b',
+    },
+    {
+      description: 'should not complete an escaped underscore',
+      input: 'a\\_b',
+      expected: 'a\\_b',
+    },
+    {
       description: 'should ignore _ inside inline code',
       input: '`a_b`',
       expected: '`a_b`',
@@ -575,6 +585,16 @@ export const strongTestCases: TestCasesByCategory = {
       description: 'should complete unclosed __',
       input: 'Hello __world',
       expected: 'Hello __world__',
+    },
+    {
+      description: 'should not complete __ inside a word',
+      input: 'a__b',
+      expected: 'a__b',
+    },
+    {
+      description: 'should not complete escaped __',
+      input: 'a\\__b',
+      expected: 'a\\__b',
     },
     {
       description: 'should complete __ with trailing _',

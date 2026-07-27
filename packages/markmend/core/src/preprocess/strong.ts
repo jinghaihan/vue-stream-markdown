@@ -19,8 +19,10 @@ import {
   isWithinLinkOrImageUrl,
   isWithinMathBlock,
   maskInlineCodeMarkdownMarkers,
+  maskInvalidUnderscoreMarkers,
   removeMathBlocksFromText,
   removeUrlsFromText,
+  shouldIgnoreUnderscoreMarker,
 } from './utils'
 
 /**
@@ -80,6 +82,7 @@ export function fixStrong(
   const lastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(lastParagraphWithoutCodeBlocks)
   // Remove math blocks to avoid counting markdown syntax inside math (math may contain **, __, etc.)
   const lastParagraphWithoutCodeBlocksAndUrlsAndMath = removeMathBlocksFromText(lastParagraphWithoutCodeBlocksAndUrls, options)
+  const lastParagraphForMarkerCounting = maskInvalidUnderscoreMarkers(lastParagraphWithoutCodeBlocksAndUrlsAndMath)
 
   // Check if content ends with a single * or _ (not ** or __)
   const endsWithSingleAsterisk = content.endsWith('*') && !content.endsWith('**')
@@ -90,7 +93,7 @@ export function fixStrong(
   const asteriskCount = asteriskMatches ? asteriskMatches.length : 0
 
   // Count __ in the last paragraph only (excluding code blocks, URLs, and math blocks)
-  const underscoreMatches = lastParagraphWithoutCodeBlocksAndUrlsAndMath.match(doubleUnderscorePattern)
+  const underscoreMatches = lastParagraphForMarkerCounting.match(doubleUnderscorePattern)
   const underscoreCount = underscoreMatches ? underscoreMatches.length : 0
 
   // Track what needs to be done
@@ -162,6 +165,10 @@ export function fixStrong(
       }
       // Check for __
       if (lastParagraph.substring(i, i + 2) === '__') {
+        if (shouldIgnoreUnderscoreMarker(lastParagraph, i, 2)) {
+          i += 1
+          continue
+        }
         actualLastUnderscorePos = i
         i += 1 // Skip the second _
       }
@@ -175,7 +182,7 @@ export function fixStrong(
       return content
     }
 
-    const afterLast = lastParagraphWithoutCodeBlocksAndUrlsAndMath.substring(lastParagraphWithoutCodeBlocksAndUrlsAndMath.lastIndexOf('__') + 2).trim()
+    const afterLast = lastParagraphForMarkerCounting.substring(lastParagraphForMarkerCounting.lastIndexOf('__') + 2).trim()
 
     if (afterLast.length > 0) {
       needsUnderscoreCompletion = true
@@ -223,11 +230,12 @@ export function fixStrong(
     const newLastParagraphWithoutCodeBlocks = maskInlineCodeMarkdownMarkers(newLastParagraph).replace(codeBlockPattern, '')
     const newLastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(newLastParagraphWithoutCodeBlocks)
     const newLastParagraphWithoutCodeBlocksAndUrlsAndMath = removeMathBlocksFromText(newLastParagraphWithoutCodeBlocksAndUrls, options)
-    const newUnderscoreMatches = newLastParagraphWithoutCodeBlocksAndUrlsAndMath.match(doubleUnderscorePattern)
+    const newLastParagraphForMarkerCounting = maskInvalidUnderscoreMarkers(newLastParagraphWithoutCodeBlocksAndUrlsAndMath)
+    const newUnderscoreMatches = newLastParagraphForMarkerCounting.match(doubleUnderscorePattern)
     const newUnderscoreCount = newUnderscoreMatches ? newUnderscoreMatches.length : 0
     if (newUnderscoreCount % 2 === 1) {
-      const lastUnderscorePos = newLastParagraphWithoutCodeBlocksAndUrlsAndMath.lastIndexOf('__')
-      const afterLast = newLastParagraphWithoutCodeBlocksAndUrlsAndMath.substring(lastUnderscorePos + 2).trim()
+      const lastUnderscorePos = newLastParagraphForMarkerCounting.lastIndexOf('__')
+      const afterLast = newLastParagraphForMarkerCounting.substring(lastUnderscorePos + 2).trim()
       if (afterLast.length > 0) {
         needsUnderscoreCompletion = true
         needsUnderscoreRemoval = false
@@ -264,7 +272,7 @@ export function fixStrong(
   if (needsAsteriskCompletion && needsUnderscoreCompletion) {
     // Both need completion - complete the one that appears first
     const firstAsteriskPos = lastParagraphWithoutCodeBlocksAndUrlsAndMath.indexOf('**')
-    const firstUnderscorePos = lastParagraphWithoutCodeBlocksAndUrlsAndMath.indexOf('__')
+    const firstUnderscorePos = lastParagraphForMarkerCounting.indexOf('__')
     if (firstAsteriskPos < firstUnderscorePos) {
       // Asterisk appears first, complete underscore first, then asterisk
       return appendBeforeTrailingWhitespace(content, '__**')
@@ -303,7 +311,7 @@ export function fixStrong(
       const currentLastParagraphWithoutCodeBlocks = maskInlineCodeMarkdownMarkers(currentLastParagraph).replace(codeBlockPattern, '')
       const currentLastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(currentLastParagraphWithoutCodeBlocks)
       const currentLastParagraphWithoutCodeBlocksAndUrlsAndMath = removeMathBlocksFromText(currentLastParagraphWithoutCodeBlocksAndUrls, options)
-      const withoutDoubleUnderscore = currentLastParagraphWithoutCodeBlocksAndUrlsAndMath.replace(doubleUnderscorePattern, '')
+      const withoutDoubleUnderscore = maskInvalidUnderscoreMarkers(currentLastParagraphWithoutCodeBlocksAndUrlsAndMath).replace(doubleUnderscorePattern, '')
       const singleUnderscoreMatches = withoutDoubleUnderscore.match(singleUnderscorePattern)
       const singleUnderscoreCount = singleUnderscoreMatches ? singleUnderscoreMatches.length : 0
       if (singleUnderscoreCount % 2 === 1) {
