@@ -1,8 +1,8 @@
-const CSS_COLOR_FUNCTION_PATTERN = /^(?:hsl|rgb|oklch|lab|lch)\(/
+const CSS_RESOLVED_COLOR_PATTERN = /^(?:#|(?:hsl|rgb|oklch|lab|lch)\()/
 
 export function normalizeThemeVariableValue(value: string): string | undefined {
   const normalizedValue = value.trim()
-  if (!normalizedValue || CSS_COLOR_FUNCTION_PATTERN.test(normalizedValue))
+  if (!normalizedValue || CSS_RESOLVED_COLOR_PATTERN.test(normalizedValue))
     return undefined
 
   return `hsl(${normalizedValue})`
