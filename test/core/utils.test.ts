@@ -5,6 +5,7 @@ import {
   getTransitionName,
   normalizeAnimationDuration,
   normalizeCssSize,
+  normalizeThemeVariableValue,
   resolveTableAlign,
   resolveTextAnimationSplit,
   shouldAnimateNode,
@@ -73,6 +74,17 @@ describe('core utilities', () => {
     expect(normalizeAnimationDuration(undefined)).toBeUndefined()
     expect(normalizeCssSize(320)).toBe('320px')
     expect(normalizeCssSize('60vh')).toBe('60vh')
+  })
+
+  it('wraps bare hsl channels and leaves resolved theme colors untouched', () => {
+    expect(normalizeThemeVariableValue('30 29% 95%')).toBe('hsl(30 29% 95%)')
+    expect(normalizeThemeVariableValue(' 0 0% 100% ')).toBe('hsl(0 0% 100%)')
+    expect(normalizeThemeVariableValue('#fff')).toBeUndefined()
+    expect(normalizeThemeVariableValue('#f5f1ed')).toBeUndefined()
+    expect(normalizeThemeVariableValue('hsl(30 29% 95%)')).toBeUndefined()
+    expect(normalizeThemeVariableValue('rgb(245 241 237)')).toBeUndefined()
+    expect(normalizeThemeVariableValue('oklch(0.96 0.01 70)')).toBeUndefined()
+    expect(normalizeThemeVariableValue('')).toBeUndefined()
   })
 
   it('resolves table alignment and unwraps table cell children', () => {
