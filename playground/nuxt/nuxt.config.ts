@@ -34,6 +34,15 @@ export default defineNuxtConfig({
   future: { compatibilityVersion: 4 },
   compatibilityDate: 'latest',
   vite: {
+    $client: {
+      build: {
+        rolldownOptions: {
+          output: {
+            codeSplitting: false,
+          },
+        },
+      },
+    },
     ssr: {
       noExternal: ['sanitize-html'],
     },
