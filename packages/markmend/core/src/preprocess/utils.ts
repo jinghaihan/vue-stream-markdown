@@ -76,6 +76,21 @@ export function getLastParagraphWithIndex(
 }
 
 /**
+ * Hide a bare marker when it is the only content in the last paragraph.
+ * Returns undefined when the paragraph does not contain one of the markers.
+ */
+export function hideBareFormattingMarker(
+  content: string,
+  markers: readonly string[],
+): string | undefined {
+  const { lastParagraph } = getLastParagraphWithIndex(content)
+  if (!markers.includes(lastParagraph.trim()))
+    return undefined
+
+  return content.slice(0, content.length - lastParagraph.length).trimEnd()
+}
+
+/**
  * Find the index of the last non-empty line
  *
  * @param lines - Array of lines

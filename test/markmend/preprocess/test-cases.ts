@@ -3,10 +3,15 @@ export interface TestCase {
   input: string
   expected: string
   integrationExpected?: string
-  preprocessOptions?: { singleDollarTextMath?: boolean }
+  preprocessOptions?: {
+    hideBareFormattingMarkers?: boolean
+    singleDollarTextMath?: boolean
+  }
 }
 
 export type TestCasesByCategory = Record<string, TestCase[]>
+
+const preserveBareFormattingMarkers = { hideBareFormattingMarkers: false } as const
 
 export const codeTestCases: TestCasesByCategory = {
   'code-inline': [
@@ -177,14 +182,26 @@ export const deleteTestCases: TestCasesByCategory = {
       expected: 'Hello ~~world~~',
     },
     {
-      description: 'should preserve bare ~',
+      description: 'should hide bare ~ by default',
       input: '~',
-      expected: '~',
+      expected: '',
     },
     {
-      description: 'should preserve bare ~~',
+      description: 'should preserve bare ~ when configured',
+      input: '~',
+      expected: '~',
+      preprocessOptions: preserveBareFormattingMarkers,
+    },
+    {
+      description: 'should hide bare ~~ by default',
+      input: '~~',
+      expected: '',
+    },
+    {
+      description: 'should preserve bare ~~ when configured',
       input: '~~',
       expected: '~~',
+      preprocessOptions: preserveBareFormattingMarkers,
     },
     {
       description: 'should remove trailing ~~',
@@ -299,9 +316,15 @@ export const deleteTestCases: TestCasesByCategory = {
 export const emphasisTestCases: TestCasesByCategory = {
   'emphasis-asterisk': [
     {
-      description: 'should preserve bare *',
+      description: 'should hide bare * by default',
+      input: '*',
+      expected: '',
+    },
+    {
+      description: 'should preserve bare * when configured',
       input: '*',
       expected: '*',
+      preprocessOptions: preserveBareFormattingMarkers,
     },
     {
       description: 'should complete unclosed *',
@@ -319,9 +342,15 @@ export const emphasisTestCases: TestCasesByCategory = {
       expected: 'Hello *world*',
     },
     {
-      description: 'should preserve bare * in paragraph',
+      description: 'should hide bare * in paragraph by default',
+      input: 'Hello\n\n*',
+      expected: 'Hello',
+    },
+    {
+      description: 'should preserve bare * in paragraph when configured',
       input: 'Hello\n\n*',
       expected: 'Hello\n\n*',
+      preprocessOptions: preserveBareFormattingMarkers,
     },
     {
       description: 'should ignore ** when counting *',
@@ -358,9 +387,15 @@ export const emphasisTestCases: TestCasesByCategory = {
 
   'emphasis-underscore': [
     {
-      description: 'should preserve bare _',
+      description: 'should hide bare _ by default',
+      input: '_',
+      expected: '',
+    },
+    {
+      description: 'should preserve bare _ when configured',
       input: '_',
       expected: '_',
+      preprocessOptions: preserveBareFormattingMarkers,
     },
     {
       description: 'should complete unclosed _',
@@ -378,9 +413,15 @@ export const emphasisTestCases: TestCasesByCategory = {
       expected: 'Hello _world_',
     },
     {
-      description: 'should preserve bare _ in paragraph',
+      description: 'should hide bare _ in paragraph by default',
+      input: 'Hello\n\n_',
+      expected: 'Hello',
+    },
+    {
+      description: 'should preserve bare _ in paragraph when configured',
       input: 'Hello\n\n_',
       expected: 'Hello\n\n_',
+      preprocessOptions: preserveBareFormattingMarkers,
     },
     {
       description: 'should ignore __ when counting _',
@@ -506,19 +547,32 @@ export const strongTestCases: TestCasesByCategory = {
       expected: 'Hello **world**',
     },
     {
-      description: 'should preserve bare **',
+      description: 'should hide bare ** by default',
+      input: '**',
+      expected: '',
+    },
+    {
+      description: 'should preserve bare ** when configured',
       input: '**',
       expected: '**',
+      preprocessOptions: preserveBareFormattingMarkers,
     },
     {
-      description: 'should preserve bare *',
+      description: 'should preserve bare * when configured',
       input: '*',
       expected: '*',
+      preprocessOptions: preserveBareFormattingMarkers,
     },
     {
-      description: 'should preserve bare ** in paragraph',
+      description: 'should hide bare ** in paragraph by default',
+      input: 'Hello\n\n**',
+      expected: 'Hello',
+    },
+    {
+      description: 'should preserve bare ** in paragraph when configured',
       input: 'Hello\n\n**',
       expected: 'Hello\n\n**',
+      preprocessOptions: preserveBareFormattingMarkers,
     },
     {
       description: 'should only process last paragraph',
@@ -616,19 +670,32 @@ export const strongTestCases: TestCasesByCategory = {
       expected: 'Hello __world__',
     },
     {
-      description: 'should preserve bare __',
+      description: 'should hide bare __ by default',
+      input: '__',
+      expected: '',
+    },
+    {
+      description: 'should preserve bare __ when configured',
       input: '__',
       expected: '__',
+      preprocessOptions: preserveBareFormattingMarkers,
     },
     {
-      description: 'should preserve bare _',
+      description: 'should preserve bare _ when configured',
       input: '_',
       expected: '_',
+      preprocessOptions: preserveBareFormattingMarkers,
     },
     {
-      description: 'should preserve bare __ in paragraph',
+      description: 'should hide bare __ in paragraph by default',
+      input: 'Hello\n\n__',
+      expected: 'Hello',
+    },
+    {
+      description: 'should preserve bare __ in paragraph when configured',
       input: 'Hello\n\n__',
       expected: 'Hello\n\n__',
+      preprocessOptions: preserveBareFormattingMarkers,
     },
     {
       description: 'should only process last paragraph',
@@ -1582,14 +1649,14 @@ export const streamingDelimiterSafetyCases: TestCase[] = [
   completeStreamingCase('single tilde beside accented letter', 'é~x', 'é\\~x'),
   completeStreamingCase('single tilde beside supplementary Unicode letter', '𐐀~a', '𐐀\\~a'),
   keepStreamingCase('complete double-tilde deletion', '~~strikethrough~~'),
-  keepStreamingCase('bare single asterisk', '*'),
-  keepStreamingCase('bare double asterisk', '**'),
+  keepStreamingCase('bare single asterisk', '*', preserveBareFormattingMarkers),
+  keepStreamingCase('bare double asterisk', '**', preserveBareFormattingMarkers),
   keepStreamingCase('bare triple asterisk', '***'),
-  keepStreamingCase('bare single underscore', '_'),
-  keepStreamingCase('bare double underscore', '__'),
+  keepStreamingCase('bare single underscore', '_', preserveBareFormattingMarkers),
+  keepStreamingCase('bare double underscore', '__', preserveBareFormattingMarkers),
   keepStreamingCase('bare triple underscore', '___'),
-  keepStreamingCase('bare single tilde', '~'),
-  keepStreamingCase('bare double tilde', '~~'),
+  keepStreamingCase('bare single tilde', '~', preserveBareFormattingMarkers),
+  keepStreamingCase('bare double tilde', '~~', preserveBareFormattingMarkers),
   keepStreamingCase('hyphen thematic break', '---'),
   keepStreamingCase('long hyphen thematic break', '-----'),
   keepStreamingCase('asterisk thematic break', '****'),

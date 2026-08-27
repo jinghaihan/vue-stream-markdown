@@ -20,11 +20,14 @@ export type PreprocessSteps = Partial<Record<PreprocessStepName, PreprocessStep>
 export interface MarkdownProcessorOptions {
   normalize?: (content: string) => string
   preprocess?: (content: string, options?: PreprocessContext) => string
+  preprocessOptions?: PreprocessContext
   preprocessSteps?: PreprocessSteps
   parseMarkdownIntoBlocks?: (content: string) => string[]
 }
 
 export interface PreprocessContext {
+  /** Hide bare `*`, `**`, `_`, `__`, `~`, and `~~` markers while streaming. @default true */
+  hideBareFormattingMarkers?: boolean
   singleDollarTextMath?: boolean
 }
 

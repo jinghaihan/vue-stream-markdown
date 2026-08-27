@@ -13,6 +13,21 @@ interface MarkdownTestWrapper {
 }
 
 describe('stream markdown', () => {
+  it('preserves bare formatting markers when configured', () => {
+    const wrapper = shallowMount(Markdown, {
+      props: {
+        content: '*',
+        mode: 'streaming',
+        preprocessOptions: {
+          hideBareFormattingMarkers: false,
+        },
+      },
+    })
+    const vm = wrapper.vm as unknown as MarkdownTestVm
+
+    expect(vm.getProcessedContent()).toBe('*')
+  })
+
   it('reparses the original content when switching to static mode', async () => {
     const wrapper = shallowMount(Markdown, {
       props: {

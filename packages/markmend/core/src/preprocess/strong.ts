@@ -13,6 +13,7 @@ import {
   findClosedCodeBlockRanges,
   findInlineCodeRanges,
   getLastParagraphWithIndex,
+  hideBareFormattingMarker,
   isInsideUnclosedCodeBlock,
   isPositionInRanges,
   isWithinHtmlTag,
@@ -50,21 +51,20 @@ import {
  *
  * @example
  * fixStrong('List item\n\n**')
- * // Returns: 'List item\n\n**' (no completion, ** has no content)
+ * // Returns: 'List item' (bare formatting markers are hidden by default)
  */
 export function fixStrong(
   content: string,
-  options?: Pick<PreprocessContext, 'singleDollarTextMath'>,
+  options?: Pick<PreprocessContext, 'hideBareFormattingMarkers' | 'singleDollarTextMath'>,
 ): string {
-  // Handle bare single * or _ first
-  if (content === '*' || content === '_') {
-    return ''
-  }
-
   // Don't process if we're inside a code block (unclosed)
   if (isInsideUnclosedCodeBlock(content)) {
     return content
   }
+
+  const hiddenBareMarker = hideBareFormattingMarker(content, ['*', '**', '_', '__'])
+  if (hiddenBareMarker !== undefined)
+    return options?.hideBareFormattingMarkers === false ? content : hiddenBareMarker
 
   // Find the last paragraph (after the last blank line)
   // Use skipTrailingEmpty=true so that a trailing whitespace-only line

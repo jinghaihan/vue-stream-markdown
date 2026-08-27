@@ -1,9 +1,11 @@
+import type { PreprocessContext } from '../types'
 import { codeBlockPattern, doubleTildePattern } from './pattern'
 import {
   calculateParagraphOffset,
   findClosedCodeBlockRanges,
   findInlineCodeRanges,
   getLastParagraphWithIndex,
+  hideBareFormattingMarker,
   isEscapedCharacter,
   isInsideUnclosedCodeBlock,
   isPositionInRanges,
@@ -34,12 +36,19 @@ import {
  *
  * @example
  * fixDelete('List item\n\n~~')
- * // Returns: 'List item\n\n~~' (no completion, ~~ has no content)
+ * // Returns: 'List item' (bare formatting markers are hidden by default)
  */
-export function fixDelete(content: string): string {
+export function fixDelete(
+  content: string,
+  options?: Pick<PreprocessContext, 'hideBareFormattingMarkers'>,
+): string {
   // Don't process if we're inside a code block (unclosed)
   if (isInsideUnclosedCodeBlock(content))
     return content
+
+  const hiddenBareMarker = hideBareFormattingMarker(content, ['~', '~~'])
+  if (hiddenBareMarker !== undefined)
+    return options?.hideBareFormattingMarkers === false ? content : hiddenBareMarker
 
   // Find the last paragraph (after the last blank line)
   // A blank line is defined as a line with only whitespace

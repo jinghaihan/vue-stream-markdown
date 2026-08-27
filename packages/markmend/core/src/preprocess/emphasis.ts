@@ -1,3 +1,4 @@
+import type { PreprocessContext } from '../types'
 import {
   codeBlockPattern,
   singleAsteriskPattern,
@@ -8,6 +9,7 @@ import {
   findClosedCodeBlockRanges,
   findInlineCodeRanges,
   getLastParagraphWithIndex,
+  hideBareFormattingMarker,
   isInsideUnclosedCodeBlock,
   isPositionInRanges,
   isWithinHtmlTag,
@@ -28,11 +30,18 @@ import {
  * Only processes the last paragraph (content after the last blank line).
  * This respects Markdown's rule that emphasis cannot span across paragraphs.
  */
-export function fixEmphasis(content: string): string {
+export function fixEmphasis(
+  content: string,
+  options?: Pick<PreprocessContext, 'hideBareFormattingMarkers'>,
+): string {
   // Don't process if we're inside a code block (unclosed)
   if (isInsideUnclosedCodeBlock(content)) {
     return content
   }
+
+  const hiddenBareMarker = hideBareFormattingMarker(content, ['*', '_'])
+  if (hiddenBareMarker !== undefined)
+    return options?.hideBareFormattingMarkers === false ? content : hiddenBareMarker
 
   // Find the last paragraph
   const lines = content.split('\n')
