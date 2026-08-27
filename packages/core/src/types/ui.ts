@@ -20,6 +20,7 @@ export interface UIButtonProps<
   iconClass?: TClass
   iconStyle?: TStyle
   options?: SelectOption[]
+  announcement?: string
 }
 
 export interface UIAlertProps {
@@ -74,6 +75,8 @@ export interface UIImageProps<
 
 export interface UIModalProps<TStyle = UIStyleValue> {
   title?: string
+  titleId?: string
+  ariaLabel?: string
   zIndex?: number
   modalStyle?: TStyle
   headerStyle?: TStyle

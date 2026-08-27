@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { SelectOption, UIButtonProps } from '../types'
 import { createReusableTemplate } from '@vueuse/core'
-import { computed } from 'vue'
+import { computed, useAttrs } from 'vue'
 import { useContext } from '../composables'
 
 defineOptions({
@@ -22,10 +22,15 @@ const emits = defineEmits<{
 }>()
 
 const { uiComponents: UI } = useContext()
+const attrs = useAttrs()
 
 const [DefineTemplate, ReuseTemplate] = createReusableTemplate()
 
 const isDropdown = computed(() => props.options.length > 0)
+const ariaLabel = computed(() => {
+  const value = attrs['aria-label']
+  return typeof value === 'string' ? value : props.name
+})
 
 function onClick(event: MouseEvent) {
   if (isDropdown.value)
@@ -63,6 +68,7 @@ function onDropdownClick(event: MouseEvent, item: SelectOption) {
   >
     <button
       v-bind="$attrs"
+      :aria-label="ariaLabel"
       data-stream-markdown="button"
       type="button"
       class="text-xs text-muted-foreground p-2 rounded-md border-none bg-transparent flex gap-1 cursor-pointer transition-colors duration-[var(--default-transition-duration)] items-center justify-center hover:text-foreground hover:bg-accent"
@@ -109,4 +115,13 @@ function onDropdownClick(event: MouseEvent, item: SelectOption) {
       {{ name }}
     </button>
   </component>
+
+  <span
+    v-if="announcement"
+    data-stream-markdown="button-announcement"
+    class="sr-only"
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+  >{{ announcement }}</span>
 </template>

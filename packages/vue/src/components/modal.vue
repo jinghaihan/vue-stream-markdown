@@ -27,6 +27,7 @@ const modalStyle = computed(() => ({
   zIndex: props.zIndex,
 }))
 const showHeader = computed(() => !!props.title || !!slots.title || !!slots.extra)
+const accessibleLabel = computed(() => props.ariaLabel || (!props.titleId ? props.title : undefined))
 
 onMounted(() => {
   container.value = getOverlayContainer() || getDocumentBody() || undefined
@@ -46,6 +47,10 @@ onMounted(() => {
     <div
       v-if="open"
       data-stream-markdown="modal"
+      role="dialog"
+      aria-modal="true"
+      :aria-label="accessibleLabel"
+      :aria-labelledby="titleId"
       class="bg-background flex flex-col inset-0 fixed"
       :style="modalStyle"
     >
@@ -55,9 +60,11 @@ onMounted(() => {
         class="px-4 py-2 flex shrink-0 items-center justify-between relative [&>*:last-child]:flex [&>*:first-child]:flex-1 [&>*:last-child]:flex-1 [&>*:nth-child(2)]:left-1/2 [&>*:last-child]:justify-end [&>*:nth-child(2)]:absolute [&>*:nth-child(2)]:-translate-x-1/2"
         :style="headerStyle"
       >
-        <slot name="title">
-          {{ title }}
-        </slot>
+        <div :id="titleId">
+          <slot name="title">
+            {{ title }}
+          </slot>
+        </div>
         <slot name="header-center">
           <div />
         </slot>

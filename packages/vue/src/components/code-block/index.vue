@@ -119,6 +119,7 @@ const builtinControls = computed((): Control[] => createCodeBlockControlDescript
 }).map(item => ({
   ...item,
   name: t(item.labelKey ?? ''),
+  announcement: item.key === 'copy' && copied.value ? t('button.copied') : undefined,
   onClick: (_event: MouseEvent, select?: SelectOption) => handleControlClick(item.key, select),
   visible: () => item.visible ?? true,
 })))
@@ -131,6 +132,9 @@ const modalControls = computed(
   () => resolveControls<CodeNodeRendererProps>('code', headerControls.value, props)
     .filter(i => i.key !== 'collapse'),
 )
+
+const modalLabel = computed(() => t('dialog.fullscreen', 'button.maximize'))
+const modalTitleId = computed(() => showLanguageName.value ? `${props.nodeKey}-fullscreen-title` : undefined)
 
 watch(
   () => previewable.value,
@@ -248,6 +252,8 @@ async function handleControlClick(key: string, item?: SelectOption) {
     <component
       :is="UI.Modal"
       v-model:open="fullscreen"
+      :aria-label="modalLabel"
+      :title-id="modalTitleId"
       :header-style="{
         backgroundColor: 'color-mix(in oklab, var(--muted) 80%, transparent)',
         color: 'var(--muted-foreground)',

@@ -89,6 +89,7 @@ const model = computed(() => createImagePreviewModel({
 
 const controlPosition = computed(() => model.value.controlPosition)
 const imageStyle = computed(() => model.value.imageStyle)
+const modalLabel = computed(() => props.alt || props.title || t('dialog.imagePreview', 'button.preview'))
 
 const builtinControls = computed((): Control[] => model.value.controls.map(item => ({
   ...item,
@@ -191,6 +192,7 @@ watch(open, (data) => {
   <component
     :is="UI.Modal"
     v-model:open="open"
+    :aria-label="modalLabel"
     transition=""
     :modal-style="{
       backgroundColor: 'rgba(0, 0, 0, 0.45)',

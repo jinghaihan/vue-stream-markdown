@@ -111,6 +111,7 @@ const builtinControls = computed((): Control[] => createTableControlDescriptors(
 }).map(item => ({
   ...item,
   name: t(item.labelKey ?? ''),
+  announcement: item.key === 'copy' && copied.value ? t('button.copied') : undefined,
   onClick: (_event: MouseEvent, select?: SelectOption) => handleControlClick(item.key, select),
   visible: () => item.visible ?? true,
 })))
@@ -120,6 +121,7 @@ const controls = computed(
 )
 
 const hasControls = computed(() => controls.value.length > 0)
+const modalLabel = computed(() => t('dialog.fullscreen', 'button.maximize'))
 
 function getNodes(cell: unknown) {
   return tableModel.value.getNodes(cell as ParsedNode)
@@ -186,6 +188,7 @@ async function handleControlClick(key: string, item?: SelectOption) {
     <component
       :is="UI.Modal"
       v-model:open="fullscreen"
+      :aria-label="modalLabel"
       :header-style="{
         backgroundColor: 'color-mix(in oklab, var(--muted) 80%, transparent)',
         color: 'var(--muted-foreground)',

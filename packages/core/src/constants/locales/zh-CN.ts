@@ -36,6 +36,10 @@ const locale: LocaleConfig = {
     copy: '复制链接',
     open: '打开链接',
   },
+  dialog: {
+    fullscreen: '全屏预览',
+    imagePreview: '图片预览',
+  },
 }
 
 export default locale

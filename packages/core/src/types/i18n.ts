@@ -34,6 +34,10 @@ export interface LocaleConfig {
     copy: string
     open: string
   }
+  dialog?: {
+    fullscreen: string
+    imagePreview: string
+  }
 }
 
 export type SupportedLanguage = 'en-US' | 'zh-CN'

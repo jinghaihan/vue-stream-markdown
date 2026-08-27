@@ -36,6 +36,10 @@ const locale: LocaleConfig = {
     copy: 'Copy link',
     open: 'Open link',
   },
+  dialog: {
+    fullscreen: 'Fullscreen preview',
+    imagePreview: 'Image preview',
+  },
 }
 
 export default locale
