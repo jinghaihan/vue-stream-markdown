@@ -106,7 +106,10 @@ const enableAnimate = computed(() => resolveEnableAnimate(mode.value, props.enab
 
 const enableCaret = computed(() => resolveEnableCaret(mode.value, props.caret))
 
-const processed = computed(() => createProcessedMarkdownModel(parse(props.content)))
+const processed = computed(() => {
+  updateMode(mode.value)
+  return createProcessedMarkdownModel(parse(props.content))
+})
 
 const blocks = computed(() => processed.value.blocks)
 const parsedNodes = computed(() => processed.value.parsedNodes)
@@ -161,7 +164,6 @@ async function bootstrap() {
 
 onMounted(bootstrap)
 
-watch(mode, () => updateMode(mode.value))
 watch(locale, () => loadLocaleMessages(locale.value))
 
 provideContext({
