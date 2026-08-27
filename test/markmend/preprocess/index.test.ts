@@ -1,6 +1,6 @@
 import { normalize, preprocess } from '@markmend/core'
 import { describe, expect, it } from 'vitest'
-import { getTestCases } from './test-cases'
+import { getTestCases, getTestCasesByCategory } from './test-cases'
 import { getFixtureFiles, getSnapshotPath, readFixture } from './utils'
 
 describe('normalize', () => {
@@ -32,4 +32,12 @@ describe('preprocess', () => {
       html: content => `${content}>custom</div>`,
     })).toBe('Hello <div>custom</div>')
   })
+})
+
+describe('streaming completion idempotence', () => {
+  for (const testCase of getTestCasesByCategory('streaming-completion')) {
+    it(`keeps the expected output stable: ${testCase.description}`, () => {
+      expect(preprocess(testCase.expected, testCase.preprocessOptions)).toBe(testCase.expected)
+    })
+  }
 })
