@@ -1,11 +1,13 @@
 import {
   createTextParts,
   detectTextDirection,
+  getConfigValue,
   getDirectionalText,
   getDownloadFilename,
   getNodeKey,
   getTableCellNodes,
   getTransitionName,
+  isConfigEnabled,
   normalizeAnimationDuration,
   normalizeCssSize,
   normalizeThemeVariableValue,
@@ -119,6 +121,24 @@ describe('core utilities', () => {
     expect(getDownloadFilename({ code: { download: true } }, 'code', 'file')).toBe('file')
     expect(getDownloadFilename({ code: { download: { filename: '' } } }, 'code', 'file')).toBe('file')
     expect(getDownloadFilename(false, 'code', 'file')).toBe('file')
+  })
+
+  it('inherits boolean control values from parent groups', () => {
+    const disabled = {
+      code: false,
+      image: false,
+      mermaid: false,
+      table: false,
+    }
+
+    expect(getConfigValue(disabled, 'code.copy')).toBe(false)
+    expect(getConfigValue(disabled, 'table.download')).toBe(false)
+    expect(isConfigEnabled(disabled, 'image.preview')).toBe(false)
+    expect(isConfigEnabled(disabled, 'mermaid.download')).toBe(false)
+
+    expect(getConfigValue({ code: true }, 'code.copy')).toBe(true)
+    expect(isConfigEnabled({ code: { copy: false } }, 'code.copy')).toBe(false)
+    expect(isConfigEnabled({ code: {} }, 'code.copy')).toBe(true)
   })
 
   it('detects text direction by strong-character majority with stable tie-breaking', () => {

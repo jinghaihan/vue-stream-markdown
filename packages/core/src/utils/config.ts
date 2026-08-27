@@ -7,6 +7,8 @@ export function getConfigValue<T = unknown>(config: unknown, key: string): T | u
     let current = config
 
     for (const part of path) {
+      if (typeof current === 'boolean')
+        return current as T
       if (current === undefined || current === null || typeof current !== 'object')
         return undefined
       current = (current as Record<string, unknown>)[part]
