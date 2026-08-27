@@ -78,6 +78,7 @@ export interface StreamMarkdownProvideContext {
   linkOptions?: MaybeRefOrGetter<StreamMarkdownContext['linkOptions']>
   cdnOptions?: MaybeRefOrGetter<StreamMarkdownContext['cdnOptions']>
   mode?: MaybeRefOrGetter<'static' | 'streaming'>
+  dir?: MaybeRefOrGetter<StreamMarkdownProps['dir']>
   isDark?: MaybeRefOrGetter<boolean>
   uiOptions?: MaybeRefOrGetter<UIOptions | undefined>
   nodeRenderers?: MaybeRefOrGetter<NodeRenderers>
@@ -101,6 +102,7 @@ export interface StreamMarkdownResolvedContext {
   provideContext: (ctx: Partial<StreamMarkdownProvideContext>) => void
   injectContext: () => StreamMarkdownProvideContext
   mode: ComputedRef<'static' | 'streaming'>
+  dir: ComputedRef<StreamMarkdownProps['dir']>
   controls: ComputedRef<StreamMarkdownContext['controls']>
   previewers: ComputedRef<StreamMarkdownContext['previewers']>
   shikiOptions: ComputedRef<StreamMarkdownContext['shikiOptions']>

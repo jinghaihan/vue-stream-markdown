@@ -1,4 +1,5 @@
 import type { SelectOption, UIErrorVariant } from './builtin'
+import type { TextDirection } from './common'
 import type { ZoomControlPosition } from './controls'
 
 export type UIClassValue = string | string[] | Record<string, unknown>
@@ -93,6 +94,7 @@ export interface UISegmentedProps<TStyle = UIStyleValue> {
 
 export interface UITableProps {
   getAlign?: (index: number) => 'left' | 'center' | 'right'
+  getDirection?: (cell: unknown) => TextDirection | undefined
   headers?: unknown[]
   rows?: Array<{ children: unknown[] }>
 }

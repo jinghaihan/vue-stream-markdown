@@ -58,6 +58,7 @@ watch(
     <div
       v-if="tokens"
       data-stream-markdown="shiki"
+      dir="ltr"
       :style="{
         minHeight: minHeight ? `${minHeight}px` : undefined,
       }"

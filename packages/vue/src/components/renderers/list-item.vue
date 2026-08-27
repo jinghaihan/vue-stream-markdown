@@ -2,6 +2,7 @@
 import type { ListItemNodeRendererProps } from '../../types'
 import { createListItemModel } from '@stream-markdown/core'
 import { computed } from 'vue'
+import { useTextDirection } from '../../composables'
 import NodeList from '../node-list.vue'
 
 const props = withDefaults(defineProps<ListItemNodeRendererProps>(), {})
@@ -9,11 +10,13 @@ const props = withDefaults(defineProps<ListItemNodeRendererProps>(), {})
 const model = computed(() => createListItemModel(props.node))
 const isTaskListItem = computed(() => model.value.isTaskListItem)
 const checked = computed(() => model.value.checked)
+const direction = useTextDirection(() => props.node)
 </script>
 
 <template>
   <li
     data-stream-markdown="list-item"
+    :dir="direction"
     class="py-1 pl-1 [&_p]:m-0"
   >
     <p

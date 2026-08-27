@@ -56,6 +56,7 @@ const {
   controls,
   previewers,
   mode,
+  dir,
   content,
   isDark: darkProp,
   locale: localeProp,
@@ -176,6 +177,7 @@ provideContext({
   linkOptions,
   cdnOptions,
   mode,
+  dir,
   nodeRenderers,
   icons,
   uiComponents,
@@ -217,6 +219,7 @@ defineExpose<StreamMarkdownExpose>({
     ref="containerRef"
     class="stream-markdown"
     :class="[isDark ? 'dark' : 'light']"
+    :dir="dir === 'auto' ? undefined : dir"
     :style="rootStyle"
   >
     <template v-for="(block, index) in blocks" :key="index">

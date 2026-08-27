@@ -28,6 +28,13 @@ StreamMarkdown provides comprehensive configuration options to customize the mar
 
 Rendering mode. `'static'` renders the entire content at once, while `'streaming'` renders content progressively.
 
+### dir
+
+- **Type:** `'auto' | 'ltr' | 'rtl' | undefined`
+- **Default:** `undefined`
+
+Text direction. Use `'ltr'` or `'rtl'` to force one direction for the whole document. With `'auto'`, paragraphs, headings, blockquotes, list items, captions, footnotes, and table cells detect their direction independently from the majority of strong text characters. Code always remains left-to-right.
+
 ### enableAnimate
 
 - **Type:** `boolean | undefined`

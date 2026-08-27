@@ -112,6 +112,7 @@ See [HTML Rendering](/feature/html-rendering) for the full example.
 
 - `content` (string): The markdown content to render
 - `mode` ('streaming' | 'static'): Rendering mode, defaults to `'streaming'`
+- `dir` ('auto' | 'ltr' | 'rtl'): Force the document direction or detect it independently for each semantic block
 - `enableAnimate` (boolean | undefined): Enable node enter animations. When `undefined`, follows the rendering mode
 - `animation` ('fade-in' | 'blur-in' | 'slide-up' | string): Node enter animation, defaults to `'fade-in'`
 - `animationSplit` ('auto' | 'word' | 'char'): Text animation split strategy, defaults to `'auto'`. Auto mode splits CJK characters individually while keeping non-CJK text word-based.

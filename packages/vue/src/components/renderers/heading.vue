@@ -2,6 +2,7 @@
 import type { HeadingNodeRendererProps } from '../../types'
 import { createHeadingModel } from '@stream-markdown/core'
 import { computed } from 'vue'
+import { useTextDirection } from '../../composables'
 import NodeList from '../node-list.vue'
 
 const props = withDefaults(defineProps<HeadingNodeRendererProps>(), {})
@@ -10,11 +11,13 @@ const model = computed(() => createHeadingModel(props.node))
 const tag = computed(() => model.value.tag)
 const id = computed(() => model.value.id)
 const depth = computed(() => model.value.depth)
+const direction = useTextDirection(() => props.node)
 </script>
 
 <template>
   <component
     :is="tag" :data-stream-markdown="id"
+    :dir="direction"
     class="font-semibold mb-2 mt-6"
     :class="{
       'text-3xl': depth === 1,

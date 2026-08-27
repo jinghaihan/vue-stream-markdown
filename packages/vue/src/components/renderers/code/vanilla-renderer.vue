@@ -31,6 +31,7 @@ export default defineComponent({
         'pre',
         {
           'data-stream-markdown': 'code',
+          'dir': 'ltr',
           'data-show-line-numbers': showLineNumbers.value,
           'data-lang': lang.value,
           'class': 'text-sm font-mono p-4 [counter-reset:line]',

@@ -213,6 +213,7 @@ async function handleControlClick(key: string, item?: SelectOption) {
 
   <div
     data-stream-markdown="code-block"
+    dir="ltr"
     :data-collapsed="collapsed"
     class="my-4 border border-border rounded-xl overflow-clip data-[collapsed=true]:[&_.code-block-header]:border-b-0"
     :class="[

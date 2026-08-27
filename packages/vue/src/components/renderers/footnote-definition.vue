@@ -2,7 +2,7 @@
 import type { FootnoteDefinitionNodeRendererProps } from '../../types'
 import { createFootnoteDefinitionModel, getDocumentBody, scrollToElement } from '@stream-markdown/core'
 import { computed } from 'vue'
-import { useContext, useI18n } from '../../composables'
+import { useContext, useI18n, useTextDirection } from '../../composables'
 import NodeList from '../node-list.vue'
 
 const props = withDefaults(defineProps<FootnoteDefinitionNodeRendererProps>(), {})
@@ -14,6 +14,7 @@ const { t } = useI18n()
 const model = computed(() => createFootnoteDefinitionModel(props.node))
 const id = computed(() => model.value.id)
 const title = computed(() => model.value.title)
+const direction = useTextDirection(() => props.node)
 
 function scrollToReference() {
   const container = getContainer() || getDocumentBody()
@@ -28,6 +29,7 @@ function scrollToReference() {
   <a
     :id="`footnote-definition-${id}`"
     data-stream-markdown="footnote-definition"
+    :dir="direction"
     class="text-muted-foreground block [&_p]:inline"
   >
     <span

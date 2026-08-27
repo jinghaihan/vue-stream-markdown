@@ -7,6 +7,7 @@ withDefaults(defineProps<InlineCodeNodeRendererProps>(), {})
 <template>
   <code
     data-stream-markdown="inline-code"
+    dir="ltr"
     class="text-sm font-mono px-1.5 py-0.5 rounded bg-muted whitespace-normal break-words"
   >
     {{ node.value }}

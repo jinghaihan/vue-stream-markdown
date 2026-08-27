@@ -6,6 +6,10 @@ const props = withDefaults(defineProps<UITableProps>(), {})
 function getAlign(index: number) {
   return props.getAlign?.(index) || 'left'
 }
+
+function getDirection(cell: unknown) {
+  return props.getDirection?.(cell)
+}
 </script>
 
 <template>
@@ -21,6 +25,7 @@ function getAlign(index: number) {
         <th
           v-for="(cell, index) in headers"
           :key="`header-${index}`"
+          :dir="getDirection(cell)"
           :style="{
             textAlign: getAlign(index),
           }"
@@ -37,6 +42,7 @@ function getAlign(index: number) {
         <td
           v-for="(cell, cellIndex) in row.children"
           :key="cellIndex"
+          :dir="getDirection(cell)"
           :style="{
             textAlign: getAlign(cellIndex),
           }"

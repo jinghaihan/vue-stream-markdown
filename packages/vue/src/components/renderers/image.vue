@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ImageNodeRendererProps } from '../../types'
-import { createImageModel, saveImage } from '@stream-markdown/core'
+import { createImageModel, resolveTextDirection, saveImage } from '@stream-markdown/core'
 import { computed, ref } from 'vue'
 import { useContext, useControls, useI18n, useSanitizers } from '../../composables'
 
@@ -9,6 +9,7 @@ const props = withDefaults(defineProps<ImageNodeRendererProps>(), {})
 const {
   beforeDownload,
   controls,
+  dir,
   hardenOptions,
   imageOptions,
   uiComponents: UI,
@@ -60,6 +61,7 @@ const imageModel = computed(() => createImageModel({
 const alt = computed(() => imageModel.value.alt)
 const title = computed(() => imageModel.value.title)
 const showCaption = computed(() => imageModel.value.showCaption)
+const direction = computed(() => resolveTextDirection(title.value, dir.value))
 
 const Error = computed(() => isHardenUrl.value
   ? (hardenOptions.value?.errorComponent ?? UI.value.ErrorComponent)
@@ -169,6 +171,7 @@ function handleMouseLeave() {
     <figcaption
       v-if="showCaption && title"
       data-stream-markdown="image-caption"
+      :dir="direction"
       class="text-sm text-center italic"
     >
       {{ title }}

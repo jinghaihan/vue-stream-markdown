@@ -1,7 +1,7 @@
 import type { MarkdownAstParserOptions } from '@markmend/ast'
 import type { AnimationSplit, AnimationType } from '../types'
 import type { CdnOptions } from './cdn'
-import type { MaybePromise } from './common'
+import type { MaybePromise, TextDirectionConfig } from './common'
 import type { DownloadEvent } from './events'
 import type { LocaleConfig } from './i18n'
 import type { TableOptions } from './options'
@@ -45,6 +45,8 @@ export interface StreamMarkdownViewProps<
   TCaret extends string = string,
 > {
   mode?: 'static' | 'streaming'
+  /** Force one text direction or detect it independently for each semantic block. */
+  dir?: TextDirectionConfig
   content?: string
   nodeRenderers?: TNodeRenderers
   icons?: Partial<TIcons>

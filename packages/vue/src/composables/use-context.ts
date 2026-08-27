@@ -21,6 +21,7 @@ export function useContext(): StreamMarkdownResolvedContext {
   const context = injectContext()
 
   const mode = computed(() => toValue(context.mode) ?? 'streaming')
+  const dir = computed(() => toValue(context.dir))
   const controls = computed(() => toValue(context.controls))
   const previewers = computed(() => toValue(context.previewers))
   const shikiOptions = computed(() => toValue(context.shikiOptions))
@@ -66,6 +67,7 @@ export function useContext(): StreamMarkdownResolvedContext {
     provideContext,
     injectContext,
     mode,
+    dir,
     controls,
     previewers,
     shikiOptions,

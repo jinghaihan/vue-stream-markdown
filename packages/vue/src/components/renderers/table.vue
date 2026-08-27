@@ -9,6 +9,7 @@ import {
   getTableContent as getSerializedTableContent,
   getTableCsvSeparator,
   handleTableControlAction,
+  resolveNodeTextDirection,
   resolveScrollableMaxHeight,
   save,
 } from '@stream-markdown/core'
@@ -24,6 +25,7 @@ const {
   controls: controlsConfig,
   onCopied,
   tableOptions,
+  dir,
   uiComponents: UI,
 } = useContext()
 
@@ -78,6 +80,10 @@ usePinnedScroll({
 
 function getAlign(index: number) {
   return tableModel.value.getAlign(index)
+}
+
+function getDirection(cell: unknown) {
+  return resolveNodeTextDirection(cell as ParsedNode, dir.value)
 }
 
 function getTableElement() {
@@ -188,7 +194,7 @@ async function handleControlClick(key: string, item?: SelectOption) {
       class="w-full overflow-x-auto overflow-y-auto"
       :style="{ maxHeight }"
     >
-      <component :is="UI.Table" ref="tableRef" :headers="headerCells" :rows="bodyRows" :get-align="getAlign">
+      <component :is="UI.Table" ref="tableRef" :headers="headerCells" :rows="bodyRows" :get-align="getAlign" :get-direction="getDirection">
         <template #header-cell="{ cell }">
           <NodeList v-bind="props" :parent-node="node" :nodes="getNodes(cell)" :deep="deep + 1" hide-caret />
         </template>
@@ -240,7 +246,7 @@ async function handleControlClick(key: string, item?: SelectOption) {
         class="p-4 h-full overflow-auto [&_thead]:top-0 [&_thead]:sticky [&_thead]:z-10"
         @click.self="fullscreen = false"
       >
-        <component :is="UI.Table" ref="fullscreenTableRef" :headers="headerCells" :rows="bodyRows" :get-align="getAlign">
+        <component :is="UI.Table" ref="fullscreenTableRef" :headers="headerCells" :rows="bodyRows" :get-align="getAlign" :get-direction="getDirection">
           <template #header-cell="{ cell }">
             <NodeList v-bind="props" :parent-node="node" :nodes="getNodes(cell)" :deep="deep + 1" hide-caret />
           </template>

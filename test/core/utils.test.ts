@@ -1,5 +1,7 @@
 import {
   createTextParts,
+  detectTextDirection,
+  getDirectionalText,
   getDownloadFilename,
   getNodeKey,
   getTableCellNodes,
@@ -7,6 +9,7 @@ import {
   normalizeAnimationDuration,
   normalizeCssSize,
   normalizeThemeVariableValue,
+  resolveNodeTextDirection,
   resolveScrollableMaxHeight,
   resolveTableAlign,
   resolveTextAnimationSplit,
@@ -116,5 +119,30 @@ describe('core utilities', () => {
     expect(getDownloadFilename({ code: { download: true } }, 'code', 'file')).toBe('file')
     expect(getDownloadFilename({ code: { download: { filename: '' } } }, 'code', 'file')).toBe('file')
     expect(getDownloadFilename(false, 'code', 'file')).toBe('file')
+  })
+
+  it('detects text direction by strong-character majority with stable tie-breaking', () => {
+    expect(detectTextDirection('Hello world')).toBe('ltr')
+    expect(detectTextDirection('مرحبا بالعالم')).toBe('rtl')
+    expect(detectTextDirection('React یک کتابخانه جاوااسکریپت بسیار محبوب است.')).toBe('rtl')
+    expect(detectTextDirection('abc אבג')).toBe('ltr')
+    expect(detectTextDirection('אבג abc')).toBe('rtl')
+    expect(detectTextDirection('1234 !?')).toBe('ltr')
+  })
+
+  it('ignores code and math when resolving an AST block direction', () => {
+    const node = {
+      type: 'paragraph',
+      children: [
+        { type: 'text', value: 'این یک نمونه است.' },
+        { type: 'inlineCode', value: 'const example = true' },
+        { type: 'inlineMath', value: 'englishIdentifier' },
+      ],
+    } as never
+
+    expect(getDirectionalText(node)).toBe('این یک نمونه است.')
+    expect(resolveNodeTextDirection(node, 'auto')).toBe('rtl')
+    expect(resolveNodeTextDirection(node, 'ltr')).toBe('ltr')
+    expect(resolveNodeTextDirection(node, undefined)).toBeUndefined()
   })
 })
