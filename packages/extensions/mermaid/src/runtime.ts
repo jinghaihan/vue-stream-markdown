@@ -5,7 +5,7 @@ import type {
   MermaidRuntime,
   MermaidRuntimeOptions,
 } from './types'
-import { resolveGetter, save, svgToPngBlob } from '@stream-markdown/core'
+import { resolveGetter, save, serializeSvgForDownload, svgToPngBlob } from '@stream-markdown/core'
 import { createBeautifulMermaidCdnLoader } from './beautiful-cdn'
 import { BeautifulMermaidRenderer } from './runtime/beautiful'
 import { VanillaMermaidRenderer } from './runtime/vanilla'
@@ -98,12 +98,14 @@ export function createMermaidRuntime(options: MermaidRuntimeOptions = {}): Merma
     if (!svg)
       throw new Error('SVG not found. Please wait for the diagram to render.')
 
+    const serializedSvg = serializeSvgForDownload(svg)
+
     if (format === 'svg') {
-      save('diagram.svg', svg, 'image/svg+xml')
+      save('diagram.svg', serializedSvg, 'image/svg+xml')
       return
     }
 
-    const blob = await svgToPngBlob(svg)
+    const blob = await svgToPngBlob(serializedSvg)
     if (!blob)
       throw new Error('Failed to export PNG image')
 

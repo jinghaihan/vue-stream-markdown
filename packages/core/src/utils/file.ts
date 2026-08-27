@@ -54,6 +54,22 @@ export async function saveImage(url: string, alt?: string) {
   save(filename, blob, blob.type)
 }
 
+/**
+ * Mermaid output may be HTML-serialized. Serialize the SVG node as XML before
+ * downloading so embedded HTML-style elements such as <br> use valid markup.
+ */
+export function serializeSvgForDownload(svgString: string): string {
+  if (typeof DOMParser === 'undefined' || typeof XMLSerializer === 'undefined')
+    return svgString
+
+  const document = new DOMParser().parseFromString(svgString, 'text/html')
+  const svg = document.querySelector('svg')
+  if (!svg)
+    return svgString
+
+  return new XMLSerializer().serializeToString(svg)
+}
+
 export function svgToPngBlob(svgString: string, options?: { scale?: number }): Promise<Blob> | null {
   const scale = options?.scale ?? 5
 
