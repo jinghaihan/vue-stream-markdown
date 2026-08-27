@@ -37,6 +37,7 @@ const isHarden = computed(() => model.value.isHarden)
   >
     <div
       v-if="showIcon"
+      aria-hidden="true"
       data-stream-markdown="error-component-icon"
       class="leading-none mr-2 align-text-bottom inline-flex items-center"
     >

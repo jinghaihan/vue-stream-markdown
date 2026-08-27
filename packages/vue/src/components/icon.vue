@@ -21,6 +21,7 @@ const iconStyle = computed(() => model.value.style)
 <template>
   <div data-stream-markdown="icon" :style="iconStyle">
     <Icon
+      aria-hidden="true"
       :width="width" :height="height"
       :class="props.class"
       :style="style"

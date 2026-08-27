@@ -17,7 +17,7 @@ withDefaults(defineProps<{
     data-stream-markdown="language-title"
     class="flex gap-2 items-center"
   >
-    <component :is="icon" v-if="showIcon" />
+    <component :is="icon" v-if="showIcon" aria-hidden="true" />
     <span
       v-if="showName" data-stream-markdown="language-name"
       class="text-sm font-mono lowercase"
