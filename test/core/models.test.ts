@@ -476,6 +476,45 @@ describe('core models', () => {
     expect(codeState).toEqual({ collapsed: false, fullscreen: false })
     expect(codeDownloads).toEqual(['file.ts'])
 
+    await handleCodeBlockControlAction({
+      key: 'download',
+      filename: 'myScript',
+      state: { collapsed: false, fullscreen: false },
+      node: { type: 'code', lang: 'ts', value: 'const a = 1' },
+      language: 'typescript',
+      saveFile: (filename) => {
+        codeDownloads.push(filename)
+      },
+    })
+    expect(codeDownloads).toEqual(['file.ts', 'myScript.ts'])
+
+    const mermaidDownloads: Array<{ filename?: string, format: string }> = []
+    await handleCodeBlockControlAction({
+      key: 'download',
+      select: { label: 'SVG', value: 'svg' },
+      filename: 'flowchart',
+      state: { collapsed: false, fullscreen: false },
+      node: { type: 'code', lang: 'mermaid', value: 'graph TD' },
+      language: 'mermaid',
+      saveMermaid: (format, _code, filename) => {
+        mermaidDownloads.push({ format, filename })
+      },
+    })
+    expect(mermaidDownloads).toEqual([{ format: 'svg', filename: 'flowchart' }])
+
+    await handleCodeBlockControlAction({
+      key: 'download',
+      select: { label: 'MMD', value: 'code' },
+      filename: 'flowchart',
+      state: { collapsed: false, fullscreen: false },
+      node: { type: 'code', lang: 'mermaid', value: 'graph TD' },
+      language: 'mermaid',
+      saveFile: (filename) => {
+        codeDownloads.push(filename)
+      },
+    })
+    expect(codeDownloads).toEqual(['file.ts', 'myScript.ts', 'flowchart.mmd'])
+
     const copied: string[] = []
     const tableState = await handleTableControlAction({
       key: 'copy',
@@ -487,5 +526,17 @@ describe('core models', () => {
     })
     expect(tableState).toEqual({ fullscreen: false })
     expect(copied).toEqual(['A\nB'])
+
+    const tableDownloads: string[] = []
+    await handleTableControlAction({
+      key: 'download',
+      filename: 'report',
+      state: { fullscreen: false },
+      getContent: () => ({ content: 'A\nB', extension: 'csv', mimeType: 'text/csv' }),
+      saveFile: (filename) => {
+        tableDownloads.push(filename)
+      },
+    })
+    expect(tableDownloads).toEqual(['report.csv'])
   })
 })

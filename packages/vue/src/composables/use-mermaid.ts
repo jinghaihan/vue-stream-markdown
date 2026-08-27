@@ -66,9 +66,10 @@ export function useMermaid(options?: UseMermaidOptions) {
     format: 'svg' | 'png',
     code: string,
     onError?: (error: Error) => void,
+    filename?: string,
   ) {
     try {
-      await runtime.save(format, code)
+      await runtime.save(format, code, filename)
     }
     catch (error) {
       onError?.(error as Error)

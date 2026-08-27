@@ -39,6 +39,7 @@ export interface TableControlState {
 export interface TableControlActionOptions {
   key: string
   select?: SelectOption
+  filename?: string
   state: TableControlState
   getContent: (format: TableFormat) => TableContent | null
   beforeDownload?: (event: DownloadEvent) => MaybePromise<boolean>
@@ -147,7 +148,7 @@ export async function handleTableControlAction(
       content: data.content,
     })
     if (result)
-      await options.saveFile?.(`table.${data.extension}`, data.content, data.mimeType)
+      await options.saveFile?.(`${options.filename || 'table'}.${data.extension}`, data.content, data.mimeType)
   }
 
   return state

@@ -35,5 +35,5 @@ export interface MermaidRuntime {
   dispose: () => void
   parse: (code: string) => Promise<MermaidParseResult>
   render: (code: string) => Promise<MermaidRenderResult>
-  save: (format: 'svg' | 'png', code: string) => Promise<void>
+  save: (format: 'svg' | 'png', code: string, filename?: string) => Promise<void>
 }

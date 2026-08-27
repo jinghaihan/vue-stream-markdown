@@ -194,6 +194,20 @@ type ControlsConfig
     }
 ```
 
+Download controls accept `true` or `false`, or an object with a custom base filename. The appropriate extension is appended automatically:
+
+```typescript
+type DownloadControlConfig = boolean | { filename: string }
+
+const controls: ControlsConfig = {
+  code: { download: { filename: 'myScript' } },
+  table: { download: { filename: 'report' } },
+  mermaid: { download: { filename: 'flowchart' } },
+}
+```
+
+This produces names such as `myScript.ts`, `report.csv`, and `flowchart.svg`. Boolean values retain the default filenames.
+
 ## table
 
 - **Type:** `boolean | TableControlsConfig`
@@ -208,7 +222,7 @@ type TableControlsConfig
   = | boolean
     | {
       copy?: boolean | string
-      download?: boolean | string
+      download?: boolean | string | { filename: string }
       fullscreen?: boolean
       customize?: ControlTransformer<TableNodeRendererProps>
     }
@@ -216,7 +230,7 @@ type TableControlsConfig
 
 ### copy
 
-- **Type:** `boolean | string | undefined`
+- **Type:** `boolean | string | { filename: string } | undefined`
 - **Default:** `true`
 
 Enable copy button for tables. When set to `true`, the default label is used. When set to a string, that string is used as the button label.
@@ -249,7 +263,7 @@ const controls: ControlsConfig = {
 - **Type:** `boolean | string | undefined`
 - **Default:** `true`
 
-Enable download button for tables. When set to `true`, the default label is used. When set to a string, that string is used as the button label. The download button allows users to download the table as CSV, TSV, or Markdown format.
+Enable the table download button. A string keeps the existing custom-label behavior; `{ filename: 'report' }` sets the downloaded file's base name. The selected CSV, TSV, or Markdown extension is appended automatically.
 
 **Only download button enabled:**
 
@@ -319,7 +333,7 @@ type CodeControlsConfig
     | {
       collapse?: boolean
       copy?: boolean
-      download?: boolean
+      download?: boolean | { filename: string }
       fullscreen?: boolean
       customize?: ControlTransformer<CodeNodeRendererProps>
     }
@@ -389,10 +403,10 @@ const controls: ControlsConfig = {
 
 ### download
 
-- **Type:** `boolean | undefined`
+- **Type:** `boolean | { filename: string } | undefined`
 - **Default:** `true`
 
-Enable download button for code blocks. When enabled, users can download the code as a file. For Mermaid diagrams, additional options (SVG, PNG) are available.
+Enable the code download button. Use `{ filename: 'myScript' }` to set a custom base filename; the language extension is appended automatically. Mermaid diagrams use the separate `mermaid.download` filename setting.
 
 **Only download button enabled:**
 
@@ -541,7 +555,7 @@ Position of the control buttons for images in preview mode. The control buttons 
 - **Type:** `boolean | MermaidControlsConfig`
 - **Default:** `true` (zoom controls enabled)
 
-Controls for Mermaid diagrams. Can be a boolean or an object with zoom options.
+Controls for Mermaid diagrams. Can be a boolean or an object with download and zoom options.
 
 ### Interface
 
@@ -549,10 +563,18 @@ Controls for Mermaid diagrams. Can be a boolean or an object with zoom options.
 type MermaidControlsConfig
   = | boolean
     | {
+      download?: boolean | { filename: string }
       position?: ZoomControlPosition
       customize?: ControlTransformer<CodeNodeRendererProps>
     }
 ```
+
+### download
+
+- **Type:** `boolean | { filename: string } | undefined`
+- **Default:** Inherits `code.download`
+
+Configure the Mermaid download button or set a custom base filename. The selected `.svg`, `.png`, or `.mmd` extension is appended automatically. When omitted, the existing `code.download` visibility setting is preserved.
 
 ### position
 

@@ -4,6 +4,7 @@ import type { CodeNodeRendererProps, Control, SelectOption } from '../../types'
 import {
   createCodeBlockControlDescriptors,
   createCodeBlockModel,
+  getDownloadFilename,
   handleCodeBlockControlAction,
   resolveCodePreviewComponent,
   save,
@@ -43,7 +44,7 @@ const [DefineTemplate, ReuseTemplate] = createReusableTemplate()
 
 const { t } = useI18n()
 
-const { isControlEnabled, resolveControls } = useControls({
+const { getControlValue, isControlEnabled, resolveControls } = useControls({
   controls,
 })
 
@@ -79,7 +80,15 @@ const showLanguageTitle = computed(() => codeBlockModel.value.showLanguageTitle)
 
 const showCollapse = computed(() => isControlEnabled('code.collapse'))
 const showCopy = computed(() => isControlEnabled('code.copy'))
-const showDownload = computed(() => isControlEnabled('code.download'))
+const showDownload = computed(() => {
+  if (language.value !== 'mermaid')
+    return isControlEnabled('code.download')
+
+  const mermaidDownload = getControlValue('mermaid.download')
+  return mermaidDownload === undefined
+    ? isControlEnabled('code.download')
+    : mermaidDownload !== false
+})
 const showFullscreen = computed(() => isControlEnabled('code.fullscreen'))
 
 const icon = computed(() => {
@@ -105,6 +114,11 @@ const PreviewComponent = computed((): Component | undefined => {
 const inlineInteractive = computed(() => codeBlockModel.value.inlineInteractive)
 const maxHeight = computed(() => codeBlockModel.value.maxHeight)
 const downloadOptions = computed(() => codeBlockModel.value.downloadOptions)
+const downloadFilename = computed(() => {
+  const type = language.value === 'mermaid' ? 'mermaid' : 'code'
+  const fallback = type === 'mermaid' ? 'diagram' : 'file'
+  return getDownloadFilename(controls.value, type, fallback)
+})
 
 const builtinControls = computed((): Control[] => createCodeBlockControlDescriptors({
   collapsed: collapsed.value,
@@ -153,6 +167,7 @@ async function handleControlClick(key: string, item?: SelectOption) {
   const state = await handleCodeBlockControlAction({
     key,
     select: item,
+    filename: downloadFilename.value,
     state: {
       collapsed: collapsed.value,
       fullscreen: fullscreen.value,
@@ -163,7 +178,7 @@ async function handleControlClick(key: string, item?: SelectOption) {
     copyText: copy,
     onCopied,
     saveFile: save,
-    saveMermaid,
+    saveMermaid: (format, code, filename) => saveMermaid(format, code, undefined, filename),
   })
 
   collapsed.value = state.collapsed

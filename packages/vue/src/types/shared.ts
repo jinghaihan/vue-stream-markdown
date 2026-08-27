@@ -38,6 +38,8 @@ export type {
   BuiltinNodeRenderers,
   BuiltinPreviewers,
   BuiltinUIComponents,
+  DownloadControlConfig,
+  DownloadControlOptions,
   LinkOptions,
   PreviewSegmentedPlacement,
   UIOptions,

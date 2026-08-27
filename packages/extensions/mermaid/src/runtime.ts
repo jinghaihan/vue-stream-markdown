@@ -93,7 +93,7 @@ export function createMermaidRuntime(options: MermaidRuntimeOptions = {}): Merma
     return await renderer.render(code)
   }
 
-  async function saveDiagram(format: 'svg' | 'png', code: string) {
+  async function saveDiagram(format: 'svg' | 'png', code: string, filename = 'diagram') {
     const { svg } = await render(code)
     if (!svg)
       throw new Error('SVG not found. Please wait for the diagram to render.')
@@ -101,7 +101,7 @@ export function createMermaidRuntime(options: MermaidRuntimeOptions = {}): Merma
     const serializedSvg = serializeSvgForDownload(svg)
 
     if (format === 'svg') {
-      save('diagram.svg', serializedSvg, 'image/svg+xml')
+      save(`${filename}.svg`, serializedSvg, 'image/svg+xml')
       return
     }
 
@@ -109,7 +109,7 @@ export function createMermaidRuntime(options: MermaidRuntimeOptions = {}): Merma
     if (!blob)
       throw new Error('Failed to export PNG image')
 
-    save('diagram.png', blob, 'image/png')
+    save(`${filename}.png`, blob, 'image/png')
   }
 
   async function preload() {

@@ -5,6 +5,7 @@ import {
   createTableControlDescriptors,
   createTableModel,
   extractTableDataFromElement,
+  getDownloadFilename,
   getTableContent as getSerializedTableContent,
   handleTableControlAction,
   save,
@@ -58,6 +59,7 @@ const headerCells = computed(() => tableModel.value.headerCells)
 const bodyRows = computed(() => tableModel.value.bodyRows)
 const loading = computed(() => tableModel.value.loading)
 const options = computed(() => tableModel.value.options)
+const downloadFilename = computed(() => getDownloadFilename(controlsConfig.value, 'table', 'table'))
 
 function getAlign(index: number) {
   return tableModel.value.getAlign(index)
@@ -131,6 +133,7 @@ async function handleControlClick(key: string, item?: SelectOption) {
   const state = await handleTableControlAction({
     key,
     select: item,
+    filename: downloadFilename.value,
     state: {
       fullscreen: fullscreen.value,
     },

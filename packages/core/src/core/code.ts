@@ -252,6 +252,7 @@ export interface CodeBlockControlState {
 export interface CodeBlockControlActionOptions {
   key: string
   select?: SelectOption
+  filename?: string
   state: CodeBlockControlState
   node: CodeNode
   language: string
@@ -259,7 +260,7 @@ export interface CodeBlockControlActionOptions {
   copyText?: (content: string) => MaybePromise<void>
   onCopied?: (content: string) => void
   saveFile?: (filename: string, content: string | Blob, mimeType: string) => MaybePromise<void>
-  saveMermaid?: (format: 'svg' | 'png', code: string) => MaybePromise<void>
+  saveMermaid?: (format: 'svg' | 'png', code: string, filename?: string) => MaybePromise<void>
 }
 
 export function createCodeBlockControlDescriptors(
@@ -371,7 +372,7 @@ async function downloadCode(options: CodeBlockControlActionOptions) {
   if (!result)
     return
 
-  await options.saveFile?.(`file.${extension}`, options.node.value, 'text/plain')
+  await options.saveFile?.(`${options.filename || 'file'}.${extension}`, options.node.value, 'text/plain')
 }
 
 async function downloadMermaid(
@@ -383,7 +384,7 @@ async function downloadMermaid(
     content: options.node.value,
   })
   if (result)
-    await options.saveMermaid?.(format, options.node.value)
+    await options.saveMermaid?.(format, options.node.value, options.filename)
 }
 
 async function resolveBeforeDownload(

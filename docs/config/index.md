@@ -211,9 +211,9 @@ Enable copy button for tables. Can be a boolean or a custom label string.
 
 ##### download
 
-- **Type:** `boolean | string`
+- **Type:** `boolean | string | { filename: string }`
 
-Enable download button for tables. Can be a boolean or a custom label string.
+Enable the table download button. An object can set a custom base filename; the export extension is appended automatically.
 
 ##### fullscreen
 
@@ -241,9 +241,9 @@ Enable copy button for code blocks.
 
 ##### download
 
-- **Type:** `boolean`
+- **Type:** `boolean | { filename: string }`
 
-Enable download button for code blocks.
+Enable the code download button. An object can set a custom base filename; the language extension is appended automatically.
 
 ##### fullscreen
 
@@ -297,7 +297,13 @@ Position of the control buttons for images.
 
 - **Type:** `boolean | MermaidControlsConfig`
 
-Controls for Mermaid diagrams. Can be a boolean or an object with zoom options.
+Controls for Mermaid diagrams. Can be a boolean or an object with download and zoom options.
+
+##### download
+
+- **Type:** `boolean | { filename: string }`
+
+Configure Mermaid downloads or set a custom base filename. The `.svg`, `.png`, or `.mmd` extension is appended automatically.
 
 ##### inlineInteractive
 

@@ -23,6 +23,19 @@ export function isConfigEnabled(config: unknown, key: string): boolean {
   return getConfigValue(config, key) !== false
 }
 
+export function getDownloadFilename(
+  config: unknown,
+  type: 'code' | 'table' | 'mermaid',
+  fallback: string,
+): string {
+  const download = getConfigValue<unknown>(config, `${type}.download`)
+  if (!download || typeof download !== 'object')
+    return fallback
+
+  const filename = (download as Record<string, unknown>).filename
+  return typeof filename === 'string' && filename ? filename : fallback
+}
+
 export function filterVisibleItems<T extends { visible?: (() => boolean) | undefined }>(items: T[]): T[] {
   return items.filter(item => item.visible?.() ?? true)
 }

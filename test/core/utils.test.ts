@@ -1,5 +1,6 @@
 import {
   createTextParts,
+  getDownloadFilename,
   getNodeKey,
   getTableCellNodes,
   getTransitionName,
@@ -94,5 +95,20 @@ describe('core utilities', () => {
     const child = { type: 'text', value: 'A' }
     expect(getTableCellNodes({ children: [child] })).toEqual([child])
     expect(getTableCellNodes(child)).toEqual([child])
+  })
+
+  it('resolves custom download filenames with safe fallbacks', () => {
+    const controls = {
+      code: { download: { filename: 'myScript' } },
+      table: { download: { filename: 'report' } },
+      mermaid: { download: { filename: 'flowchart' } },
+    }
+
+    expect(getDownloadFilename(controls, 'code', 'file')).toBe('myScript')
+    expect(getDownloadFilename(controls, 'table', 'table')).toBe('report')
+    expect(getDownloadFilename(controls, 'mermaid', 'diagram')).toBe('flowchart')
+    expect(getDownloadFilename({ code: { download: true } }, 'code', 'file')).toBe('file')
+    expect(getDownloadFilename({ code: { download: { filename: '' } } }, 'code', 'file')).toBe('file')
+    expect(getDownloadFilename(false, 'code', 'file')).toBe('file')
   })
 })
