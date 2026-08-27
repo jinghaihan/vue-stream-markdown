@@ -20,20 +20,34 @@ export function getTableCellNodes<TNode = unknown>(
   return [cell as TNode]
 }
 
+function extractTableCellText(node: Node): string {
+  if (node.nodeType === Node.TEXT_NODE)
+    return node.textContent ?? ''
+
+  if (node.nodeType !== Node.ELEMENT_NODE)
+    return ''
+
+  const element = node as HTMLElement
+  if (element.tagName === 'BR')
+    return '\n'
+
+  return Array.from(element.childNodes).map(extractTableCellText).join('')
+}
+
 export function extractTableDataFromElement(tableElement: HTMLElement): TableData {
   const headers: string[] = []
   const rows: string[][] = []
 
   const headerCells = Array.from(tableElement.querySelectorAll('thead th'))
   for (const cell of headerCells)
-    headers.push(cell.textContent?.trim() || '')
+    headers.push(extractTableCellText(cell).trim())
 
   const bodyRows = Array.from(tableElement.querySelectorAll('tbody tr'))
   for (const row of bodyRows) {
     const rowData: string[] = []
     const cells = Array.from(row.querySelectorAll('td'))
     for (const cell of cells)
-      rowData.push(cell.textContent?.trim() || '')
+      rowData.push(extractTableCellText(cell).trim())
 
     rows.push(rowData)
   }
@@ -146,7 +160,7 @@ export function escapeMarkdownTableCell(cell: string): string {
   // biome-ignore lint/style/useForOf: "Need index access to check character codes for performance"
   for (let i = 0; i < cell.length; i += 1) {
     const char = cell[i]
-    if (char === '\\' || char === '|') {
+    if (char === '\\' || char === '|' || char === '\n') {
       needsEscaping = true
       break
     }
@@ -164,6 +178,8 @@ export function escapeMarkdownTableCell(cell: string): string {
       parts.push('\\\\')
     else if (char === '|')
       parts.push('\\|')
+    else if (char === '\n')
+      parts.push('<br>')
     else
       parts.push(char)
   }
