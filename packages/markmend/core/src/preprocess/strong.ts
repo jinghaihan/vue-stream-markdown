@@ -19,7 +19,9 @@ import {
   isWithinLinkOrImageUrl,
   isWithinMathBlock,
   maskInlineCodeMarkdownMarkers,
+  maskInvalidAsteriskMarkers,
   maskInvalidUnderscoreMarkers,
+  maskThematicBreakMarkers,
   removeMathBlocksFromText,
   removeUrlsFromText,
   shouldIgnoreUnderscoreMarker,
@@ -77,19 +79,22 @@ export function fixStrong(
   // Remove code blocks and mask Markdown markers inside inline code to avoid
   // treating code content as incomplete strong emphasis.
   const lastParagraphWithoutInlineCodeMarkers = maskInlineCodeMarkdownMarkers(lastParagraph, inlineCodeRanges)
-  const lastParagraphWithoutCodeBlocks = lastParagraphWithoutInlineCodeMarkers.replace(codeBlockPattern, '')
+  const lastParagraphWithoutThematicBreakMarkers = maskThematicBreakMarkers(lastParagraphWithoutInlineCodeMarkers)
+  const lastParagraphWithoutInvalidAsterisks = maskInvalidAsteriskMarkers(lastParagraphWithoutThematicBreakMarkers)
+  const lastParagraphWithoutInvalidMarkers = maskInvalidUnderscoreMarkers(lastParagraphWithoutInvalidAsterisks)
+  const lastParagraphWithoutCodeBlocks = lastParagraphWithoutInvalidMarkers.replace(codeBlockPattern, '')
   // Remove URLs to avoid counting markdown syntax inside URLs (URLs may contain _, *, ~)
   const lastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(lastParagraphWithoutCodeBlocks)
   // Remove math blocks to avoid counting markdown syntax inside math (math may contain **, __, etc.)
   const lastParagraphWithoutCodeBlocksAndUrlsAndMath = removeMathBlocksFromText(lastParagraphWithoutCodeBlocksAndUrls, options)
-  const lastParagraphForMarkerCounting = maskInvalidUnderscoreMarkers(lastParagraphWithoutCodeBlocksAndUrlsAndMath)
+  const lastParagraphForMarkerCounting = lastParagraphWithoutCodeBlocksAndUrlsAndMath
 
   // Check if content ends with a single * or _ (not ** or __)
   const endsWithSingleAsterisk = content.endsWith('*') && !content.endsWith('**')
   const endsWithSingleUnderscore = content.endsWith('_') && !content.endsWith('__')
 
   // Count ** in the last paragraph only (excluding code blocks, URLs, and math blocks)
-  const asteriskMatches = lastParagraphWithoutCodeBlocksAndUrlsAndMath.match(doubleAsteriskPattern)
+  const asteriskMatches = lastParagraphForMarkerCounting.match(doubleAsteriskPattern)
   const asteriskCount = asteriskMatches ? asteriskMatches.length : 0
 
   // Count __ in the last paragraph only (excluding code blocks, URLs, and math blocks)
@@ -101,6 +106,7 @@ export function fixStrong(
   let needsUnderscoreCompletion = false
   let needsAsteriskRemoval = false
   let needsUnderscoreRemoval = false
+  let lastAsteriskRunLength = 0
 
   // Check asterisk
   if (asteriskCount % 2 === 1) {
@@ -122,12 +128,22 @@ export function fixStrong(
       }
       // Check for **
       if (lastParagraph.substring(i, i + 2) === '**') {
+        if (lastParagraphWithoutInvalidMarkers.substring(i, i + 2) !== '**') {
+          i += 1
+          continue
+        }
         actualLastStarPos = i
         i += 1 // Skip the second *
       }
     }
     const paragraphOffset = calculateParagraphOffset(paragraphStartIndex, lines)
     const absoluteLastStarPos = paragraphOffset + actualLastStarPos
+    if (actualLastStarPos >= 0) {
+      let runEnd = actualLastStarPos
+      while (lastParagraph[runEnd] === '*')
+        runEnd += 1
+      lastAsteriskRunLength = runEnd - actualLastStarPos
+    }
 
     // Check if the asterisk is in math block, link/image URL, or HTML tag
     if (isWithinMathBlock(content, absoluteLastStarPos, options) || isWithinLinkOrImageUrl(content, absoluteLastStarPos) || isWithinHtmlTag(content, absoluteLastStarPos)) {
@@ -135,12 +151,13 @@ export function fixStrong(
       return content
     }
 
-    const afterLast = lastParagraphWithoutCodeBlocksAndUrlsAndMath.substring(lastParagraphWithoutCodeBlocksAndUrlsAndMath.lastIndexOf('**') + 2).trim()
+    const lastMarkerPosition = lastParagraphForMarkerCounting.lastIndexOf('**')
+    const afterLast = lastParagraphForMarkerCounting.substring(lastMarkerPosition + 2).trim()
 
     if (afterLast.length > 0) {
       needsAsteriskCompletion = true
     }
-    else {
+    else if (lastParagraphForMarkerCounting.slice(0, lastMarkerPosition).trim().length === 0) {
       needsAsteriskRemoval = true
     }
   }
@@ -165,6 +182,10 @@ export function fixStrong(
       }
       // Check for __
       if (lastParagraph.substring(i, i + 2) === '__') {
+        if (lastParagraphWithoutInvalidMarkers.substring(i, i + 2) !== '__') {
+          i += 1
+          continue
+        }
         if (shouldIgnoreUnderscoreMarker(lastParagraph, i, 2)) {
           i += 1
           continue
@@ -182,12 +203,13 @@ export function fixStrong(
       return content
     }
 
-    const afterLast = lastParagraphForMarkerCounting.substring(lastParagraphForMarkerCounting.lastIndexOf('__') + 2).trim()
+    const lastMarkerPosition = lastParagraphForMarkerCounting.lastIndexOf('__')
+    const afterLast = lastParagraphForMarkerCounting.substring(lastMarkerPosition + 2).trim()
 
     if (afterLast.length > 0) {
       needsUnderscoreCompletion = true
     }
-    else {
+    else if (lastParagraphForMarkerCounting.slice(0, lastMarkerPosition).trim().length === 0) {
       needsUnderscoreRemoval = true
     }
   }
@@ -195,6 +217,9 @@ export function fixStrong(
   // Handle trailing single * or _ when there's an unclosed ** or __
   let removedTrailingSingle = false
   if (endsWithSingleAsterisk && (needsAsteriskCompletion || needsAsteriskRemoval)) {
+    if (needsAsteriskCompletion && lastAsteriskRunLength >= 3)
+      return appendBeforeTrailingWhitespace(content, '**')
+
     // Remove the trailing single * first
     content = content.slice(0, -1)
     removedTrailingSingle = true

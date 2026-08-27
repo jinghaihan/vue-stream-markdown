@@ -1,10 +1,20 @@
-import { pipePattern, separatorPattern, tableRowPattern } from './pattern'
+import { separatorPattern, tableRowPattern } from './pattern'
 import {
   findClosedCodeBlockRanges,
   getLastParagraphWithIndex,
+  isEscapedCharacter,
   isInsideUnclosedCodeBlock,
   isRangeOverlappingRanges,
 } from './utils'
+
+function countTablePipes(row: string): number {
+  let count = 0
+  for (let index = 0; index < row.length; index += 1) {
+    if (row[index] === '|' && !isEscapedCharacter(row, index))
+      count += 1
+  }
+  return count
+}
 
 /**
  * Fix incomplete table syntax in streaming markdown
@@ -83,6 +93,7 @@ export function fixTable(content: string): string {
   // This ensures we complete incomplete headers during streaming to avoid flickering
   const trimmedHeader = headerRow.trim()
   const isHeaderComplete = trimmedHeader.endsWith('|')
+    && !isEscapedCharacter(trimmedHeader, trimmedHeader.length - 1)
 
   // Complete the header row if it's incomplete
   let completedHeaderRow = headerRow
@@ -92,7 +103,7 @@ export function fixTable(content: string): string {
   }
 
   // Count columns in the completed header row
-  const headerColumns = (completedHeaderRow.match(pipePattern) || []).length - 1
+  const headerColumns = countTablePipes(completedHeaderRow) - 1
 
   const separator = generateSeparator(headerColumns)
 
@@ -115,7 +126,7 @@ export function fixTable(content: string): string {
 
   // Check if next line is already a valid separator with correct column count
   if (separatorPattern.test(nextLine)) {
-    const separatorColumns = (nextLine.match(pipePattern) || []).length - 1
+    const separatorColumns = countTablePipes(nextLine) - 1
     if (separatorColumns === headerColumns) {
       // Separator matches, but we might still need to complete the header
       if (!isHeaderComplete) {

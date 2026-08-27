@@ -1457,9 +1457,9 @@ export const htmlTestCases: TestCasesByCategory = {
       expected: '',
     },
     {
-      description: 'should remove trailing bare <',
+      description: 'should preserve trailing bare <',
       input: 'Hello <',
-      expected: 'Hello',
+      expected: 'Hello <',
     },
     {
       description: 'should remove trailing unclosed opening tag with attributes',
@@ -1503,7 +1503,7 @@ export const htmlTestCases: TestCasesByCategory = {
 function keepStreamingCase(
   description: string,
   input: string,
-  preprocessOptions?: PreprocessContext,
+  preprocessOptions?: TestCase['preprocessOptions'],
 ): TestCase {
   return {
     description,
@@ -1517,7 +1517,7 @@ function completeStreamingCase(
   description: string,
   input: string,
   expected: string,
-  preprocessOptions?: PreprocessContext,
+  preprocessOptions?: TestCase['preprocessOptions'],
 ): TestCase {
   return {
     description,

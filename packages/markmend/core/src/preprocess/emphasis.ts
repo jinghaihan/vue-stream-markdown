@@ -1,10 +1,7 @@
 import {
   codeBlockPattern,
-  doubleAsteriskPattern,
-  doubleUnderscorePattern,
   singleAsteriskPattern,
   singleUnderscorePattern,
-  trailingStandaloneDashWithNewlinesPattern,
 } from './pattern'
 import {
   calculateParagraphOffset,
@@ -17,7 +14,10 @@ import {
   isWithinLinkOrImageUrl,
   isWithinMathBlock,
   maskInlineCodeMarkdownMarkers,
+  maskInvalidAsteriskMarkers,
   maskInvalidUnderscoreMarkers,
+  maskPairedMarkerRuns,
+  maskThematicBreakMarkers,
   removeUrlsFromText,
   shouldIgnoreUnderscoreMarker,
 } from './utils'
@@ -43,28 +43,30 @@ export function fixEmphasis(content: string): string {
   // Remove code blocks and mask Markdown markers inside inline code to avoid
   // treating code content as incomplete emphasis.
   const lastParagraphWithoutInlineCodeMarkers = maskInlineCodeMarkdownMarkers(lastParagraph, inlineCodeRanges)
-  const lastParagraphWithoutCodeBlocks = lastParagraphWithoutInlineCodeMarkers.replace(codeBlockPattern, '')
+  const lastParagraphWithoutThematicBreakMarkers = maskThematicBreakMarkers(lastParagraphWithoutInlineCodeMarkers)
+  const lastParagraphWithoutInvalidAsterisks = maskInvalidAsteriskMarkers(lastParagraphWithoutThematicBreakMarkers)
+  const lastParagraphWithoutInvalidMarkers = maskInvalidUnderscoreMarkers(lastParagraphWithoutInvalidAsterisks)
+  const sourceSingleAsteriskMarkers = maskPairedMarkerRuns(lastParagraphWithoutInvalidMarkers, '*')
+  const sourceSingleUnderscoreMarkers = maskPairedMarkerRuns(lastParagraphWithoutInvalidMarkers, '_')
+  const lastParagraphWithoutCodeBlocks = lastParagraphWithoutInvalidMarkers.replace(codeBlockPattern, '')
   // Remove URLs to avoid counting markdown syntax inside URLs (URLs may contain _, *, ~)
   const lastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(lastParagraphWithoutCodeBlocks)
-  const lastParagraphForMarkerCounting = maskInvalidUnderscoreMarkers(lastParagraphWithoutCodeBlocksAndUrls)
+  const lastParagraphForMarkerCounting = lastParagraphWithoutCodeBlocksAndUrls
 
   // Check asterisk emphasis first (original behavior)
-  // Remove ** to count only single *
-  const withoutDoubleAsterisk = lastParagraphForMarkerCounting.replace(doubleAsteriskPattern, '')
+  // Mask complete pairs while preserving the source offsets of odd runs.
+  const withoutDoubleAsterisk = maskPairedMarkerRuns(lastParagraphForMarkerCounting, '*')
   const asteriskMatches = withoutDoubleAsterisk.match(singleAsteriskPattern)
   const asteriskCount = asteriskMatches ? asteriskMatches.length : 0
 
   // Check underscore emphasis
-  // Remove __ to count only single _
-  const withoutDoubleUnderscore = lastParagraphForMarkerCounting.replace(doubleUnderscorePattern, '')
+  const withoutDoubleUnderscore = maskPairedMarkerRuns(lastParagraphForMarkerCounting, '_')
   const underscoreMatches = withoutDoubleUnderscore.match(singleUnderscorePattern)
   const underscoreCount = underscoreMatches ? underscoreMatches.length : 0
 
   // Track if we need to complete asterisk and/or underscore
   let needsAsteriskCompletion = false
   let needsUnderscoreCompletion = false
-  let needsAsteriskRemoval = false
-  let needsUnderscoreRemoval = false
 
   // Check asterisk
   if (asteriskCount % 2 === 1) {
@@ -79,11 +81,9 @@ export function fixEmphasis(content: string): string {
         continue
 
       if (lastParagraph[i] === '*') {
-        const absolutePos = paragraphOffset + i
-        // Skip if it's part of ** (we already removed those)
-        if (i > 0 && lastParagraph[i - 1] === '*') {
+        if (sourceSingleAsteriskMarkers[i] !== '*')
           continue
-        }
+        const absolutePos = paragraphOffset + i
         // Skip if it's in a URL, math block, or HTML tag
         if (!isWithinMathBlock(content, absolutePos) && !isWithinLinkOrImageUrl(content, absolutePos) && !isWithinHtmlTag(content, absolutePos)) {
           lastStarPos = i
@@ -109,9 +109,6 @@ export function fixEmphasis(content: string): string {
     if (hasContentAfter) {
       needsAsteriskCompletion = true
     }
-    else {
-      needsAsteriskRemoval = true
-    }
   }
 
   // Check underscore
@@ -126,11 +123,9 @@ export function fixEmphasis(content: string): string {
         continue
 
       if (lastParagraph[i] === '_') {
-        const absolutePos = paragraphOffset + i
-        // Skip if it's part of __ (we already removed those)
-        if (i > 0 && lastParagraph[i - 1] === '_') {
+        if (sourceSingleUnderscoreMarkers[i] !== '_')
           continue
-        }
+        const absolutePos = paragraphOffset + i
         if (shouldIgnoreUnderscoreMarker(lastParagraph, i))
           continue
         // Skip if it's in a URL, math block, or HTML tag
@@ -158,47 +153,6 @@ export function fixEmphasis(content: string): string {
     if (hasContentAfter) {
       needsUnderscoreCompletion = true
     }
-    else {
-      needsUnderscoreRemoval = true
-    }
-  }
-
-  // Handle removals first (they take precedence)
-  if (needsAsteriskRemoval) {
-    // Remove the trailing * to avoid showing it as plain text
-    let result = content.slice(0, -1).trimEnd()
-    // If after removing *, we're left with a line ending in `- ` or `-\t`, remove the standalone dash line
-    if (trailingStandaloneDashWithNewlinesPattern.test(result)) {
-      result = result.replace(trailingStandaloneDashWithNewlinesPattern, '$1')
-    }
-    return result
-  }
-
-  if (needsUnderscoreRemoval) {
-    // Remove the trailing _ and all whitespace after it
-    // Find the last _ position in original text (already calculated above)
-    const paragraphOffset = calculateParagraphOffset(paragraphStartIndex, lines)
-    let lastUnderscorePosInOriginal = -1
-    for (let i = lastParagraph.length - 1; i >= 0; i--) {
-      if (isPositionInRanges(i, codeBlockRanges) || isPositionInRanges(i, inlineCodeRanges))
-        continue
-
-      if (lastParagraph[i] === '_' && (i === 0 || lastParagraph[i - 1] !== '_')) {
-        if (shouldIgnoreUnderscoreMarker(lastParagraph, i))
-          continue
-        const absolutePos = paragraphOffset + i
-        if (!isWithinMathBlock(content, absolutePos) && !isWithinLinkOrImageUrl(content, absolutePos) && !isWithinHtmlTag(content, absolutePos)) {
-          lastUnderscorePosInOriginal = absolutePos
-          break
-        }
-      }
-    }
-    let result = content.substring(0, lastUnderscorePosInOriginal).trimEnd()
-    // If after removing _, we're left with a line ending in `- ` or `-\t`, remove the standalone dash line
-    if (trailingStandaloneDashWithNewlinesPattern.test(result)) {
-      result = result.replace(trailingStandaloneDashWithNewlinesPattern, '$1')
-    }
-    return result
   }
 
   // Handle completions - if both need completion, complete based on which appears first in the string

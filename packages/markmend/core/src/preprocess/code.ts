@@ -1,12 +1,12 @@
 import {
   codeBlockPattern,
-  singleBacktickPattern,
   trailingBackticksPattern,
   trailingWhitespacePattern,
 } from './pattern'
 import {
   calculateParagraphOffset,
   getLastParagraphWithIndex,
+  isEscapedCharacter,
   isInsideUnclosedCodeBlock,
   isWithinCodeBlock,
 } from './utils'
@@ -82,6 +82,9 @@ function removeTrailingIncompleteBackticks(content: string): string {
 
   const backtickSequence = match[1]
   const backtickPos = content.lastIndexOf(backtickSequence)
+  if (isEscapedCharacter(content, backtickPos))
+    return content
+
   const beforeBackticks = content.substring(0, backtickPos)
   const afterBackticks = content.substring(backtickPos + backtickSequence.length)
 
@@ -94,8 +97,11 @@ function removeTrailingIncompleteBackticks(content: string): string {
     const withoutCodeBlocks = lastParagraph.replace(codeBlockPattern, '')
 
     // Count backticks
-    const backticks = withoutCodeBlocks.match(singleBacktickPattern)
-    const count = backticks ? backticks.length : 0
+    let count = 0
+    for (let index = 0; index < withoutCodeBlocks.length; index += 1) {
+      if (withoutCodeBlocks[index] === '`' && !isEscapedCharacter(withoutCodeBlocks, index))
+        count += 1
+    }
 
     // Check if we're inside a code block
     const isInCodeBlock = isWithinCodeBlock(beforeBackticks, beforeBackticks.length)
@@ -177,8 +183,11 @@ function fixInlineCode(content: string): string {
 
   // Count single backticks (excluding triple backticks)
   // We need to be careful not to count backticks that are part of ```
-  const backticks = withoutCodeBlocks.match(singleBacktickPattern)
-  const count = backticks ? backticks.length : 0
+  let count = 0
+  for (let index = 0; index < withoutCodeBlocks.length; index += 1) {
+    if (withoutCodeBlocks[index] === '`' && !isEscapedCharacter(withoutCodeBlocks, index))
+      count += 1
+  }
 
   // Only complete if odd number and has content after
   if (count % 2 === 1) {
@@ -196,6 +205,9 @@ function fixInlineCode(content: string): string {
       }
 
       if (lastParagraph[i] === '`') {
+        if (isEscapedCharacter(lastParagraph, i))
+          continue
+
         // Check if it's part of ``` (triple backticks)
         const before = lastParagraph[i - 1] || ''
         const before2 = lastParagraph[i - 2] || ''

@@ -1,11 +1,17 @@
 import { codeBlockPattern, doubleTildePattern } from './pattern'
 import {
   calculateParagraphOffset,
+  findClosedCodeBlockRanges,
+  findInlineCodeRanges,
   getLastParagraphWithIndex,
+  isEscapedCharacter,
   isInsideUnclosedCodeBlock,
+  isPositionInRanges,
   isWithinHtmlTag,
   isWithinLinkOrImageUrl,
   isWithinMathBlock,
+  maskEscapedMarkdownMarkers,
+  maskInlineCodeMarkdownMarkers,
   removeUrlsFromText,
 } from './utils'
 
@@ -32,16 +38,19 @@ import {
  */
 export function fixDelete(content: string): string {
   // Don't process if we're inside a code block (unclosed)
-  if (isInsideUnclosedCodeBlock(content)) {
+  if (isInsideUnclosedCodeBlock(content))
     return content
-  }
 
   // Find the last paragraph (after the last blank line)
   // A blank line is defined as a line with only whitespace
   const { lastParagraph, startIndex: paragraphStartIndex } = getLastParagraphWithIndex(content)
+  const codeBlockRanges = findClosedCodeBlockRanges(lastParagraph)
+  const inlineCodeRanges = findInlineCodeRanges(lastParagraph, codeBlockRanges)
 
-  // Remove code blocks from the last paragraph to avoid processing ~~ inside them
-  const lastParagraphWithoutCodeBlocks = lastParagraph.replace(codeBlockPattern, '')
+  // Remove code blocks and protect inline code / escaped tildes.
+  const lastParagraphWithoutInlineCodeMarkers = maskInlineCodeMarkdownMarkers(lastParagraph, inlineCodeRanges)
+  const lastParagraphWithoutEscapedTildes = maskEscapedMarkdownMarkers(lastParagraphWithoutInlineCodeMarkers, '~')
+  const lastParagraphWithoutCodeBlocks = lastParagraphWithoutEscapedTildes.replace(codeBlockPattern, '')
   // Remove URLs to avoid counting markdown syntax inside URLs (URLs may contain _, *, ~)
   const lastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(lastParagraphWithoutCodeBlocks)
 
@@ -53,11 +62,15 @@ export function fixDelete(content: string): string {
   const endsWithSingleTilde = content.endsWith('~') && !content.endsWith('~~')
 
   // If ends with single ~, we need to check if it should be completed to ~~
-  if (endsWithSingleTilde) {
+  if (endsWithSingleTilde && !isEscapedCharacter(content, content.length - 1)) {
     // Remove the trailing single ~ and check if we have odd number of ~~
     const contentWithoutLastTilde = content.slice(0, -1)
     const lastParagraphWithoutTilde = contentWithoutLastTilde.split('\n').slice(paragraphStartIndex).join('\n')
-    const lastParagraphWithoutTildeAndCodeBlocks = lastParagraphWithoutTilde.replace(codeBlockPattern, '')
+    const rangesWithoutTilde = findClosedCodeBlockRanges(lastParagraphWithoutTilde)
+    const inlineRangesWithoutTilde = findInlineCodeRanges(lastParagraphWithoutTilde, rangesWithoutTilde)
+    const lastParagraphWithoutTildeAndInlineCode = maskInlineCodeMarkdownMarkers(lastParagraphWithoutTilde, inlineRangesWithoutTilde)
+    const lastParagraphWithoutTildeAndEscapes = maskEscapedMarkdownMarkers(lastParagraphWithoutTildeAndInlineCode, '~')
+    const lastParagraphWithoutTildeAndCodeBlocks = lastParagraphWithoutTildeAndEscapes.replace(codeBlockPattern, '')
     const lastParagraphWithoutTildeAndCodeBlocksAndUrls = removeUrlsFromText(lastParagraphWithoutTildeAndCodeBlocks)
     const matchesWithoutTilde = lastParagraphWithoutTildeAndCodeBlocksAndUrls.match(doubleTildePattern)
     const countWithoutTilde = matchesWithoutTilde ? matchesWithoutTilde.length : 0
@@ -74,10 +87,10 @@ export function fixDelete(content: string): string {
         }
       }
     }
-    else {
-      // Return the content without the last ~
-      return contentWithoutLastTilde
-    }
+    const hasEarlierSingleTilde = lastParagraphWithoutTildeAndCodeBlocksAndUrls
+      .replace(doubleTildePattern, '')
+      .includes('~')
+    return hasEarlierSingleTilde ? content : contentWithoutLastTilde
   }
 
   // Only complete if:
@@ -101,6 +114,11 @@ export function fixDelete(content: string): string {
       }
       // Check for ~~
       if (lastParagraph.substring(i, i + 2) === '~~') {
+        if (isPositionInRanges(i, inlineCodeRanges)
+          || lastParagraphWithoutEscapedTildes.substring(i, i + 2) !== '~~') {
+          i += 1
+          continue
+        }
         actualLastTildePos = i
         i += 1 // Skip the second ~
       }
@@ -125,9 +143,7 @@ export function fixDelete(content: string): string {
       return `${content}~~`
     }
     else {
-      // Remove the trailing ~~ and any whitespace before and after it
       const beforeTilde = content.substring(0, content.length - afterLast.length - 2)
-      // Remove trailing whitespace from the result
       return beforeTilde.trimEnd()
     }
   }
