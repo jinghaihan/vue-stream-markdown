@@ -79,6 +79,10 @@ export interface CodeOptionsLanguage<TComponent = unknown> extends Omit<CodeOpti
   languageIcon?: boolean | TComponent
 }
 
+export interface TableOptions {
+  maxHeight?: number | string
+}
+
 export interface HardenOptions<TComponent = unknown> {
   defaultOrigin?: string
   allowedLinkPrefixes?: string[]

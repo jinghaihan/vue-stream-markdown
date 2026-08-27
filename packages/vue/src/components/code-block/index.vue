@@ -11,7 +11,7 @@ import {
 } from '@stream-markdown/core'
 import { createReusableTemplate, useClipboard } from '@vueuse/core'
 import { computed, defineAsyncComponent, ref, watch } from 'vue'
-import { useContext, useControls, useI18n, useMermaid } from '../../composables'
+import { useContext, useControls, useI18n, useMermaid, usePinnedScroll } from '../../composables'
 import { CODE_PREVIEWERS } from '../previewers'
 import Actions from './actions.vue'
 import { LANGUAGE_ICONS } from './language-icons'
@@ -62,6 +62,7 @@ const { installed: hasMermaid, saveMermaid } = useMermaid({
 const collapsed = ref<boolean>(false)
 const fullscreen = ref<boolean>(false)
 const mode = ref<'preview' | 'source'>('source')
+const scrollRef = ref<HTMLElement>()
 
 const codeBlockModel = computed(() => createCodeBlockModel<Component>({
   node: props.node,
@@ -118,6 +119,13 @@ const downloadFilename = computed(() => {
   const type = language.value === 'mermaid' ? 'mermaid' : 'code'
   const fallback = type === 'mermaid' ? 'diagram' : 'file'
   return getDownloadFilename(controls.value, type, fallback)
+})
+
+usePinnedScroll({
+  target: scrollRef,
+  active: () => !!props.node.loading && mode.value === 'source',
+  enabled: () => !!maxHeight.value && mode.value === 'source',
+  contentKey: () => props.node.value,
 })
 
 const builtinControls = computed((): Control[] => createCodeBlockControlDescriptors({
@@ -248,6 +256,7 @@ async function handleControlClick(key: string, item?: SelectOption) {
 
     <main
       v-show="!collapsed"
+      ref="scrollRef"
       data-stream-markdown="code-block-content"
       class="overflow-auto"
       :style="{ maxHeight }"

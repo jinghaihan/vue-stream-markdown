@@ -9,11 +9,12 @@ import {
   getTableContent as getSerializedTableContent,
   getTableCsvSeparator,
   handleTableControlAction,
+  resolveScrollableMaxHeight,
   save,
 } from '@stream-markdown/core'
 import { useClipboard, useClipboardItems } from '@vueuse/core'
 import { computed, ref } from 'vue'
-import { useContext, useControls, useI18n } from '../../composables'
+import { useContext, useControls, useI18n, usePinnedScroll } from '../../composables'
 import NodeList from '../node-list.vue'
 
 const props = withDefaults(defineProps<TableNodeRendererProps>(), {})
@@ -22,6 +23,7 @@ const {
   beforeDownload,
   controls: controlsConfig,
   onCopied,
+  tableOptions,
   uiComponents: UI,
 } = useContext()
 
@@ -49,6 +51,8 @@ const showFullscreen = computed(() => isControlEnabled('table.fullscreen'))
 
 const tableRef = ref<{ $el?: HTMLElement }>()
 const fullscreenTableRef = ref<{ $el?: HTMLElement }>()
+const tableScrollRef = ref<HTMLElement>()
+const fullscreenScrollRef = ref<HTMLElement>()
 const fullscreen = ref(false)
 
 const tableModel = computed(() => createTableModel({
@@ -62,6 +66,15 @@ const loading = computed(() => tableModel.value.loading)
 const options = computed(() => tableModel.value.options)
 const downloadFilename = computed(() => getDownloadFilename(controlsConfig.value, 'table', 'table'))
 const csvSeparator = computed(() => getTableCsvSeparator(controlsConfig.value))
+const maxHeight = computed(() => resolveScrollableMaxHeight(tableOptions.value?.maxHeight))
+const scrollTarget = computed(() => fullscreen.value ? fullscreenScrollRef.value : tableScrollRef.value)
+
+usePinnedScroll({
+  target: scrollTarget,
+  active: loading,
+  enabled: () => fullscreen.value || !!maxHeight.value,
+  contentKey: () => props.node,
+})
 
 function getAlign(index: number) {
   return tableModel.value.getAlign(index)
@@ -170,8 +183,10 @@ async function handleControlClick(key: string, item?: SelectOption) {
     </div>
 
     <div
+      ref="tableScrollRef"
       data-stream-markdown="table-inner-wrapper"
-      class="w-full overflow-x-auto"
+      class="w-full overflow-x-auto overflow-y-auto"
+      :style="{ maxHeight }"
     >
       <component :is="UI.Table" ref="tableRef" :headers="headerCells" :rows="bodyRows" :get-align="getAlign">
         <template #header-cell="{ cell }">
@@ -220,6 +235,7 @@ async function handleControlClick(key: string, item?: SelectOption) {
       </template>
 
       <div
+        ref="fullscreenScrollRef"
         data-stream-markdown="table-fullscreen"
         class="p-4 h-full overflow-auto [&_thead]:top-0 [&_thead]:sticky [&_thead]:z-10"
         @click.self="fullscreen = false"

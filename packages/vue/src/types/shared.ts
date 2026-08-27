@@ -18,6 +18,7 @@ import type {
   PreviewerConfig as CorePreviewerConfig,
   ShikiOptions as CoreShikiOptions,
   TableControlsConfig as CoreTableControlsConfig,
+  TableOptions as CoreTableOptions,
   UIComponents as CoreUIComponents,
 } from '@stream-markdown/core'
 import type { RenderOptions as BeautifulMermaidConfig, ThemeName } from 'beautiful-mermaid'
@@ -97,6 +98,8 @@ export type ImageOptions = CoreImageOptions<Component>
 export type CodeOptions = CoreCodeOptions<Component>
 
 export type CodeOptionsLanguage = CoreCodeOptionsLanguage<Component>
+
+export type TableOptions = CoreTableOptions
 
 export type HardenOptions = CoreHardenOptions<Component>
 

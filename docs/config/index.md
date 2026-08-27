@@ -522,7 +522,7 @@ Whether to display line numbers for code blocks.
 
 - **Type:** `number | string`
 
-Maximum height for code block content. When the code content exceeds this height, the code block will become scrollable. If a number is provided, it will be treated as pixels. If a string is provided, it can be any valid CSS height value (e.g., `'500px'`, `'50vh'`).
+Maximum height for code block content. When the code content exceeds this height, the code block becomes scrollable and follows new streamed content while pinned to the bottom. If a number is provided, it is treated as pixels. A string can be any valid CSS height value such as `'500px'` or `'50vh'`.
 
 #### language
 
@@ -531,6 +531,18 @@ Maximum height for code block content. When the code content exceeds this height
 Language-specific code options. Allows you to override display options for specific programming languages. The keys should match the language identifiers used in code blocks (e.g., `'typescript'`, `'python'`, `'mermaid'`).
 
 > **Note:** In language-specific options, `languageIcon` can be `boolean | Component` to use a custom icon component for that specific language.
+
+### tableOptions
+
+- **Type:** `TableOptions`
+
+Configuration for table display options.
+
+#### maxHeight
+
+- **Type:** `number | string`
+
+Maximum height for tables. Taller tables become vertically scrollable and follow newly added rows during streaming while the user remains at the bottom. Scrolling up pauses automatic following.
 
 ### imageOptions
 

@@ -17,8 +17,8 @@ import {
 import {
   getConfigValue,
   isCodeOptionEnabled,
-  normalizeCssSize,
   resolveCodeOptions,
+  resolveScrollableMaxHeight,
 } from '../utils'
 
 export interface CodeOptionsModel<TComponent = unknown> {
@@ -212,14 +212,10 @@ export function resolveCodeMaxHeight<TComponent = unknown>(
     return undefined
 
   const specific = options.codeOptions?.language?.[options.language]?.maxHeight
-  if (specific)
-    return normalizeCssSize(specific)
+  if (specific !== undefined)
+    return resolveScrollableMaxHeight(specific)
 
-  const height = options.codeOptions?.maxHeight
-  if (height)
-    return normalizeCssSize(height)
-
-  return undefined
+  return resolveScrollableMaxHeight(options.codeOptions?.maxHeight)
 }
 
 export function getCodeDownloadOptions(language: string, hasMermaid: boolean): SelectOption[] {

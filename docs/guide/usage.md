@@ -119,6 +119,7 @@ See [HTML Rendering](/feature/html-rendering) for the full example.
 - `isDark` (boolean): Enable dark mode
 - `locale` (string | LocaleConfig): Locale for internationalization, defaults to `'en-US'`
 - `preload` (PreloadConfig): Configure which node renderers to preload for better initial rendering performance
+- `tableOptions` (TableOptions): Configure table height limits and streaming scroll behavior
 - `beforeDownload` ((event: DownloadEvent) => MaybePromise`<boolean>`): Callback invoked before download. Return `true` to proceed, `false` to cancel.
 
 ### Code Highlighting

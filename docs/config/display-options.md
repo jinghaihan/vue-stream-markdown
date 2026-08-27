@@ -1,6 +1,6 @@
 ---
 title: Display Options
-description: Configure display settings for code blocks, images, and themes including language indicators, line numbers, and captions.
+description: Configure display settings for code blocks, tables, images, and themes including height limits, language indicators, line numbers, and captions.
 ---
 
 <script setup>
@@ -129,7 +129,7 @@ Whether to display line numbers for code blocks. Line numbers are shown on the l
 - **Type:** `number | string | undefined`
 - **Default:** `undefined` (no height limit)
 
-Maximum height for code block content. When the code content exceeds this height, the code block will become scrollable. This option only applies when viewing the source code (not in preview mode).
+Maximum height for code block content. When the code content exceeds this height, the code block becomes scrollable. During streaming, it follows new content while the user remains at the bottom and pauses when the user scrolls up. This option only applies when viewing the source code (not in preview mode).
 
 - If a `number` is provided, it will be treated as pixels (e.g., `500` means `500px`)
 - If a `string` is provided, it can be any valid CSS height value (e.g., `'500px'`, `'50vh'`, `'10rem'`)
@@ -241,6 +241,37 @@ const codeOptions: CodeOptions = {
 
 <template>
   <Markdown :content="content" :code-options="codeOptions" />
+</template>
+```
+
+## tableOptions
+
+- **Type:** `TableOptions | undefined`
+- **Default:** `undefined` (no height limit)
+
+Configure the maximum height of rendered tables:
+
+```typescript
+interface TableOptions {
+  maxHeight?: number | string
+}
+```
+
+When a table exceeds `maxHeight`, its regular view becomes vertically scrollable. During streaming, it follows newly added rows while the user remains at the bottom. Scrolling up pauses following; returning to the bottom or starting a new stream enables it again.
+
+Use `0`, `Infinity`, `'Infinity'`, or `'none'` to disable the height constraint.
+
+```vue
+<script setup lang="ts">
+import type { TableOptions } from 'vue-stream-markdown'
+
+const tableOptions: TableOptions = {
+  maxHeight: 300,
+}
+</script>
+
+<template>
+  <Markdown :content="content" :table-options="tableOptions" />
 </template>
 ```
 

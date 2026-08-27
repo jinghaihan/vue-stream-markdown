@@ -4,6 +4,7 @@ import type { CdnOptions } from './cdn'
 import type { MaybePromise } from './common'
 import type { DownloadEvent } from './events'
 import type { LocaleConfig } from './i18n'
+import type { TableOptions } from './options'
 
 export interface StreamMarkdownContext<
   TControls = unknown,
@@ -24,6 +25,7 @@ export interface StreamMarkdownContext<
   katexOptions?: TKatexOptions
   hardenOptions?: THardenOptions
   codeOptions?: TCodeOptions
+  tableOptions?: TableOptions
   imageOptions?: TImageOptions
   linkOptions?: TLinkOptions
   uiOptions?: TUIOptions

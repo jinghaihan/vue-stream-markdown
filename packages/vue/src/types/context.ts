@@ -27,6 +27,7 @@ import type {
   PreloadConfig,
   PreviewerConfig,
   ShikiOptions,
+  TableOptions,
   UIComponents,
   UIOptions,
 } from './shared'
@@ -72,6 +73,7 @@ export interface StreamMarkdownProvideContext {
   katexOptions?: MaybeRefOrGetter<StreamMarkdownContext['katexOptions']>
   hardenOptions?: MaybeRefOrGetter<StreamMarkdownContext['hardenOptions']>
   codeOptions?: MaybeRefOrGetter<StreamMarkdownContext['codeOptions']>
+  tableOptions?: MaybeRefOrGetter<TableOptions | undefined>
   imageOptions?: MaybeRefOrGetter<StreamMarkdownContext['imageOptions']>
   linkOptions?: MaybeRefOrGetter<StreamMarkdownContext['linkOptions']>
   cdnOptions?: MaybeRefOrGetter<StreamMarkdownContext['cdnOptions']>
@@ -106,6 +108,7 @@ export interface StreamMarkdownResolvedContext {
   katexOptions: ComputedRef<StreamMarkdownContext['katexOptions']>
   hardenOptions: ComputedRef<StreamMarkdownContext['hardenOptions']>
   codeOptions: ComputedRef<StreamMarkdownContext['codeOptions']>
+  tableOptions: ComputedRef<TableOptions | undefined>
   imageOptions: ComputedRef<StreamMarkdownContext['imageOptions']>
   linkOptions: ComputedRef<StreamMarkdownContext['linkOptions']>
   cdnOptions: ComputedRef<StreamMarkdownContext['cdnOptions']>

@@ -7,6 +7,7 @@ import {
   normalizeAnimationDuration,
   normalizeCssSize,
   normalizeThemeVariableValue,
+  resolveScrollableMaxHeight,
   resolveTableAlign,
   resolveTextAnimationSplit,
   shouldAnimateNode,
@@ -75,6 +76,11 @@ describe('core utilities', () => {
     expect(normalizeAnimationDuration(undefined)).toBeUndefined()
     expect(normalizeCssSize(320)).toBe('320px')
     expect(normalizeCssSize('60vh')).toBe('60vh')
+    expect(resolveScrollableMaxHeight(320)).toBe('320px')
+    expect(resolveScrollableMaxHeight('50vh')).toBe('50vh')
+    expect(resolveScrollableMaxHeight(0)).toBeUndefined()
+    expect(resolveScrollableMaxHeight(Number.POSITIVE_INFINITY)).toBeUndefined()
+    expect(resolveScrollableMaxHeight('none')).toBeUndefined()
   })
 
   it('wraps bare hsl channels and leaves resolved theme colors untouched', () => {

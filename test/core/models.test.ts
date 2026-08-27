@@ -189,6 +189,14 @@ describe('core models', () => {
       languageClass: 'language-ts',
       lines: ['const a = 1'],
     })
+    expect(createCodeBlockModel({
+      node: { type: 'code', lang: 'typescript', value: 'const a = 1' },
+      codeOptions: {
+        maxHeight: 300,
+        language: { typescript: { maxHeight: 0 } },
+      },
+      mode: 'source',
+    }).maxHeight).toBeUndefined()
     expect(createCodeBlockControlDescriptors({
       collapsed: true,
       fullscreen: false,

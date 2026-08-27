@@ -28,6 +28,7 @@ export function useContext(): StreamMarkdownResolvedContext {
   const katexOptions = computed(() => toValue(context.katexOptions))
   const hardenOptions = computed(() => toValue(context.hardenOptions))
   const codeOptions = computed(() => toValue(context.codeOptions))
+  const tableOptions = computed(() => toValue(context.tableOptions))
   const imageOptions = computed(() => toValue(context.imageOptions))
   const linkOptions = computed(() => toValue(context.linkOptions))
   const cdnOptions = computed(() => toValue(context.cdnOptions))
@@ -72,6 +73,7 @@ export function useContext(): StreamMarkdownResolvedContext {
     katexOptions,
     hardenOptions,
     codeOptions,
+    tableOptions,
     imageOptions,
     linkOptions,
     cdnOptions,
