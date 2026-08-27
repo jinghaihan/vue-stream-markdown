@@ -215,6 +215,12 @@ Enable copy button for tables. Can be a boolean or a custom label string.
 
 Enable the table download button. An object can set a custom base filename; the export extension is appended automatically.
 
+##### csvSeparator
+
+- **Type:** `',' | ';' | '\t' | 'auto'`
+
+Set the delimiter used when copying or downloading CSV. `auto` selects a semicolon for comma-decimal locales and a comma otherwise.
+
 ##### fullscreen
 
 - **Type:** `boolean`

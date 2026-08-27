@@ -1,3 +1,5 @@
+import type { CSVSeparator } from './table'
+
 export type ZoomControlPosition
   = | 'top-left'
     | 'top-right'
@@ -16,6 +18,7 @@ export type TableControlsConfig<TTransformer = unknown>
   = | boolean
     | {
       copy?: boolean | string
+      csvSeparator?: CSVSeparator
       download?: DownloadControlConfig | string
       fullscreen?: boolean
       customize?: TTransformer

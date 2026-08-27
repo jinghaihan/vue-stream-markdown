@@ -6,6 +6,7 @@ import type {
 } from '@markmend/ast'
 import type {
   ControlDescriptor,
+  CSVSeparator,
   DownloadEvent,
   MaybePromise,
   SelectOption,
@@ -73,7 +74,11 @@ export function createTableModel(options: TableModelOptions) {
   }
 }
 
-export function getTableContent(format: TableFormat, tableData: TableData): TableContent {
+export function getTableContent(
+  format: TableFormat,
+  tableData: TableData,
+  csvSeparator: CSVSeparator = ',',
+): TableContent {
   switch (format) {
     case 'markdown':
       return { content: tableDataToMarkdown(tableData), mimeType: 'text/markdown', extension: 'md' }
@@ -81,7 +86,7 @@ export function getTableContent(format: TableFormat, tableData: TableData): Tabl
       return { content: tableDataToTSV(tableData), mimeType: 'text/tsv', extension: 'tsv' }
     case 'csv':
     default:
-      return { content: tableDataToCSV(tableData), mimeType: 'text/csv', extension: 'csv' }
+      return { content: tableDataToCSV(tableData, csvSeparator), mimeType: 'text/csv', extension: 'csv' }
   }
 }
 

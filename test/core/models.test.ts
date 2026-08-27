@@ -160,6 +160,10 @@ describe('core models', () => {
       content: 'A\nB',
       extension: 'csv',
     })
+    expect(getTableContent('csv', { headers: ['A', 'B'], rows: [['1', '2']] }, ';')).toMatchObject({
+      content: 'A;B\n1;2',
+      extension: 'csv',
+    })
   })
 
   it('creates code block model for preview and download decisions', () => {

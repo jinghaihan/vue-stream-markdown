@@ -7,6 +7,7 @@ import {
   extractTableDataFromElement,
   getDownloadFilename,
   getTableContent as getSerializedTableContent,
+  getTableCsvSeparator,
   handleTableControlAction,
   save,
 } from '@stream-markdown/core'
@@ -60,6 +61,7 @@ const bodyRows = computed(() => tableModel.value.bodyRows)
 const loading = computed(() => tableModel.value.loading)
 const options = computed(() => tableModel.value.options)
 const downloadFilename = computed(() => getDownloadFilename(controlsConfig.value, 'table', 'table'))
+const csvSeparator = computed(() => getTableCsvSeparator(controlsConfig.value))
 
 function getAlign(index: number) {
   return tableModel.value.getAlign(index)
@@ -79,7 +81,7 @@ function getTableContent(format: TableFormat): {
   if (!tableElement)
     return null
   const tableData = extractTableDataFromElement(tableElement)
-  return getSerializedTableContent(format, tableData)
+  return getSerializedTableContent(format, tableData, csvSeparator.value)
 }
 
 async function copyTableContent(content: string) {

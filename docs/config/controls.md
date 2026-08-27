@@ -201,7 +201,10 @@ type DownloadControlConfig = boolean | { filename: string }
 
 const controls: ControlsConfig = {
   code: { download: { filename: 'myScript' } },
-  table: { download: { filename: 'report' } },
+  table: {
+    csvSeparator: 'auto',
+    download: { filename: 'report' },
+  },
   mermaid: { download: { filename: 'flowchart' } },
 }
 ```
@@ -222,6 +225,7 @@ type TableControlsConfig
   = | boolean
     | {
       copy?: boolean | string
+      csvSeparator?: ',' | ';' | '\t' | 'auto'
       download?: boolean | string | { filename: string }
       fullscreen?: boolean
       customize?: ControlTransformer<TableNodeRendererProps>
@@ -264,6 +268,13 @@ const controls: ControlsConfig = {
 - **Default:** `true`
 
 Enable the table download button. A string keeps the existing custom-label behavior; `{ filename: 'report' }` sets the downloaded file's base name. The selected CSV, TSV, or Markdown extension is appended automatically.
+
+### csvSeparator
+
+- **Type:** `',' | ';' | '\t' | 'auto' | undefined`
+- **Default:** `','`
+
+Set the delimiter used when copying or downloading CSV. In `auto` mode, comma-decimal locales use a semicolon and other locales use a comma. TSV and Markdown serialization are unchanged.
 
 **Only download button enabled:**
 

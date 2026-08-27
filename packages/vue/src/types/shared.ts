@@ -38,6 +38,7 @@ export type {
   BuiltinNodeRenderers,
   BuiltinPreviewers,
   BuiltinUIComponents,
+  CSVSeparator,
   DownloadControlConfig,
   DownloadControlOptions,
   LinkOptions,

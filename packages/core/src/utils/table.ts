@@ -1,4 +1,5 @@
-import type { TableData } from '../types'
+import type { CSVSeparator, TableData } from '../types'
+import { getConfigValue } from './config'
 
 export type TableAlign = 'left' | 'center' | 'right'
 
@@ -55,32 +56,41 @@ export function extractTableDataFromElement(tableElement: HTMLElement): TableDat
   return { headers, rows }
 }
 
-export function tableDataToCSV(data: TableData): string {
+export function getTableCsvSeparator(config: unknown): CSVSeparator {
+  const separator = getConfigValue<unknown>(config, 'table.csvSeparator')
+  if (separator === ';' || separator === '\t' || separator === 'auto')
+    return separator
+  return ','
+}
+
+export function tableDataToCSV(
+  data: TableData,
+  separator: CSVSeparator = ',',
+): string {
+  let resolvedSeparator: Exclude<CSVSeparator, 'auto'>
+  if (separator === 'auto')
+    resolvedSeparator = new Intl.NumberFormat().format(1.1).includes(',') ? ';' : ','
+  else
+    resolvedSeparator = separator
+
   const { headers, rows } = data
 
   const escapeCSV = (value: string): string => {
     let needsEscaping = false
-    let hasQuote = false
 
     // biome-ignore lint/style/useForOf: "Need index access to check character codes for performance"
     for (let i = 0; i < value.length; i += 1) {
       const char = value[i]
-      if (char === '"') {
+      if (char === resolvedSeparator || char === '"' || char === '\n' || char === '\r') {
         needsEscaping = true
-        hasQuote = true
         break
       }
-      if (char === ',' || char === '\n')
-        needsEscaping = true
     }
 
     if (!needsEscaping)
       return value
 
-    if (hasQuote)
-      return `"${value.replace(CSV_QUOTE_PATTERN, '""')}"`
-
-    return `"${value}"`
+    return `"${value.replace(CSV_QUOTE_PATTERN, '""')}"`
   }
 
   const totalRows = headers.length > 0 ? rows.length + 1 : rows.length
@@ -88,12 +98,12 @@ export function tableDataToCSV(data: TableData): string {
   let rowIndex = 0
 
   if (headers.length > 0) {
-    csvRows[rowIndex] = headers.map(escapeCSV).join(',')
+    csvRows[rowIndex] = headers.map(escapeCSV).join(resolvedSeparator)
     rowIndex += 1
   }
 
   for (const row of rows) {
-    csvRows[rowIndex] = row.map(escapeCSV).join(',')
+    csvRows[rowIndex] = row.map(escapeCSV).join(resolvedSeparator)
     rowIndex += 1
   }
 
