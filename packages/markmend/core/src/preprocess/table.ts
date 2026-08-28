@@ -16,6 +16,40 @@ function countTablePipes(row: string): number {
   return count
 }
 
+type TableAlignment = 'center' | 'left' | 'right' | undefined
+
+function parseIncompleteSeparatorAlignments(row: string): TableAlignment[] | undefined {
+  const trimmedRow = row.trim()
+  if (!trimmedRow.startsWith('|'))
+    return undefined
+
+  const markerCharacters = [...trimmedRow].filter(character => character !== '|' && !/\s/.test(character))
+  if (markerCharacters.length === 0
+    || markerCharacters.some(character => character !== '-' && character !== ':')) {
+    return undefined
+  }
+
+  const cells = trimmedRow.split('|')
+  if (cells[0] === '')
+    cells.shift()
+  if (cells.at(-1)?.trim() === '')
+    cells.pop()
+
+  return cells.map((cell) => {
+    const marker = cell.replace(/\s/g, '')
+    const startsWithColon = marker.startsWith(':')
+    const endsWithColon = marker.length > 1 && marker.endsWith(':')
+
+    if (startsWithColon && endsWithColon)
+      return 'center'
+    if (startsWithColon)
+      return 'left'
+    if (endsWithColon)
+      return 'right'
+    return undefined
+  })
+}
+
 /**
  * Fix incomplete table syntax in streaming markdown
  *
@@ -142,14 +176,16 @@ export function fixTable(content: string): string {
   const nextLineInContent = afterLines[1] || ''
   const newHeader = isHeaderComplete ? headerRow : completedHeaderRow
 
-  if (nextLineInContent.startsWith('|') && nextLineInContent.includes('-')) {
+  const partialSeparatorAlignments = parseIncompleteSeparatorAlignments(nextLineInContent)
+  if (partialSeparatorAlignments !== undefined) {
     // Replace incomplete separator
+    const completedSeparator = generateSeparator(headerColumns, partialSeparatorAlignments)
     const remainingLines = afterLines.slice(2).join('\n')
     if (remainingLines.length > 0) {
-      return `${beforeHeaderRow}${newHeader}\n${separator}\n${remainingLines}`
+      return `${beforeHeaderRow}${newHeader}\n${completedSeparator}\n${remainingLines}`
     }
     else {
-      return `${beforeHeaderRow}${newHeader}\n${separator}`
+      return `${beforeHeaderRow}${newHeader}\n${completedSeparator}`
     }
   }
 
@@ -162,10 +198,17 @@ export function fixTable(content: string): string {
  * Generate a table separator row with the specified number of columns
  * Format: | --- | --- | ... |
  */
-function generateSeparator(columns: number): string {
+function generateSeparator(columns: number, alignments: TableAlignment[] = []): string {
   const parts: string[] = []
   for (let i = 0; i < columns; i++) {
-    parts.push(' --- ')
+    const marker = alignments[i] === 'left'
+      ? ':---'
+      : alignments[i] === 'center'
+        ? ':---:'
+        : alignments[i] === 'right'
+          ? '---:'
+          : '---'
+    parts.push(` ${marker} `)
   }
   return `|${parts.join('|')}|`
 }
