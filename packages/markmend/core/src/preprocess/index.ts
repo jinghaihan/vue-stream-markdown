@@ -2,6 +2,7 @@ import type { PreprocessContext, PreprocessStep, PreprocessStepName, PreprocessS
 import { flow } from '../utils'
 import { fixCode } from './code'
 import { fixComparisonOperators } from './comparison-operators'
+import { createPreprocessContext } from './context'
 import { fixDelete } from './delete'
 import { fixEmphasis } from './emphasis'
 import { fixFootnote } from './footnote'
@@ -15,6 +16,7 @@ import { fixTable } from './table'
 import { fixTaskList } from './task-list'
 import { parseMarkdownIntoBlocks, preprocessLaTeX } from './vendored'
 
+export * from './context'
 export * from './pattern'
 
 function proprocessContent(content: string): string {
@@ -63,9 +65,10 @@ export function preprocess(
   options?: PreprocessContext,
   steps: PreprocessSteps = {},
 ): string {
+  const context = createPreprocessContext(options)
   return DEFAULT_PREPROCESS_STEP_NAMES.reduce((result, name) => {
     const step = steps[name] ?? DEFAULT_PREPROCESS_STEPS[name]
-    return step(result, options)
+    return step(result, context)
   }, content)
 }
 
