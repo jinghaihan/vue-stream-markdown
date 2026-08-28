@@ -363,9 +363,13 @@ export function maskThematicBreakMarkers(content: string): string {
  */
 export function maskInvalidAsteriskMarkers(content: string): string {
   const characters = content.split('')
+  let singleAsteriskCount = 0
+  let inWordAsteriskChain = false
 
   for (let index = 0; index < content.length;) {
     if (content[index] !== '*') {
+      if (!isUnicodeWordCharacterAt(content, index))
+        inWordAsteriskChain = false
       index += 1
       continue
     }
@@ -381,6 +385,31 @@ export function maskInvalidAsteriskMarkers(content: string): string {
     if (cannotDelimit) {
       for (let markerIndex = runStart; markerIndex < index; markerIndex += 1)
         characters[markerIndex] = ' '
+      continue
+    }
+
+    // Paired markers in the run belong to strong emphasis. Only decide whether
+    // the odd leftover marker participates in single-asterisk emphasis.
+    if ((index - runStart) % 2 === 0)
+      continue
+
+    const singleMarkerIndex = index - 1
+    const isInsideWord = isUnicodeWordCharacterAt(content, runStart - 1)
+      && isUnicodeWordCharacterAt(content, index)
+    const canOpen = !isWhitespaceOrBoundary(content, index)
+    const canClose = !isWhitespaceOrBoundary(content, runStart - 1)
+    const startsColdInsideWord = isInsideWord
+      && singleAsteriskCount % 2 === 0
+      && !inWordAsteriskChain
+    const participates = !startsColdInsideWord
+      && ((canClose && singleAsteriskCount % 2 === 1) || canOpen)
+
+    if (participates) {
+      singleAsteriskCount += 1
+      inWordAsteriskChain = isInsideWord
+    }
+    else {
+      characters[singleMarkerIndex] = ' '
     }
   }
 
