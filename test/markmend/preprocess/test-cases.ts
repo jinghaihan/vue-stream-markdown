@@ -383,6 +383,12 @@ export const emphasisTestCases: TestCasesByCategory = {
       input: 'a\n- *',
       expected: 'a\n',
     },
+    {
+      description: 'should preserve formatting-only list item when configured',
+      input: 'a\n- *',
+      expected: 'a\n- *',
+      preprocessOptions: preserveBareFormattingMarkers,
+    },
   ],
 
   'emphasis-underscore': [
@@ -627,6 +633,12 @@ export const strongTestCases: TestCasesByCategory = {
       integrationExpected: '',
     },
     {
+      description: 'should preserve formatting-only asterisk fragment when configured',
+      input: '** *',
+      expected: '** *',
+      preprocessOptions: preserveBareFormattingMarkers,
+    },
+    {
       description: 'should complete ** appropriately when there is trailing whitespace',
       input: `**Contribution\n`,
       expected: `**Contribution**\n`,
@@ -741,6 +753,12 @@ export const strongTestCases: TestCasesByCategory = {
       description: 'should remove __ after dropping trailing single _ with no remaining content',
       input: '__ _',
       expected: '',
+    },
+    {
+      description: 'should preserve formatting-only underscore fragment when configured',
+      input: '__ _',
+      expected: '__ _',
+      preprocessOptions: preserveBareFormattingMarkers,
     },
     {
       description: 'should ignore ** inside code block',

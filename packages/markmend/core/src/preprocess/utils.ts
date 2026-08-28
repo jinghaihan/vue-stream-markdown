@@ -84,10 +84,24 @@ export function hideBareFormattingMarker(
   markers: readonly string[],
 ): string | undefined {
   const { lastParagraph } = getLastParagraphWithIndex(content)
-  if (!markers.includes(lastParagraph.trim()))
-    return undefined
+  const containsOnlyMarkers = (value: string): boolean => {
+    const tokens = value.trim().split(/\s+/)
+    return tokens.length > 0 && tokens.every(token => markers.includes(token))
+  }
 
-  return content.slice(0, content.length - lastParagraph.length).trimEnd()
+  if (containsOnlyMarkers(lastParagraph))
+    return content.slice(0, content.length - lastParagraph.length).trimEnd()
+
+  const lastLineStart = content.lastIndexOf('\n') + 1
+  const lastLine = content.slice(lastLineStart)
+  const trimmedLastLine = lastLine.trim()
+  const separatesListMarker = trimmedLastLine[0] === '-'
+    && (trimmedLastLine[1] === ' ' || trimmedLastLine[1] === '\t')
+  const listItemContent = separatesListMarker ? trimmedLastLine.slice(2) : undefined
+  if (listItemContent !== undefined && containsOnlyMarkers(listItemContent))
+    return content.slice(0, lastLineStart)
+
+  return undefined
 }
 
 /**
