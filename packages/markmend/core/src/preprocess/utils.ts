@@ -85,6 +85,9 @@ export function hideBareFormattingMarker(
 ): string | undefined {
   const { lastParagraph } = getLastParagraphWithIndex(content)
   const containsOnlyMarkers = (value: string): boolean => {
+    if (maskThematicBreakMarkers(value) !== value)
+      return false
+
     const tokens = value.trim().split(/\s+/)
     return tokens.length > 0 && tokens.every(token => markers.includes(token))
   }

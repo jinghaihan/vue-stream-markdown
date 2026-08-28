@@ -627,16 +627,9 @@ export const strongTestCases: TestCasesByCategory = {
       expected: 'a\n',
     },
     {
-      description: 'should fallback to single * after dropping trailing single *',
-      input: '** *',
-      expected: '*',
-      integrationExpected: '',
-    },
-    {
-      description: 'should preserve formatting-only asterisk fragment when configured',
+      description: 'should preserve mixed-spacing asterisk thematic break',
       input: '** *',
       expected: '** *',
-      preprocessOptions: preserveBareFormattingMarkers,
     },
     {
       description: 'should complete ** appropriately when there is trailing whitespace',
@@ -750,15 +743,9 @@ export const strongTestCases: TestCasesByCategory = {
       expected: 'a\n',
     },
     {
-      description: 'should remove __ after dropping trailing single _ with no remaining content',
-      input: '__ _',
-      expected: '',
-    },
-    {
-      description: 'should preserve formatting-only underscore fragment when configured',
+      description: 'should preserve mixed-spacing underscore thematic break',
       input: '__ _',
       expected: '__ _',
-      preprocessOptions: preserveBareFormattingMarkers,
     },
     {
       description: 'should ignore ** inside code block',
