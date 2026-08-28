@@ -1,16 +1,32 @@
 import type { PreprocessContext } from '../types'
 import type { TextRange } from './utils'
+import { codeBlockPattern } from './pattern'
 import {
   findClosedCodeBlockRanges,
   findInlineCodeRanges,
   findLastParagraphStart,
   isInsideUnclosedCodeBlock,
-
+  maskInlineCodeMarkdownMarkers,
+  maskInvalidAsteriskMarkers,
+  maskInvalidUnderscoreMarkers,
+  maskPairedMarkerRuns,
+  maskThematicBreakMarkers,
+  removeMathBlocksFromText,
+  removeUrlsFromText,
 } from './utils'
+
+export interface FormattingMarkerAnalysis {
+  maskedContent: string
+  singleAsteriskMarkers: string
+  singleUnderscoreMarkers: string
+  withoutCodeBlocksAndUrls: string
+  withoutMath: (singleDollarTextMath?: boolean) => string
+}
 
 export interface PreprocessParagraphAnalysis {
   codeBlockRanges: TextRange[]
   content: string
+  formattingMarkers: FormattingMarkerAnalysis
   inlineCodeRanges: TextRange[]
   isFullyCodeBlock: boolean
   startIndex: number
@@ -29,10 +45,65 @@ export interface PreprocessAnalysis {
 
 const analysisCache = new WeakMap<PreprocessContext, PreprocessAnalysis>()
 
+class CachedFormattingMarkerAnalysis implements FormattingMarkerAnalysis {
+  private cachedMaskedContent?: string
+  private cachedSingleAsteriskMarkers?: string
+  private cachedSingleUnderscoreMarkers?: string
+  private cachedWithoutCodeBlocksAndUrls?: string
+  private cachedWithoutMath?: string
+  private cachedWithoutSingleDollarMath?: string
+
+  constructor(private readonly paragraph: CachedParagraphAnalysis) {}
+
+  get maskedContent(): string {
+    if (this.cachedMaskedContent === undefined) {
+      const withoutInlineCodeMarkers = maskInlineCodeMarkdownMarkers(
+        this.paragraph.content,
+        this.paragraph.inlineCodeRanges,
+      )
+      const withoutThematicBreakMarkers = maskThematicBreakMarkers(withoutInlineCodeMarkers)
+      const withoutInvalidAsterisks = maskInvalidAsteriskMarkers(withoutThematicBreakMarkers)
+      this.cachedMaskedContent = maskInvalidUnderscoreMarkers(withoutInvalidAsterisks)
+    }
+    return this.cachedMaskedContent
+  }
+
+  get singleAsteriskMarkers(): string {
+    this.cachedSingleAsteriskMarkers ??= maskPairedMarkerRuns(this.maskedContent, '*')
+    return this.cachedSingleAsteriskMarkers
+  }
+
+  get singleUnderscoreMarkers(): string {
+    this.cachedSingleUnderscoreMarkers ??= maskPairedMarkerRuns(this.maskedContent, '_')
+    return this.cachedSingleUnderscoreMarkers
+  }
+
+  get withoutCodeBlocksAndUrls(): string {
+    this.cachedWithoutCodeBlocksAndUrls ??= removeUrlsFromText(
+      this.maskedContent.replace(codeBlockPattern, ''),
+    )
+    return this.cachedWithoutCodeBlocksAndUrls
+  }
+
+  withoutMath(singleDollarTextMath = false): string {
+    if (singleDollarTextMath) {
+      this.cachedWithoutSingleDollarMath ??= removeMathBlocksFromText(
+        this.withoutCodeBlocksAndUrls,
+        { singleDollarTextMath: true },
+      )
+      return this.cachedWithoutSingleDollarMath
+    }
+
+    this.cachedWithoutMath ??= removeMathBlocksFromText(this.withoutCodeBlocksAndUrls)
+    return this.cachedWithoutMath
+  }
+}
+
 class CachedParagraphAnalysis implements PreprocessParagraphAnalysis {
   private cachedCodeBlockRanges?: TextRange[]
   private cachedInlineCodeRanges?: TextRange[]
   readonly content: string
+  readonly formattingMarkers: FormattingMarkerAnalysis
   readonly startIndex: number
   readonly startOffset: number
 
@@ -42,6 +113,7 @@ class CachedParagraphAnalysis implements PreprocessParagraphAnalysis {
     this.startOffset = this.startIndex === 0
       ? 0
       : lines.slice(0, this.startIndex).join('\n').length + 1
+    this.formattingMarkers = new CachedFormattingMarkerAnalysis(this)
   }
 
   get codeBlockRanges(): TextRange[] {

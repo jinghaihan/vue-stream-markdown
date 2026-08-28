@@ -1,7 +1,6 @@
 import type { PreprocessContext } from '../types'
 import { getPreprocessAnalysis } from './context'
 import {
-  codeBlockPattern,
   doubleAsteriskPattern,
   doubleUnderscorePattern,
   singleAsteriskPattern,
@@ -15,12 +14,7 @@ import {
   isWithinHtmlTag,
   isWithinLinkOrImageUrl,
   isWithinMathBlock,
-  maskInlineCodeMarkdownMarkers,
-  maskInvalidAsteriskMarkers,
   maskInvalidUnderscoreMarkers,
-  maskThematicBreakMarkers,
-  removeMathBlocksFromText,
-  removeUrlsFromText,
   shouldIgnoreUnderscoreMarker,
 } from './utils'
 
@@ -84,17 +78,17 @@ export function fixStrong(
   if (paragraph.isFullyCodeBlock)
     return content
 
+  if (!lastParagraph.includes('**') && !lastParagraph.includes('__'))
+    return content
+
   // Remove code blocks and mask Markdown markers inside inline code to avoid
   // treating code content as incomplete strong emphasis.
-  const lastParagraphWithoutInlineCodeMarkers = maskInlineCodeMarkdownMarkers(lastParagraph, inlineCodeRanges)
-  const lastParagraphWithoutThematicBreakMarkers = maskThematicBreakMarkers(lastParagraphWithoutInlineCodeMarkers)
-  const lastParagraphWithoutInvalidAsterisks = maskInvalidAsteriskMarkers(lastParagraphWithoutThematicBreakMarkers)
-  const lastParagraphWithoutInvalidMarkers = maskInvalidUnderscoreMarkers(lastParagraphWithoutInvalidAsterisks)
-  const lastParagraphWithoutCodeBlocks = lastParagraphWithoutInvalidMarkers.replace(codeBlockPattern, '')
-  // Remove URLs to avoid counting markdown syntax inside URLs (URLs may contain _, *, ~)
-  const lastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(lastParagraphWithoutCodeBlocks)
-  // Remove math blocks to avoid counting markdown syntax inside math (math may contain **, __, etc.)
-  const lastParagraphWithoutCodeBlocksAndUrlsAndMath = removeMathBlocksFromText(lastParagraphWithoutCodeBlocksAndUrls, options)
+  const formattingMarkers = paragraph.formattingMarkers
+  const lastParagraphWithoutInvalidMarkers = formattingMarkers.maskedContent
+  // Remove code blocks, URLs, and math to avoid counting their Markdown-like markers.
+  const lastParagraphWithoutCodeBlocksAndUrlsAndMath = formattingMarkers.withoutMath(
+    options?.singleDollarTextMath,
+  )
   const lastParagraphForMarkerCounting = lastParagraphWithoutCodeBlocksAndUrlsAndMath
 
   // Check if content ends with a single * or _ (not ** or __)
@@ -232,10 +226,10 @@ export function fixStrong(
     analysis = getPreprocessAnalysis(content, options)
     // Recalculate after removal. Again, skip any trailing empty line so we
     // still operate on the actual last non-empty paragraph.
-    const newLastParagraph = analysis.getLastParagraph(true).content
-    const newLastParagraphWithoutCodeBlocks = maskInlineCodeMarkdownMarkers(newLastParagraph).replace(codeBlockPattern, '')
-    const newLastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(newLastParagraphWithoutCodeBlocks)
-    const newLastParagraphWithoutCodeBlocksAndUrlsAndMath = removeMathBlocksFromText(newLastParagraphWithoutCodeBlocksAndUrls, options)
+    const newParagraph = analysis.getLastParagraph(true)
+    const newLastParagraphWithoutCodeBlocksAndUrlsAndMath = newParagraph.formattingMarkers.withoutMath(
+      options?.singleDollarTextMath,
+    )
     const newAsteriskMatches = newLastParagraphWithoutCodeBlocksAndUrlsAndMath.match(doubleAsteriskPattern)
     const newAsteriskCount = newAsteriskMatches ? newAsteriskMatches.length : 0
     if (newAsteriskCount % 2 === 1) {
@@ -259,11 +253,10 @@ export function fixStrong(
     analysis = getPreprocessAnalysis(content, options)
     // Recalculate after removal. Again, skip any trailing empty line so we
     // still operate on the actual last non-empty paragraph.
-    const newLastParagraph = analysis.getLastParagraph(true).content
-    const newLastParagraphWithoutCodeBlocks = maskInlineCodeMarkdownMarkers(newLastParagraph).replace(codeBlockPattern, '')
-    const newLastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(newLastParagraphWithoutCodeBlocks)
-    const newLastParagraphWithoutCodeBlocksAndUrlsAndMath = removeMathBlocksFromText(newLastParagraphWithoutCodeBlocksAndUrls, options)
-    const newLastParagraphForMarkerCounting = maskInvalidUnderscoreMarkers(newLastParagraphWithoutCodeBlocksAndUrlsAndMath)
+    const newParagraph = analysis.getLastParagraph(true)
+    const newLastParagraphForMarkerCounting = newParagraph.formattingMarkers.withoutMath(
+      options?.singleDollarTextMath,
+    )
     const newUnderscoreMatches = newLastParagraphForMarkerCounting.match(doubleUnderscorePattern)
     const newUnderscoreCount = newUnderscoreMatches ? newUnderscoreMatches.length : 0
     if (newUnderscoreCount % 2 === 1) {
@@ -320,10 +313,10 @@ export function fixStrong(
     // Check if there's also an unclosed single * that needs completion
     // But only if we didn't just remove a trailing single *
     if (!removedTrailingSingle) {
-      const currentLastParagraph = analysis.getLastParagraph(true).content
-      const currentLastParagraphWithoutCodeBlocks = maskInlineCodeMarkdownMarkers(currentLastParagraph).replace(codeBlockPattern, '')
-      const currentLastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(currentLastParagraphWithoutCodeBlocks)
-      const currentLastParagraphWithoutCodeBlocksAndUrlsAndMath = removeMathBlocksFromText(currentLastParagraphWithoutCodeBlocksAndUrls, options)
+      const currentParagraph = analysis.getLastParagraph(true)
+      const currentLastParagraphWithoutCodeBlocksAndUrlsAndMath = currentParagraph.formattingMarkers.withoutMath(
+        options?.singleDollarTextMath,
+      )
       const withoutDoubleAsterisk = currentLastParagraphWithoutCodeBlocksAndUrlsAndMath.replace(doubleAsteriskPattern, '')
       const singleAsteriskMatches = withoutDoubleAsterisk.match(singleAsteriskPattern)
       const singleAsteriskCount = singleAsteriskMatches ? singleAsteriskMatches.length : 0
@@ -340,10 +333,10 @@ export function fixStrong(
     // Check if there's also an unclosed single _ that needs completion
     // But only if we didn't just remove a trailing single _
     if (!removedTrailingSingle) {
-      const currentLastParagraph = analysis.getLastParagraph().content
-      const currentLastParagraphWithoutCodeBlocks = maskInlineCodeMarkdownMarkers(currentLastParagraph).replace(codeBlockPattern, '')
-      const currentLastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(currentLastParagraphWithoutCodeBlocks)
-      const currentLastParagraphWithoutCodeBlocksAndUrlsAndMath = removeMathBlocksFromText(currentLastParagraphWithoutCodeBlocksAndUrls, options)
+      const currentParagraph = analysis.getLastParagraph()
+      const currentLastParagraphWithoutCodeBlocksAndUrlsAndMath = currentParagraph.formattingMarkers.withoutMath(
+        options?.singleDollarTextMath,
+      )
       const withoutDoubleUnderscore = maskInvalidUnderscoreMarkers(currentLastParagraphWithoutCodeBlocksAndUrlsAndMath).replace(doubleUnderscorePattern, '')
       const singleUnderscoreMatches = withoutDoubleUnderscore.match(singleUnderscorePattern)
       const singleUnderscoreCount = singleUnderscoreMatches ? singleUnderscoreMatches.length : 0
