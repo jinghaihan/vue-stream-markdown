@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { TextNodeRendererProps } from '../../types'
-import { createTextModel } from '@stream-markdown/core'
-import { computed } from 'vue'
+import { createTextModel, DISABLED_TRANSITION_NAME } from '@stream-markdown/core'
+import { computed, ref, watch } from 'vue'
 import { useContext } from '../../composables'
 import Caret from '../caret.vue'
 
@@ -24,14 +24,20 @@ const model = computed(() => createTextModel({
 
 const showCaret = computed(() => model.value.showCaret)
 const shouldAnimate = computed(() => model.value.shouldAnimate)
+const usesAnimatedStructure = ref(shouldAnimate.value)
 const transitionName = computed(() => model.value.transitionName)
 const parts = computed(() => model.value.parts)
+
+watch(shouldAnimate, (value) => {
+  if (value)
+    usesAnimatedStructure.value = true
+})
 </script>
 
 <template>
   <TransitionGroup
-    v-if="shouldAnimate"
-    :name="transitionName"
+    v-if="usesAnimatedStructure"
+    :name="shouldAnimate ? transitionName : DISABLED_TRANSITION_NAME"
     tag="span"
     data-stream-markdown="text"
     class="whitespace-pre-wrap break-words"

@@ -1,4 +1,5 @@
 // @vitest-environment happy-dom
+import type { Ref } from 'vue'
 import type {
   MarkdownAstParser,
   NodeRenderers,
@@ -7,7 +8,7 @@ import type {
 } from 'vue-stream-markdown'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, nextTick, ref } from 'vue'
 import Caret from '../../packages/vue/src/components/caret.vue'
 import TextRenderer from '../../packages/vue/src/components/renderers/text.vue'
 import { useContext } from '../../packages/vue/src/composables'
@@ -18,6 +19,7 @@ function mountText(
     animationSplit?: NonNullable<StreamMarkdownProvideContext['animationSplit']>
     hideCaret?: boolean
     loading?: boolean
+    mode?: Ref<'static' | 'streaming'>
   } = {},
 ) {
   const textRendererProps = {
@@ -38,6 +40,7 @@ function mountText(
       const { provideContext } = useContext()
       provideContext({
         animationSplit: options.animationSplit,
+        mode: options.mode,
       })
 
       return () => h(TextRenderer, textRendererProps)
@@ -86,5 +89,16 @@ describe('text renderer', () => {
   it('does not render the caret when hidden by a parent renderer', () => {
     expect(mountText('Loading', { loading: true }).findComponent(Caret).exists()).toBe(true)
     expect(mountText('Loading', { loading: true, hideCaret: true }).findComponent(Caret).exists()).toBe(false)
+  })
+
+  it('keeps the text element when switching to static mode', async () => {
+    const mode = ref<'static' | 'streaming'>('streaming')
+    const wrapper = mountText('Heading', { mode })
+    const textElement = wrapper.get('[data-stream-markdown="text"]').element
+
+    mode.value = 'static'
+    await nextTick()
+
+    expect(wrapper.get('[data-stream-markdown="text"]').element).toBe(textElement)
   })
 })
