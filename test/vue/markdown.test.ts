@@ -1,8 +1,13 @@
 // @vitest-environment happy-dom
 import { shallowMount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 import Markdown from '../../packages/vue/src/index.vue'
+
+// These tests exercise Markdown processing, not background UI component loading.
+vi.mock('../../packages/vue/src/utils', () => ({
+  preloadAsyncComponents: async () => {},
+}))
 
 interface MarkdownTestVm {
   getProcessedContent: () => string
@@ -26,6 +31,7 @@ describe('stream markdown', () => {
     const vm = wrapper.vm as unknown as MarkdownTestVm
 
     expect(vm.getProcessedContent()).toBe('*')
+    wrapper.unmount()
   })
 
   it('reparses the original content when switching to static mode', async () => {
@@ -44,5 +50,6 @@ describe('stream markdown', () => {
     await nextTick()
 
     expect(vm.getProcessedContent()).toBe('*')
+    wrapper.unmount()
   })
 })
