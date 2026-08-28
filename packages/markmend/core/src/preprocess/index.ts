@@ -1,6 +1,7 @@
 import type { PreprocessContext, PreprocessStep, PreprocessStepName, PreprocessSteps } from '../types'
 import { flow } from '../utils'
 import { fixCode } from './code'
+import { fixComparisonOperators } from './comparison-operators'
 import { fixDelete } from './delete'
 import { fixEmphasis } from './emphasis'
 import { fixFootnote } from './footnote'
@@ -29,6 +30,7 @@ export function normalize(content: string): string {
 
 const DEFAULT_PREPROCESS_STEP_NAMES: PreprocessStepName[] = [
   'code',
+  'comparisonOperators',
   'html',
   'footnote',
   'strong',
@@ -43,6 +45,7 @@ const DEFAULT_PREPROCESS_STEP_NAMES: PreprocessStepName[] = [
 
 export const DEFAULT_PREPROCESS_STEPS = {
   code: fixCode,
+  comparisonOperators: fixComparisonOperators,
   html: fixHtml,
   footnote: fixFootnote,
   strong: fixStrong,
@@ -68,6 +71,7 @@ export function preprocess(
 
 export {
   fixCode,
+  fixComparisonOperators,
   fixDelete,
   fixEmphasis,
   fixFootnote,

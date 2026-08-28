@@ -2,6 +2,7 @@ export type MarkdownProcessorMode = 'static' | 'streaming'
 
 export type PreprocessStepName
   = | 'code'
+    | 'comparisonOperators'
     | 'html'
     | 'footnote'
     | 'strong'
@@ -26,6 +27,8 @@ export interface MarkdownProcessorOptions {
 }
 
 export interface PreprocessContext {
+  /** Escape numeric comparison operators in list items while streaming. @default true */
+  comparisonOperators?: boolean
   /** Hide bare `*`, `**`, `_`, `__`, `~`, and `~~` markers while streaming. @default true */
   hideBareFormattingMarkers?: boolean
   singleDollarTextMath?: boolean

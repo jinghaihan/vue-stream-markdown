@@ -4,6 +4,7 @@ export interface TestCase {
   expected: string
   integrationExpected?: string
   preprocessOptions?: {
+    comparisonOperators?: boolean
     hideBareFormattingMarkers?: boolean
     singleDollarTextMath?: boolean
   }
@@ -1821,6 +1822,12 @@ export const streamingBlockCompletionCases: TestCase[] = [
   completeStreamingCase('comparison in nested list', '  - > 5: expensive', '  - \\> 5: expensive'),
   completeStreamingCase('greater-than-or-equal comparison', '- >= 10: high', '- \\>= 10: high'),
   completeStreamingCase('comparison before currency', '- > $100: expensive', '- \\> $100: expensive'),
+  {
+    description: 'should preserve comparison operators when completion is disabled',
+    input: '- > 25: rich',
+    expected: '- > 25: rich',
+    preprocessOptions: { comparisonOperators: false },
+  },
   keepStreamingCase('actual blockquote', '> Some blockquote'),
   keepStreamingCase('numeric blockquote without list', '> 25 is a number'),
   keepStreamingCase('quoted prose in list', '- > Some quoted text'),
