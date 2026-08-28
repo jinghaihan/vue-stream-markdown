@@ -1,0 +1,20 @@
+{
+  "name": "benchmark",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "bench:completion": "vitest bench --run markmend.bench.ts",
+    "bench:parser": "vitest bench --run markmend-parser.bench.ts"
+  },
+  "devDependencies": {
+    "comark": "catalog:benchmark",
+    "react": "catalog:benchmark",
+    "react-dom": "catalog:benchmark",
+    "remark-gfm": "catalog:benchmark",
+    "remark-parse": "catalog:benchmark",
+    "remend": "catalog:benchmark",
+    "streamdown": "catalog:benchmark",
+    "unified": "catalog:benchmark",
+    "vitest": "catalog:test"
+  }
+}
