@@ -25,6 +25,9 @@ export interface Options extends MarkdownAstParserOptions {
 
 export class MarkdownAstParser {
   private mode: Options['mode'] = 'streaming'
+  private normalizedContent = ''
+  private blocks: string[] = []
+  private hasSegmentedBlocks = false
   private contents: string[] = []
   private asts: SyntaxTree[] = []
   private astCache = new QuickLRU<string, SyntaxTree>({
@@ -101,14 +104,62 @@ export class MarkdownAstParser {
       lastLeafNode.loading = true
   }
 
+  private parseStreamingBlocks(data: string): string[] {
+    // Custom splitters may have document-wide semantics. Footnotes also force
+    // the default splitter to keep the entire document in one AST.
+    const shouldParseFully = (
+      Boolean(this.options.parseMarkdownIntoBlocks)
+      || !this.hasSegmentedBlocks
+      || !this.blocks.length
+      || !data.startsWith(this.normalizedContent)
+      || data.includes('[^')
+    )
+
+    if (shouldParseFully)
+      return this.processor.parseMarkdownIntoBlocks(data)
+
+    if (data === this.normalizedContent)
+      return this.blocks
+
+    // Reparse the previous tail block as well as the appended text because a
+    // new line can turn it into a list, setext heading, fenced block, and more.
+    // Skip trailing whitespace-only tokens so the semantic tail is included.
+    let reparseIndex = this.blocks.length - 1
+    while (reparseIndex > 0 && !this.blocks[reparseIndex]!.trim())
+      reparseIndex -= 1
+
+    const stableBlocks = this.blocks.slice(0, reparseIndex)
+    let stableLength = 0
+    for (const block of stableBlocks)
+      stableLength += block.length
+
+    const tailBlocks = this.processor.parseMarkdownIntoBlocks(data.slice(stableLength))
+    return [...stableBlocks, ...tailBlocks]
+  }
+
   private update(data: string) {
     data = this.processor.normalize(data)
 
     // Preserve multi-block segmentation when switching from streaming -> static at runtime.
     // Otherwise block keys collapse from N -> 1 and can trigger broad component remounts.
-    const blocks = this.mode === 'static' && this.contents.length <= 1
-      ? [data]
-      : this.processor.parseMarkdownIntoBlocks(data)
+    let blocks: string[]
+    let hasSegmentedBlocks: boolean
+    if (this.mode === 'static' && this.contents.length <= 1) {
+      blocks = [data]
+      hasSegmentedBlocks = false
+    }
+    else if (this.mode === 'streaming') {
+      blocks = this.parseStreamingBlocks(data)
+      hasSegmentedBlocks = true
+    }
+    else if (this.hasSegmentedBlocks && data === this.normalizedContent) {
+      blocks = this.blocks
+      hasSegmentedBlocks = true
+    }
+    else {
+      blocks = this.processor.parseMarkdownIntoBlocks(data)
+      hasSegmentedBlocks = true
+    }
 
     const asts: SyntaxTree[] = []
     const contents: string[] = []
@@ -169,6 +220,9 @@ export class MarkdownAstParser {
 
     this.asts = asts
     this.contents = contents
+    this.blocks = blocks
+    this.normalizedContent = data
+    this.hasSegmentedBlocks = hasSegmentedBlocks
   }
 
   private updateAstLoading(ast: SyntaxTree, loading: boolean) {

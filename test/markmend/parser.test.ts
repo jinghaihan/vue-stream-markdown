@@ -20,6 +20,15 @@ function getFirstNodeTag(ast: SyntaxTree): string | undefined {
   return node?.data?.tag
 }
 
+function omitFalseLoading<T>(value: T): T {
+  return JSON.parse(JSON.stringify(
+    value,
+    (key, nestedValue) => key === 'loading' && nestedValue === false
+      ? undefined
+      : nestedValue,
+  )) as T
+}
+
 describe('markdown-parser', () => {
   it('should mark only the last block tail text as loading in streaming mode', () => {
     const parser = new MarkdownAstParser({
@@ -233,6 +242,134 @@ describe('markdown-parser', () => {
     expect(preprocess).toHaveBeenCalledTimes(1)
     expect(parseMarkdownIntoBlocks).toHaveBeenCalledTimes(1)
     expect(result.contents[0]).toBe('normalized\n')
+  })
+
+  it('should only re-segment the changing tail for appended streaming content', () => {
+    const parser = new MarkdownAstParser({ mode: 'streaming' })
+    const initial = '# Stable title\n\nStable paragraph.\n\n- item one\n- item two'
+    const updated = `${initial}\n\n## Live response\n\nGrowing tail`
+
+    parser.parseMarkdown(initial)
+
+    const processor = (parser as unknown as {
+      processor: { parseMarkdownIntoBlocks: (content: string) => string[] }
+    }).processor
+    const split = vi.spyOn(processor, 'parseMarkdownIntoBlocks')
+    const result = parser.parseMarkdown(updated)
+    const freshResult = new MarkdownAstParser({ mode: 'streaming' }).parseMarkdown(updated)
+
+    expect(split).toHaveBeenCalledTimes(1)
+    expect(split.mock.calls[0]![0].length).toBeLessThan(updated.length)
+    expect(omitFalseLoading(result)).toEqual(omitFalseLoading(freshResult))
+  })
+
+  it('should fully re-segment content after a non-append edit', () => {
+    const parser = new MarkdownAstParser({ mode: 'streaming' })
+    const initial = '# Stable title\n\nOriginal paragraph.\n\nTail paragraph.'
+    const updated = '# Stable title\n\nEdited paragraph.\n\nTail paragraph.'
+
+    parser.parseMarkdown(initial)
+
+    const processor = (parser as unknown as {
+      processor: { parseMarkdownIntoBlocks: (content: string) => string[] }
+    }).processor
+    const split = vi.spyOn(processor, 'parseMarkdownIntoBlocks')
+
+    parser.parseMarkdown(updated)
+
+    expect(split).toHaveBeenCalledOnce()
+    expect(split).toHaveBeenCalledWith(updated)
+  })
+
+  it('should fully re-segment content when appended text introduces a footnote', () => {
+    const parser = new MarkdownAstParser({ mode: 'streaming' })
+    const initial = '# Stable title\n\nStable paragraph.'
+    const updated = `${initial}\n\nFootnote[^1]\n\n[^1]: Definition`
+
+    parser.parseMarkdown(initial)
+
+    const processor = (parser as unknown as {
+      processor: { parseMarkdownIntoBlocks: (content: string) => string[] }
+    }).processor
+    const split = vi.spyOn(processor, 'parseMarkdownIntoBlocks')
+    const result = parser.parseMarkdown(updated)
+
+    expect(split).toHaveBeenCalledOnce()
+    expect(split).toHaveBeenCalledWith(updated)
+    expect(result.asts).toHaveLength(1)
+  })
+
+  it('should preserve full parsing for custom block parsers', () => {
+    const parseMarkdownIntoBlocks = vi.fn((content: string) => [content])
+    const parser = new MarkdownAstParser({
+      mode: 'streaming',
+      parseMarkdownIntoBlocks,
+    })
+
+    parser.parseMarkdown('first')
+    parser.parseMarkdown('first append')
+
+    expect(parseMarkdownIntoBlocks).toHaveBeenCalledTimes(2)
+    expect(parseMarkdownIntoBlocks).toHaveBeenLastCalledWith('first append')
+  })
+
+  it.each([
+    ['setext heading', 'Paragraph', 'Paragraph\n---'],
+    ['fenced code', '```ts\nconst value = 1', '```ts\nconst value = 1\n```'],
+    ['math block', '$$\nx + y', '$$\nx + y\n$$'],
+    ['html block', '<div>\ncontent', '<div>\ncontent\n</div>'],
+  ])('should preserve %s parsing while appending', (_, firstTail, finalTail) => {
+    const prefix = '# Stable title\n\nStable paragraph.\n\n'
+    const parser = new MarkdownAstParser({ mode: 'streaming' })
+
+    parser.parseMarkdown(prefix + firstTail)
+    const result = parser.parseMarkdown(prefix + finalTail)
+    const freshResult = new MarkdownAstParser({ mode: 'streaming' })
+      .parseMarkdown(prefix + finalTail)
+
+    expect(omitFalseLoading(result)).toEqual(omitFalseLoading(freshResult))
+  })
+
+  it('should match fresh parsing across arbitrary streaming chunk boundaries', () => {
+    const document = [
+      '# Streaming document',
+      '',
+      'A paragraph with **bold**, *emphasis*, and [a link](https://example.com).',
+      '',
+      'Setext heading',
+      '---',
+      '',
+      '- first item',
+      '- second item',
+      '',
+      '> quoted text',
+      '',
+      '```ts',
+      'const value = 1',
+      '```',
+      '',
+      '$$',
+      'x + y',
+      '$$',
+      '',
+      '<div>',
+      'HTML content',
+      '</div>',
+    ].join('\n')
+    const parser = new MarkdownAstParser({ mode: 'streaming' })
+    const chunkEnds = new Set<number>()
+    for (let end = 1; end < document.length; end += 7)
+      chunkEnds.add(end)
+    chunkEnds.add(document.length)
+
+    for (const end of chunkEnds) {
+      const content = document.slice(0, end)
+      const result = parser.parseMarkdown(content)
+      const freshResult = new MarkdownAstParser({ mode: 'streaming' })
+        .parseMarkdown(content)
+
+      expect(omitFalseLoading(result)).toEqual(omitFalseLoading(freshResult))
+    }
   })
 
   it('should allow overriding a single preprocess step', () => {
