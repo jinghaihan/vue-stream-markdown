@@ -19,6 +19,7 @@
   "scripts": {
     "dev": "pnpm playground:dev",
     "build": "turbo run build \"--filter=./packages/*\" \"--filter=./packages/extensions/*\" \"--filter=./packages/markmend/*\"",
+    "bench:markmend": "vitest bench --run benchmark/markmend.bench.ts",
     "playground:dev": "pnpm -F nuxt-playground dev",
     "playground:build": "pnpm -F nuxt-playground generate",
     "playground:typecheck": "pnpm -F nuxt-playground typecheck",
@@ -65,7 +66,9 @@
     "@vitest/coverage-v8": "catalog:test",
     "@vue/test-utils": "catalog:test",
     "vitest": "catalog:test",
-    "@types/node": "catalog:types"
+    "@types/node": "catalog:types",
+    "comark": "0.6.2",
+    "remend": "1.3.1"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm nano-staged"
