@@ -1,33 +1,52 @@
 import {
-  dashWithSpacePattern,
   incompleteTaskListPattern,
   quoteIncompleteTaskListPattern,
-  quoteStandaloneDashPattern,
-  quoteTaskListPattern,
-  standaloneDashPattern,
-  taskListPattern,
 } from './pattern'
 import { findClosedCodeBlockRanges, isInsideUnclosedCodeBlock, isRangeOverlappingRanges } from './utils'
+
+const zeroWidthSpace = '\u200B'
+
+function isListItem(line: string): boolean {
+  const trimmed = line.trimStart()
+  const firstCharacter = trimmed[0]
+  if ((firstCharacter === '-' || firstCharacter === '+' || firstCharacter === '*')
+    && (trimmed[1] === ' ' || trimmed[1] === '\t')) {
+    return true
+  }
+
+  return /^\d+[.)][ \t]/.test(trimmed)
+}
+
+function isPartialSetextUnderline(line: string): boolean {
+  const trimmed = line.trim()
+  if (trimmed.length === 0 || trimmed.length > 2)
+    return false
+
+  return [...trimmed].every(character => character === trimmed[0]
+    && (character === '-' || character === '='))
+}
 
 /**
  * Fix incomplete task list syntax in streaming markdown
  *
- * Removes standalone `-` that appears on the last line without `[ ]` or `[x]` syntax.
- * Also removes incomplete task list items like `- [` that are being typed incrementally.
+ * Removes incomplete task list items like `- [` that are being typed incrementally.
+ * Standalone list markers are preserved. A short `-` or `=` underline after
+ * prose receives a zero-width suffix so it cannot temporarily turn that prose
+ * into a Setext heading while streaming.
  * This prevents AST parsing jitter when task list items are being typed incrementally.
  * Also handles quote blocks (lines starting with `>`) to prevent leaving `> ` which could
  * cause the previous line to be misparsed as a heading.
  *
  * @param content - Markdown content (potentially incomplete in stream mode)
- * @returns Content with standalone `-` or incomplete `- [` removed from the last line if incomplete
+ * @returns Content with incomplete task markers hidden and partial Setext syntax stabilized
+ *
+ * @example
+ * fixTaskList('Paragraph\n-')
+ * // Returns: 'Paragraph\n-\u200B'
  *
  * @example
  * fixTaskList('- [ ] Task 1\n-')
- * // Returns: '- [ ] Task 1\n'
- *
- * @example
- * fixTaskList('- [ ] Task 1\n- [x] Task 2\n-')
- * // Returns: '- [ ] Task 1\n- [x] Task 2\n'
+ * // Returns: '- [ ] Task 1\n-'
  *
  * @example
  * fixTaskList('- [ ] Task 1\n  - [')
@@ -35,7 +54,7 @@ import { findClosedCodeBlockRanges, isInsideUnclosedCodeBlock, isRangeOverlappin
  *
  * @example
  * fixTaskList('> **Note**: Here\'s a quote with tasks:\n\n> -')
- * // Returns: '> **Note**: Here\'s a quote with tasks:\n\n'
+ * // Returns: '> **Note**: Here\'s a quote with tasks:\n\n> -'
  */
 export function fixTaskList(content: string): string {
   // Don't process if we're inside a code block (unclosed)
@@ -80,13 +99,6 @@ export function fixTaskList(content: string): string {
     return newLines.join('\n')
   }
 
-  // Check for standalone dash in quote block
-  if (quoteStandaloneDashPattern.test(lastLine) && !quoteTaskListPattern.test(lastLine)) {
-    // Remove the last line (the standalone `> -`)
-    const newLines = lines.slice(0, -1)
-    return newLines.join('\n')
-  }
-
   // Check if the last line is an incomplete task list item `- [` (with optional trailing whitespace)
   if (incompleteTaskListPattern.test(lastLine)) {
     // Remove the last line (the incomplete `- [`)
@@ -94,23 +106,12 @@ export function fixTaskList(content: string): string {
     return newLines.join('\n')
   }
 
-  // Check if the last line is a standalone `-` (with optional trailing whitespace)
-  // or `- ` (dash with space, which is a regular list item, not a task list)
-  // but not `- [ ]` or `- [x]` or `- [X]`
-  // If it matches standalone dash but not a task list, remove it
-  if (standaloneDashPattern.test(lastLine) && !taskListPattern.test(lastLine)) {
-    // Remove the last line (the standalone `-`)
-    const newLines = lines.slice(0, -1)
-    return newLines.join('\n')
-  }
-
-  // Check for `- ` (dash with space, regular list item, not a task list)
-  // Pattern: starts with optional whitespace, then `- `, then optional trailing whitespace
-  // But not a task list pattern
-  if (dashWithSpacePattern.test(lastLine) && !taskListPattern.test(lastLine)) {
-    // Remove the last line (the `- `)
-    const newLines = lines.slice(0, -1)
-    return newLines.join('\n')
+  const previousLine = lines.at(-2)
+  if (previousLine !== undefined
+    && previousLine.trim() !== ''
+    && !isListItem(previousLine)
+    && isPartialSetextUnderline(lastLine)) {
+    return `${content.trimEnd()}${zeroWidthSpace}`
   }
 
   return content

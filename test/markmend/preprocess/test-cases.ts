@@ -1340,19 +1340,19 @@ export const tableTestCases: TestCasesByCategory = {
 export const taskListTestCases: TestCasesByCategory = {
   'task-list': [
     {
-      description: 'should remove trailing standalone dash',
+      description: 'should preserve trailing standalone dash after a task item',
       input: '- [ ] Task 1\n-',
-      expected: '- [ ] Task 1',
+      expected: '- [ ] Task 1\n-',
     },
     {
       description: 'should keep task list with uppercase X',
       input: '- [X] Task 1\n-',
-      expected: '- [X] Task 1',
+      expected: '- [X] Task 1\n-',
     },
     {
-      description: 'should remove standalone dash after multiple items',
+      description: 'should preserve standalone dash after multiple items',
       input: '- [ ] Task 1\n- [x] Task 2\n-',
-      expected: '- [ ] Task 1\n- [x] Task 2',
+      expected: '- [ ] Task 1\n- [x] Task 2\n-',
     },
     {
       description: 'should not modify valid task list',
@@ -1370,9 +1370,9 @@ export const taskListTestCases: TestCasesByCategory = {
       expected: '',
     },
     {
-      description: 'should remove regular list item dash',
+      description: 'should preserve regular list item dash',
       input: '- [ ] Task 1\n- ',
-      expected: '- [ ] Task 1',
+      expected: '- [ ] Task 1\n- ',
     },
     {
       description: 'should remove incomplete task list with bracket',
@@ -1385,9 +1385,9 @@ export const taskListTestCases: TestCasesByCategory = {
       expected: '',
     },
     {
-      description: 'should remove standalone dash in quote',
+      description: 'should preserve standalone dash in quote',
       input: '> -',
-      expected: '',
+      expected: '> -',
     },
     {
       description: 'should ignore - inside code block',
@@ -1405,9 +1405,9 @@ export const taskListTestCases: TestCasesByCategory = {
       expected: '```\ncode\n```\n\n- [ ] Task',
     },
     {
-      description: 'should remove standalone - outside code block',
+      description: 'should preserve standalone - outside code block',
       input: '```\ncode\n```\n\n-',
-      expected: '```\ncode\n```\n',
+      expected: '```\ncode\n```\n\n-',
     },
     {
       description: 'should keep task list markers untouched in unclosed code block',
