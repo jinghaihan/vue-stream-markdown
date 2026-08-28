@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { NodeRendererListProps } from '../types'
-import { createNodeListModel } from '@stream-markdown/core'
+import { createNodeListModel, DISABLED_TRANSITION_NAME } from '@stream-markdown/core'
 import { computed } from 'vue'
 import { useContext } from '../composables'
 
@@ -47,8 +47,8 @@ const transitionName = computed(() => model.value.transitionName)
 <template>
   <template v-for="item in items" :key="item.key">
     <Transition
-      v-if="item.shouldTransition"
-      :name="transitionName"
+      v-if="item.supportsTransition"
+      :name="item.shouldTransition ? transitionName : DISABLED_TRANSITION_NAME"
       appear
     >
       <component

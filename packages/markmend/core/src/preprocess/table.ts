@@ -1,10 +1,54 @@
-import { pipePattern, separatorPattern, tableRowPattern } from './pattern'
+import { separatorPattern, tableRowPattern } from './pattern'
 import {
   findClosedCodeBlockRanges,
   getLastParagraphWithIndex,
+  isEscapedCharacter,
   isInsideUnclosedCodeBlock,
   isRangeOverlappingRanges,
 } from './utils'
+
+function countTablePipes(row: string): number {
+  let count = 0
+  for (let index = 0; index < row.length; index += 1) {
+    if (row[index] === '|' && !isEscapedCharacter(row, index))
+      count += 1
+  }
+  return count
+}
+
+type TableAlignment = 'center' | 'left' | 'right' | undefined
+
+function parseIncompleteSeparatorAlignments(row: string): TableAlignment[] | undefined {
+  const trimmedRow = row.trim()
+  if (!trimmedRow.startsWith('|'))
+    return undefined
+
+  const markerCharacters = [...trimmedRow].filter(character => character !== '|' && !/\s/.test(character))
+  if (markerCharacters.length === 0
+    || markerCharacters.some(character => character !== '-' && character !== ':')) {
+    return undefined
+  }
+
+  const cells = trimmedRow.split('|')
+  if (cells[0] === '')
+    cells.shift()
+  if (cells.at(-1)?.trim() === '')
+    cells.pop()
+
+  return cells.map((cell) => {
+    const marker = cell.replace(/\s/g, '')
+    const startsWithColon = marker.startsWith(':')
+    const endsWithColon = marker.length > 1 && marker.endsWith(':')
+
+    if (startsWithColon && endsWithColon)
+      return 'center'
+    if (startsWithColon)
+      return 'left'
+    if (endsWithColon)
+      return 'right'
+    return undefined
+  })
+}
 
 /**
  * Fix incomplete table syntax in streaming markdown
@@ -83,6 +127,7 @@ export function fixTable(content: string): string {
   // This ensures we complete incomplete headers during streaming to avoid flickering
   const trimmedHeader = headerRow.trim()
   const isHeaderComplete = trimmedHeader.endsWith('|')
+    && !isEscapedCharacter(trimmedHeader, trimmedHeader.length - 1)
 
   // Complete the header row if it's incomplete
   let completedHeaderRow = headerRow
@@ -92,7 +137,7 @@ export function fixTable(content: string): string {
   }
 
   // Count columns in the completed header row
-  const headerColumns = (completedHeaderRow.match(pipePattern) || []).length - 1
+  const headerColumns = countTablePipes(completedHeaderRow) - 1
 
   const separator = generateSeparator(headerColumns)
 
@@ -115,7 +160,7 @@ export function fixTable(content: string): string {
 
   // Check if next line is already a valid separator with correct column count
   if (separatorPattern.test(nextLine)) {
-    const separatorColumns = (nextLine.match(pipePattern) || []).length - 1
+    const separatorColumns = countTablePipes(nextLine) - 1
     if (separatorColumns === headerColumns) {
       // Separator matches, but we might still need to complete the header
       if (!isHeaderComplete) {
@@ -131,14 +176,16 @@ export function fixTable(content: string): string {
   const nextLineInContent = afterLines[1] || ''
   const newHeader = isHeaderComplete ? headerRow : completedHeaderRow
 
-  if (nextLineInContent.startsWith('|') && nextLineInContent.includes('-')) {
+  const partialSeparatorAlignments = parseIncompleteSeparatorAlignments(nextLineInContent)
+  if (partialSeparatorAlignments !== undefined) {
     // Replace incomplete separator
+    const completedSeparator = generateSeparator(headerColumns, partialSeparatorAlignments)
     const remainingLines = afterLines.slice(2).join('\n')
     if (remainingLines.length > 0) {
-      return `${beforeHeaderRow}${newHeader}\n${separator}\n${remainingLines}`
+      return `${beforeHeaderRow}${newHeader}\n${completedSeparator}\n${remainingLines}`
     }
     else {
-      return `${beforeHeaderRow}${newHeader}\n${separator}`
+      return `${beforeHeaderRow}${newHeader}\n${completedSeparator}`
     }
   }
 
@@ -151,10 +198,17 @@ export function fixTable(content: string): string {
  * Generate a table separator row with the specified number of columns
  * Format: | --- | --- | ... |
  */
-function generateSeparator(columns: number): string {
+function generateSeparator(columns: number, alignments: TableAlignment[] = []): string {
   const parts: string[] = []
   for (let i = 0; i < columns; i++) {
-    parts.push(' --- ')
+    const marker = alignments[i] === 'left'
+      ? ':---'
+      : alignments[i] === 'center'
+        ? ':---:'
+        : alignments[i] === 'right'
+          ? '---:'
+          : '---'
+    parts.push(` ${marker} `)
   }
   return `|${parts.join('|')}|`
 }

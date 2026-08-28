@@ -1,5 +1,32 @@
-import { codeBlockPattern, incompleteBracketPattern, incompleteLinkTextPattern, incompleteUrlPattern, standaloneBracketPattern } from './pattern'
-import { findLastNonEmptyLineIndex, getLastParagraphWithIndex, isInsideUnclosedCodeBlock } from './utils'
+import { codeBlockPattern, incompleteBracketPattern, incompleteLinkTextPattern, standaloneBracketPattern } from './pattern'
+import { findLastNonEmptyLineIndex, getLastParagraphWithIndex, isEscapedCharacter, isInsideUnclosedCodeBlock } from './utils'
+
+function hasTrailingIncompleteLinkUrl(content: string): boolean {
+  const urlStart = content.lastIndexOf('](')
+  if (urlStart === -1 || content.slice(urlStart + 2).includes(')'))
+    return false
+
+  let bracketDepth = 0
+  for (let index = urlStart; index >= 0; index--) {
+    const character = content[index]
+    if (isEscapedCharacter(content, index))
+      continue
+
+    if (character === ']') {
+      bracketDepth += 1
+      continue
+    }
+
+    if (character !== '[')
+      continue
+
+    bracketDepth -= 1
+    if (bracketDepth === 0)
+      return true
+  }
+
+  return false
+}
 
 /**
  * Fix unclosed link/image syntax in streaming markdown
@@ -118,7 +145,7 @@ export function fixLink(content: string): string {
   // Match link/image that has ]( but no closing )
   // Note: We don't check for markdown syntax in URLs because URLs commonly contain
   // characters like _, *, ~ which should not be treated as markdown syntax
-  if (incompleteUrlPattern.test(lastParagraphWithoutCodeBlocks)) {
+  if (hasTrailingIncompleteLinkUrl(lastParagraphWithoutCodeBlocks)) {
     return `${content})`
   }
 

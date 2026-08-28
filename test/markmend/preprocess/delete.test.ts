@@ -5,7 +5,7 @@ import { getTestCasesByCategories } from './test-cases'
 describe('fixDelete', () => {
   for (const testCase of getTestCasesByCategories(['delete'])) {
     it(testCase.description, () => {
-      expect(fixDelete(testCase.input)).toBe(testCase.expected)
+      expect(fixDelete(testCase.input, testCase.preprocessOptions)).toBe(testCase.expected)
     })
   }
 })

@@ -13,6 +13,7 @@ export interface NodeListModelItem<TNode extends ParsedNode = ParsedNode, TRende
   renderer: TRenderer | null
   prevNode?: ParsedNode
   nextNode?: ParsedNode
+  supportsTransition: boolean
   shouldTransition: boolean
 }
 
@@ -44,15 +45,19 @@ export function createNodeListModel<TNode extends ParsedNode = ParsedNode, TRend
 
   return {
     transitionName,
-    items: nodes.map((node, index) => ({
-      node,
-      index,
-      key: getNodeKey(node, index, options.nodeKey),
-      renderer: options.nodeRenderers?.[node.type] ?? null,
-      prevNode: getPrevNode(nodes, index, options.deep, prevBlock),
-      nextNode: getNextNode(nodes, index, options.deep, nextBlock),
-      shouldTransition: options.enableAnimate && shouldAnimateNode(node.type),
-    })),
+    items: nodes.map((node, index) => {
+      const supportsTransition = shouldAnimateNode(node.type)
+      return {
+        node,
+        index,
+        key: getNodeKey(node, index, options.nodeKey),
+        renderer: options.nodeRenderers?.[node.type] ?? null,
+        prevNode: getPrevNode(nodes, index, options.deep, prevBlock),
+        nextNode: getNextNode(nodes, index, options.deep, nextBlock),
+        supportsTransition,
+        shouldTransition: options.enableAnimate && supportsTransition,
+      }
+    }),
   }
 }
 

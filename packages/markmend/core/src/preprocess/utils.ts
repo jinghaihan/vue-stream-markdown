@@ -6,6 +6,7 @@ import {
   incompleteLinkImageUrlSuffixPattern,
   linkImagePattern,
   linkImageUrlSuffixPattern,
+  standaloneUrlPattern,
   trailingWhitespacePattern,
 } from './pattern'
 
@@ -72,6 +73,38 @@ export function getLastParagraphWithIndex(
     lastParagraph: lines.slice(startIndex).join('\n'),
     startIndex,
   }
+}
+
+/**
+ * Hide a bare marker when it is the only content in the last paragraph.
+ * Returns undefined when the paragraph does not contain one of the markers.
+ */
+export function hideBareFormattingMarker(
+  content: string,
+  markers: readonly string[],
+): string | undefined {
+  const { lastParagraph } = getLastParagraphWithIndex(content)
+  const containsOnlyMarkers = (value: string): boolean => {
+    if (maskThematicBreakMarkers(value) !== value)
+      return false
+
+    const tokens = value.trim().split(/\s+/)
+    return tokens.length > 0 && tokens.every(token => markers.includes(token))
+  }
+
+  if (containsOnlyMarkers(lastParagraph))
+    return content.slice(0, content.length - lastParagraph.length).trimEnd()
+
+  const lastLineStart = content.lastIndexOf('\n') + 1
+  const lastLine = content.slice(lastLineStart)
+  const trimmedLastLine = lastLine.trim()
+  const separatesListMarker = trimmedLastLine[0] === '-'
+    && (trimmedLastLine[1] === ' ' || trimmedLastLine[1] === '\t')
+  const listItemContent = separatesListMarker ? trimmedLastLine.slice(2) : undefined
+  if (listItemContent !== undefined && containsOnlyMarkers(listItemContent))
+    return content.slice(0, lastLineStart)
+
+  return undefined
 }
 
 /**
@@ -244,6 +277,10 @@ export function findInlineCodeRanges(
       continue
     }
 
+    if (isEscapedCharacter(content, i)) {
+      continue
+    }
+
     if (isBacktickPartOfTriple(content, i)) {
       continue
     }
@@ -315,6 +352,124 @@ export function isEscapedCharacter(content: string, index: number): boolean {
   return backslashCount % 2 === 1
 }
 
+function isWhitespaceOrBoundary(content: string, index: number): boolean {
+  return index < 0 || index >= content.length || /\s/.test(content[index] ?? '')
+}
+
+/**
+ * Mask thematic-break marker characters while preserving string offsets.
+ * A thematic break may contain spaces between at least three identical
+ * `*`, `_`, or `-` markers and up to three leading spaces.
+ */
+export function maskThematicBreakMarkers(content: string): string {
+  return content.split('\n').map((line) => {
+    const leadingWhitespace = line.match(/^ */)?.[0].length ?? 0
+    if (leadingWhitespace > 3)
+      return line
+
+    const compact = line.slice(leadingWhitespace).replace(/[ \t]/g, '')
+    if (!/^(?:\*{3,}|_{3,}|-{3,})$/.test(compact))
+      return line
+
+    return line.replace(/[*_-]/g, ' ')
+  }).join('\n')
+}
+
+/**
+ * Mask asterisk runs that clearly cannot act as emphasis delimiters.
+ */
+export function maskInvalidAsteriskMarkers(content: string): string {
+  const characters = content.split('')
+  let singleAsteriskCount = 0
+  let inWordAsteriskChain = false
+
+  for (let index = 0; index < content.length;) {
+    if (content[index] !== '*') {
+      if (!isUnicodeWordCharacterAt(content, index))
+        inWordAsteriskChain = false
+      index += 1
+      continue
+    }
+
+    const runStart = index
+    while (index < content.length && content[index] === '*')
+      index += 1
+
+    const cannotDelimit = isEscapedCharacter(content, runStart)
+      || (isWhitespaceOrBoundary(content, runStart - 1)
+        && isWhitespaceOrBoundary(content, index))
+
+    if (cannotDelimit) {
+      for (let markerIndex = runStart; markerIndex < index; markerIndex += 1)
+        characters[markerIndex] = ' '
+      continue
+    }
+
+    // Paired markers in the run belong to strong emphasis. Only decide whether
+    // the odd leftover marker participates in single-asterisk emphasis.
+    if ((index - runStart) % 2 === 0)
+      continue
+
+    const singleMarkerIndex = index - 1
+    const isInsideWord = isUnicodeWordCharacterAt(content, runStart - 1)
+      && isUnicodeWordCharacterAt(content, index)
+    const canOpen = !isWhitespaceOrBoundary(content, index)
+    const canClose = !isWhitespaceOrBoundary(content, runStart - 1)
+    const startsColdInsideWord = isInsideWord
+      && singleAsteriskCount % 2 === 0
+      && !inWordAsteriskChain
+    const participates = !startsColdInsideWord
+      && ((canClose && singleAsteriskCount % 2 === 1) || canOpen)
+
+    if (participates) {
+      singleAsteriskCount += 1
+      inWordAsteriskChain = isInsideWord
+    }
+    else {
+      characters[singleMarkerIndex] = ' '
+    }
+  }
+
+  return characters.join('')
+}
+
+/** Mask escaped Markdown markers while preserving string offsets. */
+export function maskEscapedMarkdownMarkers(content: string, markers: string): string {
+  const characters = content.split('')
+  for (let index = 0; index < content.length; index += 1) {
+    if (markers.includes(content[index] ?? '') && isEscapedCharacter(content, index))
+      characters[index] = ' '
+  }
+  return characters.join('')
+}
+
+/**
+ * Mask complete pairs in delimiter runs, leaving one marker for odd runs.
+ * This preserves offsets so a remaining marker can be mapped back to source.
+ */
+export function maskPairedMarkerRuns(content: string, marker: '*' | '_'): string {
+  const characters = content.split('')
+
+  for (let index = 0; index < content.length;) {
+    if (content[index] !== marker) {
+      index += 1
+      continue
+    }
+
+    const runStart = index
+    while (index < content.length && content[index] === marker)
+      index += 1
+
+    const markerToKeep = (index - runStart) % 2 === 1 ? index - 1 : -1
+    for (let markerIndex = runStart; markerIndex < index; markerIndex += 1) {
+      if (markerIndex !== markerToKeep)
+        characters[markerIndex] = ' '
+    }
+  }
+
+  return characters.join('')
+}
+
 /**
  * Check whether an underscore run is inside a word.
  *
@@ -341,6 +496,8 @@ export function shouldIgnoreUnderscoreMarker(
 ): boolean {
   return isEscapedCharacter(content, start)
     || isUnderscoreInsideWord(content, start, length)
+    || (isWhitespaceOrBoundary(content, start - 1)
+      && isWhitespaceOrBoundary(content, start + length))
 }
 
 /**
@@ -488,13 +645,17 @@ export function isWithinHtmlTag(text: string, position: number): boolean {
 
   for (let i = 0; i < position; i += 1) {
     if (text[i] === '<') {
-      // Check if it's not escaped and looks like an HTML tag
-      if (i === 0 || text[i - 1] !== '\\') {
+      const nextCharacter = text[i + 1] ?? ''
+      const characterAfterSlash = text[i + 2] ?? ''
+      const looksLikeTagStart = /[a-z!?]/i.test(nextCharacter)
+        || (nextCharacter === '/' && /[a-z]/i.test(characterAfterSlash))
+
+      if (!isEscapedCharacter(text, i) && looksLikeTagStart) {
         inHtmlTag = true
       }
     }
     else if (text[i] === '>') {
-      if (inHtmlTag && i > 0 && text[i - 1] !== '\\') {
+      if (inHtmlTag && !isEscapedCharacter(text, i)) {
         inHtmlTag = false
       }
     }
@@ -530,6 +691,9 @@ export function removeUrlsFromText(text: string): string {
   result = result.replace(incompleteLinkImageUrlPattern, (match) => {
     return match.replace(incompleteLinkImageUrlSuffixPattern, '](')
   })
+
+  // Remove standalone URLs as their path/query may contain Markdown markers.
+  result = result.replace(standaloneUrlPattern, '')
 
   return result
 }

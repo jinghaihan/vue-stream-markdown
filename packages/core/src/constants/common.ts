@@ -17,6 +17,7 @@ export const ANIMATION_SPLITS = [
 export const DEFAULT_ANIMATION_SPLIT = ANIMATION_SPLITS[0]
 
 export const STREAM_MARKDOWN_PREFIX = 'stream-markdown'
+export const DISABLED_TRANSITION_NAME = `${STREAM_MARKDOWN_PREFIX}-disabled`
 
 export const STREAM_MARKDOWN_CSS_VARIABLES = {
   animationDuration: '--stream-markdown-animation-duration',

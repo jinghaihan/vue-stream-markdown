@@ -26,9 +26,13 @@ export class MarkdownProcessor {
 
   preprocess(content: string, options?: PreprocessContext): string {
     const preprocess = this.options.preprocess ?? defaultPreprocess
+    const resolvedOptions = {
+      ...this.options.preprocessOptions,
+      ...options,
+    }
     if (this.options.preprocess)
-      return preprocess(content, options)
-    return preprocess(content, options, this.options.preprocessSteps)
+      return preprocess(content, resolvedOptions)
+    return preprocess(content, resolvedOptions, this.options.preprocessSteps)
   }
 
   parseMarkdownIntoBlocks(content: string): string[] {

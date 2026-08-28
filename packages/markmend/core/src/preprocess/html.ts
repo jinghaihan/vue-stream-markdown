@@ -8,17 +8,14 @@ import {
 const htmlCommentStartPattern = /^<!--[\s\S]*$/
 const htmlDoctypePattern = /^<![A-Z][^>]*$/i
 const htmlProcessingInstructionPattern = /^<\?[\s\S]*$/
-const htmlClosingTagPattern = /^<\/\s*[A-Z][\w-]*\s*$/i
-const htmlOpeningTagPattern = /^<\s*[A-Z][\w-]*(?:\s[^<>]*)?$/i
+const htmlClosingTagPattern = /^<\/[A-Z][\w-]*\s*$/i
+const htmlOpeningTagPattern = /^<[A-Z][\w-]*(?:\s[^<>]*)?$/i
 const trailingWhitespacePattern = /\s*$/
 const trailingLineWhitespacePattern = /[ \t]+$/
 
 function isUnclosedHtmlFragment(fragment: string): boolean {
   if (!fragment.startsWith('<') || fragment.includes('>'))
     return false
-
-  if (fragment === '<')
-    return true
 
   if (fragment.length <= 1)
     return false

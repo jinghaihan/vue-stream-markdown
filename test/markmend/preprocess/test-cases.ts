@@ -3,10 +3,16 @@ export interface TestCase {
   input: string
   expected: string
   integrationExpected?: string
-  preprocessOptions?: { singleDollarTextMath?: boolean }
+  preprocessOptions?: {
+    comparisonOperators?: boolean
+    hideBareFormattingMarkers?: boolean
+    singleDollarTextMath?: boolean
+  }
 }
 
 export type TestCasesByCategory = Record<string, TestCase[]>
+
+const preserveBareFormattingMarkers = { hideBareFormattingMarkers: false } as const
 
 export const codeTestCases: TestCasesByCategory = {
   'code-inline': [
@@ -177,14 +183,26 @@ export const deleteTestCases: TestCasesByCategory = {
       expected: 'Hello ~~world~~',
     },
     {
-      description: 'should remove bare ~',
+      description: 'should hide bare ~ by default',
       input: '~',
       expected: '',
     },
     {
-      description: 'should remove bare ~~',
+      description: 'should preserve bare ~ when configured',
+      input: '~',
+      expected: '~',
+      preprocessOptions: preserveBareFormattingMarkers,
+    },
+    {
+      description: 'should hide bare ~~ by default',
       input: '~~',
       expected: '',
+    },
+    {
+      description: 'should preserve bare ~~ when configured',
+      input: '~~',
+      expected: '~~',
+      preprocessOptions: preserveBareFormattingMarkers,
     },
     {
       description: 'should remove trailing ~~',
@@ -212,9 +230,9 @@ export const deleteTestCases: TestCasesByCategory = {
       expected: '**bold** and ~~strike~~',
     },
     {
-      description: 'should remove trailing ~ after closed ~~',
+      description: 'should preserve trailing ~ after closed ~~',
       input: '~~complete~~ text~',
-      expected: '~~complete~~ text',
+      expected: '~~complete~~ text~',
     },
     {
       description: 'should complete ~~ ending with single ~',
@@ -299,9 +317,15 @@ export const deleteTestCases: TestCasesByCategory = {
 export const emphasisTestCases: TestCasesByCategory = {
   'emphasis-asterisk': [
     {
-      description: 'should remove bare *',
+      description: 'should hide bare * by default',
       input: '*',
       expected: '',
+    },
+    {
+      description: 'should preserve bare * when configured',
+      input: '*',
+      expected: '*',
+      preprocessOptions: preserveBareFormattingMarkers,
     },
     {
       description: 'should complete unclosed *',
@@ -319,9 +343,15 @@ export const emphasisTestCases: TestCasesByCategory = {
       expected: 'Hello *world*',
     },
     {
-      description: 'should remove bare * in paragraph',
+      description: 'should hide bare * in paragraph by default',
       input: 'Hello\n\n*',
       expected: 'Hello',
+    },
+    {
+      description: 'should preserve bare * in paragraph when configured',
+      input: 'Hello\n\n*',
+      expected: 'Hello\n\n*',
+      preprocessOptions: preserveBareFormattingMarkers,
     },
     {
       description: 'should ignore ** when counting *',
@@ -354,13 +384,25 @@ export const emphasisTestCases: TestCasesByCategory = {
       input: 'a\n- *',
       expected: 'a\n',
     },
+    {
+      description: 'should preserve formatting-only list item when configured',
+      input: 'a\n- *',
+      expected: 'a\n- *',
+      preprocessOptions: preserveBareFormattingMarkers,
+    },
   ],
 
   'emphasis-underscore': [
     {
-      description: 'should remove bare _',
+      description: 'should hide bare _ by default',
       input: '_',
       expected: '',
+    },
+    {
+      description: 'should preserve bare _ when configured',
+      input: '_',
+      expected: '_',
+      preprocessOptions: preserveBareFormattingMarkers,
     },
     {
       description: 'should complete unclosed _',
@@ -378,9 +420,15 @@ export const emphasisTestCases: TestCasesByCategory = {
       expected: 'Hello _world_',
     },
     {
-      description: 'should remove bare _ in paragraph',
+      description: 'should hide bare _ in paragraph by default',
       input: 'Hello\n\n_',
       expected: 'Hello',
+    },
+    {
+      description: 'should preserve bare _ in paragraph when configured',
+      input: 'Hello\n\n_',
+      expected: 'Hello\n\n_',
+      preprocessOptions: preserveBareFormattingMarkers,
     },
     {
       description: 'should ignore __ when counting _',
@@ -506,19 +554,32 @@ export const strongTestCases: TestCasesByCategory = {
       expected: 'Hello **world**',
     },
     {
-      description: 'should remove bare **',
+      description: 'should hide bare ** by default',
       input: '**',
       expected: '',
     },
     {
-      description: 'should remove bare *',
-      input: '*',
-      expected: '',
+      description: 'should preserve bare ** when configured',
+      input: '**',
+      expected: '**',
+      preprocessOptions: preserveBareFormattingMarkers,
     },
     {
-      description: 'should remove bare ** in paragraph',
+      description: 'should preserve bare * when configured',
+      input: '*',
+      expected: '*',
+      preprocessOptions: preserveBareFormattingMarkers,
+    },
+    {
+      description: 'should hide bare ** in paragraph by default',
       input: 'Hello\n\n**',
       expected: 'Hello',
+    },
+    {
+      description: 'should preserve bare ** in paragraph when configured',
+      input: 'Hello\n\n**',
+      expected: 'Hello\n\n**',
+      preprocessOptions: preserveBareFormattingMarkers,
     },
     {
       description: 'should only process last paragraph',
@@ -557,10 +618,9 @@ export const strongTestCases: TestCasesByCategory = {
       expected: '**out [x](http://a/**b)',
     },
     {
-      description: 'should fallback to single * when input is ***',
+      description: 'should preserve thematic break ***',
       input: '***',
-      expected: '*',
-      integrationExpected: '',
+      expected: '***',
     },
     {
       description: 'should cleanup standalone dash after removing dangling **',
@@ -568,10 +628,9 @@ export const strongTestCases: TestCasesByCategory = {
       expected: 'a\n',
     },
     {
-      description: 'should fallback to single * after dropping trailing single *',
+      description: 'should preserve mixed-spacing asterisk thematic break',
       input: '** *',
-      expected: '*',
-      integrationExpected: '',
+      expected: '** *',
     },
     {
       description: 'should complete ** appropriately when there is trailing whitespace',
@@ -617,19 +676,32 @@ export const strongTestCases: TestCasesByCategory = {
       expected: 'Hello __world__',
     },
     {
-      description: 'should remove bare __',
+      description: 'should hide bare __ by default',
       input: '__',
       expected: '',
     },
     {
-      description: 'should remove bare _',
-      input: '_',
-      expected: '',
+      description: 'should preserve bare __ when configured',
+      input: '__',
+      expected: '__',
+      preprocessOptions: preserveBareFormattingMarkers,
     },
     {
-      description: 'should remove bare __ in paragraph',
+      description: 'should preserve bare _ when configured',
+      input: '_',
+      expected: '_',
+      preprocessOptions: preserveBareFormattingMarkers,
+    },
+    {
+      description: 'should hide bare __ in paragraph by default',
       input: 'Hello\n\n__',
       expected: 'Hello',
+    },
+    {
+      description: 'should preserve bare __ in paragraph when configured',
+      input: 'Hello\n\n__',
+      expected: 'Hello\n\n__',
+      preprocessOptions: preserveBareFormattingMarkers,
     },
     {
       description: 'should only process last paragraph',
@@ -662,10 +734,9 @@ export const strongTestCases: TestCasesByCategory = {
       expected: '__out [x](http://a/__b)',
     },
     {
-      description: 'should fallback to single _ when input is ___',
+      description: 'should preserve thematic break ___',
       input: '___',
-      expected: '_',
-      integrationExpected: '',
+      expected: '___',
     },
     {
       description: 'should cleanup standalone dash after removing dangling __',
@@ -673,9 +744,9 @@ export const strongTestCases: TestCasesByCategory = {
       expected: 'a\n',
     },
     {
-      description: 'should remove __ after dropping trailing single _ with no remaining content',
+      description: 'should preserve mixed-spacing underscore thematic break',
       input: '__ _',
-      expected: '',
+      expected: '__ _',
     },
     {
       description: 'should ignore ** inside code block',
@@ -1257,19 +1328,19 @@ export const tableTestCases: TestCasesByCategory = {
 export const taskListTestCases: TestCasesByCategory = {
   'task-list': [
     {
-      description: 'should remove trailing standalone dash',
+      description: 'should preserve trailing standalone dash after a task item',
       input: '- [ ] Task 1\n-',
-      expected: '- [ ] Task 1',
+      expected: '- [ ] Task 1\n-',
     },
     {
       description: 'should keep task list with uppercase X',
       input: '- [X] Task 1\n-',
-      expected: '- [X] Task 1',
+      expected: '- [X] Task 1\n-',
     },
     {
-      description: 'should remove standalone dash after multiple items',
+      description: 'should preserve standalone dash after multiple items',
       input: '- [ ] Task 1\n- [x] Task 2\n-',
-      expected: '- [ ] Task 1\n- [x] Task 2',
+      expected: '- [ ] Task 1\n- [x] Task 2\n-',
     },
     {
       description: 'should not modify valid task list',
@@ -1277,9 +1348,9 @@ export const taskListTestCases: TestCasesByCategory = {
       expected: '- [ ] Task 1\n- [x] Task 2',
     },
     {
-      description: 'should remove standalone dash',
+      description: 'should preserve standalone dash',
       input: '-',
-      expected: '',
+      expected: '-',
     },
     {
       description: 'should remove incomplete task list',
@@ -1287,9 +1358,9 @@ export const taskListTestCases: TestCasesByCategory = {
       expected: '',
     },
     {
-      description: 'should remove regular list item dash',
+      description: 'should preserve regular list item dash',
       input: '- [ ] Task 1\n- ',
-      expected: '- [ ] Task 1',
+      expected: '- [ ] Task 1\n- ',
     },
     {
       description: 'should remove incomplete task list with bracket',
@@ -1302,9 +1373,9 @@ export const taskListTestCases: TestCasesByCategory = {
       expected: '',
     },
     {
-      description: 'should remove standalone dash in quote',
+      description: 'should preserve standalone dash in quote',
       input: '> -',
-      expected: '',
+      expected: '> -',
     },
     {
       description: 'should ignore - inside code block',
@@ -1322,9 +1393,9 @@ export const taskListTestCases: TestCasesByCategory = {
       expected: '```\ncode\n```\n\n- [ ] Task',
     },
     {
-      description: 'should remove standalone - outside code block',
+      description: 'should preserve standalone - outside code block',
       input: '```\ncode\n```\n\n-',
-      expected: '```\ncode\n```\n',
+      expected: '```\ncode\n```\n\n-',
     },
     {
       description: 'should keep task list markers untouched in unclosed code block',
@@ -1459,9 +1530,9 @@ export const htmlTestCases: TestCasesByCategory = {
       expected: '',
     },
     {
-      description: 'should remove trailing bare <',
+      description: 'should preserve trailing bare <',
       input: 'Hello <',
-      expected: 'Hello',
+      expected: 'Hello <',
     },
     {
       description: 'should remove trailing unclosed opening tag with attributes',
@@ -1502,6 +1573,285 @@ export const htmlTestCases: TestCasesByCategory = {
   ],
 }
 
+function keepStreamingCase(
+  description: string,
+  input: string,
+  preprocessOptions?: TestCase['preprocessOptions'],
+): TestCase {
+  return {
+    description,
+    expected: input,
+    input,
+    preprocessOptions,
+  }
+}
+
+function completeStreamingCase(
+  description: string,
+  input: string,
+  expected: string,
+  preprocessOptions?: TestCase['preprocessOptions'],
+): TestCase {
+  return {
+    description,
+    expected,
+    input,
+    preprocessOptions,
+  }
+}
+
+export const streamingDelimiterSafetyCases: TestCase[] = [
+  keepStreamingCase('empty input', ''),
+  keepStreamingCase('plain prose', 'This is plain text without any markdown'),
+  keepStreamingCase('escaped asterisk', 'just a \\* star'),
+  completeStreamingCase('escaped asterisk before incomplete italic', '\\*escaped and *italic', '\\*escaped and *italic*'),
+  keepStreamingCase('escaped underscore', 'Text with \\_escaped underscore'),
+  keepStreamingCase('escaped tilde', 'Text with \\~literal tilde'),
+  keepStreamingCase('escaped backtick', 'literal \\` backtick'),
+  keepStreamingCase('asterisk list marker', '* item'),
+  keepStreamingCase('asterisk list marker with nested bold', '*   **Preheat:** Set  '),
+  keepStreamingCase('asterisk surrounded by spaces', 'a * b'),
+  keepStreamingCase('double asterisk surrounded by spaces', 'a ** b'),
+  keepStreamingCase('underscore surrounded by spaces', 'a _ b'),
+  keepStreamingCase('tilde surrounded by spaces', 'a ~ b'),
+  keepStreamingCase('intraword asterisk between words', 'hello*world'),
+  keepStreamingCase('intraword asterisk between digits', '234234*123'),
+  keepStreamingCase('intraword asterisk between letters and digits', 'abc*123'),
+  keepStreamingCase('intraword asterisk between digits and letters', '123*abc'),
+  keepStreamingCase('intraword asterisk between Unicode letters', '中文*测试'),
+  keepStreamingCase('paired intraword asterisks', 'test*123*test'),
+  keepStreamingCase('emphasis followed by an intraword suffix', '*foo*bar'),
+  keepStreamingCase('emphasis inside a word', 'this is *real*ly good'),
+  keepStreamingCase('numeric emphasis-shaped expression', '5*6*78'),
+  keepStreamingCase('trailing asterisk after intraword emphasis', '*foo*bar*'),
+  keepStreamingCase('trailing asterisk after inline emphasis', 'a *b*c*'),
+  keepStreamingCase('trailing asterisk after closed emphasis and space', '*a* b*'),
+  keepStreamingCase('trailing asterisk after sentence emphasis', 'a *b* c*'),
+  keepStreamingCase('multiple intraword emphasis runs', '*a*b*c*d'),
+  keepStreamingCase('Korean suffix after emphasis', '이것은 *기울임*으로 표시'),
+  keepStreamingCase('snake case identifier', 'hello_world'),
+  keepStreamingCase('multiple snake case separators', 'hello_world_test'),
+  keepStreamingCase('constant case identifier', 'MAX_VALUE'),
+  keepStreamingCase('multiple identifiers in prose', 'The user_name and user_email are required'),
+  keepStreamingCase('numeric separators', 'The value is 1_000_000'),
+  keepStreamingCase('underscore in URL path', 'Visit https://example.com/path_with_underscore'),
+  keepStreamingCase('unicode word with underscore', 'café_price'),
+  keepStreamingCase('multiple unicode words with underscore', 'naïve_approach'),
+  keepStreamingCase('intraword underscore between Unicode letters', '中文_测试'),
+  keepStreamingCase('word ending in underscore', 'word_'),
+  keepStreamingCase('intraword underscore followed by trailing underscore', 'foo_bar_'),
+  keepStreamingCase('trailing underscore after completed strong', 'a __b__ c_'),
+  keepStreamingCase('complete underscore emphasis beside identifier', '_complete italic_ and some_other_text'),
+  keepStreamingCase('dunder identifiers', '__init__ and __main__ are special'),
+  keepStreamingCase('single tilde at start', '~hello'),
+  keepStreamingCase('single tilde at end', 'hello~'),
+  keepStreamingCase('single tilde surrounded by spaces', 'hello ~ world'),
+  keepStreamingCase('complete single-tilde deletion', '~hello~'),
+  keepStreamingCase('complete single-tilde deletion after prose', 'hello ~world~'),
+  keepStreamingCase('single tilde between numbers', '20~25°C'),
+  keepStreamingCase('multiple numeric single tildes', '20~25°C。20~25°C'),
+  keepStreamingCase('single tilde between ASCII letters', 'foo~bar'),
+  keepStreamingCase('multiple intraword single tildes', 'foo~bar~baz'),
+  keepStreamingCase('single tilde between Japanese characters', '日本~語'),
+  keepStreamingCase('single tilde between Greek characters', 'α~β'),
+  keepStreamingCase('single tilde beside accented letter', 'é~x'),
+  keepStreamingCase('single tilde beside supplementary Unicode letter', '𐐀~a'),
+  keepStreamingCase('complete double-tilde deletion', '~~strikethrough~~'),
+  keepStreamingCase('bare single asterisk', '*', preserveBareFormattingMarkers),
+  keepStreamingCase('bare double asterisk', '**', preserveBareFormattingMarkers),
+  keepStreamingCase('bare triple asterisk', '***'),
+  keepStreamingCase('bare single underscore', '_', preserveBareFormattingMarkers),
+  keepStreamingCase('bare double underscore', '__', preserveBareFormattingMarkers),
+  keepStreamingCase('bare triple underscore', '___'),
+  keepStreamingCase('bare single tilde', '~', preserveBareFormattingMarkers),
+  keepStreamingCase('bare double tilde', '~~', preserveBareFormattingMarkers),
+  keepStreamingCase('hyphen thematic break', '---'),
+  keepStreamingCase('long hyphen thematic break', '-----'),
+  keepStreamingCase('asterisk thematic break', '****'),
+  keepStreamingCase('long asterisk thematic break', '*****'),
+  keepStreamingCase('underscore thematic break', '____'),
+  keepStreamingCase('long underscore thematic break', '_____'),
+  keepStreamingCase('spaced hyphen thematic break', '- - -'),
+  keepStreamingCase('spaced asterisk thematic break', '* * *'),
+  keepStreamingCase('spaced underscore thematic break', '_ _ _'),
+  keepStreamingCase('indented thematic break', '   ---'),
+  keepStreamingCase('thematic break between paragraphs', 'Text before\n***\nText after'),
+  keepStreamingCase('underscore thematic break between paragraphs', 'Text before\n___\nText after'),
+  keepStreamingCase('currency is not default inline math', 'price $20'),
+  keepStreamingCase('currency range is not default inline math', 'Costs $20 to $30'),
+]
+
+export const streamingInlineCompletionCases: TestCase[] = [
+  completeStreamingCase('incomplete bold', 'Text with **bold', 'Text with **bold**'),
+  completeStreamingCase('incomplete bold at start', '**incomplete', '**incomplete**'),
+  completeStreamingCase('second incomplete bold run', '**first** and **second', '**first** and **second**'),
+  completeStreamingCase('half bold closer', '**bold text*', '**bold text**'),
+  completeStreamingCase('half bold closer in prose', 'This is **bold text*', 'This is **bold text**'),
+  keepStreamingCase('complete bold', 'Text with **bold text**'),
+  keepStreamingCase('multiple complete bold runs', '**bold1** and **bold2**'),
+  completeStreamingCase('incomplete bold italic', 'Text with ***bold-italic', 'Text with ***bold-italic***'),
+  completeStreamingCase('incomplete bold italic at start', '***incomplete', '***incomplete***'),
+  completeStreamingCase('second incomplete bold italic run', '***first*** and ***second', '***first*** and ***second***'),
+  completeStreamingCase('partial bold italic closer with one marker', '***italic and bold*', '***italic and bold***'),
+  completeStreamingCase('partial bold italic closer with two markers', '***italic and bold**', '***italic and bold***'),
+  keepStreamingCase('complete bold italic', 'Text with ***bold and italic text***'),
+  keepStreamingCase('overlapping bold and italic closers', 'Combined **bold and *italic*** text'),
+  keepStreamingCase('overlapping bold and italic closers in list', '- Combined **bold and *italic*** text'),
+  completeStreamingCase('incomplete asterisk emphasis', 'Text with *italic', 'Text with *italic*'),
+  completeStreamingCase('incomplete asterisk emphasis at start', '*incomplete', '*incomplete*'),
+  completeStreamingCase('incomplete asterisk after complete bold', '**bold** and *italic', '**bold** and *italic*'),
+  completeStreamingCase('escaped asterisks inside incomplete emphasis', '*start \\* middle \\* end', '*start \\* middle \\* end*'),
+  keepStreamingCase('complete asterisk emphasis', 'Text with *italic text*'),
+  completeStreamingCase('incomplete underscore emphasis', 'Text with _italic', 'Text with _italic_'),
+  completeStreamingCase('incomplete underscore emphasis at start', '_incomplete', '_incomplete_'),
+  completeStreamingCase('incomplete underscore after complete strong', '__bold__ and _italic', '__bold__ and _italic_'),
+  completeStreamingCase('underscore emphasis containing snake case', '_italic with some_var_name inside', '_italic with some_var_name inside_'),
+  completeStreamingCase('underscore emphasis after snake case', 'test_var and _incomplete italic', 'test_var and _incomplete italic_'),
+  completeStreamingCase('escaped then unescaped underscore', '\\_escaped\\_ and _unescaped', '\\_escaped\\_ and _unescaped_'),
+  keepStreamingCase('complete underscore emphasis', 'Text with _italic text_'),
+  completeStreamingCase('incomplete double underscore', 'Text with __strong', 'Text with __strong__'),
+  completeStreamingCase('incomplete double underscore at start', '__incomplete', '__incomplete__'),
+  completeStreamingCase('half double-underscore closer', '__bold text_', '__bold text__'),
+  completeStreamingCase('second incomplete double-underscore run', '__first__ and __second', '__first__ and __second__'),
+  keepStreamingCase('complete double underscore', 'Text with __strong text__'),
+  completeStreamingCase('incomplete double-tilde deletion', 'Text with ~~strike', 'Text with ~~strike~~'),
+  completeStreamingCase('incomplete double-tilde deletion at start', '~~incomplete', '~~incomplete~~'),
+  completeStreamingCase('half double-tilde closer', '~~strike text~', '~~strike text~~'),
+  completeStreamingCase('second incomplete deletion run', '~~first~~ and ~~second', '~~first~~ and ~~second~~'),
+  completeStreamingCase('intraword tilde and incomplete deletion', '20~25 and ~~strike', '20~25 and ~~strike~~'),
+  completeStreamingCase('incomplete inline code', 'Text with `code', 'Text with `code`'),
+  completeStreamingCase('incomplete inline code at start', '`incomplete', '`incomplete`'),
+  completeStreamingCase('second incomplete inline code', '`code1` and `code2', '`code1` and `code2`'),
+  completeStreamingCase('open code containing asterisk', '`x * y', '`x * y`'),
+  completeStreamingCase('open code containing underscore', '`snake_case', '`snake_case`'),
+  completeStreamingCase('open code inside bold closes nested delimiters', '**bold `code', '**bold `code`**'),
+  completeStreamingCase('open code inside link text closes in nesting order', '[`foo', '[`foo`]()'),
+  keepStreamingCase('complete inline code', 'Text with `inline code`'),
+  keepStreamingCase('complete multiple inline code spans', '`code1` and `code2`'),
+  completeStreamingCase('incomplete link text', 'Text with [partial', 'Text with [partial]()'),
+  completeStreamingCase('incomplete link URL opener', 'Text with [link](', 'Text with [link]()'),
+  completeStreamingCase('incomplete link URL', 'Text with [link](https://exa', 'Text with [link](https://exa)'),
+  completeStreamingCase('bracketed text remains hidden as a pending link', 'Text with [label]', 'Text with [label]()'),
+  keepStreamingCase('complete link', 'Text with [complete link](url)'),
+  keepStreamingCase('multiple complete links', '[link1](url1) and [link2](url2)'),
+  completeStreamingCase('nested link text with partial URL', '[outer [nested] text](incomplete', '[outer [nested] text](incomplete)'),
+  completeStreamingCase('nested link text with empty URL', 'Text [foo [bar] baz](', 'Text [foo [bar] baz]()'),
+  completeStreamingCase('incomplete image text', 'Text with ![partial', 'Text with ![partial]()'),
+  completeStreamingCase('incomplete image URL opener', 'Text with ![alt](', 'Text with ![alt]()'),
+  completeStreamingCase('incomplete image URL', 'Text with ![alt](https://img.test/a', 'Text with ![alt](https://img.test/a)'),
+  keepStreamingCase('complete image', 'Text with ![alt text](image.png)'),
+]
+
+export const streamingProtectedRegionCases: TestCase[] = [
+  keepStreamingCase('asterisk inside inline code', '`*italic`'),
+  keepStreamingCase('bold markers inside inline code', '`**bold`'),
+  keepStreamingCase('deletion markers inside inline code', '`~~strike`'),
+  keepStreamingCase('underscore inside inline code', '`variable_name`'),
+  keepStreamingCase('tilde inside inline code', '`20~25`'),
+  keepStreamingCase('markers inside closed code block', '```\n*italic _name ~~strike\n```'),
+  keepStreamingCase('tilde inside closed code block', '```\n20~25\n```'),
+  keepStreamingCase('HTML-like text inside closed code block', '```\n<div\n```'),
+  keepStreamingCase('inline HTML-like code', '`<div`'),
+  completeStreamingCase('asterisk in incomplete fenced code', '```js\nconst value = *raw', '```js\nconst value = *raw\n```'),
+  completeStreamingCase('underscore in incomplete fenced code', '```python\nvariable_name', '```python\nvariable_name\n```'),
+  keepStreamingCase('complete HTML tag', 'Hello <div>'),
+  keepStreamingCase('complete HTML element', '<div>content</div>'),
+  keepStreamingCase('self-closing HTML tag', '<br/>'),
+  keepStreamingCase('underscore in HTML attribute', '<a target="_blank">link</a>'),
+  keepStreamingCase('multiple underscores in HTML attribute', '<iframe sandbox="allow_scripts">'),
+  keepStreamingCase('asterisk in HTML attribute', '<div data-value="*literal">'),
+  keepStreamingCase('tilde in HTML attribute', '<div data-value="20~25">'),
+  keepStreamingCase('underscore in complete image URL', '![image](https://example.com/path_1.png)'),
+  keepStreamingCase('multiple image URLs with underscores', '![a](https://x.test/path_1.png) ![b](https://x.test/path_2.png)'),
+  keepStreamingCase('underscore in complete link URL', '[link](https://example.com/path_name)'),
+  keepStreamingCase('asterisk in complete link URL', '[link](https://example.com/a*b)'),
+  keepStreamingCase('tilde in complete link URL', '[link](https://example.com/a~b)'),
+  keepStreamingCase('underscore in autolink URL', 'https://errors.example.dev/value_error'),
+  keepStreamingCase('asterisk in autolink URL', 'https://example.com/a*b'),
+  keepStreamingCase('tilde in autolink URL', 'https://example.com/a~b'),
+  keepStreamingCase('asterisk inside closed double-dollar math', '$$a * b$$'),
+  keepStreamingCase('underscore inside closed double-dollar math', '$$x_0$$'),
+  keepStreamingCase('tilde inside closed double-dollar math', '$$a~b$$'),
+  completeStreamingCase('incomplete bold after closed code', 'text `a*b` and **bold', 'text `a*b` and **bold**'),
+  completeStreamingCase('incomplete underscore strong after closed code', 'see `a_b_c` then __bold', 'see `a_b_c` then __bold__'),
+  completeStreamingCase('incomplete bold after escaped backticks', '\\`not code\\` **bold', '\\`not code\\` **bold**'),
+  completeStreamingCase('incomplete italic after escaped backtick', '\\` *italic', '\\` *italic*'),
+  completeStreamingCase('incomplete deletion after URL tilde', 'https://example.com/a~b and ~~strike', 'https://example.com/a~b and ~~strike~~'),
+  completeStreamingCase('incomplete emphasis after HTML attribute', '<span data_name="value"> *italic', '<span data_name="value"> *italic*'),
+]
+
+export const streamingBlockCompletionCases: TestCase[] = [
+  completeStreamingCase('incomplete fenced code block', '```javascript\nconst x = 1', '```javascript\nconst x = 1\n```'),
+  completeStreamingCase('incomplete fence with trailing backtick', '```javascript\nconst x = 1`', '```javascript\nconst x = 1\n```'),
+  completeStreamingCase('incomplete fence with trailing double backtick', '```javascript\nconst x = 1``', '```javascript\nconst x = 1\n```'),
+  completeStreamingCase('incomplete fence ending in newline', '```python\nprint("hello")\n', '```python\nprint("hello")\n```'),
+  completeStreamingCase('incomplete fence without language', '```\nplain code', '```\nplain code\n```'),
+  completeStreamingCase('incomplete second fenced block', '```js\nfirst\n```\n\n```py\nsecond', '```js\nfirst\n```\n\n```py\nsecond\n```'),
+  keepStreamingCase('complete fenced code block', '```js\nconst x = 1\n```'),
+  completeStreamingCase('partial inline triple-backtick closer with one marker', '```python print("hello")`', '```python print("hello")```'),
+  completeStreamingCase('partial inline triple-backtick closer', '```python print("hello")``', '```python print("hello")```'),
+  keepStreamingCase('complete inline triple-backtick span', '```python print("hello")```'),
+  completeStreamingCase('incomplete block math', '$$\nx = 5', '$$\nx = 5\n$$'),
+  completeStreamingCase('incomplete multiline block math', '$$\nf(x) = x^2\n+ 2x + 1', '$$\nf(x) = x^2\n+ 2x + 1\n$$'),
+  completeStreamingCase('incomplete block math after prose', 'Introduction\n$$\nx = 5', 'Introduction\n$$\nx = 5\n$$'),
+  keepStreamingCase('complete block math', '$$\nx = 5\n$$'),
+  keepStreamingCase('complete block math in prose', 'Before\n$$\nx = 5\n$$\nAfter'),
+  completeStreamingCase('incomplete inline double-dollar math', 'The formula is $$x = 5', 'The formula is $$x = 5$$'),
+  keepStreamingCase('complete inline double-dollar math', 'The formula is $$x = 5$$ and done'),
+  completeStreamingCase('incomplete table header', '| Month | Savings', '| Month | Savings |\n| --- | --- |'),
+  completeStreamingCase('table header with escaped pipe', '| Month | Savings \\| Money', '| Month | Savings \\| Money |\n| --- | --- |'),
+  completeStreamingCase('incomplete table separator', '| A | B |\n| ---', '| A | B |\n| --- | --- |'),
+  completeStreamingCase('incomplete left-aligned table separator', '| A | B |\n| :', '| A | B |\n| :--- | --- |'),
+  completeStreamingCase('incomplete centered table separator', '| A | B |\n| :-:', '| A | B |\n| :---: | --- |'),
+  completeStreamingCase('incomplete right-aligned table separator', '| A | B |\n| -:', '| A | B |\n| ---: | --- |'),
+  keepStreamingCase('complete table header and separator', '| A | B |\n| --- | --- |'),
+  keepStreamingCase('valid final table row without trailing pipe', '| A | B |\n| --- | --- |\n| one | two'),
+  completeStreamingCase('partial list marker after prose', 'here is a list\n-', 'here is a list\n-\u200B'),
+  completeStreamingCase('double dash after prose', 'Some text\n--', 'Some text\n--\u200B'),
+  completeStreamingCase('single equals after prose', 'Some text\n=', 'Some text\n=\u200B'),
+  completeStreamingCase('double equals after prose', 'Some text\n==', 'Some text\n==\u200B'),
+  completeStreamingCase('indented partial list marker after prose', 'Some text\n  -', 'Some text\n  -\u200B'),
+  keepStreamingCase('standalone dash without previous text', '-'),
+  keepStreamingCase('dash after empty line', '\n-'),
+  keepStreamingCase('complete list item after prose', 'Some text\n- Item 1'),
+  keepStreamingCase('valid Setext underline', 'Heading\n==='),
+  keepStreamingCase('valid thematic break after prose', 'Some text\n---'),
+  completeStreamingCase('comparison in unordered list', '- > 25: rich', '- \\> 25: rich'),
+  completeStreamingCase('comparison in asterisk list', '* > 25: rich', '* \\> 25: rich'),
+  completeStreamingCase('comparison in ordered list', '1. > 25: rich', '1. \\> 25: rich'),
+  completeStreamingCase('comparison in nested list', '  - > 5: expensive', '  - \\> 5: expensive'),
+  completeStreamingCase('greater-than-or-equal comparison', '- >= 10: high', '- \\>= 10: high'),
+  completeStreamingCase('comparison before currency', '- > $100: expensive', '- \\> $100: expensive'),
+  {
+    description: 'should preserve comparison operators when completion is disabled',
+    input: '- > 25: rich',
+    expected: '- > 25: rich',
+    preprocessOptions: { comparisonOperators: false },
+  },
+  keepStreamingCase('actual blockquote', '> Some blockquote'),
+  keepStreamingCase('numeric blockquote without list', '> 25 is a number'),
+  keepStreamingCase('quoted prose in list', '- > Some quoted text'),
+  keepStreamingCase('comparison inside code block', '```\n- > 25: in code\n```'),
+  completeStreamingCase('incomplete opening HTML tag', 'Hello <div', 'Hello'),
+  completeStreamingCase('incomplete custom HTML tag', 'Hello <custom', 'Hello'),
+  completeStreamingCase('incomplete closing HTML tag', 'Hello </div', 'Hello'),
+  completeStreamingCase('partial HTML attribute', 'Hello <div class="foo', 'Hello'),
+  completeStreamingCase('incomplete tag after paragraph', '# Heading\n\nParagraph <custom', '# Heading\n\nParagraph'),
+  keepStreamingCase('less-than comparison', '3 < 5'),
+  keepStreamingCase('less-than before identifier', 'x < y'),
+  keepStreamingCase('less-than at end of prose', 'if a <'),
+  keepStreamingCase('less-than before digit', 'value <1'),
+]
+
+export const streamingCompletionTestCases: TestCasesByCategory = {
+  'streaming-completion': [
+    ...streamingDelimiterSafetyCases,
+    ...streamingInlineCompletionCases,
+    ...streamingProtectedRegionCases,
+    ...streamingBlockCompletionCases,
+  ],
+}
+
 export const testCasesByCategory: TestCasesByCategory = {
   ...codeTestCases,
   ...deleteTestCases,
@@ -1514,6 +1864,7 @@ export const testCasesByCategory: TestCasesByCategory = {
   ...taskListTestCases,
   ...footnoteTestCases,
   ...htmlTestCases,
+  ...streamingCompletionTestCases,
 }
 
 export function getTestCases(): TestCase[] {

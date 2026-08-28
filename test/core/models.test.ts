@@ -89,6 +89,7 @@ describe('core models', () => {
       key: 'block-1-paragraph-0',
       renderer: 'Paragraph',
       nextNode: text,
+      supportsTransition: true,
       shouldTransition: true,
     })
     expect(model.items[1]).toMatchObject({
@@ -96,6 +97,7 @@ describe('core models', () => {
       renderer: 'Text',
       prevNode: paragraph,
       nextNode: next,
+      supportsTransition: false,
       shouldTransition: false,
     })
   })

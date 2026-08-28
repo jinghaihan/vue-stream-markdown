@@ -12,7 +12,7 @@ defineOptions({
 
 const props = withDefaults(defineProps<LinkNodeRendererProps>(), {})
 
-const { uiComponents: UI, linkOptions, hardenOptions } = useContext()
+const { uiComponents: UI, linkOptions, hardenOptions, mode } = useContext()
 const { t } = useI18n()
 
 const open = ref<boolean>(false)
@@ -21,11 +21,14 @@ const { copy, copied } = useClipboard({
   legacy: true,
 })
 
-const baseModel = computed(() => createLinkModel({
-  node: props.node,
-  linkOptions: linkOptions.value,
-  hasLoadingNode: nodes => props.markdownParser.hasLoadingNode(nodes),
-}))
+const baseModel = computed(() => {
+  const isStreaming = mode.value === 'streaming'
+  return createLinkModel({
+    node: props.node,
+    linkOptions: linkOptions.value,
+    hasLoadingNode: nodes => isStreaming && props.markdownParser.hasLoadingNode(nodes),
+  })
+})
 
 const url = computed(() => baseModel.value.url)
 const loading = computed(() => baseModel.value.loading)
@@ -36,13 +39,16 @@ const { transformedUrl, isHardenUrl } = useSanitizers({
   loading,
 })
 
-const model = computed(() => createLinkModel({
-  node: props.node,
-  transformedUrl: transformedUrl.value,
-  isHardenUrl: isHardenUrl.value,
-  linkOptions: linkOptions.value,
-  hasLoadingNode: nodes => props.markdownParser.hasLoadingNode(nodes),
-}))
+const model = computed(() => {
+  const isStreaming = mode.value === 'streaming'
+  return createLinkModel({
+    node: props.node,
+    transformedUrl: transformedUrl.value,
+    isHardenUrl: isHardenUrl.value,
+    linkOptions: linkOptions.value,
+    hasLoadingNode: nodes => isStreaming && props.markdownParser.hasLoadingNode(nodes),
+  })
+})
 
 const Error = computed(() => hardenOptions.value?.errorComponent ?? UI.value.ErrorComponent)
 

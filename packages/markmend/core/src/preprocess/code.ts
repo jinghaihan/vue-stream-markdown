@@ -1,12 +1,12 @@
 import {
   codeBlockPattern,
-  singleBacktickPattern,
   trailingBackticksPattern,
   trailingWhitespacePattern,
 } from './pattern'
 import {
   calculateParagraphOffset,
   getLastParagraphWithIndex,
+  isEscapedCharacter,
   isInsideUnclosedCodeBlock,
   isWithinCodeBlock,
 } from './utils'
@@ -41,6 +41,10 @@ import {
  * // Returns: '```' (no completion, code block has no content)
  */
 export function fixCode(content: string): string {
+  const completedInlineTripleBacktickSpan = completePartialInlineTripleBacktickSpan(content)
+  if (completedInlineTripleBacktickSpan !== undefined)
+    return completedInlineTripleBacktickSpan
+
   // Check if we're inside a code block before cleaning
   const isInsideCodeBlock = isInsideUnclosedCodeBlock(content)
 
@@ -69,6 +73,35 @@ export function fixCode(content: string): string {
 }
 
 /**
+ * Complete a same-line triple-backtick code span whose closing run currently
+ * contains only one or two backticks. A multiline opener remains a fenced code
+ * block and is handled by the existing block completion path.
+ */
+function completePartialInlineTripleBacktickSpan(content: string): string | undefined {
+  const contentWithoutTrailingWhitespace = content.trimEnd()
+  let closerStart = contentWithoutTrailingWhitespace.length
+  while (closerStart > 0 && contentWithoutTrailingWhitespace[closerStart - 1] === '`')
+    closerStart -= 1
+
+  const closerLength = contentWithoutTrailingWhitespace.length - closerStart
+  if (closerLength < 1 || closerLength > 2 || isEscapedCharacter(contentWithoutTrailingWhitespace, closerStart))
+    return undefined
+
+  const lineStart = contentWithoutTrailingWhitespace.lastIndexOf('\n', closerStart - 1) + 1
+  const openerStart = contentWithoutTrailingWhitespace.lastIndexOf('```', closerStart - 1)
+  if (openerStart < lineStart
+    || isEscapedCharacter(contentWithoutTrailingWhitespace, openerStart)
+    || contentWithoutTrailingWhitespace[openerStart - 1] === '`'
+    || contentWithoutTrailingWhitespace[openerStart + 3] === '`'
+    || openerStart + 3 === closerStart) {
+    return undefined
+  }
+
+  const trailingWhitespace = content.slice(contentWithoutTrailingWhitespace.length)
+  return `${contentWithoutTrailingWhitespace}${'`'.repeat(3 - closerLength)}${trailingWhitespace}`
+}
+
+/**
  * Remove trailing incomplete backtick sequences
  * If content ends with `, ``, or ``` (without content after), remove them
  * This prevents showing intermediate states during streaming
@@ -82,6 +115,9 @@ function removeTrailingIncompleteBackticks(content: string): string {
 
   const backtickSequence = match[1]
   const backtickPos = content.lastIndexOf(backtickSequence)
+  if (isEscapedCharacter(content, backtickPos))
+    return content
+
   const beforeBackticks = content.substring(0, backtickPos)
   const afterBackticks = content.substring(backtickPos + backtickSequence.length)
 
@@ -94,8 +130,11 @@ function removeTrailingIncompleteBackticks(content: string): string {
     const withoutCodeBlocks = lastParagraph.replace(codeBlockPattern, '')
 
     // Count backticks
-    const backticks = withoutCodeBlocks.match(singleBacktickPattern)
-    const count = backticks ? backticks.length : 0
+    let count = 0
+    for (let index = 0; index < withoutCodeBlocks.length; index += 1) {
+      if (withoutCodeBlocks[index] === '`' && !isEscapedCharacter(withoutCodeBlocks, index))
+        count += 1
+    }
 
     // Check if we're inside a code block
     const isInCodeBlock = isWithinCodeBlock(beforeBackticks, beforeBackticks.length)
@@ -177,8 +216,11 @@ function fixInlineCode(content: string): string {
 
   // Count single backticks (excluding triple backticks)
   // We need to be careful not to count backticks that are part of ```
-  const backticks = withoutCodeBlocks.match(singleBacktickPattern)
-  const count = backticks ? backticks.length : 0
+  let count = 0
+  for (let index = 0; index < withoutCodeBlocks.length; index += 1) {
+    if (withoutCodeBlocks[index] === '`' && !isEscapedCharacter(withoutCodeBlocks, index))
+      count += 1
+  }
 
   // Only complete if odd number and has content after
   if (count % 2 === 1) {
@@ -196,6 +238,9 @@ function fixInlineCode(content: string): string {
       }
 
       if (lastParagraph[i] === '`') {
+        if (isEscapedCharacter(lastParagraph, i))
+          continue
+
         // Check if it's part of ``` (triple backticks)
         const before = lastParagraph[i - 1] || ''
         const before2 = lastParagraph[i - 2] || ''
