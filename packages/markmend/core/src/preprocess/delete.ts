@@ -96,10 +96,9 @@ export function fixDelete(
         }
       }
     }
-    const hasEarlierSingleTilde = lastParagraphWithoutTildeAndCodeBlocksAndUrls
-      .replace(doubleTildePattern, '')
-      .includes('~')
-    return hasEarlierSingleTilde ? content : contentWithoutLastTilde
+    // A single tilde is literal text in our Markdown grammar. Preserve it when
+    // it is not completing an already-open double-tilde deletion marker.
+    return content
   }
 
   // Only complete if:
