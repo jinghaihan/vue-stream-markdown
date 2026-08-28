@@ -1,4 +1,5 @@
-import { isInsideUnclosedCodeBlock } from './utils'
+import type { PreprocessContext } from '../types'
+import { getPreprocessAnalysis } from './context'
 
 /**
  * Fix unclosed block math ($$) syntax in streaming markdown
@@ -22,13 +23,17 @@ import { isInsideUnclosedCodeBlock } from './utils'
  * fixMath('$$\nE = mc^2\n$$')
  * // Returns: '$$\nE = mc^2\n$$' (no change)
  */
-export function fixMath(content: string): string {
+export function fixMath(content: string, context?: PreprocessContext): string {
+  if (!content.includes('$'))
+    return content
+
+  const analysis = getPreprocessAnalysis(content, context)
   // Don't process if we're inside a code block (unclosed)
-  if (isInsideUnclosedCodeBlock(content)) {
+  if (analysis.hasUnclosedCodeBlock) {
     return content
   }
 
-  const lines = content.split('\n')
+  const { lines } = analysis
   let inCodeBlock = false
   const blockMathDelimiters: number[] = [] // Store indices of $$ delimiters on separate lines
 

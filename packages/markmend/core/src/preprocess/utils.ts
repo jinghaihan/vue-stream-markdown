@@ -82,8 +82,8 @@ export function getLastParagraphWithIndex(
 export function hideBareFormattingMarker(
   content: string,
   markers: readonly string[],
+  lastParagraph = getLastParagraphWithIndex(content).lastParagraph,
 ): string | undefined {
-  const { lastParagraph } = getLastParagraphWithIndex(content)
   const containsOnlyMarkers = (value: string): boolean => {
     if (maskThematicBreakMarkers(value) !== value)
       return false

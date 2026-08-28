@@ -1,4 +1,6 @@
+import type { PreprocessContext } from '../types'
 import type { TextRange } from './utils'
+import { getPreprocessAnalysis } from './context'
 import {
   codeBlockPattern,
   footnoteDefLabelPattern,
@@ -13,7 +15,6 @@ import {
   findClosedCodeBlockRanges,
   findInlineCodeRanges,
   getLastParagraphWithIndex,
-  isInsideUnclosedCodeBlock,
   isPositionInRanges,
 
 } from './utils'
@@ -179,8 +180,11 @@ function collectCompleteReferences(
  * fixFootnote('```\n[^1]\n```\n\nText [^1]')
  * // Code block content is ignored, only processes Text [^1]
  */
-export function fixFootnote(content: string): string {
-  if (isInsideUnclosedCodeBlock(content)) {
+export function fixFootnote(content: string, preprocessContext?: PreprocessContext): string {
+  if (!content.includes('[^'))
+    return content
+
+  if (getPreprocessAnalysis(content, preprocessContext).hasUnclosedCodeBlock) {
     return content
   }
 

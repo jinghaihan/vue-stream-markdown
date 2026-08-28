@@ -1,4 +1,9 @@
-import { createPreprocessContext, getPreprocessAnalysis } from '@markmend/core'
+import {
+  createPreprocessContext,
+  DEFAULT_PREPROCESS_STEPS,
+  getPreprocessAnalysis,
+  preprocess,
+} from '@markmend/core'
 import { describe, expect, it } from 'vitest'
 
 describe('preprocess context', () => {
@@ -42,5 +47,42 @@ describe('preprocess context', () => {
     expect(analysis.getLastParagraph(true).content).toBe('last\n')
     expect(analysis.getLastParagraph(true))
       .toBe(analysis.getLastParagraph(true))
+  })
+
+  it('keeps every step usable without a context', () => {
+    const inputs = {
+      code: 'Text `code',
+      comparisonOperators: '- > 25',
+      delete: 'Text ~~deleted',
+      emphasis: 'Text *italic',
+      footnote: 'Text [^missing]',
+      html: 'Text <span',
+      inlineMath: 'Text $$x + y',
+      link: 'Text [link](',
+      math: '$$\nx + y',
+      strong: 'Text **bold',
+      table: '| a | b |\n| ---',
+      taskList: 'Text\n- [',
+    } as const
+
+    for (const [name, step] of Object.entries(DEFAULT_PREPROCESS_STEPS)) {
+      const input = inputs[name as keyof typeof inputs]
+      expect(step(input)).toBe(step(input, createPreprocessContext()))
+    }
+  })
+
+  it('passes one context through custom steps', () => {
+    let receivedContext: unknown
+    const suppliedContext = { hideBareFormattingMarkers: false }
+
+    preprocess('content', suppliedContext, {
+      code(content, context) {
+        receivedContext = context
+        return content
+      },
+    })
+
+    expect(receivedContext).toEqual(suppliedContext)
+    expect(receivedContext).not.toBe(suppliedContext)
   })
 })

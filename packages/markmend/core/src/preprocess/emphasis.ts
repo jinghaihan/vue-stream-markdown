@@ -1,16 +1,12 @@
 import type { PreprocessContext } from '../types'
+import { getPreprocessAnalysis } from './context'
 import {
   codeBlockPattern,
   singleAsteriskPattern,
   singleUnderscorePattern,
 } from './pattern'
 import {
-  calculateParagraphOffset,
-  findClosedCodeBlockRanges,
-  findInlineCodeRanges,
-  getLastParagraphWithIndex,
   hideBareFormattingMarker,
-  isInsideUnclosedCodeBlock,
   isPositionInRanges,
   isWithinHtmlTag,
   isWithinLinkOrImageUrl,
@@ -32,22 +28,35 @@ import {
  */
 export function fixEmphasis(
   content: string,
-  options?: Pick<PreprocessContext, 'hideBareFormattingMarkers'>,
+  options?: PreprocessContext,
 ): string {
+  if (!content.includes('*') && !content.includes('_'))
+    return content
+
+  const analysis = getPreprocessAnalysis(content, options)
   // Don't process if we're inside a code block (unclosed)
-  if (isInsideUnclosedCodeBlock(content)) {
+  if (analysis.hasUnclosedCodeBlock) {
     return content
   }
 
-  const hiddenBareMarker = hideBareFormattingMarker(content, ['*', '_'])
+  const hiddenBareMarker = hideBareFormattingMarker(
+    content,
+    ['*', '_'],
+    analysis.getLastParagraph().content,
+  )
   if (hiddenBareMarker !== undefined)
     return options?.hideBareFormattingMarkers === false ? content : hiddenBareMarker
 
   // Find the last paragraph
-  const lines = content.split('\n')
-  const { lastParagraph, startIndex: paragraphStartIndex } = getLastParagraphWithIndex(content)
-  const codeBlockRanges = findClosedCodeBlockRanges(lastParagraph)
-  const inlineCodeRanges = findInlineCodeRanges(lastParagraph, codeBlockRanges)
+  const paragraph = analysis.getLastParagraph()
+  const {
+    codeBlockRanges,
+    content: lastParagraph,
+    inlineCodeRanges,
+    startOffset: paragraphOffset,
+  } = paragraph
+  if (paragraph.isFullyCodeBlock)
+    return content
 
   // Remove code blocks and mask Markdown markers inside inline code to avoid
   // treating code content as incomplete emphasis.
@@ -81,7 +90,6 @@ export function fixEmphasis(
   if (asteriskCount % 2 === 1) {
     // Find the last * in the original lastParagraph, but skip those in URLs
     // We need to find the position in the original text, not in the URL-removed text
-    const paragraphOffset = calculateParagraphOffset(paragraphStartIndex, lines)
     let lastStarPos = -1
 
     // Search backwards in the original lastParagraph to find the last * that's not in a URL
@@ -123,7 +131,6 @@ export function fixEmphasis(
   // Check underscore
   if (underscoreCount % 2 === 1) {
     // Find the last _ in the original lastParagraph, but skip those in URLs
-    const paragraphOffset = calculateParagraphOffset(paragraphStartIndex, lines)
     let lastUnderscorePos = -1
 
     // Search backwards in the original lastParagraph to find the last _ that's not in a URL
