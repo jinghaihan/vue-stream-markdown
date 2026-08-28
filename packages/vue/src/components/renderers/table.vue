@@ -26,6 +26,7 @@ const {
   onCopied,
   tableOptions,
   dir,
+  mode,
   uiComponents: UI,
 } = useContext()
 
@@ -57,10 +58,13 @@ const tableScrollRef = ref<HTMLElement>()
 const fullscreenScrollRef = ref<HTMLElement>()
 const fullscreen = ref(false)
 
-const tableModel = computed(() => createTableModel({
-  node: props.node,
-  hasLoadingNode: nodes => props.markdownParser.hasLoadingNode(nodes),
-}))
+const tableModel = computed(() => {
+  const isStreaming = mode.value === 'streaming'
+  return createTableModel({
+    node: props.node,
+    hasLoadingNode: nodes => isStreaming && props.markdownParser.hasLoadingNode(nodes),
+  })
+})
 
 const headerCells = computed(() => tableModel.value.headerCells)
 const bodyRows = computed(() => tableModel.value.bodyRows)
