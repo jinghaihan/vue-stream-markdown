@@ -40,13 +40,14 @@ watch(shouldAnimate, (value) => {
     :name="shouldAnimate ? transitionName : DISABLED_TRANSITION_NAME"
     tag="span"
     data-stream-markdown="text"
-    class="whitespace-pre-wrap break-words"
+    class="whitespace-pre-wrap break-words [text-decoration:inherit]"
   >
     <span
       v-for="part in parts"
       :key="part.key"
       :data-stream-markdown="part.whitespace ? 'text-space' : `text-${part.animationSplit}`"
-      :class="part.whitespace ? '' : 'inline-block max-w-full whitespace-pre-wrap break-words'"
+      class="[text-decoration:inherit]"
+      :class="!part.whitespace && 'inline-block max-w-full whitespace-pre-wrap break-words'"
     >{{ part.value }}</span>
     <Caret v-if="showCaret" key="stream-markdown-caret" />
   </TransitionGroup>
@@ -54,7 +55,7 @@ watch(shouldAnimate, (value) => {
   <span
     v-else
     data-stream-markdown="text"
-    class="whitespace-pre-wrap break-words"
+    class="whitespace-pre-wrap break-words [text-decoration:inherit]"
   >
     {{ node.value }}<Caret v-if="showCaret" />
   </span>

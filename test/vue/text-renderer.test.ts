@@ -91,6 +91,16 @@ describe('text renderer', () => {
     expect(mountText('Loading', { loading: true, hideCaret: true }).findComponent(Caret).exists()).toBe(false)
   })
 
+  it('inherits text decorations through animated wrappers', () => {
+    const wrapper = mountText('Linked text')
+    const text = wrapper.get('[data-stream-markdown="text"]')
+    const parts = wrapper.findAll('[data-stream-markdown^="text-"]')
+
+    expect(text.classes()).toContain('[text-decoration:inherit]')
+    expect(parts).not.toHaveLength(0)
+    expect(parts.every(part => part.classes().includes('[text-decoration:inherit]'))).toBe(true)
+  })
+
   it('keeps the text element when switching to static mode', async () => {
     const mode = ref<'static' | 'streaming'>('streaming')
     const wrapper = mountText('Heading', { mode })
