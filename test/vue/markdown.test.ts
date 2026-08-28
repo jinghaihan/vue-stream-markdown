@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
-import { shallowMount } from '@vue/test-utils'
+import { mount, shallowMount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
-import { nextTick } from 'vue'
+import { defineComponent, h, markRaw, nextTick, onMounted, onUnmounted } from 'vue'
 import Markdown from '../../packages/vue/src/index.vue'
 
 // These tests exercise Markdown processing, not background UI component loading.
@@ -51,5 +51,38 @@ describe('stream markdown', () => {
 
     expect(vm.getProcessedContent()).toBe('*')
     wrapper.unmount()
+  })
+
+  it('keeps node renderers mounted when switching to static mode', async () => {
+    let mountCount = 0
+    let unmountCount = 0
+    const Heading = markRaw(defineComponent({
+      inheritAttrs: false,
+      setup() {
+        onMounted(() => mountCount += 1)
+        onUnmounted(() => unmountCount += 1)
+        return () => h('h1', 'Heading')
+      },
+    }))
+    const wrapper = mount(Markdown, {
+      props: {
+        content: '# Heading',
+        mode: 'streaming',
+        nodeRenderers: { heading: Heading },
+      },
+    })
+    const testWrapper = wrapper as unknown as MarkdownTestWrapper
+
+    expect(mountCount).toBe(1)
+    expect(unmountCount).toBe(0)
+
+    await testWrapper.setProps({ mode: 'static' })
+    await nextTick()
+
+    expect(mountCount).toBe(1)
+    expect(unmountCount).toBe(0)
+
+    wrapper.unmount()
+    expect(unmountCount).toBe(1)
   })
 })

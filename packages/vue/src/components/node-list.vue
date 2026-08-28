@@ -47,8 +47,9 @@ const transitionName = computed(() => model.value.transitionName)
 <template>
   <template v-for="item in items" :key="item.key">
     <Transition
-      v-if="item.shouldTransition"
+      v-if="item.supportsTransition"
       :name="transitionName"
+      :css="item.shouldTransition"
       appear
     >
       <component
