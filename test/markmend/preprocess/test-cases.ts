@@ -1787,6 +1787,7 @@ export const streamingBlockCompletionCases: TestCase[] = [
   completeStreamingCase('incomplete fence without language', '```\nplain code', '```\nplain code\n```'),
   completeStreamingCase('incomplete second fenced block', '```js\nfirst\n```\n\n```py\nsecond', '```js\nfirst\n```\n\n```py\nsecond\n```'),
   keepStreamingCase('complete fenced code block', '```js\nconst x = 1\n```'),
+  completeStreamingCase('partial inline triple-backtick closer with one marker', '```python print("hello")`', '```python print("hello")```'),
   completeStreamingCase('partial inline triple-backtick closer', '```python print("hello")``', '```python print("hello")```'),
   keepStreamingCase('complete inline triple-backtick span', '```python print("hello")```'),
   completeStreamingCase('incomplete block math', '$$\nx = 5', '$$\nx = 5\n$$'),

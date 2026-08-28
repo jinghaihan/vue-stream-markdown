@@ -41,6 +41,10 @@ import {
  * // Returns: '```' (no completion, code block has no content)
  */
 export function fixCode(content: string): string {
+  const completedInlineTripleBacktickSpan = completePartialInlineTripleBacktickSpan(content)
+  if (completedInlineTripleBacktickSpan !== undefined)
+    return completedInlineTripleBacktickSpan
+
   // Check if we're inside a code block before cleaning
   const isInsideCodeBlock = isInsideUnclosedCodeBlock(content)
 
@@ -66,6 +70,35 @@ export function fixCode(content: string): string {
     content = fixInlineCode(content)
 
   return content
+}
+
+/**
+ * Complete a same-line triple-backtick code span whose closing run currently
+ * contains only one or two backticks. A multiline opener remains a fenced code
+ * block and is handled by the existing block completion path.
+ */
+function completePartialInlineTripleBacktickSpan(content: string): string | undefined {
+  const contentWithoutTrailingWhitespace = content.trimEnd()
+  let closerStart = contentWithoutTrailingWhitespace.length
+  while (closerStart > 0 && contentWithoutTrailingWhitespace[closerStart - 1] === '`')
+    closerStart -= 1
+
+  const closerLength = contentWithoutTrailingWhitespace.length - closerStart
+  if (closerLength < 1 || closerLength > 2 || isEscapedCharacter(contentWithoutTrailingWhitespace, closerStart))
+    return undefined
+
+  const lineStart = contentWithoutTrailingWhitespace.lastIndexOf('\n', closerStart - 1) + 1
+  const openerStart = contentWithoutTrailingWhitespace.lastIndexOf('```', closerStart - 1)
+  if (openerStart < lineStart
+    || isEscapedCharacter(contentWithoutTrailingWhitespace, openerStart)
+    || contentWithoutTrailingWhitespace[openerStart - 1] === '`'
+    || contentWithoutTrailingWhitespace[openerStart + 3] === '`'
+    || openerStart + 3 === closerStart) {
+    return undefined
+  }
+
+  const trailingWhitespace = content.slice(contentWithoutTrailingWhitespace.length)
+  return `${contentWithoutTrailingWhitespace}${'`'.repeat(3 - closerLength)}${trailingWhitespace}`
 }
 
 /**
