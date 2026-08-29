@@ -114,15 +114,35 @@ function renderReact(root: Root, content: string): void {
   })
 }
 
-function runVueSession(document: string, steps: number): number {
+function expectedStableText(document: string): string {
+  return document === WITH_CODE ? 'export const rate' : 'EMEA'
+}
+
+async function waitForVue(
+  host: HTMLElement,
+  expectedText: string,
+): Promise<void> {
+  for (let attempt = 0; attempt < 100; attempt += 1) {
+    await Promise.resolve()
+    await nextTick()
+    if (host.textContent?.includes(expectedText))
+      return
+  }
+
+  throw new Error(`Timed out waiting for Vue output: ${expectedText}`)
+}
+
+async function runVueSession(document: string, steps: number): Promise<number> {
   const host = createHost()
   renderVue(host, document)
+  await waitForVue(host, expectedStableText(document))
 
   let tail = ''
   for (let step = 0; step < steps; step += 1) {
     const content = appendTail(document, step, tail)
     tail = content.slice(document.length + 2)
     renderVue(host, content)
+    await waitForVue(host, tail.trimEnd())
   }
 
   const checksum = host.textContent?.length ?? 0
@@ -234,7 +254,7 @@ function createReactMount(): (host: HTMLElement, content: string) => () => void 
 async function inspectVueSession(document: string): Promise<MutationStats> {
   const host = createHost()
   renderVue(host, document)
-  await nextTick()
+  await waitForVue(host, expectedStableText(document))
 
   const heading = host.querySelector('h1')
   const stats: MutationStats = {
@@ -261,7 +281,7 @@ async function inspectVueSession(document: string): Promise<MutationStats> {
     const content = appendTail(document, step, tail)
     tail = content.slice(document.length + 2)
     renderVue(host, content)
-    await nextTick()
+    await waitForVue(host, tail.trimEnd())
     collectMutations(observer, stats)
   }
 
@@ -293,8 +313,8 @@ beforeAll(async () => {
 
 for (const [name, document] of scenarios) {
   describe(`${name} initial render`, () => {
-    bench('vue-stream-markdown', () => {
-      benchmarkResult = runVueSession(document, 0)
+    bench('vue-stream-markdown', async () => {
+      benchmarkResult = await runVueSession(document, 0)
     }, benchmarkOptions)
     bench('streamdown', () => {
       benchmarkResult = runReactSession(document, 0)
@@ -302,8 +322,8 @@ for (const [name, document] of scenarios) {
   })
 
   describe(`${name} with 20 streaming appends`, () => {
-    bench('vue-stream-markdown', () => {
-      benchmarkResult = runVueSession(document, 20)
+    bench('vue-stream-markdown', async () => {
+      benchmarkResult = await runVueSession(document, 20)
     }, benchmarkOptions)
     bench('streamdown', () => {
       benchmarkResult = runReactSession(document, 20)
