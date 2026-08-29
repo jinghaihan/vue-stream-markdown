@@ -62,7 +62,7 @@ const calculusNotation = `Derivative: $$\\frac{dy}{dx}$$, Partial: $$\\frac{\\pa
 
 const incompleteEquation = `
 $$
-E = mc^
+E = mc^2
 `
 
 const inlineVsBlock = `This is inline $$E = mc^2$$ math.

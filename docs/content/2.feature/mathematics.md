@@ -238,11 +238,10 @@ vue-stream-markdown's unterminated block parser handles incomplete equations gra
 
 ```markdown
 $$
-E = mc^
-$$
+E = mc^2
 ```
 
-::stream-markdown{example="feature-mathematics.incompleteEquation" mode="streaming"}
+::stream-markdown{example="feature-mathematics.incompleteEquation" settled-mode="streaming"}
 ::
 
 During streaming, the parser detects the incomplete block-level equation and adds the closing `$$` delimiter, ensuring proper rendering even before the equation is complete.

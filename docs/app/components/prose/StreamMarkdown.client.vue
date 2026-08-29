@@ -17,6 +17,7 @@ defineOptions({
 const props = withDefaults(defineProps<{
   example: string
   mode?: 'streaming' | 'static'
+  settledMode?: 'streaming' | 'static'
   caret?: 'block' | 'circle'
   typingDelay?: number
   codeOptionsExample?: string
@@ -26,6 +27,7 @@ const props = withDefaults(defineProps<{
   imageFallback?: string
 }>(), {
   mode: 'static',
+  settledMode: 'static',
   caret: undefined,
   typingDelay: 16,
   codeOptionsExample: undefined,
@@ -39,17 +41,22 @@ const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
 const isMobile = useMediaQuery('(max-width: 1023px)')
 
-const currentMode = ref<'streaming' | 'static'>(props.mode)
+const isTyping = ref(false)
 const typingIndex = ref(0)
 const container = ref<HTMLDivElement>()
 const minHeight = ref<number>()
 let interval: ReturnType<typeof setInterval> | undefined
 
 const content = computed(() => String(resolveExample(props.example) ?? ''))
+const currentMode = computed<'streaming' | 'static'>(() => {
+  if (props.mode === 'streaming' || isTyping.value)
+    return 'streaming'
+  return props.settledMode
+})
 const renderedContent = computed(() => {
   if (props.mode === 'streaming')
     return content.value
-  return currentMode.value === 'streaming'
+  return isTyping.value
     ? content.value.slice(0, typingIndex.value)
     : content.value
 })
@@ -87,7 +94,7 @@ const isMermaid = computed(() => content.value.includes('```mermaid'))
 const mermaidRenderer = ref<'vanilla' | 'beautiful'>('beautiful')
 
 function toggleTyping() {
-  if (currentMode.value === 'streaming') {
+  if (isTyping.value) {
     stopTyping()
     return
   }
@@ -96,7 +103,7 @@ function toggleTyping() {
     minHeight.value = container.value.getBoundingClientRect().height
 
   typingIndex.value = 0
-  currentMode.value = 'streaming'
+  isTyping.value = true
   interval = setInterval(() => {
     typingIndex.value++
     if (typingIndex.value >= content.value.length)
@@ -108,7 +115,7 @@ function stopTyping() {
   if (interval)
     clearInterval(interval)
   interval = undefined
-  currentMode.value = 'static'
+  isTyping.value = false
   minHeight.value = undefined
 }
 
@@ -150,8 +157,8 @@ onBeforeUnmount(stopTyping)
     <div class="opacity-0 flex gap-1 transition-opacity absolute z-10 group-hover:opacity-100 hover:opacity-100 -left-4 -top-4">
       <UButton
         v-if="playable"
-        :aria-label="currentMode === 'streaming' ? 'Stop typing' : 'Start typing'"
-        :icon="currentMode === 'streaming' ? 'i-lucide-circle-pause' : 'i-lucide-circle-play'"
+        :aria-label="isTyping ? 'Stop typing' : 'Start typing'"
+        :icon="isTyping ? 'i-lucide-circle-pause' : 'i-lucide-circle-play'"
         color="neutral"
         variant="ghost"
         size="xs"
