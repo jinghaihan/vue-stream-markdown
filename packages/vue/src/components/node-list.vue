@@ -38,7 +38,9 @@ export default defineComponent({
     },
     parentNode: Object as PropType<ParsedNode>,
     prevNode: Object as PropType<ParsedNode>,
+    prevNodeType: String,
     nextNode: Object as PropType<ParsedNode>,
+    nextNodeType: String,
     hideCaret: Boolean,
     blocks: Array as PropType<SyntaxTree[]>,
   },
@@ -46,6 +48,19 @@ export default defineComponent({
     const context = useContext()
     const animatedNodeKeys = new Set<string>()
     const animatedTextKeys = new Set<string>()
+    const boundaryNodes = new Map<string, ParsedNode>()
+
+    function resolveBoundaryNode(node: ParsedNode | undefined, type: string | undefined) {
+      if (node || !type)
+        return node
+
+      let boundaryNode = boundaryNodes.get(type)
+      if (!boundaryNode) {
+        boundaryNode = { type } as ParsedNode
+        boundaryNodes.set(type, boundaryNode)
+      }
+      return boundaryNode
+    }
 
     function renderNodes(
       nodes: ParsedNode[],
@@ -74,8 +89,12 @@ export default defineComponent({
           deep: options.deep,
           node: item.node,
           parentNode: options.parentNode,
-          prevNode: item.prevNode,
-          nextNode: item.nextNode,
+          prevNode: item.prevNode ?? (options.deep === props.deep
+            ? resolveBoundaryNode(props.prevNode, props.prevNodeType)
+            : undefined),
+          nextNode: item.nextNode ?? (options.deep === props.deep
+            ? resolveBoundaryNode(props.nextNode, props.nextNodeType)
+            : undefined),
           nodeKey: item.key,
           hideCaret: props.hideCaret,
         }
@@ -122,7 +141,7 @@ export default defineComponent({
       }
       state = {
         animation: vnodeContext.animation,
-        blocks: context.blocks.value,
+        blocks: props.blocks ?? context.blocks.value,
         enableAnimate: vnodeContext.enableAnimate,
         markdownParser: props.markdownParser ?? context.markdownParser,
         nodeRenderers: props.nodeRenderers ?? context.nodeRenderers.value,
