@@ -16,7 +16,7 @@ import {
 import { computed, onBeforeUnmount, onMounted, shallowRef, toRefs, watch } from 'vue'
 import { UI } from './components'
 import { ICONS } from './components/icons'
-import MarkdownNodes from './components/renderers/markdown-nodes'
+import MarkdownNodes from './components/renderers/markdown'
 import {
   useContext,
   useDarkDetector,

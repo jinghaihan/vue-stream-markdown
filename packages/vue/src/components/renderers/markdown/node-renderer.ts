@@ -1,6 +1,6 @@
 import type { Node } from '@markmend/parser'
 import type { VNodeChild } from 'vue'
-import type { MarkdownComponents, StreamMarkdownResolvedContext } from '../../types'
+import type { MarkdownComponents, StreamMarkdownResolvedContext } from '../../../types'
 import { createCommentVNode, defineAsyncComponent, h } from 'vue'
 import { BLOCK_STYLES, ELEMENT_STYLES } from './node-styles'
 import {
@@ -11,11 +11,11 @@ import {
 } from './node-utils'
 import { renderTextNode } from './text-node'
 
-const CodeBlock = defineAsyncComponent(() => import('./code-block.vue'))
-const ImageNode = defineAsyncComponent(() => import('./image-node.vue'))
-const LinkNode = defineAsyncComponent(() => import('./link-node.vue'))
-const MathNode = defineAsyncComponent(() => import('./math-node.vue'))
-const TableNode = defineAsyncComponent(() => import('./table-node.vue'))
+const CodeBlock = defineAsyncComponent(() => import('../code-block.vue'))
+const ImageNode = defineAsyncComponent(() => import('../image-node.vue'))
+const LinkNode = defineAsyncComponent(() => import('../link-node.vue'))
+const MathNode = defineAsyncComponent(() => import('../math-node.vue'))
+const TableNode = defineAsyncComponent(() => import('../table-node.vue'))
 
 export interface NodeRendererOptions {
   animatedTextKeys: Set<string>

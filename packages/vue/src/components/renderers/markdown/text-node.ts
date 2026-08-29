@@ -1,5 +1,5 @@
 import type { VNodeChild } from 'vue'
-import type { StreamMarkdownResolvedContext } from '../../types'
+import type { StreamMarkdownResolvedContext } from '../../../types'
 import {
   createTextParts,
   DISABLED_TRANSITION_NAME,

@@ -1,8 +1,8 @@
 import type { Node } from '@markmend/parser'
 import type { PropType } from 'vue'
-import type { MarkdownComponents } from '../../types'
+import type { MarkdownComponents } from '../../../types'
 import { defineComponent } from 'vue'
-import { useContext } from '../../composables'
+import { useContext } from '../../../composables'
 import { createNodeRenderer } from './node-renderer'
 
 export default defineComponent({
