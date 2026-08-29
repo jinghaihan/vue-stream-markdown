@@ -23,6 +23,68 @@ export interface Options extends MarkdownAstParserOptions {
   mode: 'streaming' | 'static'
 }
 
+const SAFE_TEXT_APPEND_PATTERN = /^[\p{L}\p{N}\p{M} \t,.'!?-]+$/u
+const FORMATTING_SUFFIX_PATTERN = /^[*_~]+$/
+const FORMATTING_NODE_TYPES = new Set(['delete', 'emphasis', 'strong'])
+const PARAGRAPH_CHANGING_PREFIX_PATTERN = /^(?: {0,3}(?:#{1,6}[ \t]|>[ \t]?|(?:[-+*]|\d+[.)])(?:[ \t]+|$))| {0,3}([-*_])(?:[ \t]*\1){2,}[ \t]*$)/
+
+function canRemainParagraph(source: string): boolean {
+  if (PARAGRAPH_CHANGING_PREFIX_PATTERN.test(source))
+    return false
+
+  const trailingToken = source.slice(Math.max(
+    source.lastIndexOf(' '),
+    source.lastIndexOf('\t'),
+    source.lastIndexOf('\n'),
+  ) + 1)
+  return !trailingToken.includes('@')
+    && !trailingToken.includes('/')
+    && !/www\./i.test(trailingToken)
+}
+
+function hasCustomParserBehavior(options: Options): boolean {
+  const builtin = options.mdastOptions?.builtin
+  return Boolean(
+    options.normalize
+    || options.preprocess
+    || (options.preprocessSteps && Object.keys(options.preprocessSteps).length > 0)
+    || options.parseMarkdownIntoBlocks
+    || options.postnormalize
+    || options.postprocess
+    || options.mdastOptions?.from?.length
+    || options.mdastOptions?.micromark?.length
+    || (builtin?.from && Object.values(builtin.from).some(value => typeof value === 'function'))
+    || (builtin?.micromark && Object.values(builtin.micromark).some(value => typeof value === 'function')),
+  )
+}
+
+function appendToTextNode(node: ParsedNode, value: string): ParsedNode | undefined {
+  if (node.type === 'text') {
+    const { loading: _loading, ...text } = node
+    return {
+      ...text,
+      value: node.value + value,
+    }
+  }
+
+  if (!FORMATTING_NODE_TYPES.has(node.type) || !('children' in node) || !node.children.length)
+    return undefined
+
+  const children = node.children as ParsedNode[]
+  const lastIndex = children.length - 1
+  const child = children[lastIndex]!
+  const nextChild = appendToTextNode(child, value)
+  if (!nextChild)
+    return undefined
+
+  const nextChildren = children.slice()
+  nextChildren[lastIndex] = nextChild
+  return {
+    ...node,
+    children: nextChildren,
+  } as ParsedNode
+}
+
 export class MarkdownAstParser {
   private mode: Options['mode'] = 'streaming'
   private normalizedContent = ''
@@ -40,11 +102,13 @@ export class MarkdownAstParser {
 
   private options: Options
   private processor: MarkdownProcessor
+  private readonly useAppendTextFastPath: boolean
 
   constructor(options: Options) {
     this.mode = options.mode
     this.options = options
     this.processor = new MarkdownProcessor(options)
+    this.useAppendTextFastPath = !hasCustomParserBehavior(options)
 
     const ctx = {
       mdastOptions: options.mdastOptions,
@@ -212,7 +276,13 @@ export class MarkdownAstParser {
         continue
       }
 
-      const ast = this.markdownToAst(content)
+      const ast = this.tryAppendTextAst({
+        content,
+        previousAst,
+        previousContent,
+        previousSource: this.blocks[index],
+        source: blocks[index]!,
+      }) ?? this.markdownToAst(content)
       this.astCache.set(content, ast)
 
       asts.push(applyLoadingState(ast, syntaxLoading, tailTextLoading))
@@ -223,6 +293,73 @@ export class MarkdownAstParser {
     this.blocks = blocks
     this.normalizedContent = data
     this.hasSegmentedBlocks = hasSegmentedBlocks
+  }
+
+  private tryAppendTextAst(options: {
+    content: string
+    previousAst?: SyntaxTree
+    previousContent?: string
+    previousSource?: string
+    source: string
+  }): SyntaxTree | undefined {
+    if (!this.useAppendTextFastPath || this.mode !== 'streaming')
+      return undefined
+
+    const {
+      content,
+      previousAst,
+      previousContent,
+      previousSource,
+      source,
+    } = options
+    if (!previousAst || previousContent === undefined || previousSource === undefined)
+      return undefined
+    if (!source.startsWith(previousSource) || source.length === previousSource.length)
+      return undefined
+
+    const appended = source.slice(previousSource.length)
+    if (!SAFE_TEXT_APPEND_PATTERN.test(appended))
+      return undefined
+    if (!canRemainParagraph(source))
+      return undefined
+    if (!previousContent.startsWith(previousSource))
+      return undefined
+
+    const completionSuffix = previousContent.slice(previousSource.length)
+    if (content !== `${source}${completionSuffix}`)
+      return undefined
+    if (completionSuffix && !FORMATTING_SUFFIX_PATTERN.test(completionSuffix))
+      return undefined
+
+    if (previousAst.children.length !== 1)
+      return undefined
+    const paragraph = previousAst.children[0]
+    if (paragraph?.type !== 'paragraph' || !paragraph.children.length)
+      return undefined
+
+    const lastIndex = paragraph.children.length - 1
+    const lastChild = paragraph.children[lastIndex]!
+    if (completionSuffix) {
+      if (!FORMATTING_NODE_TYPES.has(lastChild.type))
+        return undefined
+    }
+    else if (lastChild.type !== 'text') {
+      return undefined
+    }
+
+    const nextLastChild = appendToTextNode(lastChild, appended)
+    if (!nextLastChild)
+      return undefined
+
+    const children = paragraph.children.slice()
+    children[lastIndex] = nextLastChild as typeof children[number]
+    return {
+      ...previousAst,
+      children: [{
+        ...paragraph,
+        children,
+      }],
+    }
   }
 
   private updateAstLoading(ast: SyntaxTree, loading: boolean) {

@@ -444,6 +444,10 @@ const growingParagraph = createGrowingInputs(
   'A single paragraph with **bold text**, *emphasis*, links, and inline code. '.repeat(12),
   48,
 )
+const tokenSizedGrowingParagraph = createGrowingInputs(
+  'A single paragraph with **bold text**, *emphasis*, links, and inline code. '.repeat(12),
+  8,
+)
 const stablePrefix = `${createDocument(64)}\n\n## Live response\n\n`
 const stablePrefixInputs = createGrowingInputs(
   'The model is generating **one changing tail block** while every earlier block remains stable. '.repeat(8),
@@ -457,11 +461,13 @@ assertEquivalentSemanticBlocks('short document', [shortDocument])
 assertEquivalentSemanticBlocks('medium document', [mediumDocument])
 assertEquivalentSemanticBlocks('large document', [largeDocument])
 assertEquivalentSemanticBlocks('growing single paragraph', growingParagraph)
+assertEquivalentSemanticBlocks('token-sized growing paragraph', tokenSizedGrowingParagraph)
 assertEquivalentSemanticBlocks('large stable prefix with growing tail', stablePrefixInputs)
 assertEquivalentSemanticBlocks('appending complete blocks', appendingBlockInputs)
 assertEquivalentSemanticBlocks('editing a middle block', middleEditInputs)
 
 benchmarkStreamingSession('growing single paragraph', growingParagraph)
+benchmarkStreamingSession('token-sized growing paragraph', tokenSizedGrowingParagraph)
 benchmarkStreamingSession('large stable prefix with growing tail', stablePrefixInputs, largeOptions)
 benchmarkStreamingSession('appending complete blocks', appendingBlockInputs)
 benchmarkStreamingSession('editing a middle block', middleEditInputs, largeOptions)
