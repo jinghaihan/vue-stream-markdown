@@ -208,7 +208,7 @@ function example() {
 ```
 ````
 
-::stream-markdown{example="feature-code-blocks.incomplete"}
+::stream-markdown{example="feature-code-blocks.incomplete" mode="streaming"}
 ::
 
 The unterminated block parser ensures the code block renders properly even without the closing backticks.

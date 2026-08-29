@@ -240,7 +240,7 @@ E = mc^
 $$
 ```
 
-::stream-markdown{example="feature-mathematics.incompleteEquation"}
+::stream-markdown{example="feature-mathematics.incompleteEquation" mode="streaming"}
 ::
 
 During streaming, the parser detects the incomplete block-level equation and adds the closing `$$` delimiter, ensuring proper rendering even before the equation is complete.
