@@ -35,15 +35,12 @@ function resolveContext(context: StreamMarkdownProvideContext): StreamMarkdownRe
   const dir = computed(() => toValue(context.dir))
   const controls = computed(() => toValue(context.controls))
   const previewers = computed(() => toValue(context.previewers))
-  const shikiOptions = computed(() => toValue(context.shikiOptions))
-  const mermaidOptions = computed(() => toValue(context.mermaidOptions))
   const extensions = computed(() => toValue(context.extensions))
   const hardenOptions = computed(() => toValue(context.hardenOptions))
   const codeOptions = computed(() => toValue(context.codeOptions))
   const tableOptions = computed(() => toValue(context.tableOptions))
   const imageOptions = computed(() => toValue(context.imageOptions))
   const linkOptions = computed(() => toValue(context.linkOptions))
-  const cdnOptions = computed(() => toValue(context.cdnOptions))
   const icons = computed((): Partial<Icons> => toValue(context.icons) ?? DEFAULT_ICONS)
   const uiComponents = computed((): UIComponents => toValue(context.uiComponents) ?? DEFAULT_UI)
 
@@ -74,15 +71,12 @@ function resolveContext(context: StreamMarkdownProvideContext): StreamMarkdownRe
     dir,
     controls,
     previewers,
-    shikiOptions,
-    mermaidOptions,
     extensions,
     hardenOptions,
     codeOptions,
     tableOptions,
     imageOptions,
     linkOptions,
-    cdnOptions,
     hideTooltip,
     icons,
     uiComponents,

@@ -1,5 +1,4 @@
 import type { AnimationSplit, AnimationType } from '../types'
-import type { CdnOptions } from './cdn'
 import type { MaybePromise, TextDirectionConfig } from './common'
 import type { DownloadEvent } from './events'
 import type { LocaleConfig } from './i18n'
@@ -8,8 +7,6 @@ import type { TableOptions } from './options'
 export interface StreamMarkdownContext<
   TControls = unknown,
   TPreviewers = unknown,
-  TShikiOptions = unknown,
-  TMermaidOptions = unknown,
   THardenOptions = unknown,
   TCodeOptions = unknown,
   TImageOptions = unknown,
@@ -19,8 +16,6 @@ export interface StreamMarkdownContext<
 > {
   controls?: TControls
   previewers?: TPreviewers
-  shikiOptions?: TShikiOptions
-  mermaidOptions?: TMermaidOptions
   hardenOptions?: THardenOptions
   codeOptions?: TCodeOptions
   tableOptions?: TableOptions
@@ -28,7 +23,6 @@ export interface StreamMarkdownContext<
   linkOptions?: TLinkOptions
   uiOptions?: TUIOptions
   extensions?: TExtensions
-  cdnOptions?: CdnOptions
   isDark?: boolean
 }
 
@@ -65,8 +59,6 @@ export type StreamMarkdownProps<
   TCaret extends string = string,
   TControls = unknown,
   TPreviewers = unknown,
-  TShikiOptions = unknown,
-  TMermaidOptions = unknown,
   THardenOptions = unknown,
   TCodeOptions = unknown,
   TImageOptions = unknown,
@@ -76,8 +68,6 @@ export type StreamMarkdownProps<
 > = StreamMarkdownContext<
   TControls,
   TPreviewers,
-  TShikiOptions,
-  TMermaidOptions,
   THardenOptions,
   TCodeOptions,
   TImageOptions,

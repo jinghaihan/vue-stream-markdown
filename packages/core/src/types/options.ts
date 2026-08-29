@@ -19,38 +19,6 @@ export type PreviewerConfig<TComponent = unknown>
       } & Record<string, TComponent>
     }
 
-export interface ShikiOptions<
-  TTheme = string,
-  TLanguage = string,
-  TCodeToTokenOptions = unknown,
-  TEngine = unknown,
-> {
-  theme?: [TTheme, TTheme]
-  langs?: TLanguage[]
-  langAlias?: Record<string, string>
-  engine?: TEngine
-  codeToTokenOptions?: TCodeToTokenOptions
-}
-
-export interface MermaidOptions<
-  TComponent = unknown,
-  TConfig = unknown,
-  TBeautifulTheme = string,
-  TBeautifulConfig = unknown,
-> {
-  renderer?: 'vanilla' | 'beautiful'
-  theme?: [string, string]
-  config?: TConfig
-  beautifulTheme?: [TBeautifulTheme, TBeautifulTheme]
-  beautifulConfig?: TBeautifulConfig
-  errorComponent?: TComponent
-}
-
-export interface KatexOptions<TComponent = unknown, TConfig = unknown> {
-  config?: TConfig
-  errorComponent?: TComponent
-}
-
 export interface ImageOptions<TComponent = unknown> {
   fallback?: string
   caption?: boolean

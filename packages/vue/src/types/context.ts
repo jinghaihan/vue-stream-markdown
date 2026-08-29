@@ -14,9 +14,7 @@ import type {
   Icons,
   ImageOptions,
   LinkOptions,
-  MermaidOptions,
   PreviewerConfig,
-  ShikiOptions,
   TableOptions,
   UIComponents,
   UIOptions,
@@ -27,8 +25,6 @@ export type { StreamMarkdownHooks } from '@stream-markdown/core'
 export type StreamMarkdownContext = CoreStreamMarkdownContext<
   ControlsConfig,
   PreviewerConfig,
-  ShikiOptions,
-  MermaidOptions,
   HardenOptions,
   CodeOptions,
   ImageOptions,
@@ -44,8 +40,6 @@ type BaseStreamMarkdownProps = CoreStreamMarkdownProps<
   CaretType,
   ControlsConfig,
   PreviewerConfig,
-  ShikiOptions,
-  MermaidOptions,
   HardenOptions,
   CodeOptions,
   ImageOptions,
@@ -62,15 +56,12 @@ export type StreamMarkdownProps = BaseStreamMarkdownProps & {
 export interface StreamMarkdownProvideContext {
   controls?: MaybeRefOrGetter<StreamMarkdownContext['controls']>
   previewers?: MaybeRefOrGetter<StreamMarkdownContext['previewers']>
-  shikiOptions?: MaybeRefOrGetter<StreamMarkdownContext['shikiOptions']>
-  mermaidOptions?: MaybeRefOrGetter<StreamMarkdownContext['mermaidOptions']>
   extensions?: MaybeRefOrGetter<Extensions | undefined>
   hardenOptions?: MaybeRefOrGetter<StreamMarkdownContext['hardenOptions']>
   codeOptions?: MaybeRefOrGetter<StreamMarkdownContext['codeOptions']>
   tableOptions?: MaybeRefOrGetter<TableOptions | undefined>
   imageOptions?: MaybeRefOrGetter<StreamMarkdownContext['imageOptions']>
   linkOptions?: MaybeRefOrGetter<StreamMarkdownContext['linkOptions']>
-  cdnOptions?: MaybeRefOrGetter<StreamMarkdownContext['cdnOptions']>
   mode?: MaybeRefOrGetter<'static' | 'streaming'>
   dir?: MaybeRefOrGetter<StreamMarkdownProps['dir']>
   isDark?: MaybeRefOrGetter<boolean>
@@ -96,15 +87,12 @@ export interface StreamMarkdownResolvedContext {
   dir: ComputedRef<StreamMarkdownProps['dir']>
   controls: ComputedRef<StreamMarkdownContext['controls']>
   previewers: ComputedRef<StreamMarkdownContext['previewers']>
-  shikiOptions: ComputedRef<StreamMarkdownContext['shikiOptions']>
-  mermaidOptions: ComputedRef<StreamMarkdownContext['mermaidOptions']>
   extensions: ComputedRef<Extensions | undefined>
   hardenOptions: ComputedRef<StreamMarkdownContext['hardenOptions']>
   codeOptions: ComputedRef<StreamMarkdownContext['codeOptions']>
   tableOptions: ComputedRef<TableOptions | undefined>
   imageOptions: ComputedRef<StreamMarkdownContext['imageOptions']>
   linkOptions: ComputedRef<StreamMarkdownContext['linkOptions']>
-  cdnOptions: ComputedRef<StreamMarkdownContext['cdnOptions']>
   hideTooltip: ComputedRef<boolean>
   icons: ComputedRef<Partial<Icons>>
   uiComponents: ComputedRef<UIComponents>
