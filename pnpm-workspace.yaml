@@ -13,6 +13,8 @@ allowBuilds:
   esbuild: true
   simple-git-hooks: true
   unrs-resolver: true
+patchedDependencies:
+  comark@0.6.2: patches/comark@0.6.2.patch
 catalogs:
   benchmark:
     '@streamdown/code': ^1.1.1
