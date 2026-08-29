@@ -3,7 +3,7 @@ import type { RenderOptions, ThemeName } from 'beautiful-mermaid'
 
 export type { RenderOptions, ThemeName } from 'beautiful-mermaid'
 
-export interface BeautifulMermaidExtensionOptions<TErrorComponent = unknown> {
+export interface BeautifulMermaidExtensionOptions<TErrorComponent = never> {
   cdnOptions?: MaybeGetter<SharedCdnOptions | undefined>
   config?: MaybeGetter<RenderOptions | undefined>
   errorComponent?: TErrorComponent

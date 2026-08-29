@@ -5,12 +5,12 @@ import type { MathRuntimeOptions } from './types'
 import mathPlugin from 'comark/plugins/math'
 import { createKatexRuntime } from './runtime'
 
-export interface MathExtensionOptions<TErrorComponent = unknown> extends MathRuntimeOptions {
+export interface MathExtensionOptions<TErrorComponent = never> extends MathRuntimeOptions {
   config?: KatexOptions
   errorComponent?: TErrorComponent
 }
 
-export function math<TErrorComponent = unknown>(
+export function math<TErrorComponent = never>(
   options: MathExtensionOptions<TErrorComponent> = {},
 ): MathExtension<ComarkPlugin<any, any>, TErrorComponent> {
   const runtime = createKatexRuntime({

@@ -22,7 +22,7 @@ function extractDiagramType(code: string): string {
   return 'unknown'
 }
 
-export function beautifulMermaid<TErrorComponent = unknown>(
+export function beautifulMermaid<TErrorComponent = never>(
   options: BeautifulMermaidExtensionOptions<TErrorComponent> = {},
 ): MermaidExtension<TErrorComponent> {
   let module: typeof import('beautiful-mermaid') | null = null

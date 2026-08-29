@@ -2,12 +2,12 @@ import type { MermaidExtension } from '@stream-markdown/core'
 import type { MermaidRuntimeOptions } from './types'
 import { createMermaidRuntime } from './runtime'
 
-export interface MermaidExtensionOptions<TErrorComponent = unknown>
+export interface MermaidExtensionOptions<TErrorComponent = never>
   extends Omit<MermaidRuntimeOptions, 'isDark'> {
   errorComponent?: TErrorComponent
 }
 
-export function mermaid<TErrorComponent = unknown>(
+export function mermaid<TErrorComponent = never>(
   options: MermaidExtensionOptions<TErrorComponent> = {},
 ): MermaidExtension<TErrorComponent> {
   let isDark = false
