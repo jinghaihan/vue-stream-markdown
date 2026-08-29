@@ -1,49 +1,47 @@
 // @vitest-environment happy-dom
 import type { Ref } from 'vue'
 import type {
-  MarkdownAstParser,
-  NodeRenderers,
   StreamMarkdownProvideContext,
   TextNode,
 } from 'vue-stream-markdown'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import { defineComponent, h, nextTick, ref } from 'vue'
-import Caret from '../../packages/vue/src/components/caret.vue'
-import TextRenderer from '../../packages/vue/src/components/renderers/text.vue'
+import NodeList from '../../packages/vue/src/components/node-list.vue'
 import { useContext } from '../../packages/vue/src/composables'
 
 function mountText(
   value: string,
   options: {
+    animation?: NonNullable<StreamMarkdownProvideContext['animation']>
     animationSplit?: NonNullable<StreamMarkdownProvideContext['animationSplit']>
     hideCaret?: boolean
     loading?: boolean
     mode?: Ref<'static' | 'streaming'>
   } = {},
 ) {
-  const textRendererProps = {
-    markdownParser: {} as MarkdownAstParser,
-    nodeRenderers: {} as NodeRenderers,
-    node: {
-      type: 'text',
-      value,
-      loading: options.loading,
-    } as TextNode,
-    nodeKey: 'stream-markdown-block-0-text-0',
-    deep: 1,
-    hideCaret: options.hideCaret,
-  }
+  const node = {
+    type: 'text',
+    value,
+    loading: options.loading,
+  } as TextNode
 
   const WrappedTextRenderer = defineComponent({
     setup() {
       const { provideContext } = useContext()
       provideContext({
+        animation: options.animation,
         animationSplit: options.animationSplit,
+        enableCaret: true,
         mode: options.mode,
       })
 
-      return () => h(TextRenderer, textRendererProps)
+      return () => h(NodeList, {
+        nodes: [node],
+        nodeKey: 'stream-markdown-block-0',
+        deep: 1,
+        hideCaret: options.hideCaret,
+      })
     },
   })
 
@@ -51,6 +49,14 @@ function mountText(
 }
 
 describe('text renderer', () => {
+  it('renders static text without a wrapper element', () => {
+    const wrapper = mountText('Static text', { mode: ref('static') })
+
+    expect(wrapper.text()).toBe('Static text')
+    expect(wrapper.find('[data-stream-markdown="text"]').exists()).toBe(false)
+    expect(wrapper.element.nodeType).toBe(Node.TEXT_NODE)
+  })
+
   it('splits animated text into word and whitespace parts', () => {
     const wrapper = mountText('Hello  world')
 
@@ -59,6 +65,24 @@ describe('text renderer', () => {
       'world',
     ])
     expect(wrapper.find('[data-stream-markdown="text-space"]').element.textContent).toBe('  ')
+  })
+
+  it.each(['fade-in', 'blur-in', 'slide-up'] as const)(
+    'uses CSS animation for the built-in %s animation',
+    (animation) => {
+      const wrapper = mountText('Animated text', { animation })
+
+      expect(wrapper.find('transition-group-stub').exists()).toBe(false)
+      expect(wrapper.get('[data-stream-markdown="text-word"]').classes())
+        .toContain(`stream-markdown-text-${animation}`)
+    },
+  )
+
+  it('keeps TransitionGroup support for custom animations', () => {
+    const wrapper = mountText('Animated text', { animation: 'custom-animation' })
+
+    expect(wrapper.get('transition-group-stub').attributes('name'))
+      .toBe('stream-markdown-custom-animation')
   })
 
   it('splits animated text into character and whitespace parts', () => {
@@ -87,8 +111,8 @@ describe('text renderer', () => {
   })
 
   it('does not render the caret when hidden by a parent renderer', () => {
-    expect(mountText('Loading', { loading: true }).findComponent(Caret).exists()).toBe(true)
-    expect(mountText('Loading', { loading: true, hideCaret: true }).findComponent(Caret).exists()).toBe(false)
+    expect(mountText('Loading', { loading: true }).find('[data-stream-markdown="caret"]').exists()).toBe(true)
+    expect(mountText('Loading', { loading: true, hideCaret: true }).find('[data-stream-markdown="caret"]').exists()).toBe(false)
   })
 
   it('inherits text decorations through animated wrappers', () => {

@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import type { ImageNode, MarkdownAstParser, NodeRenderers } from 'vue-stream-markdown'
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import { defineComponent, h } from 'vue'
 import Image from '../../packages/vue/src/components/image.vue'
@@ -68,7 +68,7 @@ describe('image renderer', () => {
 })
 
 describe('image component', () => {
-  it('applies referrerPolicy to inline and preview images', () => {
+  it('mounts the preview lazily and applies referrerPolicy to both images', async () => {
     const WrappedImage = defineComponent({
       setup() {
         const { provideContext } = useContext()
@@ -101,8 +101,14 @@ describe('image component', () => {
     })
 
     const wrapper = mount(WrappedImage)
-    const images = wrapper.findAll('img')
+    expect(wrapper.findAll('img')).toHaveLength(1)
+    expect(wrapper.get('img').attributes('referrerpolicy')).toBe('no-referrer')
 
+    await wrapper.get('img').trigger('load')
+    await wrapper.get('img').trigger('click')
+    await flushPromises()
+
+    const images = wrapper.findAll('img')
     expect(images).toHaveLength(2)
     expect(images.map(image => image.attributes('referrerpolicy'))).toEqual([
       'no-referrer',

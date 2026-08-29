@@ -61,6 +61,7 @@ const { installed: hasMermaid, saveMermaid } = useMermaid({
 
 const collapsed = ref<boolean>(false)
 const fullscreen = ref<boolean>(false)
+const modalMounted = ref<boolean>(false)
 const mode = ref<'preview' | 'source'>('source')
 const scrollRef = ref<HTMLElement>()
 
@@ -189,6 +190,9 @@ async function handleControlClick(key: string, item?: SelectOption) {
     saveMermaid: (format, code, filename) => saveMermaid(format, code, undefined, filename),
   })
 
+  if (state.fullscreen)
+    modalMounted.value = true
+
   collapsed.value = state.collapsed
   fullscreen.value = state.fullscreen
 }
@@ -276,6 +280,7 @@ async function handleControlClick(key: string, item?: SelectOption) {
 
     <component
       :is="UI.Modal"
+      v-if="modalMounted"
       v-model:open="fullscreen"
       :aria-label="modalLabel"
       :title-id="modalTitleId"

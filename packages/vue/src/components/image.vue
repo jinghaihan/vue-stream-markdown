@@ -40,6 +40,7 @@ const { resolveControls } = useControls({
 const loaded = ref<boolean>(false)
 
 const open = ref<boolean>(false)
+const modalMounted = ref<boolean>(false)
 const scaleX = ref<number>(1)
 const scaleY = ref<number>(1)
 const rotate = ref<number>(0)
@@ -59,7 +60,10 @@ const {
   zoomOut,
 } = useMediumZoom({
   margin,
-  open: () => open.value = true,
+  open: () => {
+    modalMounted.value = true
+    open.value = true
+  },
   close: () => open.value = false,
 })
 
@@ -191,6 +195,7 @@ watch(open, (data) => {
 
   <component
     :is="UI.Modal"
+    v-if="modalMounted"
     v-model:open="open"
     :aria-label="modalLabel"
     transition=""

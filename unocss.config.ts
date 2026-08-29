@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url'
 import {
   defineConfig,
   presetAttributify,
@@ -10,6 +11,17 @@ import {
 } from 'unocss'
 
 export default defineConfig({
+  content: {
+    filesystem: [
+      fileURLToPath(new URL('./packages/vue/src/components/renderers/**/*.ts', import.meta.url)),
+    ],
+    pipeline: {
+      include: [
+        /\.(vue|svelte|[jt]sx|vine\.ts|mdx?|astro|elm|php|phtml|marko|html)($|\?)/,
+        /packages\/vue\/src\/components\/renderers\/.*\.ts$/,
+      ],
+    },
+  },
   theme: {
     colors: {
       'background': 'var(--background)',

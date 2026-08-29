@@ -1,4 +1,3 @@
-import type { Processor } from 'unified'
 import type { SyntaxTree } from '../packages/markmend/ast/src'
 import { Buffer } from 'node:buffer'
 import { createMarkdownParser } from 'comark'
@@ -7,7 +6,7 @@ import remarkParse from 'remark-parse'
 import remend from 'remend'
 import { parseMarkdownIntoBlocks as parseStreamdownBlocks } from 'streamdown'
 import { unified } from 'unified'
-import { bench, describe } from 'vitest'
+import { afterAll, bench, describe } from 'vitest'
 import { MarkdownAstParser, postFixFootnote } from '../packages/markmend/ast/src'
 import {
   MarkdownProcessor,
@@ -24,6 +23,12 @@ interface ParserBenchmarkImplementation {
 
 const standardOptions = { iterations: 100 }
 const largeOptions = { iterations: 20 }
+let benchmarkResult: unknown
+
+afterAll(() => {
+  if (benchmarkResult === undefined)
+    throw new Error('Parser benchmarks did not produce a result')
+})
 
 interface PositionableNode {
   children?: PositionableNode[]
@@ -60,14 +65,16 @@ function createDeletePositionParser(): MarkdownAstParser {
   })
 }
 
-function createStreamdownProcessor(): Processor {
+function createStreamdownProcessor() {
   return unified()
     .use(remarkParse)
     .use(remarkGfm)
     .freeze()
 }
 
-function parseStreamdownBlock(processor: Processor, content: string): number {
+type StreamdownProcessor = ReturnType<typeof createStreamdownProcessor>
+
+function parseStreamdownBlock(processor: StreamdownProcessor, content: string): number {
   const tree = processor.runSync(processor.parse(content), content) as {
     children?: unknown[]
   }
@@ -183,7 +190,9 @@ function benchmarkColdParse(
     for (const implementation of implementations) {
       bench(
         implementation.name,
-        async () => implementation.coldParse(input),
+        async () => {
+          benchmarkResult = await implementation.coldParse(input)
+        },
         options,
       )
     }
@@ -199,7 +208,9 @@ function benchmarkStreamingSession(
     for (const implementation of implementations) {
       bench(
         implementation.name,
-        async () => implementation.runStreamingSession(inputs),
+        async () => {
+          benchmarkResult = await implementation.runStreamingSession(inputs)
+        },
         options,
       )
     }
@@ -265,14 +276,14 @@ function benchmarkMarkmendPipeline(
       let checksum = 0
       for (const input of inputs)
         checksum += processor.normalize(input).length
-      return checksum
+      benchmarkResult = checksum
     }, options)
 
     bench('block segmentation', () => {
       let checksum = 0
       for (const input of normalizedInputs)
         checksum += processor.parseMarkdownIntoBlocks(input).length
-      return checksum
+      benchmarkResult = checksum
     }, options)
 
     bench('tail completion', () => {
@@ -282,7 +293,7 @@ function benchmarkMarkmendPipeline(
         if (tail)
           checksum += processor.preprocess(tail, { singleDollarTextMath: false }).length
       }
-      return checksum
+      benchmarkResult = checksum
     }, options)
 
     bench('ast conversion on cache misses', () => {
@@ -291,7 +302,7 @@ function benchmarkMarkmendPipeline(
       for (const content of astMissContents)
         checksum += parser.markdownToAst(content).children.length
 
-      return checksum
+      benchmarkResult = checksum
     }, options)
 
     bench('ast conversion deleting positions', () => {
@@ -300,7 +311,7 @@ function benchmarkMarkmendPipeline(
       for (const content of astMissContents)
         checksum += parser.markdownToAst(content).children.length
 
-      return checksum
+      benchmarkResult = checksum
     }, options)
 
     bench('ast conversion copying without positions', () => {
@@ -309,7 +320,7 @@ function benchmarkMarkmendPipeline(
       for (const content of astMissContents)
         checksum += parser.markdownToAst(content).children.length
 
-      return checksum
+      benchmarkResult = checksum
     }, options)
 
     bench('pipeline excluding AST conversion', () => {
@@ -320,7 +331,7 @@ function benchmarkMarkmendPipeline(
       let checksum = 0
       for (const input of inputs)
         checksum += parser.parseMarkdown(input).asts.length
-      return checksum
+      benchmarkResult = checksum
     }, options)
 
     bench('full parser session', () => {
@@ -330,7 +341,7 @@ function benchmarkMarkmendPipeline(
         const result = parser.parseMarkdown(input)
         checksum += result.asts.length
       }
-      return checksum
+      benchmarkResult = checksum
     }, options)
 
     bench('full parser session deleting positions', () => {
@@ -340,7 +351,7 @@ function benchmarkMarkmendPipeline(
         const result = parser.parseMarkdown(input)
         checksum += result.asts.length
       }
-      return checksum
+      benchmarkResult = checksum
     }, options)
 
     bench('full parser session copying without positions', () => {
@@ -350,7 +361,7 @@ function benchmarkMarkmendPipeline(
         const result = parser.parseMarkdown(input)
         checksum += result.asts.length
       }
-      return checksum
+      benchmarkResult = checksum
     }, options)
   })
 }
@@ -433,6 +444,10 @@ const growingParagraph = createGrowingInputs(
   'A single paragraph with **bold text**, *emphasis*, links, and inline code. '.repeat(12),
   48,
 )
+const tokenSizedGrowingParagraph = createGrowingInputs(
+  'A single paragraph with **bold text**, *emphasis*, links, and inline code. '.repeat(12),
+  8,
+)
 const stablePrefix = `${createDocument(64)}\n\n## Live response\n\n`
 const stablePrefixInputs = createGrowingInputs(
   'The model is generating **one changing tail block** while every earlier block remains stable. '.repeat(8),
@@ -446,11 +461,13 @@ assertEquivalentSemanticBlocks('short document', [shortDocument])
 assertEquivalentSemanticBlocks('medium document', [mediumDocument])
 assertEquivalentSemanticBlocks('large document', [largeDocument])
 assertEquivalentSemanticBlocks('growing single paragraph', growingParagraph)
+assertEquivalentSemanticBlocks('token-sized growing paragraph', tokenSizedGrowingParagraph)
 assertEquivalentSemanticBlocks('large stable prefix with growing tail', stablePrefixInputs)
 assertEquivalentSemanticBlocks('appending complete blocks', appendingBlockInputs)
 assertEquivalentSemanticBlocks('editing a middle block', middleEditInputs)
 
 benchmarkStreamingSession('growing single paragraph', growingParagraph)
+benchmarkStreamingSession('token-sized growing paragraph', tokenSizedGrowingParagraph)
 benchmarkStreamingSession('large stable prefix with growing tail', stablePrefixInputs, largeOptions)
 benchmarkStreamingSession('appending complete blocks', appendingBlockInputs)
 benchmarkStreamingSession('editing a middle block', middleEditInputs, largeOptions)

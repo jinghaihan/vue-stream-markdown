@@ -1,11 +1,11 @@
 // @vitest-environment happy-dom
+import type { NodeRendererProps } from 'vue-stream-markdown'
 import { flushPromises, mount, shallowMount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, markRaw, nextTick, onMounted, onUnmounted } from 'vue'
+import NodeList from '../../packages/vue/src/components/node-list.vue'
 import LinkRenderer from '../../packages/vue/src/components/renderers/link.vue'
-import ParagraphRenderer from '../../packages/vue/src/components/renderers/paragraph.vue'
 import TableRenderer from '../../packages/vue/src/components/renderers/table.vue'
-import TextRenderer from '../../packages/vue/src/components/renderers/text.vue'
 import Markdown from '../../packages/vue/src/index.vue'
 
 // These tests exercise Markdown processing, not background UI component loading.
@@ -18,7 +18,7 @@ interface MarkdownTestVm {
 }
 
 interface MarkdownTestWrapper {
-  setProps: (props: { mode: 'static' | 'streaming' }) => Promise<void>
+  setProps: (props: { content?: string, mode?: 'static' | 'streaming' }) => Promise<void>
 }
 
 interface TableRendererVm {
@@ -26,6 +26,62 @@ interface TableRendererVm {
 }
 
 describe('stream markdown', () => {
+  it('does not mount node lists for empty streaming blocks', () => {
+    const wrapper = mount(Markdown, {
+      props: {
+        content: '# Heading\n\nParagraph',
+        enableAnimate: false,
+        mode: 'streaming',
+      },
+    })
+    expect(wrapper.findAllComponents(NodeList)).toHaveLength(2)
+    wrapper.unmount()
+  })
+
+  it('passes siblings across empty streaming blocks', async () => {
+    let nextNode: NodeRendererProps['nextNode']
+    const Heading = defineComponent({
+      props: ['nextNode'],
+      setup(props) {
+        return () => {
+          nextNode = props.nextNode as NodeRendererProps['nextNode']
+          return h('h1', 'Heading')
+        }
+      },
+    })
+    const wrapper = mount(Markdown, {
+      props: {
+        content: '# Heading\n\nParagraph',
+        enableAnimate: false,
+        mode: 'streaming',
+        nodeRenderers: { heading: Heading },
+      },
+    })
+    const testWrapper = wrapper as unknown as MarkdownTestWrapper
+
+    expect(nextNode?.type).toBe('paragraph')
+    const initialNextNode = nextNode
+
+    await testWrapper.setProps({ content: '# Heading\n\nParagraph grows' })
+
+    expect(nextNode?.type).toBe('paragraph')
+    expect(nextNode).not.toBe(initialNextNode)
+    wrapper.unmount()
+  })
+
+  it('preserves built-in sibling layout across streaming blocks', () => {
+    const wrapper = mount(Markdown, {
+      props: {
+        content: 'Paragraph\n\n- Item',
+        enableAnimate: false,
+        mode: 'streaming',
+      },
+    })
+
+    expect(wrapper.get('p').element.style.marginBottom).toBe('0.5rem')
+    wrapper.unmount()
+  })
+
   it('preserves bare formatting markers when configured', () => {
     const wrapper = shallowMount(Markdown, {
       props: {
@@ -101,8 +157,6 @@ describe('stream markdown', () => {
         mode: 'streaming',
         nodeRenderers: {
           link: markRaw(LinkRenderer),
-          paragraph: markRaw(ParagraphRenderer),
-          text: markRaw(TextRenderer),
         },
       },
     })
@@ -128,7 +182,6 @@ describe('stream markdown', () => {
         controls: false,
         nodeRenderers: {
           table: markRaw(TableRenderer),
-          text: markRaw(TextRenderer),
         },
       },
     })

@@ -47,7 +47,7 @@ export function fixStrong(
   content: string,
   options?: PreprocessContext,
 ): string {
-  if (!content.includes('*') && !content.includes('_'))
+  if (!content.includes('**') && !content.includes('__'))
     return content
 
   let analysis = getPreprocessAnalysis(content, options)

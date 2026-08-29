@@ -335,6 +335,37 @@ describe('markdown-parser', () => {
     expect(omitFalseLoading(result)).toEqual(omitFalseLoading(freshResult))
   })
 
+  it.each([
+    'A plain response continues one token at a time.',
+    'Text with **bold**, *emphasis*, and ~~deleted text~~.',
+    'Visit www.example.com or https://example.com/docs.',
+    'www.example.com continues after the autolink.',
+    'See (www.example.com) for details.',
+    'Contact person@example.com for details.',
+    'user@example.com continues after the autolink.',
+    '1. ordered item',
+    '1) alternate ordered item',
+    '- unordered item',
+    '+ alternate unordered item',
+    '# heading text',
+    '> quoted text',
+    '---',
+    'An &amp; entity remains correct.',
+    '中文*测试*与_强调_继续输出。',
+    '```ts\nconst value = `text`;\n\nconst next = value;',
+  ])('should match fresh parsing at every prefix of %j', (document) => {
+    const parser = new MarkdownAstParser({ mode: 'streaming' })
+
+    for (let end = 1; end <= document.length; end++) {
+      const content = document.slice(0, end)
+      const result = parser.parseMarkdown(content)
+      const freshResult = new MarkdownAstParser({ mode: 'streaming' })
+        .parseMarkdown(content)
+
+      expect(omitFalseLoading(result)).toEqual(omitFalseLoading(freshResult))
+    }
+  })
+
   it('should match fresh parsing across arbitrary streaming chunk boundaries', () => {
     const document = [
       '# Streaming document',
@@ -375,6 +406,123 @@ describe('markdown-parser', () => {
 
       expect(omitFalseLoading(result)).toEqual(omitFalseLoading(freshResult))
     }
+  })
+
+  it('should reuse unchanged inline nodes for safe text appends', () => {
+    const parser = new MarkdownAstParser({ mode: 'streaming' })
+    const initial = parser.parseMarkdown('A **stable** phrase')
+    const stableStrong = initial.asts[0]?.children[0]?.type === 'paragraph'
+      ? initial.asts[0].children[0].children[1]
+      : undefined
+
+    const result = parser.parseMarkdown('A **stable** phrase continues')
+    const freshResult = new MarkdownAstParser({ mode: 'streaming' })
+      .parseMarkdown('A **stable** phrase continues')
+    const paragraph = result.asts[0]?.children[0]
+
+    expect(paragraph?.type).toBe('paragraph')
+    expect(paragraph?.type === 'paragraph' ? paragraph.children[1] : undefined)
+      .toBe(stableStrong)
+    expect(omitFalseLoading(result)).toEqual(omitFalseLoading(freshResult))
+  })
+
+  it('should reuse an unterminated formatting tail for safe text appends', () => {
+    const parser = new MarkdownAstParser({ mode: 'streaming' })
+    parser.parseMarkdown('A **growing')
+
+    const result = parser.parseMarkdown('A **growing phrase')
+    const freshResult = new MarkdownAstParser({ mode: 'streaming' })
+      .parseMarkdown('A **growing phrase')
+
+    expect(omitFalseLoading(result)).toEqual(omitFalseLoading(freshResult))
+  })
+
+  it('should append to an unterminated fenced code AST without reparsing', () => {
+    const parser = new MarkdownAstParser({ mode: 'streaming' })
+    parser.parseMarkdown('```ts\nconst value = 1;')
+    const markdownToAst = vi.spyOn(parser, 'markdownToAst')
+
+    const content = '```ts\nconst value = 1;\nconst next = value + 1;'
+    const result = parser.parseMarkdown(content)
+    const freshResult = new MarkdownAstParser({ mode: 'streaming' })
+      .parseMarkdown(content)
+
+    expect(markdownToAst).not.toHaveBeenCalled()
+    expect(omitFalseLoading(result)).toEqual(omitFalseLoading(freshResult))
+  })
+
+  it('should reuse the completed AST when the real closing fence arrives', () => {
+    const parser = new MarkdownAstParser({ mode: 'streaming' })
+    parser.parseMarkdown('```ts\nconst value = 1;')
+    const markdownToAst = vi.spyOn(parser, 'markdownToAst')
+
+    const content = '```ts\nconst value = 1;\n```'
+    const result = parser.parseMarkdown(content)
+    const freshResult = new MarkdownAstParser({ mode: 'streaming' })
+      .parseMarkdown(content)
+
+    expect(markdownToAst).not.toHaveBeenCalled()
+    expect(omitFalseLoading(result)).toEqual(omitFalseLoading(freshResult))
+  })
+
+  it('should reparse indented fenced code blocks', () => {
+    const parser = new MarkdownAstParser({ mode: 'streaming' })
+    parser.parseMarkdown('  ```ts\n  const value = 1;')
+    const markdownToAst = vi.spyOn(parser, 'markdownToAst')
+
+    const content = '  ```ts\n  const value = 1;\n  const next = value + 1;'
+    const result = parser.parseMarkdown(content)
+    const freshResult = new MarkdownAstParser({ mode: 'streaming' })
+      .parseMarkdown(content)
+
+    expect(markdownToAst).toHaveBeenCalledOnce()
+    expect(omitFalseLoading(result)).toEqual(omitFalseLoading(freshResult))
+  })
+
+  it('should fall back when appending after a completed inline node', () => {
+    const parser = new MarkdownAstParser({ mode: 'streaming' })
+    parser.parseMarkdown('[link](https://example.com)')
+
+    const result = parser.parseMarkdown('[link](https://example.com) text')
+    const freshResult = new MarkdownAstParser({ mode: 'streaming' })
+      .parseMarkdown('[link](https://example.com) text')
+
+    expect(omitFalseLoading(result)).toEqual(omitFalseLoading(freshResult))
+  })
+
+  it.each([
+    ['GFM autolink', 'Visit www.', 'Visit www.example.com'],
+    ['email autolink', 'Contact person@', 'Contact person@example.com'],
+    ['ordered list', '1', '1. item'],
+    ['ordered list with a closing parenthesis', '1', '1) item'],
+    ['unordered list', '-', '- item'],
+    ['unordered list with a plus marker', '+', '+ item'],
+    ['heading', '#', '# title'],
+    ['blockquote', '>', '> quote'],
+    ['thematic break', '--', '---'],
+  ])('should fall back when an append creates a %s', (_, initial, updated) => {
+    const parser = new MarkdownAstParser({ mode: 'streaming' })
+    parser.parseMarkdown(initial)
+
+    const result = parser.parseMarkdown(updated)
+    const freshResult = new MarkdownAstParser({ mode: 'streaming' })
+      .parseMarkdown(updated)
+
+    expect(omitFalseLoading(result)).toEqual(omitFalseLoading(freshResult))
+  })
+
+  it('should preserve custom AST lifecycle hooks while appending text', () => {
+    const postprocess = vi.fn((tree: SyntaxTree) => tree)
+    const parser = new MarkdownAstParser({
+      mode: 'streaming',
+      postprocess,
+    })
+
+    parser.parseMarkdown('Growing text')
+    postprocess.mockClear()
+    parser.parseMarkdown('Growing text continues')
+
+    expect(postprocess).toHaveBeenCalledOnce()
   })
 
   it.each([

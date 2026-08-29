@@ -1,30 +1,23 @@
 // @vitest-environment happy-dom
-import type { Component } from 'vue'
 import type {
-  MarkdownAstParser,
-  NodeRenderers,
   ParsedNode,
   StreamMarkdownProps,
 } from 'vue-stream-markdown'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import { defineComponent, h } from 'vue'
-import Heading from '../../packages/vue/src/components/renderers/heading.vue'
-import InlineCode from '../../packages/vue/src/components/renderers/inline-code.vue'
-import Paragraph from '../../packages/vue/src/components/renderers/paragraph.vue'
+import NodeList from '../../packages/vue/src/components/node-list.vue'
 import Table from '../../packages/vue/src/components/table.vue'
 import { useContext } from '../../packages/vue/src/composables'
 
-function mountRenderer(component: Component, node: ParsedNode, dir: StreamMarkdownProps['dir']) {
+function mountRenderer(node: ParsedNode, dir: StreamMarkdownProps['dir']) {
   const WrappedRenderer = defineComponent({
     setup() {
       const { provideContext } = useContext()
-      provideContext({ dir })
+      provideContext({ dir, mode: 'static' })
 
-      return () => h(component, {
-        markdownParser: {} as MarkdownAstParser,
-        nodeRenderers: {} as NodeRenderers,
-        node,
+      return () => h(NodeList, {
+        nodes: [node],
         nodeKey: `test-${node.type}`,
         deep: 0,
       })
@@ -36,16 +29,16 @@ function mountRenderer(component: Component, node: ParsedNode, dir: StreamMarkdo
 
 describe('text direction', () => {
   it('detects direction independently for semantic blocks', () => {
-    const heading = mountRenderer(Heading, {
+    const heading = mountRenderer({
       type: 'heading',
       depth: 1,
       children: [{ type: 'text', value: 'שלום עולם' }],
     } as ParsedNode, 'auto')
-    const englishParagraph = mountRenderer(Paragraph, {
+    const englishParagraph = mountRenderer({
       type: 'paragraph',
       children: [{ type: 'text', value: 'English paragraph.' }],
     } as ParsedNode, 'auto')
-    const persianParagraph = mountRenderer(Paragraph, {
+    const persianParagraph = mountRenderer({
       type: 'paragraph',
       children: [{ type: 'text', value: 'React یک کتابخانه جاوااسکریپت بسیار محبوب است.' }],
     } as ParsedNode, 'auto')
@@ -56,11 +49,11 @@ describe('text direction', () => {
   })
 
   it('forces a document direction while keeping code left-to-right', () => {
-    const paragraph = mountRenderer(Paragraph, {
+    const paragraph = mountRenderer({
       type: 'paragraph',
       children: [{ type: 'text', value: 'English paragraph.' }],
     } as ParsedNode, 'rtl')
-    const code = mountRenderer(InlineCode, {
+    const code = mountRenderer({
       type: 'inlineCode',
       value: 'const answer = 42',
     } as ParsedNode, 'rtl')

@@ -16,9 +16,21 @@ import { UI as DEFAULT_UI } from '../components'
 import { ICONS as DEFAULT_ICONS } from '../components/icons'
 
 const CONTEXT_KEY = Symbol('stream-markdown-context')
+const resolvedContextCache = new WeakMap<StreamMarkdownProvideContext, StreamMarkdownResolvedContext>()
 
 export function useContext(): StreamMarkdownResolvedContext {
-  const context = injectContext()
+  return resolveContext(injectContext())
+}
+
+function injectContext(): StreamMarkdownProvideContext {
+  const context = inject<StreamMarkdownProvideContext>(CONTEXT_KEY, {})
+  return context || {}
+}
+
+function resolveContext(context: StreamMarkdownProvideContext): StreamMarkdownResolvedContext {
+  const cached = resolvedContextCache.get(context)
+  if (cached)
+    return cached
 
   const mode = computed(() => toValue(context.mode) ?? 'streaming')
   const dir = computed(() => toValue(context.dir))
@@ -52,17 +64,13 @@ export function useContext(): StreamMarkdownResolvedContext {
   const parsedNodes = computed(() => toValue(context.parsedNodes) ?? [])
   const blocks = computed(() => toValue(context.blocks) ?? [])
 
-  function provideContext(ctx: Partial<StreamMarkdownProvideContext>) {
-    const context = injectContext()
-    provide(CONTEXT_KEY, { ...context, ...ctx })
+  function provideContext(overrides: Partial<StreamMarkdownProvideContext>) {
+    const providedContext = { ...context, ...overrides }
+    resolveContext(providedContext)
+    provide(CONTEXT_KEY, providedContext)
   }
 
-  function injectContext(): StreamMarkdownProvideContext {
-    const ctx = inject<StreamMarkdownProvideContext>(CONTEXT_KEY, {})
-    return ctx || {}
-  }
-
-  return {
+  const resolvedContext: StreamMarkdownResolvedContext = {
     context,
     provideContext,
     injectContext,
@@ -104,4 +112,7 @@ export function useContext(): StreamMarkdownResolvedContext {
       return context.onCopied || (() => {})
     },
   }
+
+  resolvedContextCache.set(context, resolvedContext)
+  return resolvedContext
 }

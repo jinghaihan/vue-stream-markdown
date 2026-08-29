@@ -6,6 +6,7 @@ import type {
   NodeRenderers,
   ParsedNode,
   StreamMarkdownProps,
+  SyntaxTree,
   UIComponents,
 } from './types'
 import {
@@ -19,7 +20,7 @@ import {
   resolvePreloadNodeRenderers,
 } from '@stream-markdown/core'
 import { computed, onBeforeUnmount, onMounted, ref, toRefs, watch } from 'vue'
-import { NODE_RENDERERS, UI } from './components'
+import { COMPONENT_RENDERERS, UI } from './components'
 import { ICONS } from './components/icons'
 import NodeList from './components/node-list.vue'
 import {
@@ -51,6 +52,8 @@ const props = withDefaults(defineProps<StreamMarkdownProps>(), {
 const emits = defineEmits<{
   (e: 'copied', content: string): void
 }>()
+
+const EMPTY_BLOCKS: SyntaxTree[] = []
 
 const {
   controls,
@@ -114,11 +117,45 @@ const processed = computed(() => {
 const blocks = computed(() => processed.value.blocks)
 const parsedNodes = computed(() => processed.value.parsedNodes)
 const processedContent = computed(() => processed.value.processedContent)
+const renderableBlocks = computed(() => {
+  const result: Array<{
+    block: SyntaxTree
+    index: number
+    nextNode?: ParsedNode
+    nextNodeType?: string
+    prevNode?: ParsedNode
+    prevNodeType?: string
+  }> = []
+  let prevNode: ParsedNode | undefined
+
+  blocks.value.forEach((block, index) => {
+    if (!block.children.length)
+      return
+
+    const previous = result.at(-1)
+    const firstNode = block.children[0]!
+    if (previous) {
+      previous.nextNodeType = firstNode.type
+      const previousLastNode = previous.block.children.at(-1)!
+      if (props.nodeRenderers[previousLastNode.type as keyof NodeRenderers])
+        previous.nextNode = firstNode
+    }
+    result.push({
+      block,
+      index,
+      prevNode: props.nodeRenderers[firstNode.type as keyof NodeRenderers] ? prevNode : undefined,
+      prevNodeType: prevNode?.type,
+    })
+    prevNode = block.children.at(-1)
+  })
+
+  return result
+})
 
 const rootStyle = computed(() => createRootStyle(cssVariables.value, props.animationDuration))
 
 const nodeRenderers = computed((): NodeRenderers => ({
-  ...NODE_RENDERERS,
+  ...COMPONENT_RENDERERS,
   ...props.nodeRenderers,
 }))
 
@@ -224,13 +261,18 @@ defineExpose<StreamMarkdownExpose>({
     :dir="dir === 'auto' ? undefined : dir"
     :style="rootStyle"
   >
-    <template v-for="(block, index) in blocks" :key="index">
-      <NodeList
-        :nodes="block.children"
-        :block-index="index"
-        :node-key="`stream-markdown-block-${index}`"
-        :deep="0"
-      />
-    </template>
+    <NodeList
+      v-for="({ block, index, nextNode, nextNodeType, prevNode, prevNodeType }) in renderableBlocks"
+      :key="index"
+      :blocks="EMPTY_BLOCKS"
+      :nodes="block.children"
+      :block-index="index"
+      :node-key="`stream-markdown-block-${index}`"
+      :deep="0"
+      :prev-node="prevNode"
+      :prev-node-type="prevNodeType"
+      :next-node="nextNode"
+      :next-node-type="nextNodeType"
+    />
   </div>
 </template>
