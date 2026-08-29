@@ -23,19 +23,19 @@ If you encounter any problems, please follow these steps:
    - Use the **Generate Share Links** button in the playground to create a shareable link with your current content
    - This link contains all the necessary information to reproduce the issue
 
-2. **Enable AST Result**
-   - Enable the **AST Result** toggle to view the parsed AST syntax tree
+2. **Enable Document Result**
+   - Enable the **Document Result** toggle to view the current Comark document
    - This helps understand how the markdown is being parsed
 
 3. **Collect Information**
    - Copy the markdown content at the time of the issue
-   - Copy the AST syntax tree displayed in the playground
+   - Copy the Comark document displayed in the playground
    - Note any error messages or unexpected behavior
 
 4. **Create the Issue**
    - Provide the shareable link from step 1
    - Include the markdown content from step 3
-   - Include the AST syntax tree from step 3
+   - Include the Comark document from step 3
    - Describe the expected behavior vs. actual behavior
    - Include steps to reproduce if applicable
 
@@ -45,7 +45,7 @@ When creating an issue, please provide:
 
 - **Shareable link** - Generated from the playground
 - **Markdown content** - The markdown text that causes the issue
-- **AST syntax tree** - The parsed AST structure (from AST Result toggle)
+- **Comark document** - The parsed document tuples (from the Document Result toggle)
 - **Description** - Clear description of the problem
 - **Expected behavior** - What you expected to happen
 - **Actual behavior** - What actually happened

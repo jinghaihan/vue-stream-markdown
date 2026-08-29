@@ -302,20 +302,20 @@ const previewers: PreviewerConfig = {
 </template>
 ```
 
-When using a custom component, it will receive `CodeNodeRendererProps` (including code block node data). For context configuration such as Mermaid options and dark mode state, use `useContext()` inside your previewer component.
+When using a custom component, it receives `CodeBlockProps` (including code block data). For context configuration such as Mermaid options and dark mode state, use `useContext()` inside your previewer component.
 
 ## Custom Previewers for Other Languages
 
 For languages other than `html` and `mermaid`, you must provide a custom `Component` (boolean values are not accepted since there are no built-in previewers for these languages).
 
-The previewer component will receive `CodeNodeRendererProps`, which includes the code block node data (`props.node.value` for code content, `props.node.loading` for loading state). If progressive rendering is enabled, handle `props.node.loading` to show appropriate loading states.
+The previewer component receives `CodeBlockProps`, which includes code block data (`props.node.value` for code content and `props.node.loading` for loading state). If progressive rendering is enabled, handle `props.node.loading` to show appropriate loading states.
 
 ```vue
 <!-- JavaScriptPreviewer.vue -->
 <script setup lang="ts">
-import type { CodeNodeRendererProps } from 'vue-stream-markdown'
+import type { CodeBlockProps } from 'vue-stream-markdown'
 
-const props = defineProps<CodeNodeRendererProps>()
+const props = defineProps<CodeBlockProps>()
 </script>
 
 <template>

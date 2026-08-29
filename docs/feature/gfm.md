@@ -73,7 +73,7 @@ Check out github.com/vercel/streamdown
 
 # GitHub Flavored Markdown
 
-vue-stream-markdown includes full support for GitHub Flavored Markdown (GFM) through [mdast-util-gfm](https://github.com/syntax-tree/mdast-util-gfm). This extends standard Markdown with powerful features commonly used on GitHub and other modern Markdown platforms.
+Vue Stream Markdown parses GitHub Flavored Markdown through Comark, including tables, task lists, autolinks, and strikethrough.
 
 ## Tables
 

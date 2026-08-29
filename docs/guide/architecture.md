@@ -1,61 +1,40 @@
 ---
 title: Architecture
-description: Overview of key dependencies and libraries including mdast, Shiki, Mermaid, and KaTeX that power vue-stream-markdown.
+description: How Comark, Markmend, and Vue cooperate during streaming Markdown rendering.
 ---
 
 # Architecture
 
-This document serves to acknowledge and document the key dependencies and libraries that have been instrumental in building **vue-stream-markdown**. Special thanks to the teams and maintainers behind these projects for their excellent work and contributions to the open-source community.
+Vue Stream Markdown separates syntax completion, incremental parsing, and Vue rendering so each layer can stay focused.
 
-## Core Dependencies
+## Rendering pipeline
 
-### AST Transformation: mdast & mdast-util
+1. The component receives the complete Markdown source on every update.
+2. A long-lived [Comark](https://github.com/comarkdown/comark) parser reuses the stable source prefix and isolates the changed tail.
+3. While `mode="streaming"`, Comark calls the Markmend completion function for that unstable tail.
+4. Comark plugins apply security, footnote, math, and user-defined transformations.
+5. The compact Comark `MarkdownDocument` is rendered directly to Vue VNodes. There is no compatibility-tree conversion.
 
-The [mdast](https://github.com/syntax-tree/mdast) (Markdown Abstract Syntax Tree) ecosystem provides the foundation for parsing and transforming Markdown content into a structured tree format. This AST-based approach enables fine-grained rendering control and optimizations for streaming scenarios where content arrives incrementally.
+Parser calls are serialized in source order. If parsing one update fails, the renderer keeps the last successfully parsed document instead of replacing the UI with an error state.
 
-**Key packages:**
+## Custom tags
 
-- `mdast-util-from-markdown` - Converts Markdown text into mdast syntax trees
-- `mdast-util-to-markdown` - Converts mdast syntax trees back to Markdown text
-- `mdast-util-gfm` - Adds GitHub Flavored Markdown support
-- `mdast-util-math` - Handles mathematical expressions in the AST
-- `mdast-util-frontmatter` - Processes YAML frontmatter
+Comark represents native HTML and custom syntax with the same compact element tuples. The public `components` prop maps these tag names directly to Vue components, so custom HTML does not require a separate HTML parser or sanitizer package.
 
-### Syntax Completion: Internal Implementation
+## Complex renderers
 
-This project implements syntax completion functionality internally, inspired by [remend](https://github.com/vercel/streamdown/tree/main/packages/remend) from the [streamdown](https://streamdown.ai/) project. It intelligently parses and completes incomplete Markdown syntax blocks, automatically detecting and completing unterminated syntax to provide the foundation for streaming-friendly Markdown parsing.
+Simple semantic elements are rendered synchronously as VNodes. Code blocks and math remain specialized components because they coordinate optional runtimes and stateful UI:
 
-### Complex Rendering Libraries
+- [Shiki](https://shiki.style/) provides syntax highlighting.
+- [Mermaid](https://mermaid.js.org/) and [beautiful-mermaid](https://github.com/lukilabs/beautiful-mermaid) render diagrams.
+- [KaTeX](https://katex.org/) renders mathematical expressions.
 
-#### Shiki - Code Syntax Highlighting
-
-[Shiki](https://shiki.style/) provides beautiful syntax highlighting for code blocks using TextMate grammars. Shiki's `codeToTokens` API enables token-level incremental rendering, reducing DOM recreation overhead and providing better rendering update control for streaming scenarios.
-
-#### Mermaid - Diagram Rendering
-
-[Mermaid](https://mermaid.js.org/) enables the rendering of various types of diagrams (flowcharts, sequence diagrams, state diagrams, etc.) from text-based definitions. It provides progressive diagram rendering with throttling support, making it suitable for streaming-friendly updates.
-
-#### KaTeX - Mathematical Expression Rendering
-
-[KaTeX](https://katex.org/) is a fast, self-contained library for rendering LaTeX mathematical expressions in the browser. It supports progressive rendering through throttling, making it well-suited for streaming scenarios.
-
-## Architecture Flow
-
-The rendering pipeline follows this general flow:
-
-1. **Preprocessing** - Custom syntax completion functions handle incomplete syntax
-2. **Parsing** - `mdast-util-from-markdown` converts Markdown to AST
-3. **Postprocessing** - AST is processed and optimized for streaming
-4. **Rendering** - Vue components render each AST node type:
-   - Specialized renderers for code (Shiki), diagrams (Mermaid), math (KaTeX)
+These optional runtimes are loaded only when their features are used.
 
 ## Acknowledgments
 
 Special thanks to:
 
-- The [**mdast**](https://github.com/syntax-tree/mdast) ecosystem maintainers for providing a robust AST foundation
-- The [**streamdown**](https://streamdown.ai/) team and [**remend**](https://github.com/vercel/streamdown/tree/main/packages/remend) contributors for the foundational ideas that inspired this project's syntax completion implementation
-- The [**Shiki**](https://shiki.style/) team for excellent syntax highlighting with streaming-friendly APIs
-- The [**Mermaid**](https://mermaid.js.org/) team for comprehensive diagram rendering capabilities
-- The [**KaTeX**](https://katex.org/) team for fast and reliable math rendering
-- All the maintainers and contributors of the dependencies that make this project possible
+- [Comark](https://github.com/comarkdown/comark) for its compact document model and stateful incremental parser.
+- [Streamdown](https://streamdown.ai/) and [Remend](https://github.com/vercel/streamdown/tree/main/packages/remend) for foundational streaming Markdown ideas.
+- The Shiki, Mermaid, beautiful-mermaid, and KaTeX maintainers for the complex rendering runtimes used by this project.

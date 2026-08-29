@@ -94,19 +94,19 @@ vue-stream-markdown provides built-in support for rendering mathematical express
 
 vue-stream-markdown uses double dollar signs (`$$`) to delimit mathematical expressions by default. Single dollar signs (`$`) are disabled by default to avoid conflicts with currency symbols.
 
-You can enable single dollar sign support by setting `singleDollarTextMath: true` in `mdastOptions`:
+You can enable single dollar sign completion by setting `singleDollarTextMath: true` in `completion`:
 
 ```vue
 <script setup lang="ts">
 import { Markdown } from 'vue-stream-markdown'
 
-const mdastOptions = {
+const completion = {
   singleDollarTextMath: true,
 }
 </script>
 
 <template>
-  <Markdown :content="content" :mdast-options="mdastOptions" />
+  <Markdown :content="content" :completion="completion" />
 </template>
 ```
 

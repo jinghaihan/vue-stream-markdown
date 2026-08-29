@@ -228,7 +228,7 @@ type TableControlsConfig
       csvSeparator?: ',' | ';' | '\t' | 'auto'
       download?: boolean | string | { filename: string }
       fullscreen?: boolean
-      customize?: ControlTransformer<TableNodeRendererProps>
+      customize?: ControlTransformer<MarkdownControlContext>
     }
 ```
 
@@ -346,7 +346,7 @@ type CodeControlsConfig
       copy?: boolean
       download?: boolean | { filename: string }
       fullscreen?: boolean
-      customize?: ControlTransformer<CodeNodeRendererProps>
+      customize?: ControlTransformer<CodeBlockProps>
     }
 ```
 
@@ -495,7 +495,7 @@ type ImageControlsConfig
       flip?: boolean
       rotate?: boolean
       controlPosition?: ZoomControlPosition
-      customize?: ControlTransformer<ImageNodeRendererProps>
+      customize?: ControlTransformer<MarkdownControlContext>
     }
 ```
 
@@ -576,7 +576,7 @@ type MermaidControlsConfig
     | {
       download?: boolean | { filename: string }
       position?: ZoomControlPosition
-      customize?: ControlTransformer<CodeNodeRendererProps>
+      customize?: ControlTransformer<CodeBlockProps>
     }
 ```
 
@@ -669,8 +669,8 @@ All control types (`table`, `code`, `image`, `mermaid`) support the `customize` 
 The `customize` function signature:
 
 ```typescript
-type ControlTransformer<T extends NodeRendererProps = NodeRendererProps>
-  = (builtin: Control[], props: T) => Control[]
+type ControlTransformer<T = unknown>
+  = (builtin: Control[], context: T) => Control[]
 ```
 
 **Example:**

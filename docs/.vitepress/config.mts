@@ -39,7 +39,7 @@ const Configs: DefaultTheme.NavItemWithLink[] = [
   { text: 'Controls', link: '/config/controls' },
   { text: 'Previewers', link: '/config/previewers' },
   { text: 'Security', link: '/config/security' },
-  { text: 'Custom Renderers', link: '/config/node-renderers' },
+  { text: 'Components', link: '/config/components' },
   { text: 'External Options', link: '/config/external-options' },
   { text: 'Internationalization', link: '/config/i18n' },
 ]

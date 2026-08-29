@@ -41,7 +41,7 @@ Without CJK-friendly parsing, the text above would render as plain text instead 
 
 ## The Solution
 
-vue-stream-markdown uses the `micromark-extension-cjk-friendly` and `micromark-extension-cjk-friendly-gfm-strikethrough` plugins to handle CJK text properly. These plugins implement an improved parsing approach that correctly recognizes emphasis markers adjacent to ideographic punctuation.
+Vue Stream Markdown combines Comark's Markdown parser with Markmend's streaming delimiter analysis. The completion layer treats CJK letters consistently with other Unicode letters and avoids inventing emphasis solely because a partial stream currently ends beside an asterisk, underscore, or tilde.
 
 ## Character Animation
 
@@ -80,7 +80,7 @@ Works correctly with all ideographic punctuation marks:
 
 ### Strikethrough with Punctuation
 
-vue-markdown-stream includes `micromark-extension-cjk-friendly-gfm-strikethrough` for proper strikethrough support:
+The same delimiter rules apply to strikethrough:
 
 ```markdown
 ~~削除されたテキスト（括弧付き）。~~この文は正しいです。

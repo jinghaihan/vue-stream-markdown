@@ -1,11 +1,9 @@
 ---
 title: Usage
-description: Installation instructions, basic usage examples, and overview of all available configuration options for vue-stream-markdown.
+description: Install and use vue-stream-markdown in streaming and static modes.
 ---
 
 # Usage
-
-This guide covers installation instructions, basic usage examples, and provides an overview of all available configuration options. For detailed configuration documentation, see the quick links section below.
 
 ## Installation
 
@@ -13,162 +11,72 @@ This guide covers installation instructions, basic usage examples, and provides 
 pnpm add vue-stream-markdown
 ```
 
-### Peer Dependencies
-
-Since some users may not need complex rendering features like code blocks, Mermaid diagrams, or mathematical formulas, `shiki`, `mermaid`, and `katex` are provided as peer dependencies. If you need these rendering features, please install them manually:
+Install the optional peer dependencies for the features you use:
 
 ```sh
-# For code syntax highlighting
-pnpm add shiki
-
-# For Mermaid diagram rendering
-pnpm add mermaid
-
-# For LaTeX math rendering
-pnpm add katex
+pnpm add shiki mermaid katex
 ```
 
-> **Note:** If you enable CDN configuration, you don't need to install locally as they will be loaded from CDN.
+When CDN loading is enabled, those libraries do not need to be installed locally.
 
-## Basic Usage
-
-By default, the component runs in `streaming` mode, which is optimized for progressive content updates. You can also use `static` mode for complete markdown content:
+## Basic usage
 
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Markdown } from 'vue-stream-markdown'
-// If CDN is enabled, you don't need to manually import katex.min.css
 import 'katex/dist/katex.min.css'
 import 'vue-stream-markdown/index.css'
-// If you don't have shadcn CSS variables globally, import the theme
 import 'vue-stream-markdown/theme.css'
 
-const content = ref('# Hello World\n\nThis is a markdown content.')
+const content = ref('# Hello World\n\nThis is **streaming** Markdown.')
 </script>
 
 <template>
-  <!-- Streaming mode (default) -->
   <Markdown :content="content" mode="streaming" />
-
-  <!-- Static mode -->
-  <Markdown :content="content" mode="static" />
 </template>
 ```
 
-## Server-Side Rendering (SSR)
+Use `mode="static"` after streaming finishes if you want settled-source semantics. Static mode skips Markmend completion.
 
-This component library supports server-side rendering. When using with Nuxt.js, you need to add the CSS imports in your `nuxt.config.ts`:
+## Custom tags
+
+Comark parses native HTML and custom HTML-like tags into the same compact document model. Map custom tags directly to Vue components:
+
+```vue
+<script setup lang="ts">
+import GitHubCard from './GitHubCard.vue'
+
+const components = { github: GitHubCard }
+const content = '<github name="vuejs/core" />'
+</script>
+
+<template>
+  <Markdown :content="content" :components="components" />
+</template>
+```
+
+See [Components](/config/components) and [HTML Rendering](/feature/html-rendering).
+
+## Nuxt and SSR
+
+Add the styles to `nuxt.config.ts`:
 
 ```ts
 export default defineNuxtConfig({
   css: [
-    // If CDN is enabled, you can omit katex.min.css
     'katex/dist/katex.min.css',
     'vue-stream-markdown/index.css',
-    // If you don't have shadcn CSS variables globally, import the theme
     'vue-stream-markdown/theme.css',
   ],
 })
 ```
 
-## Optional HTML Rendering
+## Next steps
 
-HTML rendering is opt-in:
-
-```sh
-pnpm add @stream-markdown/html
-```
-
-```ts
-import { createHtmlPlugin } from '@stream-markdown/html'
-import { createHtmlNodeRenderer } from 'vue-stream-markdown/html'
-import GitHubCard from './GitHubCard.vue'
-
-const html = createHtmlPlugin({
-  componentTags: ['github'],
-  allowedAttributes: {
-    github: ['name', 'description'],
-  },
-})
-
-const HtmlNodeRenderer = createHtmlNodeRenderer({
-  transform: html.transform,
-  components: {
-    GitHub: GitHubCard,
-  },
-})
-```
-
-```vue
-<Markdown :node-renderers="{ html: HtmlNodeRenderer }" />
-```
-
-See [HTML Rendering](/feature/html-rendering) for the full example.
-
-## Configuration
-
-### Core Props
-
-- `content` (string): The markdown content to render
-- `mode` ('streaming' | 'static'): Rendering mode, defaults to `'streaming'`
-- `dir` ('auto' | 'ltr' | 'rtl'): Force the document direction or detect it independently for each semantic block
-- `enableAnimate` (boolean | undefined): Enable node enter animations. When `undefined`, follows the rendering mode
-- `animation` ('fade-in' | 'blur-in' | 'slide-up' | string): Node enter animation, defaults to `'fade-in'`
-- `animationSplit` ('auto' | 'word' | 'char'): Text animation split strategy, defaults to `'auto'`. Auto mode splits CJK characters individually while keeping non-CJK text word-based.
-- `animationDuration` (number | string): Animation duration. Numbers are treated as milliseconds; strings are passed through as CSS values. When omitted, uses the CSS default of `500ms`.
-- `isDark` (boolean): Enable dark mode
-- `locale` (string | LocaleConfig): Locale for internationalization, defaults to `'en-US'`
-- `preload` (PreloadConfig): Configure which node renderers to preload for better initial rendering performance
-- `tableOptions` (TableOptions): Configure table height limits and streaming scroll behavior
-- `beforeDownload` ((event: DownloadEvent) => MaybePromise`<boolean>`): Callback invoked before download. Return `true` to proceed, `false` to cancel.
-
-### Code Highlighting
-
-- `shikiOptions` (ShikiOptions): Configuration for Shiki code highlighting
-
-### Mermaid Diagrams
-
-- `mermaidOptions` (MermaidOptions): Configuration for Mermaid diagram rendering
-
-### LaTeX Math
-
-- `katexOptions` (KatexOptions): Configuration for KaTeX math rendering
-
-### CDN Configuration
-
-- `cdnOptions` (CdnOptions): Configure CDN loading for external libraries (Shiki, Mermaid, KaTeX) to reduce bundle size. See [External Options](/config/external-options#cdn-configuration) for detailed documentation.
-
-### Controls
-
-- `controls` (boolean | ControlsConfig): Enable or configure interactive controls (copy, download, etc.)
-
-### Previewers
-
-- `previewers` (boolean | PreviewerConfig): Enable or configure previewers for any programming language. By default, HTML and Mermaid have built-in previewers. You can add custom previewers for any language.
-
-### Custom UI Components
-
-- `components` (UIComponents): Replace built-in UI components with custom implementations
-
-```vue
-<Markdown
-  :components="{ Button: MyButton }"
-  :content="content"
-/>
-```
-
-See [Custom UI Components](/feature/custom-ui-components)
-
-## Quick Links
-
-For detailed configuration options, see the corresponding sections in the [Config](/config/) documentation:
-
-- [Parser Options](/config/parser) - Customize markdown parsing behavior (affects how markdown is parsed and transformed)
-- [Display Options](/config/display-options) - Configure display settings (affects Shiki, Mermaid, KaTeX, images, and code blocks)
-- [Controls](/config/controls) - Detailed control configuration (affects interactive buttons like copy, download, etc.)
-- [Previewers](/config/previewers) - Configure previewer components for any programming language (affects code block preview rendering)
-- [Security](/config/security) - Security and hardening options (affects URL validation and protocol blocking)
-- [Custom Renderers](/config/node-renderers) - Replace default renderers with custom components (affects how each AST node type is rendered)
-- [Internationalization](/config/i18n) - Locale and translation configuration (affects all text content in the component)
-- [Custom UI Components](/feature/custom-ui-components) - Replace built-in UI components with custom implementations
+- [Parser](/config/parser)
+- [Configuration](/config/)
+- [Display Options](/config/display-options)
+- [Controls](/config/controls)
+- [Security](/config/security)
+- [External Options](/config/external-options)

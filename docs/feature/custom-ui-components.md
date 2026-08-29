@@ -43,7 +43,7 @@ import MyButton from './Button.vue'
 | Alert          | `UIAlertProps`          | Alert modal component  |
 | Button         | `UIButtonProps`         | Button component       |
 | Caret          | -                       | Cursor/caret indicator |
-| CodeBlock      | `CodeNodeRendererProps` | Code block wrapper     |
+| CodeBlock      | `CodeBlockProps`        | Code block wrapper     |
 | Dropdown       | `UIDropdownProps`       | Dropdown menu          |
 | ErrorComponent | `UIErrorComponentProps` | Error display          |
 | Icon           | `UIIconProps`           | Icon component         |

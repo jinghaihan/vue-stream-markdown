@@ -1,6 +1,6 @@
 ---
 title: Performance
-description: Performance optimizations including incremental rendering, token-level updates, and block-based parsing for efficient streaming.
+description: Incremental Comark parsing, stable Vue rendering, and token-level code updates.
 ---
 
 <script setup>
@@ -80,22 +80,19 @@ This approach ensures that:
 - Code blocks update smoothly as content streams in
 - Large code blocks avoid expensive full re-renders
 
-## Block-Based Parsing Optimization
+## Stateful Comark Parsing
 
-The parser uses `parseMarkdownIntoBlocks` (ported from [streamdown](https://github.com/vercel/streamdown)) to perform coarse-grained segmentation, splitting markdown content into smaller blocks before AST parsing. This reduces the content length for each AST parsing operation, improving performance especially for large documents. In streaming mode, only the last block needs to be re-parsed as new content arrives, while completed blocks remain cached.
+Each `Markdown` instance owns one long-lived Comark parser. The component always supplies the complete source, while Comark tracks the stable prefix internally and parses the changing tail incrementally. Vue Stream Markdown does not split the document or rebuild an intermediate AST.
 
-## Renderer Preloading
-
-Lightweight node renderers are preloaded by default to reduce initial rendering latency. The preload happens after merging custom renderers, ensuring that preloaded components match your final configuration. You can customize which renderers to preload using the `preload` prop.
+Simple Comark tuples are converted directly to VNodes. Only feature-heavy code and math rendering use lazily loaded Vue components.
 
 ## Performance Summary
 
 vue-stream-markdown's performance optimizations provide:
 
-- **Incremental Rendering** - Only new or changed blocks are processed, maintaining a stable AST structure
+- **Incremental Parsing** - Comark reuses the stable source prefix and processes the changing tail
 - **Stable Output** - Completed blocks remain stable and don't re-render, with nodes cached by Vue
-- **Block-Based Parsing** - Content is split into blocks (via `parseMarkdownIntoBlocks` from streamdown) to reduce AST parsing overhead
-- **Minimal Overhead** - Parsing and rendering work is minimized through lazy parsing, selective updates, and efficient Vue reactivity diffing
-- **Renderer Preloading** - Lightweight renderers are preloaded to reduce initial rendering latency
+- **Direct Rendering** - Compact Comark tuples render directly to VNodes without a conversion tree
+- **Minimal Overhead** - Heavy feature components and their event listeners are created only when needed
 
 This makes vue-stream-markdown particularly well-suited for AI chat interfaces with streaming responses, real-time collaborative editing, and progressive content loading scenarios.
