@@ -30,8 +30,8 @@ import MyButton from './Button.vue'
 
 <template>
   <Markdown
-    :components="{ Button: MyButton }"
     :content="content"
+    :ui-components="{ Button: MyButton }"
   />
 </template>
 ```
