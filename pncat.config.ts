@@ -4,6 +4,11 @@ import { dependencies } from './playground/nuxt/package.json'
 const RUNTIME_DEPS = ['vue', '@vueuse/core', '@floating-ui/dom']
 
 export default defineConfig({
+  excludeDepFields: [
+    'overrides',
+    'pnpm.overrides',
+    'resolutions',
+  ],
   exclude: [
     'shiki',
     'mermaid',
@@ -12,8 +17,22 @@ export default defineConfig({
   ],
   catalogRules: mergeCatalogRules([
     {
+      name: 'benchmark',
+      match: [
+        'comark',
+        'react',
+        'react-dom',
+        'remark-gfm',
+        'remark-parse',
+        'remend',
+        'streamdown',
+        'unified',
+      ],
+      priority: -10,
+    },
+    {
       name: 'parser',
-      match: [/marked/, /mdast-/, /micromark-/],
+      match: [/marked/, /mdast-/, /micromark-/, 'parse5', 'sanitize-html'],
       priority: 0,
     },
     {

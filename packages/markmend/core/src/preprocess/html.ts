@@ -1,7 +1,6 @@
+import type { PreprocessContext } from '../types'
+import { getPreprocessAnalysis } from './context'
 import {
-  findClosedCodeBlockRanges,
-  findInlineCodeRanges,
-  isInsideUnclosedCodeBlock,
   isPositionInRanges,
 } from './utils'
 
@@ -33,8 +32,12 @@ function isUnclosedHtmlFragment(fragment: string): boolean {
  * This prevents incomplete HTML from being emitted as plain text before the
  * parser can recognize it as an HTML node.
  */
-export function fixHtml(content: string): string {
-  if (!content || isInsideUnclosedCodeBlock(content))
+export function fixHtml(content: string, context?: PreprocessContext): string {
+  if (!content.includes('<'))
+    return content
+
+  const analysis = getPreprocessAnalysis(content, context)
+  if (analysis.hasUnclosedCodeBlock)
     return content
 
   const trailingWhitespace = content.match(trailingWhitespacePattern)?.[0] ?? ''
@@ -54,12 +57,10 @@ export function fixHtml(content: string): string {
   if (!isUnclosedHtmlFragment(fragment))
     return content
 
-  const codeBlockRanges = findClosedCodeBlockRanges(content)
-  if (isPositionInRanges(fragmentStart, codeBlockRanges))
+  if (isPositionInRanges(fragmentStart, analysis.codeBlockRanges))
     return content
 
-  const inlineCodeRanges = findInlineCodeRanges(content, codeBlockRanges)
-  if (isPositionInRanges(fragmentStart, inlineCodeRanges))
+  if (isPositionInRanges(fragmentStart, analysis.inlineCodeRanges))
     return content
 
   const beforeFragment = content.slice(0, fragmentStart).replace(trailingLineWhitespacePattern, '')

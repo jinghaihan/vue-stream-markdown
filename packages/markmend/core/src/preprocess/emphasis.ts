@@ -1,28 +1,33 @@
 import type { PreprocessContext } from '../types'
+import { getPreprocessAnalysis } from './context'
 import {
-  codeBlockPattern,
   singleAsteriskPattern,
   singleUnderscorePattern,
 } from './pattern'
 import {
-  calculateParagraphOffset,
-  findClosedCodeBlockRanges,
-  findInlineCodeRanges,
-  getLastParagraphWithIndex,
   hideBareFormattingMarker,
-  isInsideUnclosedCodeBlock,
   isPositionInRanges,
   isWithinHtmlTag,
   isWithinLinkOrImageUrl,
   isWithinMathBlock,
-  maskInlineCodeMarkdownMarkers,
-  maskInvalidAsteriskMarkers,
-  maskInvalidUnderscoreMarkers,
   maskPairedMarkerRuns,
-  maskThematicBreakMarkers,
-  removeUrlsFromText,
   shouldIgnoreUnderscoreMarker,
 } from './utils'
+
+function hasOddMarkerRun(content: string, marker: '*' | '_'): boolean {
+  for (let index = content.indexOf(marker); index !== -1;) {
+    const runStart = index
+    while (content[index] === marker)
+      index += 1
+
+    if ((index - runStart) % 2 === 1)
+      return true
+
+    index = content.indexOf(marker, index)
+  }
+
+  return false
+}
 
 /**
  * Fix unclosed emphasis (* or _) syntax in streaming markdown
@@ -32,44 +37,58 @@ import {
  */
 export function fixEmphasis(
   content: string,
-  options?: Pick<PreprocessContext, 'hideBareFormattingMarkers'>,
+  options?: PreprocessContext,
 ): string {
+  if (!content.includes('*') && !content.includes('_'))
+    return content
+
+  const analysis = getPreprocessAnalysis(content, options)
   // Don't process if we're inside a code block (unclosed)
-  if (isInsideUnclosedCodeBlock(content)) {
+  if (analysis.hasUnclosedCodeBlock) {
     return content
   }
 
-  const hiddenBareMarker = hideBareFormattingMarker(content, ['*', '_'])
+  const hiddenBareMarker = hideBareFormattingMarker(
+    content,
+    ['*', '_'],
+    analysis.getLastParagraph().content,
+  )
   if (hiddenBareMarker !== undefined)
     return options?.hideBareFormattingMarkers === false ? content : hiddenBareMarker
 
+  if (!hasOddMarkerRun(content, '*') && !hasOddMarkerRun(content, '_'))
+    return content
+
   // Find the last paragraph
-  const lines = content.split('\n')
-  const { lastParagraph, startIndex: paragraphStartIndex } = getLastParagraphWithIndex(content)
-  const codeBlockRanges = findClosedCodeBlockRanges(lastParagraph)
-  const inlineCodeRanges = findInlineCodeRanges(lastParagraph, codeBlockRanges)
+  const paragraph = analysis.getLastParagraph()
+  const {
+    codeBlockRanges,
+    content: lastParagraph,
+    inlineCodeRanges,
+    startOffset: paragraphOffset,
+  } = paragraph
+  if (paragraph.isFullyCodeBlock)
+    return content
 
   // Remove code blocks and mask Markdown markers inside inline code to avoid
   // treating code content as incomplete emphasis.
-  const lastParagraphWithoutInlineCodeMarkers = maskInlineCodeMarkdownMarkers(lastParagraph, inlineCodeRanges)
-  const lastParagraphWithoutThematicBreakMarkers = maskThematicBreakMarkers(lastParagraphWithoutInlineCodeMarkers)
-  const lastParagraphWithoutInvalidAsterisks = maskInvalidAsteriskMarkers(lastParagraphWithoutThematicBreakMarkers)
-  const lastParagraphWithoutInvalidMarkers = maskInvalidUnderscoreMarkers(lastParagraphWithoutInvalidAsterisks)
-  const sourceSingleAsteriskMarkers = maskPairedMarkerRuns(lastParagraphWithoutInvalidMarkers, '*')
-  const sourceSingleUnderscoreMarkers = maskPairedMarkerRuns(lastParagraphWithoutInvalidMarkers, '_')
-  const lastParagraphWithoutCodeBlocks = lastParagraphWithoutInvalidMarkers.replace(codeBlockPattern, '')
-  // Remove URLs to avoid counting markdown syntax inside URLs (URLs may contain _, *, ~)
-  const lastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(lastParagraphWithoutCodeBlocks)
-  const lastParagraphForMarkerCounting = lastParagraphWithoutCodeBlocksAndUrls
+  const formattingMarkers = paragraph.formattingMarkers
+  const sourceSingleAsteriskMarkers = formattingMarkers.singleAsteriskMarkers
+  const sourceSingleUnderscoreMarkers = formattingMarkers.singleUnderscoreMarkers
+  const lastParagraphForMarkerCounting = formattingMarkers.withoutCodeBlocksAndUrls
 
   // Check asterisk emphasis first (original behavior)
   // Mask complete pairs while preserving the source offsets of odd runs.
-  const withoutDoubleAsterisk = maskPairedMarkerRuns(lastParagraphForMarkerCounting, '*')
+  const withoutDoubleAsterisk = lastParagraphForMarkerCounting === formattingMarkers.maskedContent
+    ? sourceSingleAsteriskMarkers
+    : maskPairedMarkerRuns(lastParagraphForMarkerCounting, '*')
   const asteriskMatches = withoutDoubleAsterisk.match(singleAsteriskPattern)
   const asteriskCount = asteriskMatches ? asteriskMatches.length : 0
 
   // Check underscore emphasis
-  const withoutDoubleUnderscore = maskPairedMarkerRuns(lastParagraphForMarkerCounting, '_')
+  const withoutDoubleUnderscore = lastParagraphForMarkerCounting === formattingMarkers.maskedContent
+    ? sourceSingleUnderscoreMarkers
+    : maskPairedMarkerRuns(lastParagraphForMarkerCounting, '_')
   const underscoreMatches = withoutDoubleUnderscore.match(singleUnderscorePattern)
   const underscoreCount = underscoreMatches ? underscoreMatches.length : 0
 
@@ -81,7 +100,6 @@ export function fixEmphasis(
   if (asteriskCount % 2 === 1) {
     // Find the last * in the original lastParagraph, but skip those in URLs
     // We need to find the position in the original text, not in the URL-removed text
-    const paragraphOffset = calculateParagraphOffset(paragraphStartIndex, lines)
     let lastStarPos = -1
 
     // Search backwards in the original lastParagraph to find the last * that's not in a URL
@@ -123,7 +141,6 @@ export function fixEmphasis(
   // Check underscore
   if (underscoreCount % 2 === 1) {
     // Find the last _ in the original lastParagraph, but skip those in URLs
-    const paragraphOffset = calculateParagraphOffset(paragraphStartIndex, lines)
     let lastUnderscorePos = -1
 
     // Search backwards in the original lastParagraph to find the last _ that's not in a URL

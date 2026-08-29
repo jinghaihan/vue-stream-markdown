@@ -190,7 +190,7 @@ Override individual built-in preprocess steps while keeping the default order.
 
 - **Type:** `(data: SyntaxTree) => SyntaxTree`
 
-Function to normalize the syntax tree after parsing but before postprocess. Used for basic AST normalization tasks, such as reorganizing footnote definitions.
+Function to normalize the syntax tree after parsing but before postprocess. The built-in implementation reorganizes footnote definitions and omits positional metadata to reduce retained memory.
 
 ### postprocess
 

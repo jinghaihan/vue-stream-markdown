@@ -82,14 +82,14 @@ export function getLastParagraphWithIndex(
 export function hideBareFormattingMarker(
   content: string,
   markers: readonly string[],
+  lastParagraph = getLastParagraphWithIndex(content).lastParagraph,
 ): string | undefined {
-  const { lastParagraph } = getLastParagraphWithIndex(content)
   const containsOnlyMarkers = (value: string): boolean => {
-    if (maskThematicBreakMarkers(value) !== value)
+    const tokens = value.trim().split(/\s+/)
+    if (tokens.length === 0 || !tokens.every(token => markers.includes(token)))
       return false
 
-    const tokens = value.trim().split(/\s+/)
-    return tokens.length > 0 && tokens.every(token => markers.includes(token))
+    return maskThematicBreakMarkers(value) === value
   }
 
   if (containsOnlyMarkers(lastParagraph))
@@ -362,6 +362,9 @@ function isWhitespaceOrBoundary(content: string, index: number): boolean {
  * `*`, `_`, or `-` markers and up to three leading spaces.
  */
 export function maskThematicBreakMarkers(content: string): string {
+  if (!content.includes('*') && !content.includes('_') && !content.includes('-'))
+    return content
+
   return content.split('\n').map((line) => {
     const leadingWhitespace = line.match(/^ */)?.[0].length ?? 0
     if (leadingWhitespace > 3)
@@ -379,7 +382,10 @@ export function maskThematicBreakMarkers(content: string): string {
  * Mask asterisk runs that clearly cannot act as emphasis delimiters.
  */
 export function maskInvalidAsteriskMarkers(content: string): string {
-  const characters = content.split('')
+  if (!content.includes('*'))
+    return content
+
+  let characters: string[] | undefined
   let singleAsteriskCount = 0
   let inWordAsteriskChain = false
 
@@ -400,6 +406,7 @@ export function maskInvalidAsteriskMarkers(content: string): string {
         && isWhitespaceOrBoundary(content, index))
 
     if (cannotDelimit) {
+      characters ??= content.split('')
       for (let markerIndex = runStart; markerIndex < index; markerIndex += 1)
         characters[markerIndex] = ' '
       continue
@@ -426,11 +433,12 @@ export function maskInvalidAsteriskMarkers(content: string): string {
       inWordAsteriskChain = isInsideWord
     }
     else {
+      characters ??= content.split('')
       characters[singleMarkerIndex] = ' '
     }
   }
 
-  return characters.join('')
+  return characters?.join('') ?? content
 }
 
 /** Mask escaped Markdown markers while preserving string offsets. */
@@ -448,6 +456,9 @@ export function maskEscapedMarkdownMarkers(content: string, markers: string): st
  * This preserves offsets so a remaining marker can be mapped back to source.
  */
 export function maskPairedMarkerRuns(content: string, marker: '*' | '_'): string {
+  if (!content.includes(marker))
+    return content
+
   const characters = content.split('')
 
   for (let index = 0; index < content.length;) {
@@ -504,7 +515,10 @@ export function shouldIgnoreUnderscoreMarker(
  * Mask escaped and intraword underscore runs while preserving string offsets.
  */
 export function maskInvalidUnderscoreMarkers(content: string): string {
-  const characters = content.split('')
+  if (!content.includes('_'))
+    return content
+
+  let characters: string[] | undefined
 
   for (let index = 0; index < content.length;) {
     if (content[index] !== '_') {
@@ -518,12 +532,13 @@ export function maskInvalidUnderscoreMarkers(content: string): string {
 
     const runLength = index - runStart
     if (shouldIgnoreUnderscoreMarker(content, runStart, runLength)) {
+      characters ??= content.split('')
       for (let markerIndex = runStart; markerIndex < index; markerIndex += 1)
         characters[markerIndex] = ' '
     }
   }
 
-  return characters.join('')
+  return characters?.join('') ?? content
 }
 
 /**
@@ -674,26 +689,33 @@ export function isWithinHtmlTag(text: string, position: number): boolean {
  */
 export function removeUrlsFromText(text: string): string {
   // First, remove code blocks to avoid processing URLs inside them
-  const withoutCodeBlocks = text.replace(codeBlockPattern, '')
+  const withoutCodeBlocks = text.includes('```')
+    ? text.replace(codeBlockPattern, '')
+    : text
 
   // Remove HTML tags (including their attributes which may contain URLs)
   // This handles cases like <file url="http://example.com/path_with_underscore">
-  let result = withoutCodeBlocks.replace(htmlTagPattern, '')
+  let result = withoutCodeBlocks.includes('<')
+    ? withoutCodeBlocks.replace(htmlTagPattern, '')
+    : withoutCodeBlocks
 
   // Remove complete link/image URLs: [text](url) or ![alt](url)
   // Replace the URL part with empty string, keep the [text] or ![alt] part
-  result = result.replace(linkImagePattern, (match) => {
-    return match.replace(linkImageUrlSuffixPattern, ']()')
-  })
+  if (result.includes('](')) {
+    result = result.replace(linkImagePattern, (match) => {
+      return match.replace(linkImageUrlSuffixPattern, ']()')
+    })
 
-  // Remove incomplete link/image URLs: [text](url or ![alt](url
-  // Replace the incomplete URL part with empty string
-  result = result.replace(incompleteLinkImageUrlPattern, (match) => {
-    return match.replace(incompleteLinkImageUrlSuffixPattern, '](')
-  })
+    // Remove incomplete link/image URLs: [text](url or ![alt](url
+    // Replace the incomplete URL part with empty string
+    result = result.replace(incompleteLinkImageUrlPattern, (match) => {
+      return match.replace(incompleteLinkImageUrlSuffixPattern, '](')
+    })
+  }
 
   // Remove standalone URLs as their path/query may contain Markdown markers.
-  result = result.replace(standaloneUrlPattern, '')
+  if (result.includes('://'))
+    result = result.replace(standaloneUrlPattern, '')
 
   return result
 }
@@ -710,6 +732,9 @@ export function removeMathBlocksFromText(
   text: string,
   options?: Pick<PreprocessContext, 'singleDollarTextMath'>,
 ): string {
+  if (!text.includes('$'))
+    return text
+
   const singleDollarEnabled = options?.singleDollarTextMath === true
   let result = text
   let i = 0

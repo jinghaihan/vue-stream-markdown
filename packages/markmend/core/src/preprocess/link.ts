@@ -1,5 +1,7 @@
+import type { PreprocessContext } from '../types'
+import { getPreprocessAnalysis } from './context'
 import { codeBlockPattern, incompleteBracketPattern, incompleteLinkTextPattern, standaloneBracketPattern } from './pattern'
-import { findLastNonEmptyLineIndex, getLastParagraphWithIndex, isEscapedCharacter, isInsideUnclosedCodeBlock } from './utils'
+import { findLastNonEmptyLineIndex, isEscapedCharacter } from './utils'
 
 function hasTrailingIncompleteLinkUrl(content: string): boolean {
   const urlStart = content.lastIndexOf('](')
@@ -70,15 +72,23 @@ function hasTrailingIncompleteLinkUrl(content: string): boolean {
  * // Returns: 'Text '
  * // Removes trailing standalone bracket and trailing newline
  */
-export function fixLink(content: string): string {
+export function fixLink(content: string, context?: PreprocessContext): string {
+  if (!content.includes('['))
+    return content
+
+  const analysis = getPreprocessAnalysis(content, context)
   // Don't process if we're inside a code block (unclosed)
-  if (isInsideUnclosedCodeBlock(content)) {
+  if (analysis.hasUnclosedCodeBlock) {
     return content
   }
 
+  if (analysis.isFullyCodeBlock)
+    return content
+
   // Find the last paragraph (after the last blank line)
-  const lines = content.split('\n')
-  const { lastParagraph } = getLastParagraphWithIndex(content)
+  const { lines } = analysis
+  const paragraph = analysis.getLastParagraph()
+  const lastParagraph = paragraph.content
 
   // Remove code blocks from the last paragraph to avoid processing links inside them
   const lastParagraphWithoutCodeBlocks = lastParagraph.replace(codeBlockPattern, '')

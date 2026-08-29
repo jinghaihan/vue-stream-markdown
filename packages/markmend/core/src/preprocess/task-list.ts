@@ -1,8 +1,10 @@
+import type { PreprocessContext } from '../types'
+import { getPreprocessAnalysis } from './context'
 import {
   incompleteTaskListPattern,
   quoteIncompleteTaskListPattern,
 } from './pattern'
-import { findClosedCodeBlockRanges, isInsideUnclosedCodeBlock, isRangeOverlappingRanges } from './utils'
+import { isRangeOverlappingRanges } from './utils'
 
 const zeroWidthSpace = '\u200B'
 
@@ -56,17 +58,22 @@ function isPartialSetextUnderline(line: string): boolean {
  * fixTaskList('> **Note**: Here\'s a quote with tasks:\n\n> -')
  * // Returns: '> **Note**: Here\'s a quote with tasks:\n\n> -'
  */
-export function fixTaskList(content: string): string {
+export function fixTaskList(content: string, context?: PreprocessContext): string {
+  if (!content.includes('[') && !content.includes('\n'))
+    return content
+
+  const analysis = getPreprocessAnalysis(content, context)
   // Don't process if we're inside a code block (unclosed)
-  if (isInsideUnclosedCodeBlock(content)) {
+  if (analysis.hasUnclosedCodeBlock) {
     return content
   }
 
+  if (analysis.isFullyCodeBlock)
+    return content
+
   // Check if the last line is inside a code block
   // Find all code block ranges
-  const codeBlockRanges = findClosedCodeBlockRanges(content)
-
-  const lines = content.split('\n')
+  const { codeBlockRanges, lines } = analysis
 
   // Get the last line
   const lastLine = lines.at(-1)

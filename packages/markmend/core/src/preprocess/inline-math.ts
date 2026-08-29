@@ -1,5 +1,6 @@
+import type { PreprocessContext } from '../types'
+import { getPreprocessAnalysis } from './context'
 import { codeBlockPattern, doubleDollarPattern, inlineCodePattern } from './pattern'
-import { calculateParagraphOffset, getLastParagraphWithIndex, isInsideUnclosedCodeBlock } from './utils'
 
 /**
  * Fix unclosed inline math ($$) syntax in streaming markdown
@@ -29,19 +30,23 @@ import { calculateParagraphOffset, getLastParagraphWithIndex, isInsideUnclosedCo
  * fixInlineMath('$$\n')
  * // Returns: '$$\n' (no completion, this is block math)
  */
-export function fixInlineMath(content: string): string {
+export function fixInlineMath(content: string, context?: PreprocessContext): string {
   // Handle bare single $ first
   if (content === '$') {
     return ''
   }
 
+  if (!content.includes('$'))
+    return content
+
   // Don't process if we're inside a code block (unclosed)
-  if (isInsideUnclosedCodeBlock(content))
+  const analysis = getPreprocessAnalysis(content, context)
+  if (analysis.hasUnclosedCodeBlock)
     return content
 
   // Find the last paragraph (after the last blank line)
-  const lines = content.split('\n')
-  const { lastParagraph, startIndex: paragraphStartIndex } = getLastParagraphWithIndex(content)
+  const paragraph = analysis.getLastParagraph()
+  const lastParagraph = paragraph.content
 
   // Remove code blocks and inline code from the last paragraph to avoid counting $$ inside them
   let withoutCodeBlocks = lastParagraph.replace(codeBlockPattern, '')
@@ -90,8 +95,7 @@ export function fixInlineMath(content: string): string {
 
       // Complete inline math - LaTeX content should not be treated as markdown
       if (shouldRemoveTrailingDollar) {
-        const offset = calculateParagraphOffset(paragraphStartIndex, lines)
-        const actualLastDollarPos = offset + lastDollarPos
+        const actualLastDollarPos = paragraph.startOffset + lastDollarPos
         const contentBeforeMath = content.substring(0, actualLastDollarPos + 2)
         const contentAfterMath = lastParagraph.substring(lastDollarPos + 2, lastParagraph.length - 1)
         return `${contentBeforeMath}${contentAfterMath}$$`
@@ -100,8 +104,7 @@ export function fixInlineMath(content: string): string {
     }
     else {
       // Remove the trailing $$ and any trailing whitespace
-      const offset = calculateParagraphOffset(paragraphStartIndex, lines)
-      const actualLastDollarPos = offset + lastDollarPos
+      const actualLastDollarPos = paragraph.startOffset + lastDollarPos
       return content.slice(0, actualLastDollarPos).trimEnd()
     }
   }

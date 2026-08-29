@@ -1,9 +1,8 @@
+import type { PreprocessContext } from '../types'
+import { getPreprocessAnalysis } from './context'
 import { separatorPattern, tableRowPattern } from './pattern'
 import {
-  findClosedCodeBlockRanges,
-  getLastParagraphWithIndex,
   isEscapedCharacter,
-  isInsideUnclosedCodeBlock,
   isRangeOverlappingRanges,
 } from './utils'
 
@@ -76,16 +75,20 @@ function parseIncompleteSeparatorAlignments(row: string): TableAlignment[] | und
  * fixTable('| a | b |\n| --- | --- |')
  * // Returns: '| a | b |\n| --- | --- |' (no change, already complete)
  */
-export function fixTable(content: string): string {
+export function fixTable(content: string, context?: PreprocessContext): string {
+  if (!content.includes('|'))
+    return content
+
+  const analysis = getPreprocessAnalysis(content, context)
   // Don't process if we're inside a code block (unclosed)
-  if (isInsideUnclosedCodeBlock(content))
+  if (analysis.hasUnclosedCodeBlock)
     return content
 
   // Find all code block ranges to check if table is inside a closed code block
-  const codeBlockRanges = findClosedCodeBlockRanges(content)
+  const { codeBlockRanges } = analysis
 
   // Find the last paragraph (after the last blank line)
-  const { lastParagraph } = getLastParagraphWithIndex(content, true)
+  const lastParagraph = analysis.getLastParagraph(true).content
   const paragraphLines = lastParagraph.split('\n').filter(line => line.trim() !== '')
 
   // Check if any line in the last paragraph is a table header row

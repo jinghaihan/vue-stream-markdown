@@ -2,153 +2,156 @@
 
 import { Lexer } from 'marked'
 
-// Regex patterns moved to top level for performance
-const footnoteReferencePattern = /\[\^[^\]\s]{1,200}\](?!:)/
-const footnoteDefinitionPattern = /\[\^[^\]\s]{1,200}\]:/
-const closingTagPattern = /<\/(\w+)>/
-const openingTagPattern = /<(\w+)[\s>]/
+const footnoteReferencePattern = /\[\^[\w-]{1,200}\](?!:)/
+const footnoteDefinitionPattern = /\[\^[\w-]{1,200}\]:/
+const openingTagPattern = /<([a-z][\w:-]*)[\s>/]/i
 
-// Helper function to check if string starts with $$
-function startsWithDoubleDollar(str: string): boolean {
-  let i = 0
-  // Skip leading whitespace
-  while (
-    i < str.length
-    && (str[i] === ' ' || str[i] === '\t' || str[i] === '\n' || str[i] === '\r')
-  ) {
-    i += 1
-  }
-  return i + 1 < str.length && str[i] === '$' && str[i + 1] === '$'
+const voidElements = new Set([
+  'area',
+  'base',
+  'br',
+  'col',
+  'embed',
+  'hr',
+  'img',
+  'input',
+  'link',
+  'meta',
+  'param',
+  'source',
+  'track',
+  'wbr',
+])
+
+const openTagPatternCache = new Map<string, RegExp>()
+const closeTagPatternCache = new Map<string, RegExp>()
+
+function getOpenTagPattern(tagName: string): RegExp {
+  const normalizedTag = tagName.toLowerCase()
+  const cached = openTagPatternCache.get(normalizedTag)
+  if (cached)
+    return cached
+
+  const pattern = new RegExp(`<${normalizedTag}(?=[\\s>/])[^>]*>`, 'gi')
+  openTagPatternCache.set(normalizedTag, pattern)
+  return pattern
 }
 
-// Helper function to check if string ends with $$
-function endsWithDoubleDollar(str: string): boolean {
-  let i = str.length - 1
-  // Skip trailing whitespace
-  while (
-    i >= 0
-    && (str[i] === ' ' || str[i] === '\t' || str[i] === '\n' || str[i] === '\r')
-  ) {
-    i -= 1
-  }
-  return i >= 1 && str[i] === '$' && str[i - 1] === '$'
+function getCloseTagPattern(tagName: string): RegExp {
+  const normalizedTag = tagName.toLowerCase()
+  const cached = closeTagPatternCache.get(normalizedTag)
+  if (cached)
+    return cached
+
+  const pattern = new RegExp(`</${normalizedTag}(?=[\\s>])[^>]*>`, 'gi')
+  closeTagPatternCache.set(normalizedTag, pattern)
+  return pattern
 }
 
-// Helper function to count $$ occurrences
-function countDoubleDollars(str: string): number {
+function countNonSelfClosingOpenTags(block: string, tagName: string): number {
+  if (voidElements.has(tagName.toLowerCase()))
+    return 0
+
+  const matches = block.match(getOpenTagPattern(tagName))
+  if (!matches)
+    return 0
+
   let count = 0
-  for (let i = 0; i < str.length - 1; i += 1) {
-    if (str[i] === '$' && str[i + 1] === '$') {
+  for (const match of matches) {
+    if (!match.trimEnd().endsWith('/>'))
       count += 1
-      i += 1 // Skip next character
+  }
+  return count
+}
+
+function countClosingTags(block: string, tagName: string): number {
+  return block.match(getCloseTagPattern(tagName))?.length ?? 0
+}
+
+function countDoubleDollars(value: string): number {
+  let count = 0
+  for (let index = 0; index < value.length - 1; index += 1) {
+    if (value[index] === '$' && value[index + 1] === '$') {
+      count += 1
+      index += 1
     }
   }
   return count
 }
 
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: "Complex parsing logic that handles multiple markdown edge cases"
 export function parseMarkdownIntoBlocks(markdown: string): string[] {
-  // Check if the markdown contains footnotes (references or definitions)
-  // Footnote references: [^1], [^label], etc.
-  // Footnote definitions: [^1]: text, [^label]: text, etc.
-  // Use atomic groups or possessive quantifiers to prevent backtracking
-  const hasFootnoteReference = footnoteReferencePattern.test(markdown)
-  const hasFootnoteDefinition = footnoteDefinitionPattern.test(markdown)
-
-  // If footnotes are present, return the entire document as a single block
-  // This ensures footnote references and definitions remain in the same mdast tree
-  if (hasFootnoteReference || hasFootnoteDefinition) {
+  if (
+    footnoteReferencePattern.test(markdown)
+    || footnoteDefinitionPattern.test(markdown)
+  ) {
     return [markdown]
   }
 
   const tokens = Lexer.lex(markdown, { gfm: true })
-
-  // Post-process to merge consecutive blocks that belong together
   const mergedBlocks: string[] = []
-  const htmlStack: string[] = [] // Track opening HTML tags
+  const htmlStack: string[] = []
+  let previousTokenWasCode = false
+  let mergeFollowingSpaceIntoHtml = false
 
   for (const token of tokens) {
     const currentBlock = token.raw
-    const mergedBlocksLen = mergedBlocks.length
+    const mergedBlocksLength = mergedBlocks.length
 
-    // Check if we're inside an HTML block
-    if (htmlStack.length > 0) {
-      // We're inside an HTML block, merge with the previous block
-      mergedBlocks[mergedBlocksLen - 1] += currentBlock
-
-      // Check if this token closes an HTML tag
-      if (token.type === 'html') {
-        const closingTagMatch = currentBlock.match(closingTagPattern)
-        if (closingTagMatch) {
-          const closingTag = closingTagMatch[1]
-          // Check if this closes the most recent opening tag
-          if (htmlStack.at(-1) === closingTag) {
-            htmlStack.pop()
-          }
-        }
+    if (mergeFollowingSpaceIntoHtml) {
+      mergeFollowingSpaceIntoHtml = false
+      if (token.type === 'space' && mergedBlocksLength > 0) {
+        mergedBlocks[mergedBlocksLength - 1] += currentBlock
+        continue
       }
+    }
+
+    if (htmlStack.length > 0) {
+      mergedBlocks[mergedBlocksLength - 1] += currentBlock
+
+      const trackedTag = htmlStack.at(-1)!
+      const newOpenTags = countNonSelfClosingOpenTags(currentBlock, trackedTag)
+      const newCloseTags = countClosingTags(currentBlock, trackedTag)
+
+      for (let index = 0; index < newOpenTags; index += 1)
+        htmlStack.push(trackedTag)
+
+      for (let index = 0; index < newCloseTags; index += 1) {
+        if (htmlStack.at(-1) === trackedTag)
+          htmlStack.pop()
+      }
+      mergeFollowingSpaceIntoHtml = htmlStack.length === 0
       continue
     }
 
-    // Check if this is an opening HTML block tag
     if (token.type === 'html' && token.block) {
       const openingTagMatch = currentBlock.match(openingTagPattern)
-      if (openingTagMatch && openingTagMatch[1]) {
+      if (openingTagMatch?.[1]) {
         const tagName = openingTagMatch[1]
-        // Check if this is a self-closing tag or if there's a closing tag in the same block
-        const hasClosingTag = currentBlock.includes(`</${tagName}>`)
-        if (!hasClosingTag) {
-          // This is an opening tag without a closing tag in the same block
+        const openTags = countNonSelfClosingOpenTags(currentBlock, tagName)
+        const closeTags = countClosingTags(currentBlock, tagName)
+        if (openTags > closeTags)
           htmlStack.push(tagName)
-        }
       }
     }
 
-    // Optimize trim operations by checking characters directly
-    const trimmedBlock = currentBlock.trim()
-
-    // Math block merging logic (existing)
-    // Check if this is a standalone $$ that might be a closing delimiter
-    if (trimmedBlock === '$$' && mergedBlocksLen > 0) {
-      const previousBlock = mergedBlocks[mergedBlocksLen - 1]
-      if (!previousBlock)
-        continue
-
-      // Check if the previous block starts with $$ but doesn't end with $$
-      const prevStartsWith$$ = startsWithDoubleDollar(previousBlock)
-      const prevDollarCount = countDoubleDollars(previousBlock)
-
-      // If previous block has odd number of $$ and starts with $$, merge them
-      if (prevStartsWith$$ && prevDollarCount % 2 === 1) {
-        mergedBlocks[mergedBlocksLen - 1] = previousBlock + currentBlock
-        continue
-      }
-    }
-
-    // Check if current block ends with $$ and previous block started with $$ but didn't close
-    if (mergedBlocksLen > 0 && endsWithDoubleDollar(currentBlock)) {
-      const previousBlock = mergedBlocks[mergedBlocksLen - 1]
-      if (!previousBlock)
-        continue
-
-      const prevStartsWith$$ = startsWithDoubleDollar(previousBlock)
-      const prevDollarCount = countDoubleDollars(previousBlock)
-      const currDollarCount = countDoubleDollars(currentBlock)
-
-      // If previous block has unclosed math (odd $$) and current block ends with $$
-      // AND current block doesn't start with $$, it's likely a continuation
-      if (
-        prevStartsWith$$
-        && prevDollarCount % 2 === 1
-        && !startsWithDoubleDollar(currentBlock)
-        && currDollarCount === 1
-      ) {
-        mergedBlocks[mergedBlocksLen - 1] = previousBlock + currentBlock
+    if (mergedBlocksLength > 0 && !previousTokenWasCode) {
+      const previousBlock = mergedBlocks[mergedBlocksLength - 1]!
+      if (countDoubleDollars(previousBlock) % 2 === 1) {
+        mergedBlocks[mergedBlocksLength - 1] = previousBlock + currentBlock
         continue
       }
     }
 
     mergedBlocks.push(currentBlock)
+
+    mergeFollowingSpaceIntoHtml = (
+      token.type === 'html'
+      && Boolean(token.block)
+      && htmlStack.length === 0
+    )
+
+    if (token.type !== 'space')
+      previousTokenWasCode = token.type === 'code'
   }
 
   return mergedBlocks

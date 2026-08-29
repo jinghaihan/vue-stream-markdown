@@ -1,13 +1,11 @@
 import type { PreprocessContext } from '../types'
+import { getPreprocessAnalysis } from './context'
 import { codeBlockPattern, doubleTildePattern } from './pattern'
 import {
-  calculateParagraphOffset,
   findClosedCodeBlockRanges,
   findInlineCodeRanges,
-  getLastParagraphWithIndex,
   hideBareFormattingMarker,
   isEscapedCharacter,
-  isInsideUnclosedCodeBlock,
   isPositionInRanges,
   isWithinHtmlTag,
   isWithinLinkOrImageUrl,
@@ -40,21 +38,34 @@ import {
  */
 export function fixDelete(
   content: string,
-  options?: Pick<PreprocessContext, 'hideBareFormattingMarkers'>,
+  options?: PreprocessContext,
 ): string {
-  // Don't process if we're inside a code block (unclosed)
-  if (isInsideUnclosedCodeBlock(content))
+  if (!content.includes('~'))
     return content
 
-  const hiddenBareMarker = hideBareFormattingMarker(content, ['~', '~~'])
+  const analysis = getPreprocessAnalysis(content, options)
+  // Don't process if we're inside a code block (unclosed)
+  if (analysis.hasUnclosedCodeBlock)
+    return content
+
+  const hiddenBareMarker = hideBareFormattingMarker(
+    content,
+    ['~', '~~'],
+    analysis.getLastParagraph().content,
+  )
   if (hiddenBareMarker !== undefined)
     return options?.hideBareFormattingMarkers === false ? content : hiddenBareMarker
 
   // Find the last paragraph (after the last blank line)
   // A blank line is defined as a line with only whitespace
-  const { lastParagraph, startIndex: paragraphStartIndex } = getLastParagraphWithIndex(content)
-  const codeBlockRanges = findClosedCodeBlockRanges(lastParagraph)
-  const inlineCodeRanges = findInlineCodeRanges(lastParagraph, codeBlockRanges)
+  const paragraph = analysis.getLastParagraph()
+  const {
+    content: lastParagraph,
+    inlineCodeRanges,
+    startIndex: paragraphStartIndex,
+  } = paragraph
+  if (paragraph.isFullyCodeBlock)
+    return content
 
   // Remove code blocks and protect inline code / escaped tildes.
   const lastParagraphWithoutInlineCodeMarkers = maskInlineCodeMarkdownMarkers(lastParagraph, inlineCodeRanges)
@@ -106,7 +117,6 @@ export function fixDelete(
   // 2. There's actual content after the last ~~ (not just `~~` alone)
   if (count % 2 === 1) {
     // Find the last ~~ in original lastParagraph, skipping code blocks
-    const lines = content.split('\n')
     let actualLastTildePos = -1
     let inCodeBlock = false
     for (let i = 0; i < lastParagraph.length - 1; i++) {
@@ -134,8 +144,7 @@ export function fixDelete(
     if (actualLastTildePos === -1) {
       return content
     }
-    const paragraphOffset = calculateParagraphOffset(paragraphStartIndex, lines)
-    const absoluteLastTildePos = paragraphOffset + actualLastTildePos
+    const absoluteLastTildePos = paragraph.startOffset + actualLastTildePos
 
     // Check if the tilde is in math block, link/image URL, or HTML tag
     if (isWithinMathBlock(content, absoluteLastTildePos) || isWithinLinkOrImageUrl(content, absoluteLastTildePos) || isWithinHtmlTag(content, absoluteLastTildePos)) {
