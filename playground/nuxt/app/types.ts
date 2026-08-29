@@ -13,7 +13,7 @@ export interface UserConfig {
   typedStep: number
   typedDelay: number
   showInputEditor: boolean
-  showAstResult: boolean
+  showDocumentResult: boolean
   shikiLightTheme: BuiltinTheme
   shikiDarkTheme: BuiltinTheme
   mermaidRenderer: 'vanilla' | 'beautiful'

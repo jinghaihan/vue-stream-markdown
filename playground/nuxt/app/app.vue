@@ -11,12 +11,10 @@ import type {
   UIOptions,
 } from 'vue-stream-markdown'
 import { throttle } from '@antfu/utils'
-import { createHtmlPlugin } from '@stream-markdown/html'
 import { useCycleList, useResizeObserver } from '@vueuse/core'
 import * as LZString from 'lz-string'
 import { hydrateOnVisible } from 'vue'
 import { Markdown, SUPPORT_LANGUAGES, useTailwindV3Theme } from 'vue-stream-markdown'
-import { createHtmlNodeRenderer } from 'vue-stream-markdown/html'
 import { ChartPie } from './icons'
 import { DEFAULT_MARKDOWN_PATH, getPresetContent } from './markdown'
 import { getContentFromUrl } from './utils'
@@ -25,39 +23,16 @@ const GitHubComponent = defineAsyncComponent({
   loader: () => import('./components/github-card.vue'),
   hydrate: hydrateOnVisible(),
 })
-const html = createHtmlPlugin({
-  allowedTags: [
-    'div',
-    'p',
-    'strong',
-    'em',
-    'ul',
-    'li',
-    'a',
-    'figure',
-    'figcaption',
-    'img',
-  ],
-  componentTags: ['github'],
-  allowedAttributes: {
-    '*': ['class'],
-    'github': ['name', 'description'],
-  },
-})
-const HtmlNodeRenderer = createHtmlNodeRenderer({
-  transform: html.transform,
-  components: {
-    GitHub: GitHubComponent,
-  },
-})
+const markdownComponents: StreamMarkdownProps['components'] = {
+  github: GitHubComponent,
+}
 
 const { cssVariables } = useTailwindV3Theme({})
 
 const userConfig = useUserConfig()
 
 const markdownRef = ref()
-const parsedNodes = computed(() => markdownRef.value?.getParsedNodes() ?? [])
-const processedContent = computed(() => markdownRef.value?.getProcessedContent() ?? '')
+const documentNodes = computed(() => markdownRef.value?.getDocument()?.nodes ?? [])
 
 const containerRef = ref<HTMLDivElement>()
 const monacoRef = ref()
@@ -102,10 +77,7 @@ const renderMode = computed(() => {
 const markdownContent = computed(() => renderMode.value === 'static' ? content.value : typedContent.value)
 
 const copyContent = computed(() => {
-  return JSON.stringify({
-    raw: markdownContent.value,
-    processed: processedContent.value,
-  }, null, 2)
+  return markdownContent.value
 })
 
 const shikiOptions = computed((): ShikiOptions => {
@@ -194,10 +166,6 @@ const previewerConfig: PreviewerConfig = {
   },
 }
 
-const nodeRenderers: StreamMarkdownProps['nodeRenderers'] = {
-  html: HtmlNodeRenderer,
-}
-
 const caret = computed(() => userConfig.value.caret ? userConfig.value.caret : undefined)
 
 function onEditorChange(data: string) {
@@ -225,7 +193,7 @@ function stopTypeWriting() {
 function terminateTypeWriting() {
   typedEnable.value = false
   if (!userConfig.value.staticMode)
-    userConfig.value.showAstResult = false
+    userConfig.value.showDocumentResult = false
   terminate()
 }
 
@@ -307,7 +275,7 @@ onMounted(() => {
   <Layout
     v-model:typed-enable="typedEnable"
     v-model:show-input-editor="userConfig.showInputEditor"
-    v-model:show-ast-result="userConfig.showAstResult"
+    v-model:show-document-result="userConfig.showDocumentResult"
     :stop="stopTypeWriting"
     class="vue-stream-markdown"
     :style="cssVariables"
@@ -326,7 +294,7 @@ onMounted(() => {
         v-model:typed-step="userConfig.typedStep"
         v-model:typed-delay="userConfig.typedDelay"
         v-model:show-input-editor="userConfig.showInputEditor"
-        v-model:show-ast-result="userConfig.showAstResult"
+        v-model:show-document-result="userConfig.showDocumentResult"
         v-model:shiki-light-theme="userConfig.shikiLightTheme"
         v-model:shiki-dark-theme="userConfig.shikiDarkTheme"
         v-model:mermaid-renderer="userConfig.mermaidRenderer"
@@ -382,7 +350,7 @@ onMounted(() => {
           :content="markdownContent"
           :controls="controlsConfig"
           :previewers="previewerConfig"
-          :node-renderers="nodeRenderers"
+          :components="markdownComponents"
           :locale="locale"
           :shiki-options="shikiOptions"
           :code-options="codeOptions"
@@ -393,8 +361,8 @@ onMounted(() => {
       </div>
     </template>
 
-    <template #ast>
-      <AstResult :parsed-nodes="parsedNodes" />
+    <template #document>
+      <DocumentResult :nodes="documentNodes" />
     </template>
   </Layout>
 </template>

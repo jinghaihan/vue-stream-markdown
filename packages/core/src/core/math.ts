@@ -1,11 +1,11 @@
-import type { InlineMathNode, MathNode } from '@markmend/ast'
-
-export function isDisplayMathNode(node: InlineMathNode | MathNode): boolean {
-  return node.type !== 'inlineMath'
+export interface MathRenderNode {
+  value: string
+  display: boolean
+  loading?: boolean
 }
 
 export interface MathRendererModelOptions {
-  node: InlineMathNode | MathNode
+  node: MathRenderNode
   installed: boolean
   renderFlag?: boolean
   renderingCode?: string
@@ -27,7 +27,7 @@ export interface MathRendererResult {
 export function createMathRendererModel(options: MathRendererModelOptions) {
   const code = options.node.value
   const loading = !!options.node.loading
-  const isDisplayMode = isDisplayMathNode(options.node)
+  const isDisplayMode = options.node.display
   const error = !options.installed
     || (!loading
       && !!options.errorMessage

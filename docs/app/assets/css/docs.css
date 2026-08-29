@@ -1,0 +1,26 @@
+:root {
+  --stream-markdown-animation-duration: 150ms;
+}
+
+.comark-content .stream-markdown {
+  --background: var(--ui-bg);
+  --foreground: var(--ui-text);
+  --primary: var(--ui-primary);
+}
+
+.comark-content .stream-markdown table {
+  display: table;
+  margin: 0;
+}
+
+.comark-content .stream-markdown code {
+  padding: 0;
+}
+
+.comark-content .stream-markdown div[class*='language-'] {
+  margin: 0 !important;
+}
+
+.comark-content .stream-markdown div[class*='language-'] pre {
+  padding: 1rem;
+}

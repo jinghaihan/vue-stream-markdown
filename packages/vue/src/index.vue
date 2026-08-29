@@ -1,28 +1,22 @@
 <script setup lang="ts">
 import type {
-  BuiltinNodeRenderers,
   Icons,
-  MarkdownAstParser,
-  NodeRenderers,
-  ParsedNode,
+  MarkdownDocument,
   StreamMarkdownProps,
-  SyntaxTree,
   UIComponents,
 } from './types'
+import { createMarkmendParser } from '@markmend/parser'
 import {
-  createProcessedMarkdownModel,
   createRootStyle,
-  createStreamMarkdownEngine,
   DEFAULT_ANIMATION,
   DEFAULT_ANIMATION_SPLIT,
   resolveEnableAnimate,
   resolveEnableCaret,
-  resolvePreloadNodeRenderers,
 } from '@stream-markdown/core'
-import { computed, onBeforeUnmount, onMounted, ref, toRefs, watch } from 'vue'
-import { COMPONENT_RENDERERS, UI } from './components'
+import { computed, onBeforeUnmount, onMounted, shallowRef, toRefs, watch } from 'vue'
+import { UI } from './components'
 import { ICONS } from './components/icons'
-import NodeList from './components/node-list.vue'
+import MarkdownNodes from './components/renderers/markdown'
 import {
   useContext,
   useDarkDetector,
@@ -39,7 +33,8 @@ import './style.css'
 const props = withDefaults(defineProps<StreamMarkdownProps>(), {
   mode: 'streaming',
   content: '',
-  nodeRenderers: () => ({}),
+  components: () => ({}),
+  uiComponents: () => ({}),
   icons: () => ({}),
   controls: true,
   previewers: true,
@@ -52,8 +47,6 @@ const props = withDefaults(defineProps<StreamMarkdownProps>(), {
 const emits = defineEmits<{
   (e: 'copied', content: string): void
 }>()
-
-const EMPTY_BLOCKS: SyntaxTree[] = []
 
 const {
   controls,
@@ -94,72 +87,33 @@ const { preload: preloadMermaid, dispose: disposeMermaid } = useMermaid({
 })
 const { preload: preloadKatex, dispose: disposeKatex } = useKatex({
   markdown: content,
-  mdastOptions: props.mdastOptions,
   cdnOptions: props.cdnOptions,
 })
 
-const containerRef = ref<HTMLDivElement>()
+const containerRef = shallowRef<HTMLDivElement>()
+const document = shallowRef<MarkdownDocument>({
+  frontmatter: {},
+  meta: {},
+  nodes: [],
+})
 
-const { markdownParser, parse, updateMode } = createStreamMarkdownEngine({
-  ...props,
-  mode: props.mode,
+const parser = createMarkmendParser({
+  completion: props.completion,
+  parserOptions: props.parserOptions,
+  syntax: {
+    security: {
+      allowedImagePrefixes: props.hardenOptions?.allowedImagePrefixes,
+      allowedLinkPrefixes: props.hardenOptions?.allowedLinkPrefixes,
+      allowedProtocols: props.hardenOptions?.allowedProtocols,
+      allowDataImages: props.hardenOptions?.allowDataImages,
+      defaultOrigin: props.hardenOptions?.defaultOrigin,
+    },
+  },
 })
 
 const enableAnimate = computed(() => resolveEnableAnimate(mode.value, props.enableAnimate))
-
 const enableCaret = computed(() => resolveEnableCaret(mode.value, props.caret))
-
-const processed = computed(() => {
-  updateMode(mode.value)
-  return createProcessedMarkdownModel(parse(props.content))
-})
-
-const blocks = computed(() => processed.value.blocks)
-const parsedNodes = computed(() => processed.value.parsedNodes)
-const processedContent = computed(() => processed.value.processedContent)
-const renderableBlocks = computed(() => {
-  const result: Array<{
-    block: SyntaxTree
-    index: number
-    nextNode?: ParsedNode
-    nextNodeType?: string
-    prevNode?: ParsedNode
-    prevNodeType?: string
-  }> = []
-  let prevNode: ParsedNode | undefined
-
-  blocks.value.forEach((block, index) => {
-    if (!block.children.length)
-      return
-
-    const previous = result.at(-1)
-    const firstNode = block.children[0]!
-    if (previous) {
-      previous.nextNodeType = firstNode.type
-      const previousLastNode = previous.block.children.at(-1)!
-      if (props.nodeRenderers[previousLastNode.type as keyof NodeRenderers])
-        previous.nextNode = firstNode
-    }
-    result.push({
-      block,
-      index,
-      prevNode: props.nodeRenderers[firstNode.type as keyof NodeRenderers] ? prevNode : undefined,
-      prevNodeType: prevNode?.type,
-    })
-    prevNode = block.children.at(-1)
-  })
-
-  return result
-})
-
 const rootStyle = computed(() => createRootStyle(cssVariables.value, props.animationDuration))
-
-const nodeRenderers = computed((): NodeRenderers => ({
-  ...COMPONENT_RENDERERS,
-  ...props.nodeRenderers,
-}))
-
-const preloadNodeRenderers = computed((): BuiltinNodeRenderers[] => resolvePreloadNodeRenderers(props.preload))
 
 const icons = computed((): Icons => ({
   ...ICONS,
@@ -168,17 +122,26 @@ const icons = computed((): Icons => ({
 
 const uiComponents = computed((): UIComponents => ({
   ...UI,
-  ...props.components,
+  ...props.uiComponents,
 }))
+
+let active = true
+
+watch(
+  [content, mode],
+  ([markdown, currentMode]) => {
+    void parser.parse(markdown, currentMode).then((nextDocument) => {
+      if (active)
+        document.value = nextDocument
+    })
+  },
+  { immediate: true },
+)
+
+watch(locale, () => loadLocaleMessages(locale.value))
 
 function getContainer(): HTMLElement | undefined {
   return containerRef.value
-}
-
-interface StreamMarkdownExpose {
-  getMarkdownParser: () => MarkdownAstParser
-  getParsedNodes: () => ParsedNode[]
-  getProcessedContent: () => string
 }
 
 async function bootstrap() {
@@ -193,15 +156,10 @@ async function bootstrap() {
   if (props.locale !== 'en-US')
     tasks.push(loadLocaleMessages(locale.value))
 
-  if (preloadNodeRenderers.value.length)
-    tasks.push(preloadAsyncComponents(nodeRenderers.value, preloadNodeRenderers.value))
-
   await Promise.all(tasks)
 }
 
 onMounted(bootstrap)
-
-watch(locale, () => loadLocaleMessages(locale.value))
 
 provideContext({
   controls,
@@ -217,7 +175,6 @@ provideContext({
   cdnOptions,
   mode,
   dir,
-  nodeRenderers,
   icons,
   uiComponents,
   uiOptions,
@@ -227,17 +184,16 @@ provideContext({
   animationSplit,
   enableCaret,
   caret,
-  blocks,
-  parsedNodes,
-  markdownParser,
+  documentNodes: computed(() => document.value.nodes),
   getContainer,
   beforeDownload: props.beforeDownload,
-  onCopied: (content: string) => {
-    emits('copied', content)
+  onCopied: (copiedContent: string) => {
+    emits('copied', copiedContent)
   },
 })
 
 onBeforeUnmount(() => {
+  active = false
   disposeShiki()
   disposeMermaid()
   disposeKatex()
@@ -246,10 +202,8 @@ onBeforeUnmount(() => {
   stopDarkModeObserver()
 })
 
-defineExpose<StreamMarkdownExpose>({
-  getMarkdownParser: () => markdownParser,
-  getParsedNodes: () => parsedNodes.value,
-  getProcessedContent: () => processedContent.value,
+defineExpose({
+  getDocument: () => document.value,
 })
 </script>
 
@@ -261,18 +215,10 @@ defineExpose<StreamMarkdownExpose>({
     :dir="dir === 'auto' ? undefined : dir"
     :style="rootStyle"
   >
-    <NodeList
-      v-for="({ block, index, nextNode, nextNodeType, prevNode, prevNodeType }) in renderableBlocks"
-      :key="index"
-      :blocks="EMPTY_BLOCKS"
-      :nodes="block.children"
-      :block-index="index"
-      :node-key="`stream-markdown-block-${index}`"
-      :deep="0"
-      :prev-node="prevNode"
-      :prev-node-type="prevNodeType"
-      :next-node="nextNode"
-      :next-node-type="nextNodeType"
+    <MarkdownNodes
+      :components="components"
+      :loading="mode === 'streaming'"
+      :nodes="document.nodes"
     />
   </div>
 </template>

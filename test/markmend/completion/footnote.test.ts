@@ -1,0 +1,11 @@
+import { describe, expect, it } from 'vitest'
+import { fixFootnote } from '../../../packages/markmend/core/src/completion/footnote'
+import { getTestCasesByCategories } from './test-cases'
+
+describe('fixFootnote', () => {
+  for (const testCase of getTestCasesByCategories(['footnote'])) {
+    it(testCase.description, () => {
+      expect(fixFootnote(testCase.input)).toBe(testCase.expected)
+    })
+  }
+})

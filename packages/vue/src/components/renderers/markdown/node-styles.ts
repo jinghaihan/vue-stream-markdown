@@ -1,0 +1,30 @@
+export const BLOCK_STYLES: Record<string, string> = {
+  blockquote: 'text-muted-foreground mx-0 my-4 pl-4 border-l-4 border-l-muted-foreground/30 italic relative [&_p]:mb-0',
+  h1: 'font-semibold mb-2 mt-6 text-3xl',
+  h2: 'font-semibold mb-2 mt-6 text-2xl',
+  h3: 'font-semibold mb-2 mt-6 text-xl',
+  h4: 'font-semibold mb-2 mt-6 text-lg',
+  h5: 'font-semibold mb-2 mt-6 text-base',
+  h6: 'font-semibold mb-2 mt-6 text-sm',
+  ol: 'leading-6 pl-5 whitespace-normal list-decimal',
+  p: 'my-4 align-middle transition-[height] duration-[var(--default-transition-duration)] ease',
+  ul: 'leading-6 pl-5 whitespace-normal list-disc',
+}
+
+export const ELEMENT_STYLES: Record<string, string> = {
+  a: 'text-primary underline cursor-pointer [overflow-wrap:anywhere]',
+  code: 'text-sm font-mono px-1.5 py-0.5 rounded bg-muted whitespace-normal break-words',
+  del: 'line-through',
+  em: 'italic',
+  hr: 'my-6 border-t border-border',
+  img: 'rounded-lg max-w-full h-auto',
+  input: 'mr-2 align-middle',
+  li: 'py-1 pl-1 [&_p]:m-0',
+  strong: 'font-semibold',
+  sup: 'text-primary',
+  table: 'border border-border rounded-lg w-full overflow-hidden border-collapse [&_p]:m-0 [&_tr]:border-b [&_tr]:border-border',
+  tbody: 'font-semibold border-y border-border bg-muted/40 relative [&_td]:text-sm [&_td]:px-4 [&_td]:py-2',
+  td: 'text-sm px-4 py-2',
+  th: 'text-sm text-left px-4 py-2 whitespace-nowrap',
+  thead: 'bg-muted/80 relative',
+}

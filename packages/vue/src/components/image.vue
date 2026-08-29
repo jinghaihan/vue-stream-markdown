@@ -3,7 +3,7 @@ import type {
   ImagePreviewControlKey,
   ImagePreviewTransformState,
 } from '@stream-markdown/core'
-import type { Control, ImageNodeRendererProps, UIImageProps } from '../types'
+import type { Control, UIImageProps } from '../types'
 import {
   createImagePreviewModel,
   createImagePreviewSources,
@@ -28,7 +28,7 @@ const emits = defineEmits<{
   (e: 'error', event: Event): void
 }>()
 
-const { icons, parsedNodes, uiComponents: UI } = useContext()
+const { icons, uiComponents: UI } = useContext()
 
 const { margin, controls: controlsConfig } = toRefs(props)
 
@@ -67,14 +67,14 @@ const {
   close: () => open.value = false,
 })
 
-const imageList = computed(() => createImagePreviewSources(parsedNodes.value, props.transformHardenUrl))
+const imageList = computed(() => createImagePreviewSources(props.sources, props.transformHardenUrl))
 const { state: imageSrc, prev, next } = useCycleList(imageList, {
   initialValue: props.src,
   fallbackIndex: 0,
 })
 
 const model = computed(() => createImagePreviewModel({
-  parsedNodes: parsedNodes.value,
+  sources: imageList.value,
   src: imageSrc.value,
   controls: controlsConfig.value,
   transformHardenUrl: props.transformHardenUrl,
@@ -103,7 +103,7 @@ const builtinControls = computed((): Control[] => model.value.controls.map(item 
 })))
 
 const zoomControls = computed(
-  () => resolveControls<ImageNodeRendererProps>('image', builtinControls.value, props.nodeProps),
+  () => resolveControls('image', builtinControls.value, props.nodeProps),
 )
 
 function handleLoad(event: Event) {

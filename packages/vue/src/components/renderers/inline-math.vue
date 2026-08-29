@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { InlineMathNodeRendererProps } from '../../types'
+import type { MathRenderProps } from '../../types'
 import { computed, toRefs } from 'vue'
 import { useContext, useMathRenderer } from '../../composables'
 
-const props = withDefaults(defineProps<InlineMathNodeRendererProps & {
+const props = withDefaults(defineProps<MathRenderProps & {
   throttle?: number
 }>(), {
   throttle: 300,

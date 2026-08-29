@@ -1,6 +1,6 @@
 import type { CdnOptions } from '@stream-markdown/core'
 import type { MaybeRefOrGetter } from 'vue'
-import type { InlineMathNode, KatexOptions, MathNode } from '../types'
+import type { KatexOptions, MathRenderNode } from '../types'
 import { throttle } from '@antfu/utils'
 import {
   applyMathRendererResult,
@@ -11,7 +11,7 @@ import { computed, ref, toValue, watch } from 'vue'
 import { useKatex } from './use-katex'
 
 interface UseMathRendererOptions {
-  node: MaybeRefOrGetter<InlineMathNode | MathNode>
+  node: MaybeRefOrGetter<MathRenderNode>
   katexOptions?: MaybeRefOrGetter<KatexOptions | undefined>
   cdnOptions?: CdnOptions
   throttle?: MaybeRefOrGetter<number>

@@ -2,20 +2,17 @@ import {
   createTextParts,
   detectTextDirection,
   getConfigValue,
-  getDirectionalText,
   getDownloadFilename,
-  getNodeKey,
   getTableCellNodes,
   getTransitionName,
   isConfigEnabled,
   normalizeAnimationDuration,
   normalizeCssSize,
   normalizeThemeVariableValue,
-  resolveNodeTextDirection,
   resolveScrollableMaxHeight,
   resolveTableAlign,
   resolveTextAnimationSplit,
-  shouldAnimateNode,
+  resolveTextDirection,
   splitText,
   splitTextByAuto,
   splitTextByChar,
@@ -62,16 +59,8 @@ describe('core utilities', () => {
     ])
   })
 
-  it('keeps node keys compatible with existing renderer behavior', () => {
-    expect(getNodeKey({ type: 'paragraph' }, 2, 'block-0')).toBe('block-0-paragraph-2')
-    expect(getNodeKey({ type: 'footnoteReference', identifier: 'a' }, 3, 'block-0')).toBe('block-0-footnoteReference-a')
-  })
-
-  it('resolves animation names and node transition eligibility', () => {
+  it('resolves animation names', () => {
     expect(getTransitionName('fade-in')).toBe('stream-markdown-fade-in')
-    expect(shouldAnimateNode('paragraph')).toBe(true)
-    expect(shouldAnimateNode('text')).toBe(false)
-    expect(shouldAnimateNode('code')).toBe(false)
   })
 
   it('normalizes CSS values used by renderers', () => {
@@ -150,19 +139,9 @@ describe('core utilities', () => {
     expect(detectTextDirection('1234 !?')).toBe('ltr')
   })
 
-  it('ignores code and math when resolving an AST block direction', () => {
-    const node = {
-      type: 'paragraph',
-      children: [
-        { type: 'text', value: 'این یک نمونه است.' },
-        { type: 'inlineCode', value: 'const example = true' },
-        { type: 'inlineMath', value: 'englishIdentifier' },
-      ],
-    } as never
-
-    expect(getDirectionalText(node)).toBe('این یک نمونه است.')
-    expect(resolveNodeTextDirection(node, 'auto')).toBe('rtl')
-    expect(resolveNodeTextDirection(node, 'ltr')).toBe('ltr')
-    expect(resolveNodeTextDirection(node, undefined)).toBeUndefined()
+  it('resolves text direction from visible text', () => {
+    expect(resolveTextDirection('این یک نمونه است.', 'auto')).toBe('rtl')
+    expect(resolveTextDirection('این یک نمونه است.', 'ltr')).toBe('ltr')
+    expect(resolveTextDirection('این یک نمونه است.', undefined)).toBeUndefined()
   })
 })

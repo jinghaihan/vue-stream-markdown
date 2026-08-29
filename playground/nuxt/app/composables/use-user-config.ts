@@ -7,7 +7,7 @@ const DEFAULT_USER_CONFIG: UserConfig = {
   typedStep: 1,
   typedDelay: 16,
   showInputEditor: true,
-  showAstResult: false,
+  showDocumentResult: false,
   shikiLightTheme: 'github-light',
   shikiDarkTheme: 'github-dark',
   mermaidRenderer: 'beautiful',

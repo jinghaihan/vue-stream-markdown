@@ -1,4 +1,3 @@
-import type { CodeNode } from '@markmend/ast'
 import type {
   CodeOptions,
   CodeOptionsLanguage,
@@ -9,7 +8,6 @@ import type {
   PreviewSegmentedPlacement,
   SelectOption,
 } from '../types'
-import type { CodeBlockModeState } from './types'
 import {
   LANGUAGE_ALIAS,
   LANGUAGE_EXTENSIONS,
@@ -21,6 +19,16 @@ import {
   resolveScrollableMaxHeight,
 } from '../utils'
 
+export interface CodeBlockNode {
+  value: string
+  lang?: string | null
+  loading?: boolean
+}
+
+export interface CodeBlockModeState {
+  mode: 'preview' | 'source'
+}
+
 export interface CodeOptionsModel<TComponent = unknown> {
   languageCodeOptions: CodeOptionsLanguage<TComponent>
   showLanguageIcon: boolean
@@ -30,7 +38,7 @@ export interface CodeOptionsModel<TComponent = unknown> {
 }
 
 export interface CodeBlockModelOptions<TComponent = unknown> {
-  node: CodeNode
+  node: CodeBlockNode
   codeOptions?: CodeOptions<TComponent>
   previewers?: PreviewerConfig<TComponent>
   controls?: unknown
@@ -250,7 +258,7 @@ export interface CodeBlockControlActionOptions {
   select?: SelectOption
   filename?: string
   state: CodeBlockControlState
-  node: CodeNode
+  node: CodeBlockNode
   language: string
   beforeDownload?: (event: DownloadEvent) => MaybePromise<boolean>
   copyText?: (content: string) => MaybePromise<void>
@@ -299,7 +307,7 @@ export function getCodeFileExtension(language: string): string | undefined {
   return (LANGUAGE_EXTENSIONS as Record<string, string | undefined>)[language]
 }
 
-export function createCodeRendererModel(node: CodeNode) {
+export function createCodeRendererModel(node: CodeBlockNode) {
   const code = node.value.trim()
   const lang = node.lang || ''
 

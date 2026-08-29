@@ -22,7 +22,6 @@ export default defineConfig({
         '@streamdown/code',
         '@types/react',
         '@types/react-dom',
-        'comark',
         'jsdom',
         'react',
         'react-dom',
@@ -36,12 +35,12 @@ export default defineConfig({
     },
     {
       name: 'parser',
-      match: [/marked/, /mdast-/, /micromark-/, 'parse5', 'sanitize-html'],
+      match: ['comark', 'markdown-it-cjk-friendly'],
       priority: 0,
     },
     {
       name: 'inlined',
-      match: ['@antfu/utils', /quick-lru/, /treechop/],
+      match: ['@antfu/utils'],
       priority: 0,
     },
     {

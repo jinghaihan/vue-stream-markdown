@@ -7,28 +7,28 @@ const props = withDefaults(defineProps<{
 
 const typedEnable = defineModel<boolean>('typedEnable', { required: false, default: false })
 const showInputEditor = defineModel<boolean>('showInputEditor', { required: false, default: false })
-const showAstResult = defineModel<boolean>('showAstResult', { required: false, default: false })
+const showDocumentResult = defineModel<boolean>('showDocumentResult', { required: false, default: false })
 
 const showMarkdown = computed(
-  () => isMobile.value ? (!showInputEditor.value && !showAstResult.value) : true,
+  () => isMobile.value ? (!showInputEditor.value && !showDocumentResult.value) : true,
 )
 
 // when is mobile, only one section can be shown at a time
 const shouldToggle = computed(
-  () => isMobile.value && showInputEditor.value && showAstResult.value,
+  () => isMobile.value && showInputEditor.value && showDocumentResult.value,
 )
 
 watch(
   () => isMobile.value,
   () => {
     if (!isMobile.value) {
-      if (!showInputEditor.value && !showAstResult.value)
+      if (!showInputEditor.value && !showDocumentResult.value)
         showInputEditor.value = true
       return
     }
 
     showInputEditor.value = false
-    showAstResult.value = false
+    showDocumentResult.value = false
   },
   { immediate: true },
 )
@@ -39,7 +39,7 @@ watch(
       return
     if (typedEnable.value) {
       showInputEditor.value = false
-      showAstResult.value = false
+      showDocumentResult.value = false
     }
   },
 )
@@ -49,19 +49,19 @@ watch(
     if (!isMobile.value)
       return
     if (shouldToggle.value)
-      showAstResult.value = false
+      showDocumentResult.value = false
     if (showInputEditor.value)
       props.stop()
   },
 )
 watch(
-  () => showAstResult.value,
+  () => showDocumentResult.value,
   () => {
     if (!isMobile.value)
       return
     if (shouldToggle.value)
       showInputEditor.value = false
-    if (showAstResult.value)
+    if (showDocumentResult.value)
       props.stop()
   },
 )
@@ -85,8 +85,8 @@ watch(
         <slot name="markdown" />
       </div>
 
-      <div v-if="showAstResult" class="flex-1 min-w-0 lg:overflow-auto">
-        <slot name="ast" />
+      <div v-if="showDocumentResult" class="flex-1 min-w-0 lg:overflow-auto">
+        <slot name="document" />
       </div>
     </main>
   </section>

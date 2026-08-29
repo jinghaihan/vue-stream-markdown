@@ -1,4 +1,2 @@
-export * from './preprocess'
-export * from './processor'
-export * from './types'
-export * from './utils'
+export { completeMarkdown } from './completion'
+export type { CompletionOptions } from './types'

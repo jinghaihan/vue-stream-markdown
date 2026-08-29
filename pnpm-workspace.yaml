@@ -5,6 +5,7 @@ packages:
   - packages/markmend/*
   - playground/*
   - docs
+blockExoticSubdeps: false
 overrides:
   typescript: catalog:dev
   vue: catalog:frontend
@@ -13,12 +14,15 @@ allowBuilds:
   esbuild: true
   simple-git-hooks: true
   unrs-resolver: true
+  vue-demi: true
+patchedDependencies:
+  comark-docs@0.0.1: patches/comark-docs@0.0.1.patch
+  comark@0.6.2: patches/comark@0.6.2.patch
 catalogs:
   benchmark:
     '@streamdown/code': ^1.1.1
     '@types/react': ^19.2.18
     '@types/react-dom': ^19.2.5
-    comark: 0.6.2
     jsdom: ^30.0.1
     react: 18.3.1
     react-dom: 18.3.1
@@ -46,9 +50,6 @@ catalogs:
     tsx: ^4.23.12
     turbo: ^2.10.12
     typescript: ~6.0.3
-  docs:
-    vitepress: ^1.6.4
-    vitepress-plugin-llms: ^1.13.5
   frontend:
     '@floating-ui/dom': ^1.8.0
     '@vueuse/core': ^14.4.0
@@ -59,8 +60,6 @@ catalogs:
     '@iconify-json/simple-icons': ^1.2.93
   inlined:
     '@antfu/utils': ^9.3.0
-    quick-lru: ^7.3.0
-    treechop: ^0.1.2
   lint:
     '@nuxt/eslint': ^1.17.0
     '@octohash/eslint-config': ^0.5.3
@@ -69,20 +68,8 @@ catalogs:
     eslint-plugin-format: ^2.0.1
     vue-tsc: ^3.3.11
   parser:
-    marked: ^18.0.11
-    mdast-util-from-markdown: ^2.0.3
-    mdast-util-frontmatter: ^2.0.1
-    mdast-util-gfm: ^3.1.0
-    mdast-util-math: ^3.0.0
-    mdast-util-to-markdown: ^2.1.2
-    micromark-extension-cjk-friendly: ^2.0.1
-    micromark-extension-cjk-friendly-gfm-strikethrough: ^2.0.1
-    micromark-extension-frontmatter: ^2.0.0
-    micromark-extension-gfm: ^3.0.0
-    micromark-extension-math: ^3.1.0
-    micromark-util-types: ^2.0.2
-    parse5: ^8.0.1
-    sanitize-html: ^2.17.7
+    comark: 0.6.2
+    markdown-it-cjk-friendly: ^3.0.0
   playground:
     '@monaco-editor/loader': ^1.7.0
     '@nuxt/devtools': ^3.4.2
@@ -102,9 +89,7 @@ catalogs:
     '@vue/test-utils': ^2.5.0
     vitest: ^4.1.11
   types:
-    '@types/mdast': ^4.0.4
     '@types/node': ^26.4.0
-    '@types/sanitize-html': ^2.16.1
 onlyBuiltDependencies:
   - esbuild
   - simple-git-hooks

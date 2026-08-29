@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
-import type { CodeNodeRendererProps, Control, SelectOption } from '../../types'
+import type { CodeBlockProps, Control, SelectOption } from '../../types'
 import {
   createCodeBlockControlDescriptors,
   createCodeBlockModel,
@@ -22,7 +22,7 @@ defineOptions({
   inheritAttrs: false,
 })
 
-const props = withDefaults(defineProps<CodeNodeRendererProps>(), {})
+const props = withDefaults(defineProps<CodeBlockProps>(), {})
 
 const {
   beforeDownload,
@@ -148,11 +148,11 @@ const builtinControls = computed((): Control[] => createCodeBlockControlDescript
 })))
 
 const headerControls = computed(
-  () => resolveControls<CodeNodeRendererProps>('code', builtinControls.value, props),
+  () => resolveControls<CodeBlockProps>('code', builtinControls.value, props),
 )
 
 const modalControls = computed(
-  () => resolveControls<CodeNodeRendererProps>('code', headerControls.value, props)
+  () => resolveControls<CodeBlockProps>('code', headerControls.value, props)
     .filter(i => i.key !== 'collapse'),
 )
 

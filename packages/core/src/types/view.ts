@@ -1,6 +1,3 @@
-export type NodeRenderers<TComponent = unknown, TNodeType extends PropertyKey = string>
-  = Partial<Record<TNodeType, TComponent>>
-
 export type UIComponents<TComponent = unknown, TComponentName extends PropertyKey = string>
   = Record<TComponentName, TComponent>
 

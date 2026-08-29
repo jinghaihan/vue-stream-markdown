@@ -1,4 +1,3 @@
-import type { MarkdownAstParserOptions } from '@markmend/ast'
 import type { AnimationSplit, AnimationType } from '../types'
 import type { CdnOptions } from './cdn'
 import type { MaybePromise, TextDirectionConfig } from './common'
@@ -38,20 +37,18 @@ export interface StreamMarkdownHooks {
 }
 
 export interface StreamMarkdownViewProps<
-  TNodeRenderers = unknown,
+  TMarkdownComponents = unknown,
   TIcons = unknown,
   TUIComponents = unknown,
-  TPreload = unknown,
   TCaret extends string = string,
 > {
   mode?: 'static' | 'streaming'
   /** Force one text direction or detect it independently for each semantic block. */
   dir?: TextDirectionConfig
   content?: string
-  nodeRenderers?: TNodeRenderers
+  components?: TMarkdownComponents
   icons?: Partial<TIcons>
-  components?: Partial<TUIComponents>
-  preload?: TPreload
+  uiComponents?: Partial<TUIComponents>
   locale?: string | LocaleConfig
   enableAnimate?: boolean
   animation?: AnimationType
@@ -62,10 +59,9 @@ export interface StreamMarkdownViewProps<
 }
 
 export type StreamMarkdownProps<
-  TNodeRenderers = unknown,
+  TMarkdownComponents = unknown,
   TIcons = unknown,
   TUIComponents = unknown,
-  TPreload = unknown,
   TCaret extends string = string,
   TControls = unknown,
   TPreviewers = unknown,
@@ -89,6 +85,5 @@ export type StreamMarkdownProps<
   TLinkOptions,
   TUIOptions
 >
-& StreamMarkdownViewProps<TNodeRenderers, TIcons, TUIComponents, TPreload, TCaret>
+& StreamMarkdownViewProps<TMarkdownComponents, TIcons, TUIComponents, TCaret>
 & StreamMarkdownHooks
-& MarkdownAstParserOptions

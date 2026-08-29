@@ -1,4 +1,4 @@
-import type { BuiltinNodeRenderers, CaretType, HardenOptions, PlainTextNodeTypes } from '../types'
+import type { CaretType, HardenOptions } from '../types'
 
 export const ANIMATION_TYPES = [
   'fade-in',
@@ -24,11 +24,6 @@ export const STREAM_MARKDOWN_CSS_VARIABLES = {
   defaultTransitionDuration: '--default-transition-duration',
 } as const
 
-export const NODE_TRANSITION_EXCLUDED_TYPES = [
-  'code',
-  'text',
-] as const satisfies readonly BuiltinNodeRenderers[]
-
 export const CARETS = {
   block: ' ▋',
   circle: ' ●',
@@ -40,40 +35,6 @@ export const DEFAULT_HARDEN_OPTIONS: HardenOptions = {
   allowedProtocols: ['*'],
   allowDataImages: true,
 }
-
-export const PLAIN_TEXT_NODES: PlainTextNodeTypes[] = [
-  'text',
-  'inlineCode',
-  'inlineMath',
-  'strong',
-  'emphasis',
-  'delete',
-  'footnoteReference',
-  'footnoteDefinition',
-  'link',
-  'linkReference',
-]
-
-export const PRELOAD_NODE_RENDERER: BuiltinNodeRenderers[] = [
-  'blockquote',
-  'delete',
-  'emphasis',
-  'footnoteDefinition',
-  'footnoteReference',
-  'heading',
-  'image',
-  'inlineCode',
-  'inlineMath',
-  'link',
-  'list',
-  'listItem',
-  'paragraph',
-  'strong',
-  'table',
-  'text',
-  'thematicBreak',
-  'yaml',
-]
 
 export const SHADCN_SCHEMAS = [
   'background',

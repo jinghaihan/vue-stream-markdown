@@ -1,8 +1,14 @@
-import type { ImageNode } from '@markmend/ast'
 import type { ImageOptions } from '../types'
 
+export interface ImageRenderNode {
+  url: string
+  alt?: string | null
+  title?: string | null
+  loading?: boolean
+}
+
 export interface ImageModelOptions<TComponent = unknown> {
-  node: ImageNode
+  node: ImageRenderNode
   imageOptions?: ImageOptions<TComponent>
   fallbackAttempted?: boolean
   imageLoaded?: boolean

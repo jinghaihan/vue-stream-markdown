@@ -1,5 +1,5 @@
 import type { MaybeRefOrGetter } from 'vue'
-import type { Control, ControlsConfig, NodeRendererProps } from '../types'
+import type { Control, ControlsConfig } from '../types'
 import {
   getConfigValue,
   isConfigEnabled,
@@ -22,7 +22,7 @@ export function useControls(options: UseControlsOptions) {
     return getConfigValue<T>(controls.value, key)
   }
 
-  function resolveControls<T extends NodeRendererProps = NodeRendererProps>(
+  function resolveControls<T>(
     type: string,
     builtinControls: Control[],
     props: T,

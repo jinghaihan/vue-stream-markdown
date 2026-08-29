@@ -12,10 +12,10 @@ export function isRegExp(value: unknown): value is RegExp {
   return Object.prototype.toString.call(value) === '[object RegExp]'
 }
 
-export function filterObjectKeys(ast: unknown, exclude: string[]) {
+export function filterObjectKeys(value: unknown, exclude: string[]) {
   const seen = new WeakMap<any, unknown>()
   return JSON.stringify(
-    ast,
+    value,
     (key: string, value: unknown) => {
       if ([...exclude.filter(v => !!v)].includes(key))
         return
