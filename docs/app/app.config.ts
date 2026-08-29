@@ -1,3 +1,5 @@
+import { version } from '../../packages/vue/package.json'
+
 export default defineAppConfig({
   seo: {
     siteName: 'Vue Stream Markdown',
@@ -17,6 +19,7 @@ export default defineAppConfig({
       { label: 'Features', sections: ['feature'] },
       { label: 'Config', sections: ['config'] },
       { label: 'Playground', sections: [], to: 'https://play-vue-stream-markdown.netlify.app/' },
+      { label: `v${version}`, sections: [], to: 'https://github.com/jinghaihan/vue-stream-markdown/releases' },
     ],
     links: [
       {
@@ -54,7 +57,7 @@ export default defineAppConfig({
     schemaOrg: {
       applicationCategory: 'DeveloperApplication',
       operatingSystem: 'Web',
-      softwareVersion: '1.1.0',
+      softwareVersion: version,
     },
   },
 })
