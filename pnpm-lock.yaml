@@ -409,10 +409,10 @@ importers:
       '@stream-markdown/core':
         specifier: workspace:*
         version: link:../../core
-    devDependencies:
       beautiful-mermaid:
         specifier: ^1.1.3
         version: 1.1.3
+    devDependencies:
       mermaid:
         specifier: ^11.13.0
         version: 11.16.0
@@ -4933,7 +4933,7 @@ packages:
     hasBin: true
 
   comark-docs@https://codeload.github.com/comarkdown/comark-docs/tar.gz/fad7fbfd4e05cfaabc6ace410bee4c068665f37f:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/comarkdown/comark-docs/tar.gz/fad7fbfd4e05cfaabc6ace410bee4c068665f37f}
+    resolution: {gitHosted: true, integrity: sha512-DQO6zkhESU0l0TZKAjKs4T+tJf9jeQ/pHqNothwL5Z1IaFH9fh7FUC68y30jWu//dkhm6Nay1edgh/Fv5EwLJw==, tarball: https://codeload.github.com/comarkdown/comark-docs/tar.gz/fad7fbfd4e05cfaabc6ace410bee4c068665f37f}
     version: 0.0.1
     peerDependencies:
       nuxt: ^4.5.0
