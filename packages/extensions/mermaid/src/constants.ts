@@ -1,9 +1,9 @@
 import type { RenderOptions as BeautifulMermaidConfig, ThemeName } from 'beautiful-mermaid'
 import { stripVersionRangePrefix } from '@stream-markdown/core'
-import { devDependencies } from '../package.json'
+import { dependencies, devDependencies } from '../package.json'
 
 export const MERMAID_VERSION = stripVersionRangePrefix(devDependencies.mermaid)
-export const BEAUTIFUL_MERMAID_VERSION = stripVersionRangePrefix(devDependencies['beautiful-mermaid'])
+export const BEAUTIFUL_MERMAID_VERSION = stripVersionRangePrefix(dependencies['beautiful-mermaid'])
 
 export const BEAUTIFUL_MERMAID_SUPPORTED_PATTERNS = [
   'flowchart',
