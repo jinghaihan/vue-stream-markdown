@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { getTokenStyleObject, TokensResult } from 'shiki'
+import type { getTokenStyleObject, ThemedToken, TokensResult } from 'shiki'
 import type { PropType } from 'vue'
 import { computed, defineComponent, h, renderList, shallowRef, watch } from 'vue'
 
@@ -57,7 +57,9 @@ export default defineComponent({
       { immediate: true },
     )
 
-    const lines = computed(() => props.tokens?.tokens ?? props.code.split('\n'))
+    const lines = computed<ThemedToken[][]>(() => props.tokens?.tokens ?? props.code
+      .split('\n')
+      .map(content => [{ content, offset: 0, htmlStyle: {} }]))
 
     return () => h(
       'div',
@@ -98,16 +100,14 @@ export default defineComponent({
                   : 'relative block min-h-4 text-sm',
                 'key': index,
               },
-              typeof line === 'string'
-                ? line
-                : renderList(line, (token, tokenIndex) => h(
-                    'span',
-                    {
-                      key: tokenIndex,
-                      style: token.htmlStyle || (getTokenStyleObjectRef.value?.(token) ?? {}),
-                    },
-                    token.content,
-                  )),
+              renderList(line, (token, tokenIndex) => h(
+                'span',
+                {
+                  key: tokenIndex,
+                  style: token.htmlStyle || (getTokenStyleObjectRef.value?.(token) ?? {}),
+                },
+                token.content,
+              )),
             ),
           ),
         ),
