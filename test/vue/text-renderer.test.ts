@@ -13,6 +13,7 @@ import { useContext } from '../../packages/vue/src/composables'
 function mountText(
   value: string,
   options: {
+    animation?: NonNullable<StreamMarkdownProvideContext['animation']>
     animationSplit?: NonNullable<StreamMarkdownProvideContext['animationSplit']>
     hideCaret?: boolean
     loading?: boolean
@@ -29,6 +30,7 @@ function mountText(
     setup() {
       const { provideContext } = useContext()
       provideContext({
+        animation: options.animation,
         animationSplit: options.animationSplit,
         enableCaret: true,
         mode: options.mode,
@@ -63,6 +65,24 @@ describe('text renderer', () => {
       'world',
     ])
     expect(wrapper.find('[data-stream-markdown="text-space"]').element.textContent).toBe('  ')
+  })
+
+  it.each(['fade-in', 'blur-in', 'slide-up'] as const)(
+    'uses CSS animation for the built-in %s animation',
+    (animation) => {
+      const wrapper = mountText('Animated text', { animation })
+
+      expect(wrapper.find('transition-group-stub').exists()).toBe(false)
+      expect(wrapper.get('[data-stream-markdown="text-word"]').classes())
+        .toContain(`stream-markdown-text-${animation}`)
+    },
+  )
+
+  it('keeps TransitionGroup support for custom animations', () => {
+    const wrapper = mountText('Animated text', { animation: 'custom-animation' })
+
+    expect(wrapper.get('transition-group-stub').attributes('name'))
+      .toBe('stream-markdown-custom-animation')
   })
 
   it('splits animated text into character and whitespace parts', () => {
