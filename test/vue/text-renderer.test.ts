@@ -47,6 +47,14 @@ function mountText(
 }
 
 describe('text renderer', () => {
+  it('renders static text without a wrapper element', () => {
+    const wrapper = mountText('Static text', { mode: ref('static') })
+
+    expect(wrapper.text()).toBe('Static text')
+    expect(wrapper.find('[data-stream-markdown="text"]').exists()).toBe(false)
+    expect(wrapper.element.nodeType).toBe(Node.TEXT_NODE)
+  })
+
   it('splits animated text into word and whitespace parts', () => {
     const wrapper = mountText('Hello  world')
 

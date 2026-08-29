@@ -1,7 +1,7 @@
 import type { TextNode } from '@stream-markdown/core'
 import type { VNodeRenderContext, VNodeRendererProps } from './types'
 import { createTextModel, DISABLED_TRANSITION_NAME } from '@stream-markdown/core'
-import { h, TransitionGroup } from 'vue'
+import { createTextVNode, h, TransitionGroup } from 'vue'
 
 export function renderText(
   props: VNodeRendererProps<TextNode>,
@@ -25,6 +25,9 @@ export function renderText(
         'data-stream-markdown': 'caret',
       }, context.caret)
     : undefined
+
+  if (!context.animatedTextKeys.has(props.nodeKey) && !caret)
+    return createTextVNode(props.node.value)
 
   if (context.animatedTextKeys.has(props.nodeKey)) {
     return h(TransitionGroup, {
