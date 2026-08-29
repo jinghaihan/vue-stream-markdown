@@ -1,7 +1,7 @@
 <script lang="ts">
 import type { getTokenStyleObject, TokensResult } from 'shiki'
 import type { PropType } from 'vue'
-import { defineComponent, h, renderList, shallowRef } from 'vue'
+import { defineComponent, h, renderList, shallowRef, watch } from 'vue'
 
 export default defineComponent({
   name: 'ShikiTokensRenderer',
@@ -24,10 +24,29 @@ export default defineComponent({
       return null
 
     const getTokenStyleObjectRef = shallowRef<typeof getTokenStyleObject | null>(null)
-    void (async () => {
-      const { getTokenStyleObject } = await props.getShiki()
-      getTokenStyleObjectRef.value = getTokenStyleObject
-    })()
+    let loadingTokenStyleObject = false
+    watch(
+      () => props.tokens,
+      (tokens) => {
+        const needsTokenStyleObject = tokens?.tokens.some(
+          line => line.some(token => !token.htmlStyle),
+        )
+        if (!needsTokenStyleObject || loadingTokenStyleObject || getTokenStyleObjectRef.value)
+          return
+
+        loadingTokenStyleObject = true
+        void (async () => {
+          try {
+            const { getTokenStyleObject } = await props.getShiki()
+            getTokenStyleObjectRef.value = getTokenStyleObject
+          }
+          finally {
+            loadingTokenStyleObject = false
+          }
+        })()
+      },
+      { immediate: true },
+    )
 
     return () => {
       if (!props.tokens?.tokens)

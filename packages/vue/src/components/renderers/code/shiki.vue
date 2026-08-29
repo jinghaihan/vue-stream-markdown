@@ -3,7 +3,7 @@ import type { TokensResult } from 'shiki'
 import type { CodeNodeRendererProps } from '../../../types'
 import { createCodeRendererModel } from '@stream-markdown/core'
 import { useResizeObserver } from '@vueuse/core'
-import { computed, defineAsyncComponent, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, ref, shallowRef, watch } from 'vue'
 import { useCodeOptions, useContext, useShiki } from '../../../composables'
 import VanillaRenderer from './vanilla-renderer.vue'
 
@@ -29,7 +29,7 @@ const { getShiki, codeToTokens } = useShiki({
   isDark,
 })
 
-const tokens = ref<TokensResult>()
+const tokens = shallowRef<TokensResult>()
 
 const vanillaRef = ref()
 const minHeight = ref<number>()
