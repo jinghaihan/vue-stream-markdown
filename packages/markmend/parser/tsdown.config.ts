@@ -15,7 +15,6 @@ export default defineConfig({
       neverBundle: [
         '@markmend/core',
         /^comark(?:\/|$)/,
-        /^markdown-it-cjk-friendly(?:\/|$)/,
       ],
     },
     neverBundle: ['@markmend/core'],
