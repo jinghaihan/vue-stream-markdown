@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { Component } from 'vue'
+import type { TokensResult } from 'shiki'
 import type { CodeNodeRendererProps } from '../../../types'
 import { createCodeRendererModel } from '@stream-markdown/core'
-import { computed, defineAsyncComponent } from 'vue'
-import { useContext, useShiki } from '../../../composables'
-import Vanilla from './vanilla.vue'
+import { computed, shallowRef, watch } from 'vue'
+import { useCodeOptions, useContext, useShiki } from '../../../composables'
+import CodeContent from './content.vue'
 
 const props = withDefaults(defineProps<CodeNodeRendererProps & {
   showHeader?: boolean
@@ -12,18 +12,50 @@ const props = withDefaults(defineProps<CodeNodeRendererProps & {
   showHeader: true,
 })
 
-const { cdnOptions, uiComponents: UI } = useContext()
+const { cdnOptions, codeOptions, isDark, shikiOptions, uiComponents: UI } = useContext()
 
 const model = computed(() => createCodeRendererModel(props.node))
+const code = computed(() => model.value.code)
+const lang = computed(() => model.value.lang)
 const languageClass = computed(() => model.value.languageClass)
 
-const { installed: hasShiki } = useShiki({
-  cdnOptions,
+const { showLineNumbers } = useCodeOptions({
+  codeOptions,
+  language: lang,
 })
 
-const Shiki = defineAsyncComponent(() => import('./shiki.vue'))
+const { installed: hasShiki, getShiki, codeToTokens } = useShiki({
+  cdnOptions,
+  lang,
+  shikiOptions,
+  isDark,
+})
 
-const component = computed<Component>(() => hasShiki.value ? Shiki : Vanilla)
+const highlighted = shallowRef<TokensResult>()
+let highlightRequest = 0
+
+const tokens = computed(() => highlighted.value)
+
+watch(
+  () => [
+    code.value,
+    hasShiki.value,
+    shikiOptions.value,
+    isDark.value,
+  ] as const,
+  async ([currentCode, installed]) => {
+    const request = ++highlightRequest
+    if (!installed) {
+      highlighted.value = undefined
+      return
+    }
+
+    const result = await codeToTokens(currentCode)
+    if (request === highlightRequest)
+      highlighted.value = result
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -32,17 +64,23 @@ const component = computed<Component>(() => hasShiki.value ? Shiki : Vanilla)
     v-if="showHeader"
     v-bind="props"
   >
-    <component
-      :is="component"
-      v-bind="props"
-      :class="[languageClass]"
+    <CodeContent
+      :code="code"
+      :lang="lang"
+      :language-class="languageClass"
+      :tokens="tokens"
+      :get-shiki="getShiki"
+      :show-line-numbers="showLineNumbers"
     />
   </component>
 
-  <component
-    :is="component"
+  <CodeContent
     v-else
-    v-bind="props"
-    :class="[languageClass]"
+    :code="code"
+    :lang="lang"
+    :language-class="languageClass"
+    :tokens="tokens"
+    :get-shiki="getShiki"
+    :show-line-numbers="showLineNumbers"
   />
 </template>

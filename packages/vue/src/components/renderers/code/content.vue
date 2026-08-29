@@ -1,11 +1,23 @@
 <script lang="ts">
 import type { getTokenStyleObject, TokensResult } from 'shiki'
 import type { PropType } from 'vue'
-import { defineComponent, h, renderList, shallowRef, watch } from 'vue'
+import { computed, defineComponent, h, renderList, shallowRef, watch } from 'vue'
 
 export default defineComponent({
-  name: 'ShikiTokensRenderer',
+  name: 'CodeContent',
   props: {
+    code: {
+      type: String,
+      required: true,
+    },
+    lang: {
+      type: String,
+      required: true,
+    },
+    languageClass: {
+      type: String,
+      required: true,
+    },
     tokens: {
       type: Object as PropType<TokensResult>,
       required: false,
@@ -20,9 +32,6 @@ export default defineComponent({
     },
   },
   setup(props) {
-    if (!props.tokens)
-      return null
-
     const getTokenStyleObjectRef = shallowRef<typeof getTokenStyleObject | null>(null)
     let loadingTokenStyleObject = false
     watch(
@@ -48,23 +57,29 @@ export default defineComponent({
       { immediate: true },
     )
 
-    return () => {
-      if (!props.tokens?.tokens)
-        return null
+    const lines = computed(() => props.tokens?.tokens ?? props.code.split('\n'))
 
-      return h(
+    return () => h(
+      'div',
+      {
+        'class': props.languageClass,
+        'data-stream-markdown': props.tokens ? 'shiki' : undefined,
+        'dir': 'ltr',
+      },
+      h(
         'pre',
         {
+          'data-stream-markdown': 'code',
+          'data-show-line-numbers': props.showLineNumbers,
+          'data-language': props.tokens?.grammarState?.lang ?? props.lang,
+          'data-bg': props.tokens?.bg,
+          'data-fg': props.tokens?.fg,
           'class': [
-            'shiki',
-            props.tokens.themeName,
+            props.tokens ? ['shiki', props.tokens.themeName] : undefined,
+            props.languageClass,
             'p-4 font-mono text-sm',
           ],
-          'data-language': props.tokens.grammarState?.lang,
-          'data-bg': props.tokens.bg,
-          'data-fg': props.tokens.fg,
-          // background color most time looks not good, so we don't set it
-          'style': `counter-reset: line; color: ${props.tokens.fg};`,
+          'style': `counter-reset: line; color: ${props.tokens?.fg ?? 'inherit'};`,
         },
         h(
           'code',
@@ -73,7 +88,7 @@ export default defineComponent({
             class: 'text-sm font-mono',
           },
           renderList(
-            props.tokens.tokens,
+            lines.value,
             (line, index) => h(
               'div',
               {
@@ -83,19 +98,21 @@ export default defineComponent({
                   : 'relative block min-h-4 text-sm',
                 'key': index,
               },
-              renderList(line, (token, tokenIndex) => h(
-                'span',
-                {
-                  key: tokenIndex,
-                  style: token.htmlStyle || (getTokenStyleObjectRef.value?.(token) ?? {}),
-                },
-                token.content,
-              )),
+              typeof line === 'string'
+                ? line
+                : renderList(line, (token, tokenIndex) => h(
+                    'span',
+                    {
+                      key: tokenIndex,
+                      style: token.htmlStyle || (getTokenStyleObjectRef.value?.(token) ?? {}),
+                    },
+                    token.content,
+                  )),
             ),
           ),
         ),
-      )
-    }
+      ),
+    )
   },
 })
 </script>

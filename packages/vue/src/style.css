@@ -138,19 +138,6 @@
   }
 }
 
-.stream-markdown-code-switch-enter-active,
-.stream-markdown-code-switch-leave-active {
-  transition: opacity var(--default-transition-duration) ease;
-}
-.stream-markdown-code-switch-enter-from,
-.stream-markdown-code-switch-leave-to {
-  opacity: 0;
-}
-.stream-markdown-code-switch-enter-to,
-.stream-markdown-code-switch-leave-from {
-  opacity: 1;
-}
-
 .stream-markdown-modal-enter-from,
 .stream-markdown-modal-leave-to {
   opacity: 0;
