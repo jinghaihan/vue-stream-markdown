@@ -8,8 +8,6 @@ export default defineConfig({
   },
   deps: {
     onlyBundle: false,
-    neverBundle: [
-      'mermaid',
-    ],
+    neverBundle: ['beautiful-mermaid'],
   },
 })

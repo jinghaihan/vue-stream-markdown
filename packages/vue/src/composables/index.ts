@@ -1,4 +1,3 @@
-export * from './use-cdn-loader'
 export * from './use-code-options'
 export * from './use-context'
 export * from './use-controls'

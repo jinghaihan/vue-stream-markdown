@@ -9,7 +9,6 @@ export abstract class MermaidRenderer {
   }
 
   abstract load(): Promise<void>
-  abstract isSupported(diagramType: string): boolean
   abstract render(code: string): Promise<MermaidRenderResult>
   abstract parse(code: string): Promise<MermaidParseResult>
   abstract isEnabled(): Promise<boolean>

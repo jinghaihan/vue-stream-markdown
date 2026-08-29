@@ -1,10 +1,8 @@
 import type { MaybeGetter, SharedCdnOptions } from '@stream-markdown/core'
-import type { RenderOptions as BeautifulMermaidConfig, ThemeName } from 'beautiful-mermaid'
 import type { MermaidConfig } from 'mermaid'
 
 export type { MaybeGetter }
-
-export type MermaidRendererType = 'beautiful' | 'vanilla'
+export type { MermaidConfig } from 'mermaid'
 
 export interface MermaidRenderResult {
   svg?: string
@@ -18,14 +16,10 @@ export interface MermaidParseResult {
 }
 
 export interface MermaidRuntimeOptions {
-  renderer?: MaybeGetter<MermaidRendererType | undefined>
   theme?: MaybeGetter<[string, string] | undefined>
-  beautifulTheme?: MaybeGetter<[ThemeName, ThemeName] | undefined>
   config?: MaybeGetter<MermaidConfig | undefined>
-  beautifulConfig?: MaybeGetter<BeautifulMermaidConfig | undefined>
   cdnOptions?: MaybeGetter<SharedCdnOptions | undefined>
   isDark?: MaybeGetter<boolean | undefined>
-  getThemeColors?: () => Promise<Record<string, string> | null>
 }
 
 export interface MermaidRuntime {
@@ -35,5 +29,4 @@ export interface MermaidRuntime {
   dispose: () => void
   parse: (code: string) => Promise<MermaidParseResult>
   render: (code: string) => Promise<MermaidRenderResult>
-  save: (format: 'svg' | 'png', code: string, filename?: string) => Promise<void>
 }

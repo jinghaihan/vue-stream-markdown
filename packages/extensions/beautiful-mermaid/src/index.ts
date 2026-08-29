@@ -1,5 +1,4 @@
+export * from './cdn'
 export * from './constants'
 export * from './extension'
-export * from './mermaid-cdn'
-export * from './runtime'
 export * from './types'

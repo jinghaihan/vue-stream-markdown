@@ -1,69 +1,47 @@
-import { resolveMermaidRendererType } from '@stream-markdown/mermaid'
+import type { MermaidExtension } from '@stream-markdown/core'
+import type { Component } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
+import { useMermaid } from '../packages/vue/src/composables/use-mermaid'
 
-describe('resolveMermaidRendererType', () => {
-  it('should use beautiful when renderer is explicitly set to beautiful', async () => {
-    const hasBeautifulModule = vi.fn(async () => false)
+function createExtension(
+  supports: (code: string) => boolean,
+  svg: string,
+): MermaidExtension<Component> {
+  return {
+    supports,
+    render: vi.fn(async () => ({ svg, valid: true })),
+  }
+}
 
-    const result = await resolveMermaidRendererType(
-      { renderer: 'beautiful' },
-      hasBeautifulModule,
-    )
+describe('mermaid extension fallback', () => {
+  it('prefers Beautiful Mermaid for supported diagrams', async () => {
+    const beautifulMermaid = createExtension(code => code.startsWith('flowchart'), '<svg>beautiful</svg>')
+    const mermaid = createExtension(() => true, '<svg>vanilla</svg>')
+    const runtime = useMermaid({ extensions: { beautifulMermaid, mermaid } })
 
-    expect(result).toBe('beautiful')
-    expect(hasBeautifulModule).not.toHaveBeenCalled()
+    const result = await runtime.renderMermaid('flowchart LR')
+
+    expect(result.svg).toBe('<svg>beautiful</svg>')
+    expect(beautifulMermaid.render).toHaveBeenCalledOnce()
+    expect(mermaid.render).not.toHaveBeenCalled()
   })
 
-  it('should use vanilla when renderer is explicitly set to vanilla', async () => {
-    const hasBeautifulModule = vi.fn(async () => true)
+  it('falls back to Mermaid when Beautiful Mermaid does not support a diagram', async () => {
+    const beautifulMermaid = createExtension(code => code.startsWith('flowchart'), '<svg>beautiful</svg>')
+    const mermaid = createExtension(() => true, '<svg>vanilla</svg>')
+    const runtime = useMermaid({ extensions: { beautifulMermaid, mermaid } })
 
-    const result = await resolveMermaidRendererType(
-      { renderer: 'vanilla' },
-      hasBeautifulModule,
-    )
+    const result = await runtime.renderMermaid('pie title Usage')
 
-    expect(result).toBe('vanilla')
-    expect(hasBeautifulModule).not.toHaveBeenCalled()
+    expect(result.svg).toBe('<svg>vanilla</svg>')
+    expect(beautifulMermaid.render).not.toHaveBeenCalled()
+    expect(mermaid.render).toHaveBeenCalledOnce()
   })
 
-  it('should use beautiful when beautiful-mermaid CDN is configured in auto mode', async () => {
-    const hasBeautifulModule = vi.fn(async () => false)
+  it('keeps unsupported diagrams as source when only Beautiful Mermaid is configured', () => {
+    const beautifulMermaid = createExtension(code => code.startsWith('flowchart'), '<svg />')
+    const runtime = useMermaid({ extensions: { beautifulMermaid } })
 
-    const result = await resolveMermaidRendererType(
-      {
-        cdnOptions: {
-          baseUrl: 'https://cdn.jsdelivr.net/npm',
-          beautifulMermaid: 'umd',
-        },
-      },
-      hasBeautifulModule,
-    )
-
-    expect(result).toBe('beautiful')
-    expect(hasBeautifulModule).not.toHaveBeenCalled()
-  })
-
-  it('should detect local module in auto mode when CDN is unavailable', async () => {
-    const hasBeautifulModule = vi.fn(async () => true)
-
-    const result = await resolveMermaidRendererType(
-      {},
-      hasBeautifulModule,
-    )
-
-    expect(result).toBe('beautiful')
-    expect(hasBeautifulModule).toHaveBeenCalledTimes(1)
-  })
-
-  it('should fallback to vanilla in auto mode when local module is not installed', async () => {
-    const hasBeautifulModule = vi.fn(async () => false)
-
-    const result = await resolveMermaidRendererType(
-      {},
-      hasBeautifulModule,
-    )
-
-    expect(result).toBe('vanilla')
-    expect(hasBeautifulModule).toHaveBeenCalledTimes(1)
+    expect(runtime.canRender('pie title Usage')).toBe(false)
   })
 })

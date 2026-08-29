@@ -55,10 +55,6 @@ export class VanillaMermaidRenderer extends MermaidRenderer {
     this.mermaid = module
   }
 
-  isSupported(): boolean {
-    return true
-  }
-
   async parse(code: string): Promise<MermaidParseResult> {
     try {
       await this.ensureLoaded()

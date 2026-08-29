@@ -1,102 +1,84 @@
-import type { CdnOptions } from '@stream-markdown/core'
 import type { MaybeRefOrGetter } from 'vue'
-import type { MermaidOptions, ShikiOptions } from '../types'
+import type { Extensions } from '../types'
 import {
-  createShikiRuntime,
-  DEFAULT_SHIKI_DARK_THEME,
-  DEFAULT_SHIKI_LIGHT_THEME,
-} from '@stream-markdown/code'
-import { isClient } from '@stream-markdown/core'
-import { createMermaidRuntime } from '@stream-markdown/mermaid'
-import { ref, toValue } from 'vue'
+  save,
+  serializeSvgForDownload,
+  svgToPngBlob,
+} from '@stream-markdown/core'
+import { computed, toValue } from 'vue'
 
 interface UseMermaidOptions {
-  mermaidOptions?: MaybeRefOrGetter<MermaidOptions | undefined>
-  cdnOptions?: MaybeRefOrGetter<CdnOptions | undefined>
-  shikiOptions?: MaybeRefOrGetter<ShikiOptions | undefined>
+  extensions?: MaybeRefOrGetter<Extensions | undefined>
   isDark?: MaybeRefOrGetter<boolean>
 }
 
-export function useMermaid(options?: UseMermaidOptions) {
-  async function resolveThemeColorsFromShiki(): Promise<Record<string, string> | null> {
-    try {
-      const shikiTheme = (toValue(options?.shikiOptions)?.theme ?? [DEFAULT_SHIKI_LIGHT_THEME, DEFAULT_SHIKI_DARK_THEME])
-      const currentShikiTheme = (toValue(options?.isDark) ?? false) ? shikiTheme[1] : shikiTheme[0]
-      const shikiRuntime = createShikiRuntime({
-        cdnOptions: () => toValue(options?.cdnOptions),
-        isDark: () => toValue(options?.isDark) ?? false,
-        theme: () => shikiTheme,
-        langs: () => toValue(options?.shikiOptions)?.langs ?? [],
-        langAlias: () => toValue(options?.shikiOptions)?.langAlias ?? {},
-        engine: () => toValue(options?.shikiOptions)?.engine,
-        codeToTokenOptions: () => toValue(options?.shikiOptions)?.codeToTokenOptions,
-      })
-      const [{ fromShikiTheme }, highlighter] = await Promise.all([
-        import('beautiful-mermaid'),
-        shikiRuntime.getHighlighter(),
-      ])
-      const theme = highlighter.getTheme(currentShikiTheme ?? DEFAULT_SHIKI_LIGHT_THEME)
-      return fromShikiTheme(theme) as unknown as Record<string, string>
-    }
-    catch {
-      return null
-    }
+export function useMermaid(options: UseMermaidOptions = {}) {
+  const extensions = computed(() => toValue(options.extensions))
+  const isDark = computed(() => toValue(options.isDark) ?? false)
+
+  function resolveExtension(code: string) {
+    const configured = extensions.value
+    if (configured?.beautifulMermaid?.supports(code))
+      return configured.beautifulMermaid
+    if (configured?.mermaid?.supports(code))
+      return configured.mermaid
+    return undefined
   }
 
-  const runtime = createMermaidRuntime({
-    renderer: () => toValue(options?.mermaidOptions)?.renderer,
-    theme: () => toValue(options?.mermaidOptions)?.theme,
-    beautifulTheme: () => toValue(options?.mermaidOptions)?.beautifulTheme,
-    config: () => toValue(options?.mermaidOptions)?.config,
-    beautifulConfig: () => toValue(options?.mermaidOptions)?.beautifulConfig,
-    cdnOptions: () => toValue(options?.cdnOptions),
-    isDark: () => toValue(options?.isDark) ?? false,
-    getThemeColors: resolveThemeColorsFromShiki,
-  })
-
-  async function parseMermaid(code: string) {
-    return await runtime.parse(code)
+  function canRender(code: string) {
+    return !!resolveExtension(code)
   }
 
   async function renderMermaid(code: string) {
-    return await runtime.render(code)
+    const extension = resolveExtension(code)
+    if (!extension) {
+      return {
+        error: 'No Mermaid extension supports this diagram.',
+        supported: false,
+        valid: false,
+      }
+    }
+
+    const theme = await extensions.value?.code?.getTheme?.(isDark.value)
+    return await extension.render({
+      code,
+      isDark: isDark.value,
+      theme,
+    })
   }
 
   async function saveMermaid(
     format: 'svg' | 'png',
     code: string,
     onError?: (error: Error) => void,
-    filename?: string,
+    filename = 'diagram',
   ) {
     try {
-      await runtime.save(format, code, filename)
+      const { svg } = await renderMermaid(code)
+      if (!svg)
+        throw new Error('SVG not found. Please wait for the diagram to render.')
+
+      const serializedSvg = serializeSvgForDownload(svg)
+      if (format === 'svg') {
+        save(`${filename}.svg`, serializedSvg, 'image/svg+xml')
+        return
+      }
+
+      const blob = await svgToPngBlob(serializedSvg)
+      if (!blob)
+        throw new Error('Failed to export PNG image')
+
+      save(`${filename}.png`, blob, 'image/png')
     }
     catch (error) {
       onError?.(error as Error)
     }
   }
 
-  const installed = ref<boolean>(false)
-
-  async function preload() {
-    installed.value = await runtime.installed
-    if (installed.value)
-      await runtime.preload()
-  }
-
-  if (isClient()) {
-    (async () => {
-      installed.value = await runtime.installed
-    })()
-  }
-
   return {
-    installed,
-    getMermaid: runtime.load,
-    parseMermaid,
+    canRender,
     renderMermaid,
+    resolveExtension,
     saveMermaid,
-    preload,
-    dispose: runtime.dispose,
   }
 }
