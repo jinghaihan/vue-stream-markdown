@@ -4,6 +4,7 @@ import type { CodeNodeRendererProps } from '../../../types'
 import { createCodeRendererModel } from '@stream-markdown/core'
 import { computed, defineAsyncComponent } from 'vue'
 import { useContext, useShiki } from '../../../composables'
+import Vanilla from './vanilla.vue'
 
 const props = withDefaults(defineProps<CodeNodeRendererProps & {
   showHeader?: boolean
@@ -20,16 +21,9 @@ const { installed: hasShiki } = useShiki({
   cdnOptions,
 })
 
-const components: Record<string, Component> = {
-  vanilla: defineAsyncComponent(() => import('./vanilla.vue')),
-  shiki: defineAsyncComponent(() => import('./shiki.vue')),
-}
+const Shiki = defineAsyncComponent(() => import('./shiki.vue'))
 
-const component = computed(() => {
-  if (hasShiki.value)
-    return components.shiki
-  return components.vanilla
-})
+const component = computed<Component>(() => hasShiki.value ? Shiki : Vanilla)
 </script>
 
 <template>
