@@ -14,7 +14,9 @@ import type {
   StreamMarkdownProps as CoreStreamMarkdownProps,
 } from '@stream-markdown/core'
 import type { ComputedRef, MaybeRefOrGetter } from 'vue'
+import type { MarkdownComponents } from './comark'
 import type { NodeRenderers, ParsedNode, SyntaxTree } from './core'
+import type { Completion, StreamMarkdownParserOptions } from './parser'
 import type {
   CodeOptions,
   ControlsConfig,
@@ -47,7 +49,7 @@ export type StreamMarkdownContext = CoreStreamMarkdownContext<
   UIOptions
 >
 
-export type StreamMarkdownProps = CoreStreamMarkdownProps<
+type LegacyStreamMarkdownProps = CoreStreamMarkdownProps<
   NodeRenderers,
   Icons,
   UIComponents,
@@ -64,6 +66,13 @@ export type StreamMarkdownProps = CoreStreamMarkdownProps<
   LinkOptions,
   UIOptions
 >
+
+export type StreamMarkdownProps = Omit<LegacyStreamMarkdownProps, 'components'> & {
+  completion?: Completion
+  components?: MarkdownComponents
+  parserOptions?: StreamMarkdownParserOptions
+  uiComponents?: Partial<UIComponents>
+}
 
 export interface StreamMarkdownProvideContext {
   controls?: MaybeRefOrGetter<StreamMarkdownContext['controls']>

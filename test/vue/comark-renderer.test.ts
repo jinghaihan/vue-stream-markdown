@@ -4,7 +4,7 @@ import type { MarkdownNode as Node } from '../../packages/vue/src/types'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import { defineComponent, h, nextTick, shallowRef } from 'vue'
-import ComarkNodeList from '../../packages/vue/src/components/comark-node-list'
+import ComarkNodeList from '../../packages/vue/src/components/renderers/node-list'
 import { useContext } from '../../packages/vue/src/composables'
 
 function mountNodes(nodes: ShallowRef<Node[]>, components = {}) {

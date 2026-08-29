@@ -1,10 +1,11 @@
 import type { ElementNode, Node } from 'comark'
 import type { PropType, VNodeChild } from 'vue'
-import type { MarkdownComponents } from '../types'
+import type { MarkdownComponents } from '../../types'
 import { createCommentVNode, defineAsyncComponent, defineComponent, h } from 'vue'
-import { useContext } from '../composables'
+import { useContext } from '../../composables'
 
-const ComarkCode = defineAsyncComponent(() => import('./comark-code.vue'))
+const ComarkCode = defineAsyncComponent(() => import('../comark-code.vue'))
+const ComarkMath = defineAsyncComponent(() => import('../comark-math.vue'))
 
 const BLOCK_STYLES: Record<string, string> = {
   blockquote: 'text-muted-foreground mx-0 my-4 pl-4 border-l-4 border-l-muted-foreground/30 italic relative [&_p]:mb-0',
@@ -52,24 +53,17 @@ export default defineComponent({
   },
   setup(props) {
     const context = useContext()
-    const nodeIds = new WeakMap<ElementNode, number>()
-    let nextNodeId = 0
 
-    function getNodeKey(node: ElementNode): string {
-      let id = nodeIds.get(node)
-      if (id === undefined) {
-        id = nextNodeId++
-        nodeIds.set(node, id)
-      }
-      return `comark-node-${id}`
-    }
-
-    function renderNodes(nodes: Node[], loading: boolean): VNodeChild[] {
+    function renderNodes(nodes: Node[], loading: boolean, parentKey = 'root'): VNodeChild[] {
       const lastIndex = findLastRenderableIndex(nodes)
-      return nodes.map((node, index) => renderNode(node, loading && index === lastIndex, index))
+      return nodes.map((node, index) => renderNode(
+        node,
+        loading && index === lastIndex,
+        `${parentKey}-${index}`,
+      ))
     }
 
-    function renderNode(node: Node, loading: boolean, index: number): VNodeChild {
+    function renderNode(node: Node, loading: boolean, path: string): VNodeChild {
       if (typeof node === 'string') {
         const caret = loading && context.enableCaret.value
           ? h('span', {
@@ -78,7 +72,7 @@ export default defineComponent({
           : undefined
 
         return h('span', {
-          'key': `text-${index}`,
+          'key': `${path}-text`,
           'data-stream-markdown': 'text',
           'class': 'whitespace-pre-wrap break-words [text-decoration:inherit]',
         }, [node, caret])
@@ -88,7 +82,7 @@ export default defineComponent({
       if (tag === null)
         return createCommentVNode(String(children[0] ?? ''))
 
-      const key = getNodeKey(node)
+      const key = `${path}-${tag}`
       const component = props.components[tag]
       if (component) {
         return h(component, {
@@ -96,7 +90,7 @@ export default defineComponent({
           key,
           node,
         }, {
-          default: () => renderNodes(children, loading),
+          default: () => renderNodes(children, loading, key),
         })
       }
 
@@ -104,6 +98,14 @@ export default defineComponent({
         return h(ComarkCode, {
           key,
           loading,
+          node,
+          nodeKey: key,
+        })
+      }
+
+      if (tag === 'math') {
+        return h(ComarkMath, {
+          key,
           node,
           nodeKey: key,
         })
@@ -117,8 +119,11 @@ export default defineComponent({
       ]
 
       if (tag === 'a') {
-        resolvedAttrs.rel ??= 'noreferrer'
-        resolvedAttrs.target ??= '_blank'
+        const internal = typeof resolvedAttrs.href === 'string' && resolvedAttrs.href.startsWith('#')
+        if (!internal) {
+          resolvedAttrs.rel ??= 'noreferrer'
+          resolvedAttrs.target ??= '_blank'
+        }
         if (loading) {
           className.push('no-underline cursor-default pointer-events-none')
           resolvedAttrs['data-stream-markdown-loading'] = true
@@ -151,7 +156,7 @@ export default defineComponent({
         'class': className,
         'data-stream-markdown': resolveDataAttribute(tag),
         'dir': tag === 'code' ? 'ltr' : resolvedAttrs.dir,
-      }, renderNodes(children, loading))
+      }, renderNodes(children, loading, key))
 
       if (tag === 'table') {
         return h('div', {
