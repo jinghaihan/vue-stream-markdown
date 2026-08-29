@@ -8,7 +8,6 @@ import type {
   UIZoomContainerProps as CoreUIZoomContainerProps,
 } from '@stream-markdown/core'
 import type { Component, CSSProperties } from 'vue'
-import type { ImageNodeRendererProps } from './renderer'
 import type { ControlsConfig } from './shared'
 
 export type {
@@ -26,7 +25,9 @@ export type UIErrorComponentProps = CoreUIErrorComponentProps<Component>
 
 export type UIIconProps = CoreUIIconProps<Component, CSSProperties>
 
-export type UIImageProps = CoreUIImageProps<ImageNodeRendererProps, ControlsConfig>
+export type UIImageProps = CoreUIImageProps<unknown, ControlsConfig> & {
+  sources?: string[]
+}
 
 export type UIModalProps = CoreUIModalProps<CSSProperties>
 

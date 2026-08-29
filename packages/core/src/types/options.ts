@@ -1,7 +1,3 @@
-export interface PreloadConfig<TBuiltinNodeRenderer extends string = string> {
-  nodeRenderers?: TBuiltinNodeRenderer[]
-}
-
 export type PreviewSegmentedPlacement = 'left' | 'center' | 'right' | 'auto'
 
 export interface HtmlPreviewerOptions {

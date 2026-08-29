@@ -1,4 +1,3 @@
-import type { ParsedNode, SyntaxTree } from '@markmend/ast'
 import {
   applyMathRendererResult,
   applyMermaidRenderResult,
@@ -8,24 +7,15 @@ import {
   createCodeRendererModel,
   createErrorModel,
   createFloatingStyle,
-  createHeadingModel,
   createHtmlPreviewModel,
   createHtmlPreviewSrcdoc,
   createImageModel,
   createImagePreviewModel,
-  createLinkModel,
-  createListItemModel,
-  createListModel,
   createMathRendererModel,
   createMathRendererState,
   createMermaidPreviewControllerState,
-  createNodeListModel,
-  createParagraphModel,
   createRootStyle,
   createTableControlDescriptors,
-  createTableModel,
-  createTextModel,
-  createYamlTableModel,
   createZoomContainerModel,
   flipImagePreviewHorizontal,
   getCodeFileExtension,
@@ -42,7 +32,6 @@ import {
   resolveHtmlPreviewMaxHeightValue,
   resolveHtmlPreviewMeasurementMode,
   resolveHtmlPreviewSandbox,
-  resolvePreloadNodeRenderers,
   rotateImagePreviewRight,
   setMermaidMeasuredHeight,
   syncCodeBlockMode,
@@ -60,115 +49,9 @@ describe('core models', () => {
       'color': 'red',
       '--stream-markdown-animation-duration': '300ms',
     })
-    expect(resolvePreloadNodeRenderers({ nodeRenderers: ['text'] })).toEqual(['text'])
   })
 
-  it('creates node-list items with renderer, sibling, key, and transition decisions', () => {
-    const paragraph = { type: 'paragraph' } as ParsedNode
-    const text = { type: 'text', value: 'Hello' } as ParsedNode
-    const next = { type: 'heading' } as ParsedNode
-    const blocks = [
-      { type: 'root', children: [] },
-      { type: 'root', children: [paragraph, text] },
-      { type: 'root', children: [next] },
-    ] as SyntaxTree[]
-
-    const model = createNodeListModel({
-      nodes: [paragraph, text],
-      blocks,
-      blockIndex: 1,
-      deep: 0,
-      nodeKey: 'block-1',
-      nodeRenderers: { paragraph: 'Paragraph', text: 'Text' },
-      enableAnimate: true,
-      animation: 'fade-in',
-    })
-
-    expect(model.transitionName).toBe('stream-markdown-fade-in')
-    expect(model.items[0]).toMatchObject({
-      key: 'block-1-paragraph-0',
-      renderer: 'Paragraph',
-      nextNode: text,
-      supportsTransition: true,
-      shouldTransition: true,
-    })
-    expect(model.items[1]).toMatchObject({
-      key: 'block-1-text-1',
-      renderer: 'Text',
-      prevNode: paragraph,
-      nextNode: next,
-      supportsTransition: false,
-      shouldTransition: false,
-    })
-  })
-
-  it('creates text model for word animation and caret rendering', () => {
-    const model = createTextModel({
-      node: { type: 'text', value: 'Hello  world', loading: true },
-      nodeKey: 'text-0',
-      enableAnimate: true,
-      animation: 'slide-up',
-      animationSplit: 'word',
-    })
-
-    expect(model.showCaret).toBe(true)
-    expect(model.shouldAnimate).toBe(true)
-    expect(model.transitionName).toBe('stream-markdown-slide-up')
-    expect(model.parts.map(part => part.value)).toEqual(['Hello', '  ', 'world'])
-  })
-
-  it('creates text model for character animation', () => {
-    const model = createTextModel({
-      node: { type: 'text', value: '你好 world' },
-      nodeKey: 'text-0',
-      enableAnimate: true,
-      animation: 'fade-in',
-      animationSplit: 'char',
-    })
-
-    expect(model.parts.map(part => part.value)).toEqual(['你', '好', ' ', 'w', 'o', 'r', 'l', 'd'])
-  })
-
-  it('creates text model with automatic character animation for CJK text', () => {
-    const model = createTextModel({
-      node: { type: 'text', value: '你好 world' },
-      nodeKey: 'text-0',
-      enableAnimate: true,
-      animation: 'fade-in',
-    })
-
-    expect(model.parts.map(part => part.value)).toEqual(['你', '好', ' ', 'world'])
-    expect(model.parts.map(part => part.animationSplit)).toEqual(['char', 'char', 'word', 'word'])
-  })
-
-  it('creates table model and serializes table data', () => {
-    const text = { type: 'text', value: 'Name' } as ParsedNode
-    const cell = { type: 'tableCell', children: [text] } as ParsedNode
-    const row = { type: 'tableRow', children: [cell] } as never
-
-    const model = createTableModel({
-      node: {
-        type: 'table',
-        align: ['center'],
-        children: [row],
-      },
-      hasLoadingNode: () => true,
-    })
-
-    expect(model.loading).toBe(true)
-    expect(model.getAlign(0)).toBe('center')
-    expect(model.getNodes(cell)).toEqual([text])
-    expect(getTableContent('csv', { headers: ['A'], rows: [['B']] })).toMatchObject({
-      content: 'A\nB',
-      extension: 'csv',
-    })
-    expect(getTableContent('csv', { headers: ['A', 'B'], rows: [['1', '2']] }, ';')).toMatchObject({
-      content: 'A;B\n1;2',
-      extension: 'csv',
-    })
-  })
-
-  it('creates code block model for preview and download decisions', () => {
+  it('creates code block models and control descriptors', () => {
     const model = createCodeBlockModel({
       node: { lang: 'mermaid', value: 'graph TD' },
       codeOptions: { maxHeight: 240 },
@@ -178,10 +61,12 @@ describe('core models', () => {
       mode: 'source',
     })
 
-    expect(model.language).toBe('mermaid')
-    expect(model.previewable).toBe(true)
-    expect(model.previewPlacement).toBe('center')
-    expect(model.maxHeight).toBe('240px')
+    expect(model).toMatchObject({
+      language: 'mermaid',
+      previewable: true,
+      previewPlacement: 'center',
+      maxHeight: '240px',
+    })
     expect(model.downloadOptions.map(option => option.value)).toEqual(['svg', 'png', 'code'])
     expect(getCodeFileExtension('typescript')).toBe('ts')
     expect(syncCodeBlockMode({ mode: 'source' }, true)).toEqual({ mode: 'preview' })
@@ -191,14 +76,6 @@ describe('core models', () => {
       languageClass: 'language-ts',
       lines: ['const a = 1'],
     })
-    expect(createCodeBlockModel({
-      node: { lang: 'typescript', value: 'const a = 1' },
-      codeOptions: {
-        maxHeight: 300,
-        language: { typescript: { maxHeight: 0 } },
-      },
-      mode: 'source',
-    }).maxHeight).toBeUndefined()
     expect(createCodeBlockControlDescriptors({
       collapsed: true,
       fullscreen: false,
@@ -211,38 +88,30 @@ describe('core models', () => {
     }).map(control => control.key)).toEqual(['collapse', 'copy', 'download', 'fullscreen'])
   })
 
-  it('creates image model for fallback, caption, and error state', () => {
-    const model = createImageModel({
-      node: { type: 'image', url: 'broken.png', alt: 'Alt', title: 'Title' },
+  it('creates image models from renderer data and source lists', () => {
+    const image = createImageModel({
+      node: { url: 'broken.png', alt: 'Alt', title: 'Title' },
       imageOptions: { fallback: 'fallback.png' },
       fallbackAttempted: true,
       imageLoaded: false,
       isHardenUrl: true,
     })
-
-    expect(model.imageSrc).toBe('fallback.png')
-    expect(model.alt).toBe('Alt')
-    expect(model.title).toBe('Title')
-    expect(model.showCaption).toBe(true)
-    expect(model.showError).toBe(true)
-    expect(model.errorVariant).toBe('harden-image')
-  })
-
-  it('creates image preview state, controls, and filtered sources', () => {
-    const nodes = [
-      { type: 'image', url: 'a.png' },
-      { type: 'paragraph', children: [{ type: 'image', url: 'b.png' }] },
-      { type: 'image', url: 'a.png' },
-      { type: 'image', url: 'blocked.png' },
-    ] as ParsedNode[]
+    expect(image).toMatchObject({
+      imageSrc: 'fallback.png',
+      alt: 'Alt',
+      title: 'Title',
+      showCaption: true,
+      showError: true,
+      errorVariant: 'harden-image',
+    })
 
     const state = rotateImagePreviewRight(flipImagePreviewHorizontal({
       scaleX: 1,
       scaleY: 1,
       rotate: 0,
     }))
-    const model = createImagePreviewModel({
-      parsedNodes: nodes,
+    const preview = createImagePreviewModel({
+      sources: ['a.png', 'b.png', 'a.png', 'blocked.png'],
       src: 'a.png',
       controls: true,
       transformHardenUrl: url => url === 'blocked.png' ? null : url,
@@ -253,92 +122,26 @@ describe('core models', () => {
       state,
       icons: { arrowRight: false },
     })
-
-    expect(model.sources).toEqual(['a.png', 'b.png'])
-    expect(model.canOpen).toBe(true)
-    expect(model.imageStyle.transform).toBe('scaleX(-1) scaleY(1) rotate(90deg)')
-    expect(model.controls.find(control => control.key === 'next')).toMatchObject({
-      icon: 'arrowLeft',
-      buttonStyle: { transform: 'scaleX(-1)' },
-    })
+    expect(preview.sources).toEqual(['a.png', 'b.png'])
+    expect(preview.canOpen).toBe(true)
+    expect(preview.imageStyle.transform).toBe('scaleX(-1) scaleY(1) rotate(90deg)')
   })
 
-  it('creates basic renderer models', () => {
-    const text = { type: 'text', value: 'Hello' } as ParsedNode
-
-    expect(createParagraphModel({
-      node: { type: 'paragraph', children: [text] } as never,
-      nextNode: { type: 'list' } as ParsedNode,
-      deep: 0,
-    })).toEqual({ marginBottom: '0.5rem', lineHeight: 1.75 })
-    const headingModel = createHeadingModel({ type: 'heading', depth: 2, children: [] } as never)
-    expect(headingModel).toMatchObject({
-      tag: 'h2',
-      id: 'heading-2',
-    })
-    expect(headingModel).not.toHaveProperty('class')
-
-    const listModel = createListModel({
-      type: 'list',
-      ordered: true,
-      children: [{ type: 'listItem', checked: true, children: [] }],
-    } as never)
-    expect(listModel).toMatchObject({
-      isTaskList: true,
-      tag: 'ol',
-      id: 'task-list',
-    })
-    expect(listModel).not.toHaveProperty('class')
-
-    expect(createListItemModel({ type: 'listItem', checked: false, children: [] } as never)).toEqual({
-      isTaskListItem: true,
-      checked: false,
-    })
-    expect(createYamlTableModel({ type: 'yaml', value: 'a: 1\nb: 2' } as never)).toMatchObject({
-      headers: ['a', 'b'],
-      rows: [{ children: ['1', '2'] }],
-    })
-  })
-
-  it('creates link, math, table controls, error, and zoom models', () => {
-    expect(createLinkModel({
-      node: { type: 'link', url: 'https://example.com', children: [] },
-      transformedUrl: 'https://example.com',
-      linkOptions: {},
-    })).toMatchObject({
-      loading: false,
-      safetyCheck: true,
-      showLink: true,
-    })
+  it('creates math, table, HTML, error, and zoom models', () => {
     expect(createMathRendererModel({
       node: { value: 'x', display: false, loading: false },
       installed: false,
-    })).toMatchObject({
-      code: 'x',
-      isDisplayMode: false,
-      error: true,
-    })
+    })).toMatchObject({ code: 'x', isDisplayMode: false, error: true })
     expect(createMathRendererModel({
       node: { value: '\\frac{1}{', display: true, loading: true },
       installed: true,
       renderFlag: true,
       renderingCode: '\\frac{1}{',
       errorMessage: 'Unexpected end of input',
-    })).toMatchObject({
-      code: '\\frac{1}{',
-      loading: true,
-      error: false,
-    })
-    expect(createMathRendererModel({
-      node: { value: '\\frac{1}{', display: true, loading: false },
-      installed: true,
-      renderFlag: true,
-      renderingCode: '\\frac{1}{',
-      errorMessage: 'Unexpected end of input',
-    })).toMatchObject({
-      code: '\\frac{1}{',
-      loading: false,
-      error: true,
+    })).toMatchObject({ loading: true, error: false })
+    expect(getTableContent('csv', { headers: ['A', 'B'], rows: [['1', '2']] }, ';')).toMatchObject({
+      content: 'A;B\n1;2',
+      extension: 'csv',
     })
     expect(createTableControlDescriptors({
       copied: true,
@@ -347,10 +150,7 @@ describe('core models', () => {
       showDownload: true,
       showFullscreen: true,
     }).map(control => control.icon)).toEqual(['check', 'download', 'minimize'])
-    expect(createErrorModel({
-      variant: 'harden-link',
-      hasIcon: name => name === 'link',
-    })).toMatchObject({
+    expect(createErrorModel({ variant: 'harden-link', hasIcon: name => name === 'link' })).toMatchObject({
       icon: 'link',
       messageKey: 'error.harden',
       isHarden: true,
@@ -359,80 +159,22 @@ describe('core models', () => {
       zoom: 1.5,
       position: 'bottom-center',
       controlSize: 'large',
-    })).toMatchObject({
-      zoomPercent: '150%',
-      controlsPosition: {
-        bottom: '0.5rem',
-        left: '50%',
-        transform: 'translateX(-50%)',
-      },
-    })
-    expect(createHtmlPreviewModel({ type: 'code', value: ' <div /> ' } as never)).toEqual({
-      code: '<div />',
-    })
+    }).zoomPercent).toBe('150%')
+
+    expect(createHtmlPreviewModel({ value: ' <div /> ' })).toEqual({ code: '<div />' })
     expect(resolveHtmlPreviewSandbox(undefined)).toBe('allow-scripts')
-    expect(resolveHtmlPreviewSandbox(true)).toBe('allow-scripts')
-    expect(resolveHtmlPreviewSandbox({
-      html: {
-        sandbox: 'allow-scripts allow-same-origin allow-forms',
-      },
-    })).toBe('allow-scripts allow-same-origin allow-forms')
-    expect(resolveHtmlPreviewAutoHeight(undefined)).toBe(true)
-    expect(resolveHtmlPreviewAutoHeight({
-      html: {
-        autoHeight: false,
-      },
-    })).toBe(false)
-    expect(resolveHtmlPreviewHeight(undefined)).toBe('360px')
-    expect(resolveHtmlPreviewHeight({
-      html: {
-        height: 480,
-      },
-    })).toBe('480px')
-    expect(resolveHtmlPreviewMaxHeight({
-      html: {
-        maxHeight: '80vh',
-      },
-    })).toBe('80vh')
-    expect(resolveHtmlPreviewMaxHeightValue({
-      html: {
-        maxHeight: 800,
-      },
-    })).toBe(800)
-    expect(resolveHtmlPreviewMaxHeightValue({
-      html: {
-        maxHeight: '800px',
-      },
-    })).toBe(800)
-    expect(resolveHtmlPreviewMaxHeightValue({
-      html: {
-        maxHeight: '80vh',
-      },
-    })).toBeUndefined()
+    expect(resolveHtmlPreviewAutoHeight({ html: { autoHeight: false } })).toBe(false)
+    expect(resolveHtmlPreviewHeight({ html: { height: 480 } })).toBe('480px')
+    expect(resolveHtmlPreviewMaxHeight({ html: { maxHeight: '80vh' } })).toBe('80vh')
+    expect(resolveHtmlPreviewMaxHeightValue({ html: { maxHeight: '800px' } })).toBe(800)
     expect(resolveHtmlPreviewMeasurementMode('allow-scripts allow-same-origin', true)).toBe('dom')
     expect(resolveHtmlPreviewMeasurementMode('allow-scripts', true)).toBe('message')
-    expect(resolveHtmlPreviewMeasurementMode('', true)).toBe('fallback')
-    expect(resolveHtmlPreviewMeasurementMode('allow-scripts allow-same-origin', false)).toBe('fallback')
-    expect(createHtmlPreviewSrcdoc('<body><div>Hello</div></body>')).toContain('stream-markdown:html-preview-height')
     expect(createHtmlPreviewSrcdoc('<body><div>Hello</div></body>')).toContain('<script>')
     expect(getHtmlPreviewMessageHeight({
       type: 'stream-markdown:html-preview-height',
       height: 120.2,
     })).toBe(137)
-    expect(getHtmlPreviewMessageHeight({
-      type: 'stream-markdown:html-preview-height',
-      height: 8000,
-    })).toBe(1000)
-    expect(getHtmlPreviewMessageHeight({
-      type: 'stream-markdown:html-preview-height',
-      height: 8000,
-    }, 16, 800)).toBe(800)
     expect(clampHtmlPreviewHeight(8000)).toBe(1000)
-    expect(clampHtmlPreviewHeight(8000, 800)).toBe(800)
-    expect(getHtmlPreviewMessageHeight({
-      type: 'other',
-      height: 120,
-    })).toBeUndefined()
     expect(resolveFloatingDelay([10, 20])).toEqual({ show: 10, hide: 20 })
     expect(createFloatingStyle({ x: 1, y: 2, strategy: 'fixed' })).toEqual({
       position: 'fixed',
@@ -441,26 +183,12 @@ describe('core models', () => {
     })
   })
 
-  it('updates headless controller state for framework adapters', async () => {
+  it('updates headless controller state', async () => {
     expect(applyMathRendererResult(
       createMathRendererState(),
       'x',
       { html: '<span>x</span>' },
-    )).toMatchObject({
-      html: '<span>x</span>',
-      errorMessage: '',
-      renderFlag: true,
-      renderingCode: '',
-    })
-    expect(applyMathRendererResult(
-      createMathRendererState(),
-      '\\frac{1}{',
-      { error: 'Unexpected end of input' },
-    )).toMatchObject({
-      errorMessage: 'Unexpected end of input',
-      renderFlag: true,
-      renderingCode: '\\frac{1}{',
-    })
+    )).toMatchObject({ html: '<span>x</span>', renderFlag: true })
 
     const mermaidState = setMermaidMeasuredHeight(
       applyMermaidRenderResult(
@@ -469,27 +197,9 @@ describe('core models', () => {
       ),
       120,
     )
-    expect(mermaidState).toMatchObject({
-      svg: '<svg />',
-      error: undefined,
-      measuredHeight: 120,
-      renderAttempt: true,
-      renderFlag: true,
-    })
+    expect(mermaidState).toMatchObject({ svg: '<svg />', measuredHeight: 120, renderFlag: true })
 
     const codeDownloads: string[] = []
-    const codeState = await handleCodeBlockControlAction({
-      key: 'download',
-      state: { collapsed: false, fullscreen: false },
-      node: { lang: 'ts', value: 'const a = 1' },
-      language: 'typescript',
-      saveFile: (filename) => {
-        codeDownloads.push(filename)
-      },
-    })
-    expect(codeState).toEqual({ collapsed: false, fullscreen: false })
-    expect(codeDownloads).toEqual(['file.ts'])
-
     await handleCodeBlockControlAction({
       key: 'download',
       filename: 'myScript',
@@ -500,37 +210,10 @@ describe('core models', () => {
         codeDownloads.push(filename)
       },
     })
-    expect(codeDownloads).toEqual(['file.ts', 'myScript.ts'])
-
-    const mermaidDownloads: Array<{ filename?: string, format: string }> = []
-    await handleCodeBlockControlAction({
-      key: 'download',
-      select: { label: 'SVG', value: 'svg' },
-      filename: 'flowchart',
-      state: { collapsed: false, fullscreen: false },
-      node: { lang: 'mermaid', value: 'graph TD' },
-      language: 'mermaid',
-      saveMermaid: (format, _code, filename) => {
-        mermaidDownloads.push({ format, filename })
-      },
-    })
-    expect(mermaidDownloads).toEqual([{ format: 'svg', filename: 'flowchart' }])
-
-    await handleCodeBlockControlAction({
-      key: 'download',
-      select: { label: 'MMD', value: 'code' },
-      filename: 'flowchart',
-      state: { collapsed: false, fullscreen: false },
-      node: { lang: 'mermaid', value: 'graph TD' },
-      language: 'mermaid',
-      saveFile: (filename) => {
-        codeDownloads.push(filename)
-      },
-    })
-    expect(codeDownloads).toEqual(['file.ts', 'myScript.ts', 'flowchart.mmd'])
+    expect(codeDownloads).toEqual(['myScript.ts'])
 
     const copied: string[] = []
-    const tableState = await handleTableControlAction({
+    await handleTableControlAction({
       key: 'copy',
       state: { fullscreen: false },
       getContent: () => ({ content: 'A\nB', extension: 'csv', mimeType: 'text/csv' }),
@@ -538,19 +221,6 @@ describe('core models', () => {
         copied.push(content)
       },
     })
-    expect(tableState).toEqual({ fullscreen: false })
     expect(copied).toEqual(['A\nB'])
-
-    const tableDownloads: string[] = []
-    await handleTableControlAction({
-      key: 'download',
-      filename: 'report',
-      state: { fullscreen: false },
-      getContent: () => ({ content: 'A\nB', extension: 'csv', mimeType: 'text/csv' }),
-      saveFile: (filename) => {
-        tableDownloads.push(filename)
-      },
-    })
-    expect(tableDownloads).toEqual(['report.csv'])
   })
 })

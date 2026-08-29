@@ -1,11 +1,21 @@
 import type { ElementNode, Node } from 'comark'
 import type { PropType, VNodeChild } from 'vue'
 import type { MarkdownComponents } from '../../types'
-import { createCommentVNode, defineAsyncComponent, defineComponent, h } from 'vue'
+import {
+  createTextParts,
+  DISABLED_TRANSITION_NAME,
+  getTransitionName,
+  resolveTextDirection,
+} from '@stream-markdown/core'
+import { createCommentVNode, defineAsyncComponent, defineComponent, h, TransitionGroup } from 'vue'
 import { useContext } from '../../composables'
 
-const ComarkCode = defineAsyncComponent(() => import('../comark-code.vue'))
-const ComarkMath = defineAsyncComponent(() => import('../comark-math.vue'))
+const CodeBlock = defineAsyncComponent(() => import('./code-block.vue'))
+const ImageNode = defineAsyncComponent(() => import('./image-node.vue'))
+const LinkNode = defineAsyncComponent(() => import('./link-node.vue'))
+const MathNode = defineAsyncComponent(() => import('./math-node.vue'))
+const TableNode = defineAsyncComponent(() => import('./table-node.vue'))
+const CSS_TEXT_ANIMATIONS = new Set(['blur-in', 'fade-in', 'slide-up'])
 
 const BLOCK_STYLES: Record<string, string> = {
   blockquote: 'text-muted-foreground mx-0 my-4 pl-4 border-l-4 border-l-muted-foreground/30 italic relative [&_p]:mb-0',
@@ -53,6 +63,8 @@ export default defineComponent({
   },
   setup(props) {
     const context = useContext()
+    const animatedTextKeys = new Set<string>()
+    let renderedTextKeys = new Set<string>()
 
     function renderNodes(nodes: Node[], loading: boolean, parentKey = 'root'): VNodeChild[] {
       const lastIndex = findLastRenderableIndex(nodes)
@@ -65,14 +77,55 @@ export default defineComponent({
 
     function renderNode(node: Node, loading: boolean, path: string): VNodeChild {
       if (typeof node === 'string') {
+        const textKey = `${path}-text`
+        renderedTextKeys.add(textKey)
+        if (context.enableAnimate.value && node.trim())
+          animatedTextKeys.add(textKey)
+
         const caret = loading && context.enableCaret.value
           ? h('span', {
+              'key': `${textKey}-caret`,
               'data-stream-markdown': 'caret',
             }, context.caret.value)
           : undefined
 
+        if (animatedTextKeys.has(textKey)) {
+          const useCssAnimation = CSS_TEXT_ANIMATIONS.has(context.animation.value)
+          const parts = createTextParts(node, textKey, context.animationSplit.value)
+          const children = () => [
+            ...parts.map(part => h('span', {
+              'key': part.key,
+              'data-stream-markdown': part.whitespace ? 'text-space' : `text-${part.animationSplit}`,
+              'class': [
+                '[text-decoration:inherit]',
+                !part.whitespace && 'inline-block max-w-full whitespace-pre-wrap break-words',
+                useCssAnimation && `stream-markdown-text-${context.animation.value}`,
+              ],
+            }, part.value)),
+            caret,
+          ]
+
+          if (!useCssAnimation) {
+            return h(TransitionGroup, {
+              'key': textKey,
+              'name': context.enableAnimate.value
+                ? getTransitionName(context.animation.value)
+                : DISABLED_TRANSITION_NAME,
+              'tag': 'span',
+              'data-stream-markdown': 'text',
+              'class': 'whitespace-pre-wrap break-words [text-decoration:inherit]',
+            }, children)
+          }
+
+          return h('span', {
+            'key': textKey,
+            'data-stream-markdown': 'text',
+            'class': 'whitespace-pre-wrap break-words [text-decoration:inherit]',
+          }, children())
+        }
+
         return h('span', {
-          'key': `${path}-text`,
+          'key': textKey,
           'data-stream-markdown': 'text',
           'class': 'whitespace-pre-wrap break-words [text-decoration:inherit]',
         }, [node, caret])
@@ -95,7 +148,7 @@ export default defineComponent({
       }
 
       if (tag === 'pre') {
-        return h(ComarkCode, {
+        return h(CodeBlock, {
           key,
           loading,
           node,
@@ -104,7 +157,7 @@ export default defineComponent({
       }
 
       if (tag === 'math') {
-        return h(ComarkMath, {
+        return h(MathNode, {
           key,
           node,
           nodeKey: key,
@@ -119,35 +172,39 @@ export default defineComponent({
       ]
 
       if (tag === 'a') {
-        const internal = typeof resolvedAttrs.href === 'string' && resolvedAttrs.href.startsWith('#')
-        if (!internal) {
-          resolvedAttrs.rel ??= 'noreferrer'
-          resolvedAttrs.target ??= '_blank'
-        }
-        if (loading) {
-          className.push('no-underline cursor-default pointer-events-none')
-          resolvedAttrs['data-stream-markdown-loading'] = true
-        }
+        return h(LinkNode, {
+          key,
+          attributes: resolvedAttrs,
+          loading,
+          node,
+          nodeKey: key,
+        }, {
+          default: () => renderNodes(children, loading, key),
+        })
       }
 
       if (tag === 'img') {
-        return h('figure', {
+        return h(ImageNode, {
           key,
-          'class': 'inline-block',
-          'data-stream-markdown': 'image-figure',
-        }, [
-          h('img', {
+          loading,
+          node,
+          nodeKey: key,
+        })
+      }
+
+      if (tag === 'table') {
+        return h(TableNode, {
+          key,
+          loading,
+          node,
+          nodeKey: key,
+        }, {
+          default: () => h('table', {
             ...resolvedAttrs,
             'class': className,
-            'data-stream-markdown': 'image',
-          }),
-          resolvedAttrs.title
-            ? h('figcaption', {
-                'class': 'text-sm text-center italic',
-                'data-stream-markdown': 'image-caption',
-              }, String(resolvedAttrs.title))
-            : undefined,
-        ])
+            'data-stream-markdown': 'table',
+          }, renderNodes(children, loading, key)),
+        })
       }
 
       const rendered = h(tag, {
@@ -155,21 +212,23 @@ export default defineComponent({
         'key': key,
         'class': className,
         'data-stream-markdown': resolveDataAttribute(tag),
-        'dir': tag === 'code' ? 'ltr' : resolvedAttrs.dir,
+        'dir': tag === 'code'
+          ? 'ltr'
+          : resolvedAttrs.dir ?? resolveNodeDirection(tag, node, context.dir.value),
       }, renderNodes(children, loading, key))
-
-      if (tag === 'table') {
-        return h('div', {
-          'key': `${key}-wrapper`,
-          'class': 'my-4 w-full overflow-x-auto overflow-y-auto',
-          'data-stream-markdown': 'table-wrapper',
-        }, rendered)
-      }
 
       return rendered
     }
 
-    return () => renderNodes(props.nodes, props.loading)
+    return () => {
+      renderedTextKeys = new Set<string>()
+      const rendered = renderNodes(props.nodes, props.loading)
+      for (const key of animatedTextKeys) {
+        if (!renderedTextKeys.has(key))
+          animatedTextKeys.delete(key)
+      }
+      return rendered
+    }
   },
 })
 
@@ -180,6 +239,46 @@ function findLastRenderableIndex(nodes: Node[]): number {
       return index
   }
   return -1
+}
+
+const DIRECTIONAL_TAGS = new Set([
+  'blockquote',
+  'figcaption',
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'li',
+  'p',
+  'td',
+  'th',
+])
+
+function resolveNodeDirection(
+  tag: string,
+  node: Node,
+  direction: 'auto' | 'ltr' | 'rtl' | undefined,
+) {
+  if (!DIRECTIONAL_TAGS.has(tag))
+    return undefined
+  return resolveTextDirection(getNodeText(node), direction)
+}
+
+function getNodeText(node: Node): string {
+  if (typeof node === 'string')
+    return node
+
+  let text = ''
+  for (let index = 2; index < node.length; index++) {
+    const child = node[index]
+    if (typeof child === 'string')
+      text += child
+    else if (Array.isArray(child))
+      text += getNodeText(child as Node)
+  }
+  return text
 }
 
 function resolveAttributes(attrs: ElementNode[1]): Record<string, unknown> {

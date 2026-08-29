@@ -1,10 +1,4 @@
 import type {
-  ParsedNode,
-  TableCellNode,
-  TableNode,
-  TableRowNode,
-} from '@markmend/ast'
-import type {
   ControlDescriptor,
   CSVSeparator,
   DownloadEvent,
@@ -14,8 +8,6 @@ import type {
   TableFormat,
 } from '../types'
 import {
-  getTableCellNodes,
-  resolveTableAlign,
   tableDataToCSV,
   tableDataToMarkdown,
   tableDataToTSV,
@@ -47,31 +39,6 @@ export interface TableControlActionOptions {
   copyContent?: (content: string) => MaybePromise<void>
   onCopied?: (content: string) => void
   saveFile?: (filename: string, content: string | Blob, mimeType: string) => MaybePromise<void>
-}
-
-export interface TableModelOptions {
-  node: TableNode
-  hasLoadingNode?: (nodes?: ParsedNode[]) => boolean
-}
-
-export function createTableModel(options: TableModelOptions) {
-  const align = options.node.align || []
-  const headerCells = options.node.children?.[0]?.children ?? []
-  const bodyRows = options.node.children.slice(1)
-
-  return {
-    align,
-    headerCells,
-    bodyRows,
-    loading: options.hasLoadingNode?.(options.node.children) ?? false,
-    options: TABLE_FORMAT_OPTIONS,
-    getAlign(index: number) {
-      return resolveTableAlign(align, index)
-    },
-    getNodes(cell: ParsedNode | TableRowNode | TableCellNode) {
-      return getTableCellNodes<ParsedNode>(cell as ParsedNode | { children?: ParsedNode[] })
-    },
-  }
 }
 
 export function getTableContent(

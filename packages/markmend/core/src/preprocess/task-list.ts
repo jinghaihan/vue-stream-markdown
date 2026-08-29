@@ -35,7 +35,7 @@ function isPartialSetextUnderline(line: string): boolean {
  * Standalone list markers are preserved. A short `-` or `=` underline after
  * prose receives a zero-width suffix so it cannot temporarily turn that prose
  * into a Setext heading while streaming.
- * This prevents AST parsing jitter when task list items are being typed incrementally.
+ * This prevents rendering jitter when task list items are being typed incrementally.
  * Also handles quote blocks (lines starting with `>`) to prevent leaving `> ` which could
  * cause the previous line to be misparsed as a heading.
  *

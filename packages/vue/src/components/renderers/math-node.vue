@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { ElementNode } from 'comark'
-import type { MathRenderNode } from '../types'
+import type { MathRenderNode } from '../../types'
 import { computed } from 'vue'
-import InlineMathRenderer from './renderers/inline-math.vue'
-import MathRenderer from './renderers/math.vue'
+import InlineMathRenderer from './inline-math.vue'
+import MathRenderer from './math.vue'
 
 const props = defineProps<{
   node: ElementNode

@@ -5,9 +5,9 @@ import { filterObjectKeys } from '../utils'
 import 'vue-json-pretty/lib/styles.css'
 
 const props = withDefaults(defineProps<{
-  parsedNodes?: unknown[]
+  nodes?: unknown[]
 }>(), {
-  parsedNodes: () => [],
+  nodes: () => [],
 })
 
 const { isDark } = useDark()
@@ -17,7 +17,7 @@ const height = ref<number>(0)
 
 const theme = computed(() => isDark.value ? 'dark' : 'light')
 
-const hideKeysValue = ref<string>('position')
+const hideKeysValue = ref<string>('')
 const hideKeys = computed(() => {
   try {
     return hideKeysValue.value.split(',').map(v => v.trim())
@@ -27,18 +27,18 @@ const hideKeys = computed(() => {
   }
 })
 
-const ast = computed(() => {
+const documentData = computed(() => {
   try {
-    return JSON.parse(filterObjectKeys(props.parsedNodes, hideKeys.value))
+    return JSON.parse(filterObjectKeys(props.nodes, hideKeys.value))
   }
   catch {
-    return props.parsedNodes
+    return props.nodes
   }
 })
 
 const content = computed(() => {
   try {
-    return JSON.stringify(ast.value, null, 2)
+    return JSON.stringify(documentData.value, null, 2)
   }
   catch {
     return ''
@@ -74,7 +74,7 @@ onMounted(updateHeight)
     </ScrollTriggerGroup>
 
     <VueJsonPretty
-      :data="ast"
+      :data="documentData"
       :show-line-number="true"
       :show-icon="true"
       :virtual="true"

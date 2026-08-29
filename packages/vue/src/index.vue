@@ -195,6 +195,7 @@ provideContext({
   animationSplit,
   enableCaret,
   caret,
+  documentNodes: computed(() => document.value.nodes),
   getContainer,
   beforeDownload: props.beforeDownload,
   onCopied: (copiedContent: string) => {
@@ -214,8 +215,6 @@ onBeforeUnmount(() => {
 
 defineExpose({
   getDocument: () => document.value,
-  getParsedNodes: () => document.value.nodes,
-  getProcessedContent: () => props.content,
 })
 </script>
 

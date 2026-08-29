@@ -1,10 +1,14 @@
 <script setup lang="ts">
-import type { ImageNodeRendererProps } from '../../types'
+import type { ElementNode } from 'comark'
 import { createImageModel, resolveTextDirection, saveImage } from '@stream-markdown/core'
 import { computed, ref } from 'vue'
 import { useContext, useControls, useI18n, useSanitizers } from '../../composables'
 
-const props = withDefaults(defineProps<ImageNodeRendererProps>(), {})
+const props = defineProps<{
+  loading?: boolean
+  node: ElementNode
+  nodeKey: string
+}>()
 
 const {
   beforeDownload,
@@ -16,29 +20,30 @@ const {
 } = useContext()
 
 const { t } = useI18n()
+const { isControlEnabled } = useControls({ controls })
 
-const { isControlEnabled } = useControls({
-  controls,
-})
+const maskRef = ref<HTMLElement>()
+const loadError = ref(false)
+const imageLoaded = ref(false)
+const fallbackAttempted = ref(false)
 
-const maskRef = ref()
-
-const loadError = ref<boolean>(false)
-const imageLoaded = ref<boolean>(false)
-const fallbackAttempted = ref<boolean>(false)
+const imageNode = computed(() => ({
+  url: String(props.node[1].src ?? ''),
+  alt: typeof props.node[1].alt === 'string' ? props.node[1].alt : null,
+  title: typeof props.node[1].title === 'string' ? props.node[1].title : null,
+  loading: props.loading,
+}))
 
 const baseImageModel = computed(() => createImageModel({
-  node: props.node,
+  node: imageNode.value,
   imageOptions: imageOptions.value,
   fallbackAttempted: fallbackAttempted.value,
   imageLoaded: imageLoaded.value,
 }))
 
 const isLoading = computed(() => baseImageModel.value.isLoading)
-
 const enableDownload = computed(() => isControlEnabled('image.download'))
 const enablePreview = computed(() => isControlEnabled('image.preview'))
-
 const fallback = computed(() => baseImageModel.value.fallback)
 const imageSrc = computed(() => baseImageModel.value.imageSrc)
 
@@ -50,7 +55,7 @@ const { transformedUrl, isHardenUrl, transformHardenUrl } = useSanitizers({
 })
 
 const imageModel = computed(() => createImageModel({
-  node: props.node,
+  node: imageNode.value,
   imageOptions: imageOptions.value,
   fallbackAttempted: fallbackAttempted.value,
   imageLoaded: imageLoaded.value,
@@ -62,6 +67,7 @@ const alt = computed(() => imageModel.value.alt)
 const title = computed(() => imageModel.value.title)
 const showCaption = computed(() => imageModel.value.showCaption)
 const direction = computed(() => resolveTextDirection(title.value, dir.value))
+const controlContext = computed(() => ({ node: props.node, nodeKey: props.nodeKey }))
 
 const Error = computed(() => isHardenUrl.value
   ? (hardenOptions.value?.errorComponent ?? UI.value.ErrorComponent)
@@ -82,22 +88,13 @@ function handleError() {
 async function handleDownload(url: string = imageSrc.value) {
   if (!url)
     return
-  const result = await beforeDownload({
-    type: 'image',
-    url,
-  })
-  if (result)
+  if (await beforeDownload({ type: 'image', url }))
     saveImage(url, alt.value)
 }
 
-function handleMouseEnter() {
+function setMaskOpacity(opacity: number) {
   if (maskRef.value)
-    maskRef.value.style.opacity = 1
-}
-
-function handleMouseLeave() {
-  if (maskRef.value)
-    maskRef.value.style.opacity = 0
+    maskRef.value.style.opacity = String(opacity)
 }
 </script>
 
@@ -105,44 +102,32 @@ function handleMouseLeave() {
   <figure
     data-stream-markdown="image-figure"
     class="inline-block"
-    :style="{
-      width: imageModel.figureWidth,
-    }"
-    @mouseenter="handleMouseEnter"
-    @mouseleave="handleMouseLeave"
+    :style="{ width: imageModel.figureWidth }"
+    @mouseenter="setMaskOpacity(1)"
+    @mouseleave="setMaskOpacity(0)"
   >
-    <div
-      data-stream-markdown="image-wrapper"
-      class="text-center relative"
-    >
+    <div data-stream-markdown="image-wrapper" class="text-center relative">
       <div
         v-if="!isHardenUrl"
         ref="maskRef"
         data-stream-markdown="image-mask"
         class="rounded-lg bg-[rgb(0_0_0_/_0.1)] opacity-0 pointer-events-none transition-opacity duration-[var(--default-transition-duration)] ease inset-0 absolute"
       >
-        <div
-          v-if="!isLoading && enableDownload"
-          class="pointer-events-auto bottom-2 right-2 absolute"
-        >
+        <div v-if="!isLoading && enableDownload" class="pointer-events-auto bottom-2 right-2 absolute">
           <component
             :is="UI.Button"
             data-stream-markdown="image-download-button"
             icon="download"
             :name="t('button.download')"
-            icon-class="test"
             :icon-width="16"
             :icon-height="16"
-            :button-style="{
-              backgroundColor: 'color-mix(in oklab, var(--background) 90%, transparent)',
-            }"
+            :button-style="{ backgroundColor: 'color-mix(in oklab, var(--background) 90%, transparent)' }"
             @click="() => handleDownload(imageSrc)"
           />
         </div>
       </div>
 
       <component :is="UI.Spin" v-if="imageModel.showSpin" />
-
       <component
         :is="UI.Image"
         v-if="imageModel.showImage && typeof transformedUrl === 'string'"
@@ -154,16 +139,12 @@ function handleMouseLeave() {
         :referrer-policy="imageOptions?.referrerPolicy"
         :controls="controls"
         :transform-harden-url="transformHardenUrl"
-        :node-props="props"
+        :node-props="controlContext"
         :handle-download="handleDownload"
         @load="handleLoaded"
         @error="handleError"
       />
-      <component
-        :is="Error"
-        v-else-if="imageModel.showError"
-        :variant="imageModel.errorVariant"
-      >
+      <component :is="Error" v-else-if="imageModel.showError" :variant="imageModel.errorVariant">
         {{ title }}
       </component>
     </div>

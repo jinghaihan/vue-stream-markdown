@@ -1,5 +1,4 @@
 import type {
-  BuiltinNodeRenderers,
   BuiltinUIComponents,
   CodeControlsConfig as CoreCodeControlsConfig,
   CodeOptions as CoreCodeOptions,
@@ -14,7 +13,6 @@ import type {
   KatexOptions as CoreKatexOptions,
   MermaidControlsConfig as CoreMermaidControlsConfig,
   MermaidOptions as CoreMermaidOptions,
-  PreloadConfig as CorePreloadConfig,
   PreviewerConfig as CorePreviewerConfig,
   ShikiOptions as CoreShikiOptions,
   TableControlsConfig as CoreTableControlsConfig,
@@ -29,13 +27,11 @@ import type { Component } from 'vue'
 import type { ICONS } from '../components/icons'
 import type {
   CodeBlockProps,
-  ImageNodeRendererProps,
-  TableNodeRendererProps,
+  MarkdownControlContext,
 } from './renderer'
 import type { UIButtonProps } from './ui'
 
 export type {
-  BuiltinNodeRenderers,
   BuiltinPreviewers,
   BuiltinUIComponents,
   CSVSeparator,
@@ -59,18 +55,18 @@ export type Control = CoreControl<UIButtonProps>
 
 export type ControlTransformer<T = unknown> = CoreControlTransformer<Control, T>
 
-export type TableControlsConfig = CoreTableControlsConfig<ControlTransformer<TableNodeRendererProps>>
+export type TableControlsConfig = CoreTableControlsConfig<ControlTransformer<MarkdownControlContext>>
 
 export type CodeControlsConfig = CoreCodeControlsConfig<ControlTransformer<CodeBlockProps>>
 
-export type ImageControlsConfig = CoreImageControlsConfig<ControlTransformer<ImageNodeRendererProps>>
+export type ImageControlsConfig = CoreImageControlsConfig<ControlTransformer<MarkdownControlContext>>
 
 export type MermaidControlsConfig = CoreMermaidControlsConfig<ControlTransformer<CodeBlockProps>>
 
 export type ControlsConfig = CoreControlsConfig<
-  ControlTransformer<TableNodeRendererProps>,
+  ControlTransformer<MarkdownControlContext>,
   ControlTransformer<CodeBlockProps>,
-  ControlTransformer<ImageNodeRendererProps>,
+  ControlTransformer<MarkdownControlContext>,
   ControlTransformer<CodeBlockProps>
 >
 
@@ -101,5 +97,3 @@ export type CodeOptionsLanguage = CoreCodeOptionsLanguage<Component>
 export type TableOptions = CoreTableOptions
 
 export type HardenOptions = CoreHardenOptions<Component>
-
-export type PreloadConfig = CorePreloadConfig<BuiltinNodeRenderers>

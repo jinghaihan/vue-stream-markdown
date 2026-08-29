@@ -1,6 +1,5 @@
 import type {
   Icons,
-  NodeRenderers,
   StreamMarkdownProvideContext,
   StreamMarkdownResolvedContext,
   UIComponents,
@@ -46,8 +45,6 @@ function resolveContext(context: StreamMarkdownProvideContext): StreamMarkdownRe
   const linkOptions = computed(() => toValue(context.linkOptions))
   const cdnOptions = computed(() => toValue(context.cdnOptions))
   const icons = computed((): Partial<Icons> => toValue(context.icons) ?? DEFAULT_ICONS)
-  const nodeRenderers = computed((): NodeRenderers => toValue(context.nodeRenderers) ?? {})
-
   const uiComponents = computed((): UIComponents => toValue(context.uiComponents) ?? DEFAULT_UI)
 
   const uiOptions = computed(() => toValue(context.uiOptions) ?? {})
@@ -61,8 +58,7 @@ function resolveContext(context: StreamMarkdownProvideContext): StreamMarkdownRe
   const enableCaret = computed(() => toValue(context.enableCaret))
   const caret = computed(() => resolveCaret(toValue(context.caret)))
 
-  const parsedNodes = computed(() => toValue(context.parsedNodes) ?? [])
-  const blocks = computed(() => toValue(context.blocks) ?? [])
+  const documentNodes = computed(() => toValue(context.documentNodes) ?? [])
 
   function provideContext(overrides: Partial<StreamMarkdownProvideContext>) {
     const providedContext = { ...context, ...overrides }
@@ -89,7 +85,6 @@ function resolveContext(context: StreamMarkdownProvideContext): StreamMarkdownRe
     cdnOptions,
     hideTooltip,
     icons,
-    nodeRenderers,
     uiComponents,
     isDark,
     enableAnimate,
@@ -97,11 +92,7 @@ function resolveContext(context: StreamMarkdownProvideContext): StreamMarkdownRe
     animationSplit,
     enableCaret,
     caret,
-    parsedNodes,
-    blocks,
-    get markdownParser() {
-      return context.markdownParser
-    },
+    documentNodes,
     get getContainer() {
       return context.getContainer || (() => undefined)
     },

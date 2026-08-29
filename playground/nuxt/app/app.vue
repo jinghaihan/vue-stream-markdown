@@ -32,8 +32,7 @@ const { cssVariables } = useTailwindV3Theme({})
 const userConfig = useUserConfig()
 
 const markdownRef = ref()
-const parsedNodes = computed(() => markdownRef.value?.getParsedNodes() ?? [])
-const processedContent = computed(() => markdownRef.value?.getProcessedContent() ?? '')
+const documentNodes = computed(() => markdownRef.value?.getDocument()?.nodes ?? [])
 
 const containerRef = ref<HTMLDivElement>()
 const monacoRef = ref()
@@ -78,10 +77,7 @@ const renderMode = computed(() => {
 const markdownContent = computed(() => renderMode.value === 'static' ? content.value : typedContent.value)
 
 const copyContent = computed(() => {
-  return JSON.stringify({
-    raw: markdownContent.value,
-    processed: processedContent.value,
-  }, null, 2)
+  return markdownContent.value
 })
 
 const shikiOptions = computed((): ShikiOptions => {
@@ -197,7 +193,7 @@ function stopTypeWriting() {
 function terminateTypeWriting() {
   typedEnable.value = false
   if (!userConfig.value.staticMode)
-    userConfig.value.showAstResult = false
+    userConfig.value.showDocumentResult = false
   terminate()
 }
 
@@ -279,7 +275,7 @@ onMounted(() => {
   <Layout
     v-model:typed-enable="typedEnable"
     v-model:show-input-editor="userConfig.showInputEditor"
-    v-model:show-ast-result="userConfig.showAstResult"
+    v-model:show-document-result="userConfig.showDocumentResult"
     :stop="stopTypeWriting"
     class="vue-stream-markdown"
     :style="cssVariables"
@@ -298,7 +294,7 @@ onMounted(() => {
         v-model:typed-step="userConfig.typedStep"
         v-model:typed-delay="userConfig.typedDelay"
         v-model:show-input-editor="userConfig.showInputEditor"
-        v-model:show-ast-result="userConfig.showAstResult"
+        v-model:show-document-result="userConfig.showDocumentResult"
         v-model:shiki-light-theme="userConfig.shikiLightTheme"
         v-model:shiki-dark-theme="userConfig.shikiDarkTheme"
         v-model:mermaid-renderer="userConfig.mermaidRenderer"
@@ -365,8 +361,8 @@ onMounted(() => {
       </div>
     </template>
 
-    <template #ast>
-      <AstResult :parsed-nodes="parsedNodes" />
+    <template #document>
+      <DocumentResult :nodes="documentNodes" />
     </template>
   </Layout>
 </template>

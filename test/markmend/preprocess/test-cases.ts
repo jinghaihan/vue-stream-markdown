@@ -636,6 +636,7 @@ export const strongTestCases: TestCasesByCategory = {
       description: 'should complete ** appropriately when there is trailing whitespace',
       input: `**Contribution\n`,
       expected: `**Contribution**\n`,
+      integrationExpected: '**Contribution**',
     },
   ],
 
@@ -921,13 +922,13 @@ export const linkTestCases: TestCasesByCategory = {
     },
     {
       description: 'should complete image with incomplete URL',
-      input: '![mdast](https://image.png',
-      expected: '![mdast](https://image.png)',
+      input: '![image](https://image.png',
+      expected: '![image](https://image.png)',
     },
     {
       description: 'should not modify closed image',
-      input: '![mdast](https://raw.githubusercontent.com/logo.svg)',
-      expected: '![mdast](https://raw.githubusercontent.com/logo.svg)',
+      input: '![image](https://raw.githubusercontent.com/logo.svg)',
+      expected: '![image](https://raw.githubusercontent.com/logo.svg)',
     },
     {
       description: 'should complete image in context',
@@ -991,8 +992,8 @@ export const linkTestCases: TestCasesByCategory = {
     },
     {
       description: 'should ignore incomplete image inside code block',
-      input: '```\nconst img = ![mdast](https://image.png\n```',
-      expected: '```\nconst img = ![mdast](https://image.png\n```',
+      input: '```\nconst img = ![image](https://image.png\n```',
+      expected: '```\nconst img = ![image](https://image.png\n```',
     },
     {
       description: 'should process image outside code block',
@@ -1361,6 +1362,7 @@ export const taskListTestCases: TestCasesByCategory = {
       description: 'should preserve regular list item dash',
       input: '- [ ] Task 1\n- ',
       expected: '- [ ] Task 1\n- ',
+      integrationExpected: '- [ ] Task 1\n-',
     },
     {
       description: 'should remove incomplete task list with bracket',
@@ -1407,6 +1409,7 @@ export const taskListTestCases: TestCasesByCategory = {
       description: 'should keep content when last line is empty',
       input: '- [ ] Task 1\n',
       expected: '- [ ] Task 1\n',
+      integrationExpected: '- [ ] Task 1',
     },
   ],
 }
@@ -1609,7 +1612,10 @@ export const streamingDelimiterSafetyCases: TestCase[] = [
   keepStreamingCase('escaped tilde', 'Text with \\~literal tilde'),
   keepStreamingCase('escaped backtick', 'literal \\` backtick'),
   keepStreamingCase('asterisk list marker', '* item'),
-  keepStreamingCase('asterisk list marker with nested bold', '*   **Preheat:** Set  '),
+  {
+    ...keepStreamingCase('asterisk list marker with nested bold', '*   **Preheat:** Set  '),
+    integrationExpected: '*   **Preheat:** Set',
+  },
   keepStreamingCase('asterisk surrounded by spaces', 'a * b'),
   keepStreamingCase('double asterisk surrounded by spaces', 'a ** b'),
   keepStreamingCase('underscore surrounded by spaces', 'a _ b'),

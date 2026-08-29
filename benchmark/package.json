@@ -4,11 +4,8 @@
   "private": true,
   "scripts": {
     "bench:completion": "vitest bench --run markmend.bench.ts",
-    "bench:parser": "vitest bench --run markmend-parser.bench.ts",
-    "bench:position-memory": "node --expose-gc --import tsx markmend-position-memory.ts",
     "bench:render:code": "vitest bench --run code-block-render.bench.ts",
-    "bench:render": "vitest bench --run streaming-render.bench.ts",
-    "bench:render:vnode": "vitest bench --run vnode-rendering.bench.ts"
+    "bench:render": "vitest bench --run streaming-render.bench.ts"
   },
   "devDependencies": {
     "@streamdown/code": "catalog:benchmark",

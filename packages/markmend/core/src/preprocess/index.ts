@@ -1,4 +1,4 @@
-import type { CompletionOptions, PreprocessContext, PreprocessStep, PreprocessStepName, PreprocessSteps } from '../types'
+import type { CompletionOptions, PreprocessContext } from '../types'
 import { flow } from '../utils'
 import { fixCode } from './code'
 import { fixComparisonOperators } from './comparison-operators'
@@ -14,23 +14,36 @@ import { crlfPattern } from './pattern'
 import { fixStrong } from './strong'
 import { fixTable } from './table'
 import { fixTaskList } from './task-list'
-import { parseMarkdownIntoBlocks, preprocessLaTeX } from './vendored'
+import { preprocessLaTeX } from './vendored/markdown-utils'
 
-export * from './context'
-export * from './pattern'
-
-function proprocessContent(content: string): string {
+function normalizeLineEndings(content: string): string {
   return content.replace(crlfPattern, '\n').trimEnd()
 }
 
 export function normalize(content: string): string {
   return flow([
-    proprocessContent,
+    normalizeLineEndings,
     preprocessLaTeX,
   ])(content)
 }
 
-const DEFAULT_PREPROCESS_STEP_NAMES: PreprocessStepName[] = [
+type CompletionStepName
+  = | 'code'
+    | 'comparisonOperators'
+    | 'html'
+    | 'footnote'
+    | 'strong'
+    | 'emphasis'
+    | 'delete'
+    | 'taskList'
+    | 'link'
+    | 'table'
+    | 'inlineMath'
+    | 'math'
+
+type CompletionStep = (content: string, options?: PreprocessContext) => string
+
+const COMPLETION_STEP_NAMES: CompletionStepName[] = [
   'code',
   'comparisonOperators',
   'html',
@@ -45,7 +58,7 @@ const DEFAULT_PREPROCESS_STEP_NAMES: PreprocessStepName[] = [
   'math',
 ]
 
-export const DEFAULT_PREPROCESS_STEPS = {
+const COMPLETION_STEPS = {
   code: fixCode,
   comparisonOperators: fixComparisonOperators,
   html: fixHtml,
@@ -58,43 +71,15 @@ export const DEFAULT_PREPROCESS_STEPS = {
   table: fixTable,
   inlineMath: fixInlineMath,
   math: fixMath,
-} satisfies Record<PreprocessStepName, PreprocessStep>
+} satisfies Record<CompletionStepName, CompletionStep>
 
 export function completeMarkdown(
   content: string,
   options?: CompletionOptions,
-  steps: PreprocessSteps = {},
 ): string {
   const context = createPreprocessContext(options)
-  return DEFAULT_PREPROCESS_STEP_NAMES.reduce((result, name) => {
-    const step = steps[name] ?? DEFAULT_PREPROCESS_STEPS[name]
-    return step(result, context)
-  }, content)
-}
-
-/** @deprecated Use `completeMarkdown` instead. */
-export function preprocess(
-  content: string,
-  options?: PreprocessContext,
-  steps: PreprocessSteps = {},
-): string {
-  return completeMarkdown(content, options, steps)
-}
-
-export {
-  fixCode,
-  fixComparisonOperators,
-  fixDelete,
-  fixEmphasis,
-  fixFootnote,
-  fixHtml,
-  fixInlineMath,
-  fixLink,
-  fixMath,
-  fixStrong,
-  fixTable,
-  fixTaskList,
-  parseMarkdownIntoBlocks,
-  preprocessLaTeX,
-  proprocessContent,
+  return COMPLETION_STEP_NAMES.reduce(
+    (result, name) => COMPLETION_STEPS[name](result, context),
+    normalize(content),
+  )
 }

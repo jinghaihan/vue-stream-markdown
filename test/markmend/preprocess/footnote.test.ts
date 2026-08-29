@@ -1,5 +1,5 @@
-import { fixFootnote } from '@markmend/core'
 import { describe, expect, it } from 'vitest'
+import { fixFootnote } from '../../../packages/markmend/core/src/preprocess/footnote'
 import { getTestCasesByCategories } from './test-cases'
 
 describe('fixFootnote', () => {

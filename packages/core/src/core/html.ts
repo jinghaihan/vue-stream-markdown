@@ -1,5 +1,5 @@
-import type { CodeNode } from '@markmend/ast'
 import type { PreviewerConfig } from '../types'
+import type { CodeBlockNode } from './code'
 import { normalizeCssSize } from '../utils'
 
 export const DEFAULT_HTML_PREVIEW_SANDBOX = 'allow-scripts'
@@ -9,7 +9,7 @@ export const MAX_HTML_PREVIEW_AUTO_HEIGHT = 1000
 
 export type HtmlPreviewMeasurementMode = 'dom' | 'message' | 'fallback'
 
-export function createHtmlPreviewModel(node: CodeNode) {
+export function createHtmlPreviewModel(node: CodeBlockNode) {
   return {
     code: node.value.trim(),
   }

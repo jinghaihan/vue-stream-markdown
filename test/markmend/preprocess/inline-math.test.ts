@@ -1,5 +1,5 @@
-import { fixInlineMath } from '@markmend/core'
 import { describe, expect, it } from 'vitest'
+import { fixInlineMath } from '../../../packages/markmend/core/src/preprocess/inline-math'
 import { getTestCasesByCategories } from './test-cases'
 
 describe('fixInlineMath', () => {

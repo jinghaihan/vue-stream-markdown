@@ -43,15 +43,11 @@ export default defineNuxtConfig({
         },
       },
     },
-    ssr: {
-      noExternal: ['sanitize-html'],
-    },
   },
   typescript: {
     tsConfig: {
       compilerOptions: {
         paths: {
-          '@markmend/ast': ['../../packages/markmend/ast/src/index.ts'],
           '@markmend/core': ['../../packages/markmend/core/src/index.ts'],
           'vue-stream-markdown': ['../../packages/vue/src/'],
         },

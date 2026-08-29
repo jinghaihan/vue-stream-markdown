@@ -3,9 +3,7 @@ import type { Component } from 'vue'
 import { defineAsyncComponent } from 'vue'
 
 export * from './previewers'
-export * from './renderers'
 
-export const ComarkNodeList = defineAsyncComponent(() => import('./renderers/node-list'))
 export const UI = {
   Alert: defineAsyncComponent(() => import('./alert.vue')),
   Button: defineAsyncComponent(() => import('./button.vue')),
@@ -22,5 +20,3 @@ export const UI = {
   Tooltip: defineAsyncComponent(() => import('./tooltip.vue')),
   ZoomContainer: defineAsyncComponent(() => import('./zoom-container.vue')),
 } as const satisfies Record<BuiltinUIComponents, Component>
-
-export const NodeList = defineAsyncComponent(() => import('./node-list.vue'))

@@ -1,5 +1,5 @@
-import { fixTaskList } from '@markmend/core'
 import { describe, expect, it } from 'vitest'
+import { fixTaskList } from '../../../packages/markmend/core/src/preprocess/task-list'
 import { getTestCasesByCategories } from './test-cases'
 
 describe('fixTaskList', () => {

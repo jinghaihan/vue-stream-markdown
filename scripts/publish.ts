@@ -7,11 +7,9 @@ const readmePath = resolve(rootDir, 'README.md')
 const packages = [
   resolve(rootDir, 'packages/core'),
   resolve(rootDir, 'packages/extensions/code'),
-  resolve(rootDir, 'packages/extensions/html'),
   resolve(rootDir, 'packages/extensions/math'),
   resolve(rootDir, 'packages/extensions/mermaid'),
   resolve(rootDir, 'packages/markmend/core'),
-  resolve(rootDir, 'packages/markmend/ast'),
   resolve(rootDir, 'packages/vue'),
 ]
 

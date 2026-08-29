@@ -1,5 +1,5 @@
-import { fixCode } from '@markmend/core'
 import { describe, expect, it } from 'vitest'
+import { fixCode } from '../../../packages/markmend/core/src/preprocess/code'
 import { getTestCasesByCategories } from './test-cases'
 
 describe('fixCode', () => {

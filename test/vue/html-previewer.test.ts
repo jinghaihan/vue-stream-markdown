@@ -1,5 +1,4 @@
 // @vitest-environment happy-dom
-import type { CodeNode, MarkdownAstParser, NodeRenderers } from 'vue-stream-markdown'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import { defineComponent, h } from 'vue'
@@ -16,15 +15,11 @@ function mountHtmlPreviewer(previewers?: unknown) {
       })
 
       return () => h(HtmlPreviewer, {
-        markdownParser: {} as MarkdownAstParser,
-        nodeRenderers: {} as NodeRenderers,
         node: {
-          type: 'code',
           lang: 'html',
           value: '<div>Hello</div>',
-        } as CodeNode,
+        },
         nodeKey: 'stream-markdown-block-0-code-0',
-        deep: 1,
       })
     },
   })

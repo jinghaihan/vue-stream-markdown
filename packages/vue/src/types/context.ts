@@ -1,21 +1,10 @@
 import type {
-  FromMarkdownExtension,
-  MarkdownAstParser,
-  MarkdownAstParserOptions,
-  MarkdownParserOptions,
-  MdastOptions,
-  MicromarkExtension,
-  ToMarkdownExtension,
-} from '@markmend/ast'
-import type { PreprocessContext } from '@markmend/core'
-import type {
   CaretType,
   StreamMarkdownContext as CoreStreamMarkdownContext,
   StreamMarkdownProps as CoreStreamMarkdownProps,
 } from '@stream-markdown/core'
 import type { ComputedRef, MaybeRefOrGetter } from 'vue'
-import type { MarkdownComponents } from './comark'
-import type { NodeRenderers, ParsedNode, SyntaxTree } from './core'
+import type { MarkdownComponents, MarkdownNode } from './comark'
 import type { Completion, StreamMarkdownParserOptions } from './parser'
 import type {
   CodeOptions,
@@ -26,7 +15,6 @@ import type {
   KatexOptions,
   LinkOptions,
   MermaidOptions,
-  PreloadConfig,
   PreviewerConfig,
   ShikiOptions,
   TableOptions,
@@ -49,11 +37,10 @@ export type StreamMarkdownContext = CoreStreamMarkdownContext<
   UIOptions
 >
 
-type LegacyStreamMarkdownProps = CoreStreamMarkdownProps<
-  NodeRenderers,
+type BaseStreamMarkdownProps = CoreStreamMarkdownProps<
+  MarkdownComponents,
   Icons,
   UIComponents,
-  PreloadConfig,
   CaretType,
   ControlsConfig,
   PreviewerConfig,
@@ -67,11 +54,9 @@ type LegacyStreamMarkdownProps = CoreStreamMarkdownProps<
   UIOptions
 >
 
-export type StreamMarkdownProps = Omit<LegacyStreamMarkdownProps, 'components'> & {
+export type StreamMarkdownProps = BaseStreamMarkdownProps & {
   completion?: Completion
-  components?: MarkdownComponents
   parserOptions?: StreamMarkdownParserOptions
-  uiComponents?: Partial<UIComponents>
 }
 
 export interface StreamMarkdownProvideContext {
@@ -90,7 +75,6 @@ export interface StreamMarkdownProvideContext {
   dir?: MaybeRefOrGetter<StreamMarkdownProps['dir']>
   isDark?: MaybeRefOrGetter<boolean>
   uiOptions?: MaybeRefOrGetter<UIOptions | undefined>
-  nodeRenderers?: MaybeRefOrGetter<NodeRenderers>
   icons?: MaybeRefOrGetter<Icons>
   uiComponents?: MaybeRefOrGetter<UIComponents>
   enableAnimate?: MaybeRefOrGetter<boolean>
@@ -98,9 +82,7 @@ export interface StreamMarkdownProvideContext {
   animationSplit?: MaybeRefOrGetter<StreamMarkdownProps['animationSplit']>
   enableCaret?: MaybeRefOrGetter<boolean>
   caret?: MaybeRefOrGetter<StreamMarkdownProps['caret']>
-  parsedNodes?: MaybeRefOrGetter<ParsedNode[]>
-  blocks?: MaybeRefOrGetter<SyntaxTree[]>
-  markdownParser?: MarkdownAstParser
+  documentNodes?: MaybeRefOrGetter<MarkdownNode[]>
   getContainer?: () => HTMLElement | undefined
   beforeDownload?: StreamMarkdownProps['beforeDownload']
   onCopied?: (content: string) => void
@@ -125,7 +107,6 @@ export interface StreamMarkdownResolvedContext {
   cdnOptions: ComputedRef<StreamMarkdownContext['cdnOptions']>
   hideTooltip: ComputedRef<boolean>
   icons: ComputedRef<Partial<Icons>>
-  nodeRenderers: ComputedRef<NodeRenderers>
   uiComponents: ComputedRef<UIComponents>
   isDark: ComputedRef<boolean>
   enableAnimate: ComputedRef<boolean>
@@ -133,23 +114,8 @@ export interface StreamMarkdownResolvedContext {
   animationSplit: ComputedRef<NonNullable<StreamMarkdownProps['animationSplit']>>
   enableCaret: ComputedRef<boolean | undefined>
   caret: ComputedRef<string | undefined>
-  parsedNodes: ComputedRef<ParsedNode[]>
-  blocks: ComputedRef<SyntaxTree[]>
-  readonly markdownParser: MarkdownAstParser | undefined
+  documentNodes: ComputedRef<MarkdownNode[]>
   readonly getContainer: () => HTMLElement | undefined
   readonly beforeDownload: NonNullable<StreamMarkdownProps['beforeDownload']>
   readonly onCopied: (content: string) => void
-}
-
-export type {
-  FromMarkdownExtension,
-  MarkdownAstParser,
-  MarkdownAstParserOptions,
-  MarkdownParserOptions,
-  MdastOptions,
-  MicromarkExtension,
-  ParsedNode,
-  PreprocessContext,
-  SyntaxTree,
-  ToMarkdownExtension,
 }

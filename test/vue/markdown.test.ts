@@ -12,7 +12,6 @@ vi.mock('../../packages/vue/src/utils', () => ({
 
 interface MarkdownTestVm {
   getDocument: () => { nodes: unknown[] }
-  getProcessedContent: () => string
 }
 
 interface MarkdownTestWrapper {
@@ -124,11 +123,12 @@ describe('stream markdown', () => {
       },
     })
     const testWrapper = wrapper as unknown as MarkdownTestWrapper
+    await vi.dynamicImportSettled()
     await flushPromises()
     const link = wrapper.get('[data-stream-markdown="link"]')
 
     expect(link.attributes('data-stream-markdown-loading')).toBe('true')
-    expect(link.classes()).toContain('no-underline')
+    expect(link.classes()).toContain('data-[stream-markdown-loading=true]:no-underline')
 
     await testWrapper.setProps({ mode: 'static' })
     await flushPromises()
@@ -136,19 +136,6 @@ describe('stream markdown', () => {
     expect(wrapper.get('[data-stream-markdown="link"]').element).toBe(link.element)
     expect(link.attributes('data-stream-markdown-loading')).toBeUndefined()
     expect(link.classes()).toContain('underline')
-    wrapper.unmount()
-  })
-
-  it('exposes the original source as processed content', async () => {
-    const wrapper = mount(Markdown, {
-      props: {
-        content: '*',
-        mode: 'streaming',
-      },
-    })
-    await flushPromises()
-
-    expect((wrapper.vm as unknown as MarkdownTestVm).getProcessedContent()).toBe('*')
     wrapper.unmount()
   })
 })

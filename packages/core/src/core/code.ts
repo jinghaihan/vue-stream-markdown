@@ -8,7 +8,6 @@ import type {
   PreviewSegmentedPlacement,
   SelectOption,
 } from '../types'
-import type { CodeBlockModeState } from './types'
 import {
   LANGUAGE_ALIAS,
   LANGUAGE_EXTENSIONS,
@@ -24,6 +23,10 @@ export interface CodeBlockNode {
   value: string
   lang?: string | null
   loading?: boolean
+}
+
+export interface CodeBlockModeState {
+  mode: 'preview' | 'source'
 }
 
 export interface CodeOptionsModel<TComponent = unknown> {

@@ -1,6 +1,5 @@
 export * from './comark'
 export * from './context'
-export * from './core'
 export * from './parser'
 export * from './renderer'
 export * from './shared'
@@ -9,7 +8,6 @@ export * from './ui'
 export type {
   AnimationSplit,
   AnimationType,
-  BuiltinNodeRenderers,
   BuiltinPreviewers,
   BuiltinUIComponents,
   CaretType,

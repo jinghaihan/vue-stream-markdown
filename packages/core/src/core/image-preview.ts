@@ -1,4 +1,3 @@
-import type { ImageNode, ParsedNode } from '@markmend/ast'
 import type { ControlDescriptor, UIStyleValue, ZoomControlPosition } from '../types'
 import { getConfigValue, isConfigEnabled } from '../utils'
 
@@ -15,7 +14,7 @@ export interface ImagePreviewIconAvailability {
 }
 
 export interface ImagePreviewModelOptions {
-  parsedNodes?: ParsedNode[]
+  sources?: string[]
   src?: string
   controls?: unknown
   transformHardenUrl?: (url: string) => string | null
@@ -48,30 +47,22 @@ const DEFAULT_IMAGE_PREVIEW_TRANSFORM_STATE: ImagePreviewTransformState = {
 }
 
 export function createImagePreviewSources(
-  nodes: ParsedNode[] = [],
+  sources: string[] = [],
   transformHardenUrl?: (url: string) => string | null,
 ): string[] {
-  const sources: string[] = []
+  const resolved: string[] = []
   const seen = new Set<string>()
 
-  visitNodes(nodes, (node) => {
-    if (node.type !== 'image')
-      return
-
-    const image = node as ImageNode
-    if (image.loading || !image.url)
-      return
-
-    const url = image.url
+  sources.forEach((url) => {
     const transformed = transformHardenUrl ? transformHardenUrl(url) : url
     if (!transformed || seen.has(url))
       return
 
     seen.add(url)
-    sources.push(url)
+    resolved.push(url)
   })
 
-  return sources
+  return resolved
 }
 
 export function resolveImageControlPosition(controls: unknown): ZoomControlPosition {
@@ -213,7 +204,7 @@ export function createImagePreviewControlDescriptors(
 }
 
 export function createImagePreviewModel(options: ImagePreviewModelOptions) {
-  const sources = createImagePreviewSources(options.parsedNodes, options.transformHardenUrl)
+  const sources = createImagePreviewSources(options.sources, options.transformHardenUrl)
   const state = createImagePreviewTransformState(options.state)
 
   return {
@@ -230,13 +221,4 @@ export function createImagePreviewModel(options: ImagePreviewModelOptions) {
       imageSrc: options.src,
     }),
   }
-}
-
-function visitNodes(nodes: ParsedNode[], visit: (node: ParsedNode) => void) {
-  nodes.forEach((node) => {
-    visit(node)
-    const children = (node as ParsedNode & { children?: ParsedNode[] }).children
-    if (Array.isArray(children))
-      visitNodes(children, visit)
-  })
 }

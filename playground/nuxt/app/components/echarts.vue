@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { CodeNodeRendererProps } from 'vue-stream-markdown'
+import type { CodeBlockProps } from 'vue-stream-markdown'
 import { useResizeObserver } from '@vueuse/core'
 import * as echarts from 'echarts'
 import { UI, useContext } from 'vue-stream-markdown'
 
-const props = defineProps<CodeNodeRendererProps>()
+const props = defineProps<CodeBlockProps>()
 const { isDark } = useContext()
 
 const chartRef = ref<HTMLDivElement>()

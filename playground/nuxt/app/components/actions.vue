@@ -49,7 +49,7 @@ const typedStep = defineModel<number>('typedStep', { required: false, default: 1
 const typedDelay = defineModel<number>('typedDelay', { required: false, default: 16 })
 
 const showInputEditor = defineModel<boolean>('showInputEditor', { required: false, default: false })
-const showAstResult = defineModel<boolean>('showAstResult', { required: false, default: false })
+const showDocumentResult = defineModel<boolean>('showDocumentResult', { required: false, default: false })
 
 const shikiLightTheme = defineModel<string>('shikiLightTheme', { required: false, default: 'github-light' })
 const shikiDarkTheme = defineModel<string>('shikiDarkTheme', { required: false, default: 'github-dark' })
@@ -141,11 +141,11 @@ const actions = computed((): Action[] => {
       onClick: () => showInputEditor.value = !showInputEditor.value,
     }),
     wrapAction({
-      name: 'Toggle Ast Result',
+      name: 'Toggle Document Result',
       icon: ListTree,
       variant: 'toggle',
-      defaultActive: showAstResult.value,
-      onClick: () => showAstResult.value = !showAstResult.value,
+      defaultActive: showDocumentResult.value,
+      onClick: () => showDocumentResult.value = !showDocumentResult.value,
     }),
     wrapAction({
       name: 'Change Languages',

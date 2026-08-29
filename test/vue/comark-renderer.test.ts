@@ -1,8 +1,8 @@
 import type { ShallowRef } from 'vue'
 // @vitest-environment happy-dom
 import type { MarkdownNode as Node } from '../../packages/vue/src/types'
-import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { flushPromises, mount } from '@vue/test-utils'
+import { describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, nextTick, shallowRef } from 'vue'
 import ComarkNodeList from '../../packages/vue/src/components/renderers/node-list'
 import { useContext } from '../../packages/vue/src/composables'
@@ -26,7 +26,7 @@ function mountNodes(nodes: ShallowRef<Node[]>, components = {}) {
 }
 
 describe('comark renderer', () => {
-  it('renders semantic nodes and bound attributes directly', () => {
+  it('renders semantic nodes and bound attributes directly', async () => {
     const nodes = shallowRef<Node[]>([
       ['h2', { id: 'title' }, ['strong', {}, 'Title']],
       ['p', {}, 'Visit ', ['a', { href: 'https://example.com' }, 'example']],
@@ -39,17 +39,20 @@ describe('comark renderer', () => {
       ['table', {}, ['thead', {}, ['tr', {}, ['th', {}, 'Name']]], ['tbody', {}, ['tr', {}, ['td', {}, 'Value']]]],
     ])
     const wrapper = mountNodes(nodes)
+    await vi.dynamicImportSettled()
+    await flushPromises()
 
     expect(wrapper.get('h2').classes()).toContain('text-2xl')
     expect(wrapper.get('strong').text()).toBe('Title')
     expect(wrapper.get('a').attributes()).toMatchObject({
-      href: 'https://example.com',
+      href: 'https://example.com/',
       rel: 'noreferrer',
       target: '_blank',
     })
     expect(wrapper.get('a').classes()).toContain('underline')
     expect(wrapper.get('input').element).toMatchObject({ checked: true, disabled: true })
     expect(wrapper.get('[data-stream-markdown="table-wrapper"]')).toBeTruthy()
+    wrapper.unmount()
   })
 
   it('passes attributes, children, and the raw node to custom components', () => {

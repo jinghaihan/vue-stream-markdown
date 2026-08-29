@@ -28,9 +28,6 @@
     "build": "tsdown",
     "prepublishOnly": "pnpm build"
   },
-  "dependencies": {
-    "@markmend/ast": "workspace:*"
-  },
   "devDependencies": {
     "tsdown": "catalog:build"
   }

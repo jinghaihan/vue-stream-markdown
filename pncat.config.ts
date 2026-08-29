@@ -35,12 +35,12 @@ export default defineConfig({
     },
     {
       name: 'parser',
-      match: ['comark', /marked/, /mdast-/, /micromark-/, 'parse5', 'sanitize-html'],
+      match: ['comark'],
       priority: 0,
     },
     {
       name: 'inlined',
-      match: ['@antfu/utils', /quick-lru/, /treechop/],
+      match: ['@antfu/utils'],
       priority: 0,
     },
     {

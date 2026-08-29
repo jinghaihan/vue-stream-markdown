@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { ElementNode } from 'comark'
-import type { CodeBlockNode } from '../types'
+import type { CodeBlockNode } from '../../types'
 import { computed } from 'vue'
-import CodeRenderer from './renderers/code/index.vue'
+import CodeRenderer from './code/index.vue'
 
 const props = defineProps<{
   loading?: boolean

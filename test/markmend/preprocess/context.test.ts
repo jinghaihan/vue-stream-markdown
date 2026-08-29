@@ -1,10 +1,20 @@
+import { describe, expect, it } from 'vitest'
+import { fixCode } from '../../../packages/markmend/core/src/preprocess/code'
+import { fixComparisonOperators } from '../../../packages/markmend/core/src/preprocess/comparison-operators'
 import {
   createPreprocessContext,
-  DEFAULT_PREPROCESS_STEPS,
   getPreprocessAnalysis,
-  preprocess,
-} from '@markmend/core'
-import { describe, expect, it } from 'vitest'
+} from '../../../packages/markmend/core/src/preprocess/context'
+import { fixDelete } from '../../../packages/markmend/core/src/preprocess/delete'
+import { fixEmphasis } from '../../../packages/markmend/core/src/preprocess/emphasis'
+import { fixFootnote } from '../../../packages/markmend/core/src/preprocess/footnote'
+import { fixHtml } from '../../../packages/markmend/core/src/preprocess/html'
+import { fixInlineMath } from '../../../packages/markmend/core/src/preprocess/inline-math'
+import { fixLink } from '../../../packages/markmend/core/src/preprocess/link'
+import { fixMath } from '../../../packages/markmend/core/src/preprocess/math'
+import { fixStrong } from '../../../packages/markmend/core/src/preprocess/strong'
+import { fixTable } from '../../../packages/markmend/core/src/preprocess/table'
+import { fixTaskList } from '../../../packages/markmend/core/src/preprocess/task-list'
 
 describe('preprocess context', () => {
   it('reuses analysis for unchanged content', () => {
@@ -50,6 +60,20 @@ describe('preprocess context', () => {
   })
 
   it('keeps every step usable without a context', () => {
+    const completionSteps = {
+      code: fixCode,
+      comparisonOperators: fixComparisonOperators,
+      delete: fixDelete,
+      emphasis: fixEmphasis,
+      footnote: fixFootnote,
+      html: fixHtml,
+      inlineMath: fixInlineMath,
+      link: fixLink,
+      math: fixMath,
+      strong: fixStrong,
+      table: fixTable,
+      taskList: fixTaskList,
+    }
     const inputs = {
       code: 'Text `code',
       comparisonOperators: '- > 25',
@@ -65,24 +89,9 @@ describe('preprocess context', () => {
       taskList: 'Text\n- [',
     } as const
 
-    for (const [name, step] of Object.entries(DEFAULT_PREPROCESS_STEPS)) {
+    for (const [name, step] of Object.entries(completionSteps)) {
       const input = inputs[name as keyof typeof inputs]
       expect(step(input)).toBe(step(input, createPreprocessContext()))
     }
-  })
-
-  it('passes one context through custom steps', () => {
-    let receivedContext: unknown
-    const suppliedContext = { hideBareFormattingMarkers: false }
-
-    preprocess('content', suppliedContext, {
-      code(content, context) {
-        receivedContext = context
-        return content
-      },
-    })
-
-    expect(receivedContext).toEqual(suppliedContext)
-    expect(receivedContext).not.toBe(suppliedContext)
   })
 })
