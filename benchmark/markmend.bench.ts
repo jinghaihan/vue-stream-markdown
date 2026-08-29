@@ -1,6 +1,6 @@
 import { autoCloseMarkdown } from 'comark'
 import remend from 'remend'
-import { bench, describe } from 'vitest'
+import { afterAll, bench, describe } from 'vitest'
 import { preprocess } from '../packages/markmend/core/src/preprocess'
 
 type CompleteMarkdown = (content: string) => string
@@ -16,6 +16,12 @@ const implementations: Array<{
 
 const standardOptions = { iterations: 1000 }
 const pathologicalOptions = { iterations: 10 }
+let benchmarkResult: unknown
+
+afterAll(() => {
+  if (benchmarkResult === undefined)
+    throw new Error('Completion benchmarks did not produce a result')
+})
 
 function benchmarkInput(
   category: string,
@@ -27,7 +33,9 @@ function benchmarkInput(
     for (const implementation of implementations) {
       bench(
         implementation.name,
-        () => implementation.complete(input),
+        () => {
+          benchmarkResult = implementation.complete(input)
+        },
         options,
       )
     }
@@ -45,7 +53,7 @@ function benchmarkStream(
         implementation.name,
         () => {
           for (const input of inputs)
-            implementation.complete(input)
+            benchmarkResult = implementation.complete(input)
         },
         standardOptions,
       )

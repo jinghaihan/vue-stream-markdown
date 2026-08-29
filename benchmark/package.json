@@ -23,6 +23,7 @@
     "unified": "catalog:benchmark",
     "vue": "catalog:frontend",
     "vitest": "catalog:test",
+    "@types/node": "catalog:types",
     "vue-stream-markdown": "workspace:*"
   }
 }

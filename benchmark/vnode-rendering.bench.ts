@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 
 import type { Root as ReactRoot } from 'react-dom/client'
+import type { VNode } from 'vue'
 import type { ParsedNode, SyntaxTree } from 'vue-stream-markdown'
 import {
   createParagraphModel,
@@ -16,7 +17,7 @@ import { createElement } from 'react'
 import { flushSync } from 'react-dom'
 import { createRoot } from 'react-dom/client'
 import { Streamdown } from 'streamdown'
-import { beforeAll, bench, describe } from 'vitest'
+import { afterAll, beforeAll, bench, describe } from 'vitest'
 import {
   defineComponent,
   Fragment,
@@ -63,6 +64,12 @@ const benchmarkOptions = {
   time: 1000,
   warmupTime: 500,
 }
+let benchmarkResult: unknown
+
+afterAll(() => {
+  if (benchmarkResult === undefined)
+    throw new Error('VNode rendering benchmarks did not produce a result')
+})
 
 let prototypeBlockRenderCount = 0
 
@@ -138,7 +145,7 @@ function renderNode(
   node: ParsedNode,
   nextNode: ParsedNode | undefined,
   options: RenderOptions,
-) {
+): VNode {
   const childOptions = {
     ...options,
     deep: options.deep + 1,
@@ -148,7 +155,7 @@ function renderNode(
     ? renderNodes(node.children as ParsedNode[], childOptions)
     : undefined
 
-  let vnode
+  let vnode: VNode
   switch (node.type) {
     case 'text':
       vnode = renderText(node, options)
@@ -203,7 +210,7 @@ function renderNode(
   })
 }
 
-function renderNodes(nodes: ParsedNode[], options: RenderOptions) {
+function renderNodes(nodes: ParsedNode[], options: RenderOptions): VNode[] {
   return nodes.map((node, index) => renderNode(
     node,
     nodes[index + 1],
@@ -469,13 +476,25 @@ beforeAll(async () => {
 }, 30_000)
 
 describe('non-animated simple document initial render', () => {
-  bench('vue-stream-markdown', () => runVueSession(renderCurrentVue, false, 0), benchmarkOptions)
-  bench('ast to VNode prototype', () => runVueSession(renderVNodeVue, false, 0), benchmarkOptions)
-  bench('streamdown', () => runReactSession(false, 0), benchmarkOptions)
+  bench('vue-stream-markdown', () => {
+    benchmarkResult = runVueSession(renderCurrentVue, false, 0)
+  }, benchmarkOptions)
+  bench('ast to VNode prototype', () => {
+    benchmarkResult = runVueSession(renderVNodeVue, false, 0)
+  }, benchmarkOptions)
+  bench('streamdown', () => {
+    benchmarkResult = runReactSession(false, 0)
+  }, benchmarkOptions)
 })
 
 describe('non-animated simple document with 20 streaming appends', () => {
-  bench('vue-stream-markdown', () => runVueSession(renderCurrentVue, false, 20), benchmarkOptions)
-  bench('ast to VNode prototype', () => runVueSession(renderVNodeVue, false, 20), benchmarkOptions)
-  bench('streamdown', () => runReactSession(false, 20), benchmarkOptions)
+  bench('vue-stream-markdown', () => {
+    benchmarkResult = runVueSession(renderCurrentVue, false, 20)
+  }, benchmarkOptions)
+  bench('ast to VNode prototype', () => {
+    benchmarkResult = runVueSession(renderVNodeVue, false, 20)
+  }, benchmarkOptions)
+  bench('streamdown', () => {
+    benchmarkResult = runReactSession(false, 20)
+  }, benchmarkOptions)
 })

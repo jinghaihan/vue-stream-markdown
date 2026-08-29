@@ -350,6 +350,9 @@ importers:
 
   benchmark:
     devDependencies:
+      '@types/node':
+        specifier: catalog:types
+        version: 26.1.2
       '@types/react':
         specifier: catalog:benchmark
         version: 18.3.31

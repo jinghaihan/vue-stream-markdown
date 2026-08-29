@@ -5,7 +5,7 @@ import { createElement } from 'react'
 import { flushSync } from 'react-dom'
 import { createRoot } from 'react-dom/client'
 import { Streamdown } from 'streamdown'
-import { beforeAll, bench, describe } from 'vitest'
+import { afterAll, beforeAll, bench, describe } from 'vitest'
 import { h, nextTick, render } from 'vue'
 import { Markdown as VueStreamMarkdown } from 'vue-stream-markdown'
 
@@ -63,6 +63,12 @@ const benchmarkOptions = {
   time: 1000,
   warmupTime: 500,
 }
+let benchmarkResult: unknown
+
+afterAll(() => {
+  if (benchmarkResult === undefined)
+    throw new Error('Streaming render benchmarks did not produce a result')
+})
 
 interface MutationStats {
   addedNodes: number
@@ -287,12 +293,20 @@ beforeAll(async () => {
 
 for (const [name, document] of scenarios) {
   describe(`${name} initial render`, () => {
-    bench('vue-stream-markdown', () => runVueSession(document, 0), benchmarkOptions)
-    bench('streamdown', () => runReactSession(document, 0), benchmarkOptions)
+    bench('vue-stream-markdown', () => {
+      benchmarkResult = runVueSession(document, 0)
+    }, benchmarkOptions)
+    bench('streamdown', () => {
+      benchmarkResult = runReactSession(document, 0)
+    }, benchmarkOptions)
   })
 
   describe(`${name} with 20 streaming appends`, () => {
-    bench('vue-stream-markdown', () => runVueSession(document, 20), benchmarkOptions)
-    bench('streamdown', () => runReactSession(document, 20), benchmarkOptions)
+    bench('vue-stream-markdown', () => {
+      benchmarkResult = runVueSession(document, 20)
+    }, benchmarkOptions)
+    bench('streamdown', () => {
+      benchmarkResult = runReactSession(document, 20)
+    }, benchmarkOptions)
   })
 }

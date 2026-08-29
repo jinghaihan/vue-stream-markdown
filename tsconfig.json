@@ -39,6 +39,7 @@
     "skipLibCheck": true
   },
   "include": [
+    "benchmark",
     "packages/**/*.ts",
     "scripts/**/*.ts",
     "docs",
