@@ -352,6 +352,7 @@ describe('markdown-parser', () => {
     '---',
     'An &amp; entity remains correct.',
     '中文*测试*与_强调_继续输出。',
+    '```ts\nconst value = `text`;\n\nconst next = value;',
   ])('should match fresh parsing at every prefix of %j', (document) => {
     const parser = new MarkdownAstParser({ mode: 'streaming' })
 
@@ -433,6 +434,48 @@ describe('markdown-parser', () => {
     const freshResult = new MarkdownAstParser({ mode: 'streaming' })
       .parseMarkdown('A **growing phrase')
 
+    expect(omitFalseLoading(result)).toEqual(omitFalseLoading(freshResult))
+  })
+
+  it('should append to an unterminated fenced code AST without reparsing', () => {
+    const parser = new MarkdownAstParser({ mode: 'streaming' })
+    parser.parseMarkdown('```ts\nconst value = 1;')
+    const markdownToAst = vi.spyOn(parser, 'markdownToAst')
+
+    const content = '```ts\nconst value = 1;\nconst next = value + 1;'
+    const result = parser.parseMarkdown(content)
+    const freshResult = new MarkdownAstParser({ mode: 'streaming' })
+      .parseMarkdown(content)
+
+    expect(markdownToAst).not.toHaveBeenCalled()
+    expect(omitFalseLoading(result)).toEqual(omitFalseLoading(freshResult))
+  })
+
+  it('should reuse the completed AST when the real closing fence arrives', () => {
+    const parser = new MarkdownAstParser({ mode: 'streaming' })
+    parser.parseMarkdown('```ts\nconst value = 1;')
+    const markdownToAst = vi.spyOn(parser, 'markdownToAst')
+
+    const content = '```ts\nconst value = 1;\n```'
+    const result = parser.parseMarkdown(content)
+    const freshResult = new MarkdownAstParser({ mode: 'streaming' })
+      .parseMarkdown(content)
+
+    expect(markdownToAst).not.toHaveBeenCalled()
+    expect(omitFalseLoading(result)).toEqual(omitFalseLoading(freshResult))
+  })
+
+  it('should reparse indented fenced code blocks', () => {
+    const parser = new MarkdownAstParser({ mode: 'streaming' })
+    parser.parseMarkdown('  ```ts\n  const value = 1;')
+    const markdownToAst = vi.spyOn(parser, 'markdownToAst')
+
+    const content = '  ```ts\n  const value = 1;\n  const next = value + 1;'
+    const result = parser.parseMarkdown(content)
+    const freshResult = new MarkdownAstParser({ mode: 'streaming' })
+      .parseMarkdown(content)
+
+    expect(markdownToAst).toHaveBeenCalledOnce()
     expect(omitFalseLoading(result)).toEqual(omitFalseLoading(freshResult))
   })
 

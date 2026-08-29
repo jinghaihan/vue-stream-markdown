@@ -23,10 +23,20 @@ export interface Options extends MarkdownAstParserOptions {
   mode: 'streaming' | 'static'
 }
 
+interface AppendAstOptions {
+  content: string
+  previousAst?: SyntaxTree
+  previousContent?: string
+  previousSource?: string
+  source: string
+}
+
 const SAFE_TEXT_APPEND_PATTERN = /^[\p{L}\p{N}\p{M} \t,.'!?-]+$/u
 const FORMATTING_SUFFIX_PATTERN = /^[*_~]+$/
 const FORMATTING_NODE_TYPES = new Set(['delete', 'emphasis', 'strong'])
 const PARAGRAPH_CHANGING_PREFIX_PATTERN = /^(?: {0,3}(?:#{1,6}[ \t]|>[ \t]?|(?:[-+*]|\d+[.)])(?:[ \t]+|$))| {0,3}([-*_])(?:[ \t]*\1){2,}[ \t]*$)/
+const BACKTICK_FENCE_PATTERN = /^```[^`\n]*\n/
+const BACKTICK_FENCE_COMPLETION_SUFFIX = '\n```'
 
 function canRemainParagraph(source: string): boolean {
   if (PARAGRAPH_CHANGING_PREFIX_PATTERN.test(source))
@@ -102,13 +112,13 @@ export class MarkdownAstParser {
 
   private options: Options
   private processor: MarkdownProcessor
-  private readonly useAppendTextFastPath: boolean
+  private readonly useAppendFastPaths: boolean
 
   constructor(options: Options) {
     this.mode = options.mode
     this.options = options
     this.processor = new MarkdownProcessor(options)
-    this.useAppendTextFastPath = !hasCustomParserBehavior(options)
+    this.useAppendFastPaths = !hasCustomParserBehavior(options)
 
     const ctx = {
       mdastOptions: options.mdastOptions,
@@ -276,13 +286,16 @@ export class MarkdownAstParser {
         continue
       }
 
-      const ast = this.tryAppendTextAst({
+      const appendOptions = {
         content,
         previousAst,
         previousContent,
         previousSource: this.blocks[index],
         source: blocks[index]!,
-      }) ?? this.markdownToAst(content)
+      }
+      const ast = this.tryAppendCodeAst(appendOptions)
+        ?? this.tryAppendTextAst(appendOptions)
+        ?? this.markdownToAst(content)
       this.astCache.set(content, ast)
 
       asts.push(applyLoadingState(ast, syntaxLoading, tailTextLoading))
@@ -295,14 +308,49 @@ export class MarkdownAstParser {
     this.hasSegmentedBlocks = hasSegmentedBlocks
   }
 
-  private tryAppendTextAst(options: {
-    content: string
-    previousAst?: SyntaxTree
-    previousContent?: string
-    previousSource?: string
-    source: string
-  }): SyntaxTree | undefined {
-    if (!this.useAppendTextFastPath || this.mode !== 'streaming')
+  private tryAppendCodeAst(options: AppendAstOptions): SyntaxTree | undefined {
+    if (!this.useAppendFastPaths || this.mode !== 'streaming')
+      return undefined
+
+    const {
+      content,
+      previousAst,
+      previousContent,
+      previousSource,
+      source,
+    } = options
+    if (!previousAst || previousContent === undefined || previousSource === undefined)
+      return undefined
+    if (!source.startsWith(previousSource) || source.length === previousSource.length)
+      return undefined
+    if (!BACKTICK_FENCE_PATTERN.test(previousSource))
+      return undefined
+
+    const completionSuffix = previousContent.slice(previousSource.length)
+    if (completionSuffix !== BACKTICK_FENCE_COMPLETION_SUFFIX)
+      return undefined
+    if (content !== `${source}${completionSuffix}`)
+      return undefined
+    if (previousAst.children.length !== 1)
+      return undefined
+
+    const node = previousAst.children[0] as ParsedNode | undefined
+    if (node?.type !== 'code')
+      return undefined
+
+    const appended = source.slice(previousSource.length)
+    const { loading: _loading, ...code } = node
+    return {
+      ...previousAst,
+      children: [{
+        ...code,
+        value: node.value + appended,
+      }],
+    }
+  }
+
+  private tryAppendTextAst(options: AppendAstOptions): SyntaxTree | undefined {
+    if (!this.useAppendFastPaths || this.mode !== 'streaming')
       return undefined
 
     const {
