@@ -2,10 +2,10 @@
 import type {
   Icons,
   MarkdownDocument,
-  StreamMarkdownParserOptions,
   StreamMarkdownProps,
   UIComponents,
 } from './types'
+import { createMarkmendParser } from '@markmend/parser'
 import {
   createRootStyle,
   DEFAULT_ANIMATION,
@@ -13,10 +13,6 @@ import {
   resolveEnableAnimate,
   resolveEnableCaret,
 } from '@stream-markdown/core'
-import footnotes from 'comark/plugins/footnotes'
-import math from 'comark/plugins/math'
-import security from 'comark/plugins/security'
-import cjkFriendly from 'markdown-it-cjk-friendly'
 import { computed, onBeforeUnmount, onMounted, shallowRef, toRefs, watch } from 'vue'
 import { UI } from './components'
 import { ICONS } from './components/icons'
@@ -31,7 +27,6 @@ import {
   useTailwindV3Theme,
 } from './composables'
 import { loadLocaleMessages } from './locales'
-import { createComarkParserEngine } from './parser'
 import { preloadAsyncComponents } from './utils'
 import './style.css'
 
@@ -102,29 +97,18 @@ const document = shallowRef<MarkdownDocument>({
   nodes: [],
 })
 
-const parserOptions: StreamMarkdownParserOptions = {
-  ...props.parserOptions,
-  plugins: [
-    ...(props.parserOptions?.plugins ?? []),
-    {
-      name: 'cjk-friendly',
-      markdownItPlugins: [cjkFriendly],
-    },
-    security({
+const parser = createMarkmendParser({
+  completion: props.completion,
+  parserOptions: props.parserOptions,
+  syntax: {
+    security: {
       allowedImagePrefixes: props.hardenOptions?.allowedImagePrefixes,
       allowedLinkPrefixes: props.hardenOptions?.allowedLinkPrefixes,
       allowedProtocols: props.hardenOptions?.allowedProtocols,
       allowDataImages: props.hardenOptions?.allowDataImages,
       defaultOrigin: props.hardenOptions?.defaultOrigin,
-    }),
-    footnotes(),
-    math(),
-  ],
-}
-
-const parser = createComarkParserEngine({
-  completion: props.completion,
-  parserOptions,
+    },
+  },
 })
 
 const enableAnimate = computed(() => resolveEnableAnimate(mode.value, props.enableAnimate))

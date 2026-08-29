@@ -1,21 +1,20 @@
-import type { CompletionOptions } from '@markmend/core'
 import type {
   ComarkPlugin,
+  Completion,
+  CompletionFunction,
   MarkdownDocument,
-  Node,
-  ParserOptions,
-} from 'comark'
-
-export type CompletionFunction = (markdown: string) => string
-
-export type Completion = CompletionOptions | CompletionFunction
+  MarkdownNode,
+  MarkmendParserOptions,
+} from '@markmend/parser'
 
 export type StreamMarkdownParserOptions<
   TPlugins extends readonly ComarkPlugin<any, any>[] = readonly ComarkPlugin<any, any>[],
-> = Omit<ParserOptions<TPlugins>, 'autoClose'>
+> = MarkmendParserOptions<TPlugins>
 
 export type {
   ComarkPlugin,
+  Completion,
+  CompletionFunction,
   MarkdownDocument,
-  Node as MarkdownNode,
+  MarkdownNode,
 }

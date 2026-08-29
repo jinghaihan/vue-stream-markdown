@@ -1,3 +1,4 @@
+import { createMarkmendParser } from '@markmend/parser'
 import { createMarkdownParser } from 'comark'
 import remarkGfm from 'remark-gfm'
 import remarkParse from 'remark-parse'
@@ -5,7 +6,6 @@ import remend from 'remend'
 import { parseMarkdownIntoBlocks as parseStreamdownBlocks } from 'streamdown'
 import { unified } from 'unified'
 import { afterAll, bench, describe } from 'vitest'
-import { createComarkParserEngine } from '../packages/vue/src/parser'
 
 type MaybePromise<T> = Promise<T> | T
 
@@ -39,13 +39,13 @@ function parseStreamdownBlock(processor: StreamdownProcessor, content: string): 
 
 const implementations: Implementation[] = [
   {
-    name: 'vue-stream-markdown',
+    name: 'markmend',
     async coldParse(content) {
-      const parser = createComarkParserEngine()
+      const parser = createMarkmendParser()
       return (await parser.parse(content, 'streaming')).nodes.length
     },
     async stream(inputs) {
-      const parser = createComarkParserEngine()
+      const parser = createMarkmendParser()
       let checksum = 0
       for (const input of inputs)
         checksum += (await parser.parse(input, 'streaming')).nodes.length

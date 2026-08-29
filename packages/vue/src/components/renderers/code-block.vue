@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ElementNode } from 'comark'
+import type { ElementNode } from '@markmend/parser'
 import type { CodeBlockNode } from '../../types'
 import { computed } from 'vue'
 import CodeRenderer from './code/index.vue'

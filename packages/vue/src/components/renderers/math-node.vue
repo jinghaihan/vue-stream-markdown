@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ElementNode } from 'comark'
+import type { ElementNode } from '@markmend/parser'
 import type { MathRenderNode } from '../../types'
 import { computed } from 'vue'
 import InlineMathRenderer from './inline-math.vue'

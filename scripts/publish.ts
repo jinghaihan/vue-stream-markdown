@@ -10,6 +10,7 @@ const packages = [
   resolve(rootDir, 'packages/extensions/math'),
   resolve(rootDir, 'packages/extensions/mermaid'),
   resolve(rootDir, 'packages/markmend/core'),
+  resolve(rootDir, 'packages/markmend/parser'),
   resolve(rootDir, 'packages/vue'),
 ]
 

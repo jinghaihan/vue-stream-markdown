@@ -61,9 +61,7 @@
   "dependencies": {
     "@floating-ui/dom": "catalog:frontend",
     "@vueuse/core": "catalog:frontend",
-    "comark": "catalog:parser",
-    "markdown-it-cjk-friendly": "catalog:parser",
-    "@markmend/core": "workspace:*",
+    "@markmend/parser": "workspace:*",
     "@stream-markdown/code": "workspace:*",
     "@stream-markdown/core": "workspace:*",
     "@stream-markdown/math": "workspace:*",

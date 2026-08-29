@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ElementNode } from 'comark'
+import type { ElementNode } from '@markmend/parser'
 import { createImageModel, resolveTextDirection, saveImage } from '@stream-markdown/core'
 import { computed, ref } from 'vue'
 import { useContext, useControls, useI18n, useSanitizers } from '../../composables'

@@ -319,7 +319,7 @@ importers:
         version: 19.2.5(@types/react@19.2.18)
       comark:
         specifier: catalog:parser
-        version: 0.6.2(patch_hash=113b0ea4ae50dd45053b16038f1f582232bd56ab9c601d980fd07abfef1ca745)(beautiful-mermaid@1.1.3)(katex@0.16.47)(shiki@4.4.1)
+        version: 0.6.2(patch_hash=113b0ea4ae50dd45053b16038f1f582232bd56ab9c601d980fd07abfef1ca745)(beautiful-mermaid@1.1.3)(shiki@4.4.1)
       jsdom:
         specifier: catalog:benchmark
         version: 30.0.1
@@ -430,14 +430,30 @@ importers:
         specifier: catalog:build
         version: 0.22.14(@tsdown/css@0.22.14)(@typescript/native-preview@7.0.0-dev.20260707.2)(@volar/typescript@2.4.28(typescript@6.0.3))(tsx@4.23.12)(typescript@6.0.3)(vue-tsc@3.3.11(typescript@6.0.3))
 
+  packages/markmend/parser:
+    dependencies:
+      '@markmend/core':
+        specifier: workspace:*
+        version: link:../core
+      comark:
+        specifier: catalog:parser
+        version: 0.6.2(patch_hash=113b0ea4ae50dd45053b16038f1f582232bd56ab9c601d980fd07abfef1ca745)(beautiful-mermaid@1.1.3)(shiki@4.4.1)
+      markdown-it-cjk-friendly:
+        specifier: catalog:parser
+        version: 3.0.0(markdown-it@14.3.0)
+    devDependencies:
+      tsdown:
+        specifier: catalog:build
+        version: 0.22.14(@tsdown/css@0.22.14)(@typescript/native-preview@7.0.0-dev.20260707.2)(@volar/typescript@2.4.28(typescript@6.0.3))(tsx@4.23.12)(typescript@6.0.3)(vue-tsc@3.3.11(typescript@6.0.3))
+
   packages/vue:
     dependencies:
       '@floating-ui/dom':
         specifier: catalog:frontend
         version: 1.8.0
-      '@markmend/core':
+      '@markmend/parser':
         specifier: workspace:*
-        version: link:../markmend/core
+        version: link:../markmend/parser
       '@stream-markdown/code':
         specifier: workspace:*
         version: link:../extensions/code
@@ -453,12 +469,6 @@ importers:
       '@vueuse/core':
         specifier: catalog:frontend
         version: 14.4.0(vue@3.5.42(typescript@6.0.3))
-      comark:
-        specifier: catalog:parser
-        version: 0.6.2(patch_hash=113b0ea4ae50dd45053b16038f1f582232bd56ab9c601d980fd07abfef1ca745)(beautiful-mermaid@1.1.3)(katex@0.16.47)(shiki@4.4.1)
-      markdown-it-cjk-friendly:
-        specifier: catalog:parser
-        version: 3.0.0(markdown-it@14.3.0)
       vue:
         specifier: ^3.5.42
         version: 3.5.42(typescript@6.0.3)
@@ -11958,7 +11968,7 @@ snapshots:
 
   colorette@2.0.20: {}
 
-  comark@0.6.2(patch_hash=113b0ea4ae50dd45053b16038f1f582232bd56ab9c601d980fd07abfef1ca745)(beautiful-mermaid@1.1.3)(katex@0.16.47)(shiki@4.4.1):
+  comark@0.6.2(patch_hash=113b0ea4ae50dd45053b16038f1f582232bd56ab9c601d980fd07abfef1ca745)(beautiful-mermaid@1.1.3)(shiki@4.4.1):
     dependencies:
       entities: 8.0.0
       htmlparser2: 12.0.0
@@ -11966,7 +11976,6 @@ snapshots:
       markdown-exit: 1.1.0-beta.2
     optionalDependencies:
       beautiful-mermaid: 1.1.3
-      katex: 0.16.47
       shiki: 4.4.1
 
   comma-separated-tokens@2.0.3: {}

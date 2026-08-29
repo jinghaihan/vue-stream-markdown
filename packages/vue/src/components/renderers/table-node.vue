@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import type { ElementNode } from '@markmend/parser'
 import type { TableFormat } from '@stream-markdown/core'
-import type { ElementNode } from 'comark'
 import type { Control, SelectOption } from '../../types'
 import {
   createTableControlDescriptors,

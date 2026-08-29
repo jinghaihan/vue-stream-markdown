@@ -1,4 +1,4 @@
-import type { ElementNode, Node } from 'comark'
+import type { ElementNode, Node } from '@markmend/parser'
 import type { PropType, VNodeChild } from 'vue'
 import type { MarkdownComponents } from '../../types'
 import {

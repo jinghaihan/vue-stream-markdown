@@ -21,8 +21,8 @@ export default defineConfig({
   test: {
     coverage: {
       include: [
-        'packages/markmend/core/src/preprocess/*.ts',
-        'packages/markmend/core/src/processor.ts',
+        'packages/markmend/core/src/completion/*.ts',
+        'packages/markmend/parser/src/*.ts',
       ],
     },
   },

@@ -13,7 +13,7 @@
       "@stream-markdown/mermaid": ["./packages/extensions/mermaid/src/index.ts"],
       "@stream-markdown/math": ["./packages/extensions/math/src/index.ts"],
       "@markmend/core": ["./packages/markmend/core/src/index.ts"],
-      "@markmend/*": ["./packages/markmend/core/src/*"],
+      "@markmend/parser": ["./packages/markmend/parser/src/index.ts"],
       "vue-stream-markdown": ["./packages/vue/src/index.ts"],
       "@vue-stream-markdown/*": ["./packages/vue/src/*"],
       "@shared/*": ["./playground/nuxt/app/*"],

@@ -1,10 +1,10 @@
+import { createMarkmendParser } from '@markmend/parser'
 import { describe, expect, it, vi } from 'vitest'
-import { createComarkParserEngine } from '../../packages/vue/src/parser'
 
-describe('comark parser engine', () => {
+describe('markmend parser', () => {
   it('completes only streaming input', async () => {
     const completion = vi.fn(markdown => `${markdown} completed`)
-    const engine = createComarkParserEngine({ completion })
+    const engine = createMarkmendParser({ completion })
 
     const streaming = await engine.parse('streaming', 'streaming')
     const staticDocument = await engine.parse('static', 'static')
@@ -16,7 +16,7 @@ describe('comark parser engine', () => {
 
   it('publishes queued parses in request order', async () => {
     const observed: string[] = []
-    const engine = createComarkParserEngine({
+    const engine = createMarkmendParser({
       parserOptions: {
         plugins: [{
           name: 'observe-order',
@@ -40,7 +40,7 @@ describe('comark parser engine', () => {
   })
 
   it('keeps the last successful document when parsing fails', async () => {
-    const engine = createComarkParserEngine({
+    const engine = createMarkmendParser({
       parserOptions: {
         plugins: [{
           name: 'reject-invalid',
@@ -60,5 +60,14 @@ describe('comark parser engine', () => {
     await expect(engine.parse('recovered', 'static')).resolves.toMatchObject({
       nodes: [['p', {}, 'recovered']],
     })
+  })
+
+  it('enables CJK-friendly emphasis by default', async () => {
+    const engine = createMarkmendParser()
+    const document = await engine.parse('**中文加粗。**后文', 'static')
+
+    expect(document.nodes).toEqual([
+      ['p', {}, ['strong', {}, '中文加粗。'], '后文'],
+    ])
   })
 })
