@@ -1,7 +1,7 @@
 import { autoCloseMarkdown } from 'comark'
 import remend from 'remend'
 import { afterAll, bench, describe } from 'vitest'
-import { preprocess } from '../packages/markmend/core/src/preprocess'
+import { completeMarkdown } from '../packages/markmend/core/src/preprocess'
 
 type CompleteMarkdown = (content: string) => string
 
@@ -9,7 +9,7 @@ const implementations: Array<{
   name: string
   complete: CompleteMarkdown
 }> = [
-  { name: 'markmend', complete: preprocess },
+  { name: 'markmend', complete: completeMarkdown },
   { name: 'streamdown/remend', complete: remend },
   { name: 'comark', complete: autoCloseMarkdown },
 ]

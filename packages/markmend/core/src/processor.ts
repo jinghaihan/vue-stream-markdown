@@ -5,9 +5,9 @@ import type {
   PreprocessContext,
 } from './types'
 import {
+  completeMarkdown as defaultCompleteMarkdown,
   normalize as defaultNormalize,
   parseMarkdownIntoBlocks as defaultParseMarkdownIntoBlocks,
-  preprocess as defaultPreprocess,
 } from './preprocess'
 
 const EMPTY_RESULT: MarkdownProcessorResult = {
@@ -25,7 +25,7 @@ export class MarkdownProcessor {
   }
 
   preprocess(content: string, options?: PreprocessContext): string {
-    const preprocess = this.options.preprocess ?? defaultPreprocess
+    const preprocess = this.options.preprocess ?? defaultCompleteMarkdown
     const resolvedOptions = {
       ...this.options.preprocessOptions,
       ...options,

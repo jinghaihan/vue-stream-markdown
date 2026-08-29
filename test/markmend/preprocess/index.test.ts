@@ -1,4 +1,4 @@
-import { normalize, parseMarkdownIntoBlocks, preprocess } from '@markmend/core'
+import { completeMarkdown, normalize, parseMarkdownIntoBlocks, preprocess } from '@markmend/core'
 import { describe, expect, it } from 'vitest'
 import { getTestCases, getTestCasesByCategory } from './test-cases'
 import { getFixtureFiles, getSnapshotPath, readFixture } from './utils'
@@ -61,6 +61,11 @@ describe('parseMarkdownIntoBlocks', () => {
 })
 
 describe('preprocess', () => {
+  it('keeps the legacy alias equivalent to completeMarkdown', () => {
+    const content = '**streaming'
+    expect(preprocess(content)).toBe(completeMarkdown(content))
+  })
+
   for (const testCase of getTestCases()) {
     it(testCase.description, () => {
       const expected = testCase.integrationExpected ?? testCase.expected

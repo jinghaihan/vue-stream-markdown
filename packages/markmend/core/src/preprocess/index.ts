@@ -1,4 +1,4 @@
-import type { PreprocessContext, PreprocessStep, PreprocessStepName, PreprocessSteps } from '../types'
+import type { CompletionOptions, PreprocessContext, PreprocessStep, PreprocessStepName, PreprocessSteps } from '../types'
 import { flow } from '../utils'
 import { fixCode } from './code'
 import { fixComparisonOperators } from './comparison-operators'
@@ -60,9 +60,9 @@ export const DEFAULT_PREPROCESS_STEPS = {
   math: fixMath,
 } satisfies Record<PreprocessStepName, PreprocessStep>
 
-export function preprocess(
+export function completeMarkdown(
   content: string,
-  options?: PreprocessContext,
+  options?: CompletionOptions,
   steps: PreprocessSteps = {},
 ): string {
   const context = createPreprocessContext(options)
@@ -70,6 +70,15 @@ export function preprocess(
     const step = steps[name] ?? DEFAULT_PREPROCESS_STEPS[name]
     return step(result, context)
   }, content)
+}
+
+/** @deprecated Use `completeMarkdown` instead. */
+export function preprocess(
+  content: string,
+  options?: PreprocessContext,
+  steps: PreprocessSteps = {},
+): string {
+  return completeMarkdown(content, options, steps)
 }
 
 export {
