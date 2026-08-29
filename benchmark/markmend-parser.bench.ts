@@ -1,5 +1,6 @@
 import type { Processor } from 'unified'
 import type { SyntaxTree } from '../packages/markmend/ast/src'
+import { Buffer } from 'node:buffer'
 import { createMarkdownParser } from 'comark'
 import remarkGfm from 'remark-gfm'
 import remarkParse from 'remark-parse'
@@ -7,7 +8,7 @@ import remend from 'remend'
 import { parseMarkdownIntoBlocks as parseStreamdownBlocks } from 'streamdown'
 import { unified } from 'unified'
 import { bench, describe } from 'vitest'
-import { MarkdownAstParser } from '../packages/markmend/ast/src'
+import { MarkdownAstParser, postFixFootnote } from '../packages/markmend/ast/src'
 import {
   MarkdownProcessor,
   parseMarkdownIntoBlocks as parseMarkmendBlocks,
@@ -23,6 +24,63 @@ interface ParserBenchmarkImplementation {
 
 const standardOptions = { iterations: 100 }
 const largeOptions = { iterations: 20 }
+
+interface PositionableNode {
+  children?: PositionableNode[]
+  position?: unknown
+}
+
+function removePositions<T extends PositionableNode>(node: T): T {
+  delete node.position
+  const children = node.children
+  if (!children)
+    return node
+
+  for (const child of children)
+    removePositions(child)
+
+  return node
+}
+
+function postnormalizeDeletingPositions(data: SyntaxTree): SyntaxTree {
+  return removePositions(postFixFootnote(data))
+}
+
+function copyWithoutPositions<T extends PositionableNode>(node: T): T {
+  const { children, position: _position, ...rest } = node
+  if (!children)
+    return rest as T
+
+  return {
+    ...rest,
+    children: children.map(child => copyWithoutPositions(child)),
+  } as T
+}
+
+function postnormalizeWithPositionlessCopy(data: SyntaxTree): SyntaxTree {
+  return copyWithoutPositions(postFixFootnote(data))
+}
+
+function createPositionedParser(): MarkdownAstParser {
+  return new MarkdownAstParser({
+    mode: 'streaming',
+    postnormalize: postFixFootnote,
+  })
+}
+
+function createDeletePositionParser(): MarkdownAstParser {
+  return new MarkdownAstParser({
+    mode: 'streaming',
+    postnormalize: postnormalizeDeletingPositions,
+  })
+}
+
+function createPositionlessCopyParser(): MarkdownAstParser {
+  return new MarkdownAstParser({
+    mode: 'streaming',
+    postnormalize: postnormalizeWithPositionlessCopy,
+  })
+}
 
 function createStreamdownProcessor(): Processor {
   return unified()
@@ -42,12 +100,46 @@ const implementations: ParserBenchmarkImplementation[] = [
   {
     name: 'markmend',
     coldParse(content) {
-      const parser = new MarkdownAstParser({ mode: 'streaming' })
+      const parser = createPositionedParser()
       const result = parser.parseMarkdown(content)
       return result.asts.reduce((total, ast) => total + ast.children.length, 0)
     },
     runStreamingSession(inputs) {
-      const parser = new MarkdownAstParser({ mode: 'streaming' })
+      const parser = createPositionedParser()
+      let checksum = 0
+      for (const input of inputs) {
+        const result = parser.parseMarkdown(input)
+        checksum += result.asts.reduce((total, ast) => total + ast.children.length, 0)
+      }
+      return checksum
+    },
+  },
+  {
+    name: 'markmend/delete-position',
+    coldParse(content) {
+      const parser = createDeletePositionParser()
+      const result = parser.parseMarkdown(content)
+      return result.asts.reduce((total, ast) => total + ast.children.length, 0)
+    },
+    runStreamingSession(inputs) {
+      const parser = createDeletePositionParser()
+      let checksum = 0
+      for (const input of inputs) {
+        const result = parser.parseMarkdown(input)
+        checksum += result.asts.reduce((total, ast) => total + ast.children.length, 0)
+      }
+      return checksum
+    },
+  },
+  {
+    name: 'markmend/copy-no-position',
+    coldParse(content) {
+      const parser = createPositionlessCopyParser()
+      const result = parser.parseMarkdown(content)
+      return result.asts.reduce((total, ast) => total + ast.children.length, 0)
+    },
+    runStreamingSession(inputs) {
+      const parser = createPositionlessCopyParser()
       let checksum = 0
       for (const input of inputs) {
         const result = parser.parseMarkdown(input)
@@ -181,7 +273,7 @@ function benchmarkMarkmendPipeline(
   const normalizedInputs = inputs.map(input => processor.normalize(input))
   const blockInputs = normalizedInputs.map(input => processor.parseMarkdownIntoBlocks(input))
   const astMissContents: string[] = []
-  const recordingParser = new MarkdownAstParser({ mode: 'streaming' })
+  const recordingParser = createPositionedParser()
   const markdownToAst = recordingParser.markdownToAst.bind(recordingParser)
   recordingParser.markdownToAst = (content) => {
     astMissContents.push(content)
@@ -216,7 +308,25 @@ function benchmarkMarkmendPipeline(
     }, options)
 
     bench('ast conversion on cache misses', () => {
-      const parser = new MarkdownAstParser({ mode: 'streaming' })
+      const parser = createPositionedParser()
+      let checksum = 0
+      for (const content of astMissContents)
+        checksum += parser.markdownToAst(content).children.length
+
+      return checksum
+    }, options)
+
+    bench('ast conversion deleting positions', () => {
+      const parser = createDeletePositionParser()
+      let checksum = 0
+      for (const content of astMissContents)
+        checksum += parser.markdownToAst(content).children.length
+
+      return checksum
+    }, options)
+
+    bench('ast conversion copying without positions', () => {
+      const parser = createPositionlessCopyParser()
       let checksum = 0
       for (const content of astMissContents)
         checksum += parser.markdownToAst(content).children.length
@@ -225,7 +335,7 @@ function benchmarkMarkmendPipeline(
     }, options)
 
     bench('pipeline excluding AST conversion', () => {
-      const parser = new MarkdownAstParser({ mode: 'streaming' })
+      const parser = createPositionedParser()
       const emptyAst: SyntaxTree = { type: 'root', children: [] }
       parser.markdownToAst = () => emptyAst
 
@@ -236,7 +346,27 @@ function benchmarkMarkmendPipeline(
     }, options)
 
     bench('full parser session', () => {
-      const parser = new MarkdownAstParser({ mode: 'streaming' })
+      const parser = createPositionedParser()
+      let checksum = 0
+      for (const input of inputs) {
+        const result = parser.parseMarkdown(input)
+        checksum += result.asts.length
+      }
+      return checksum
+    }, options)
+
+    bench('full parser session deleting positions', () => {
+      const parser = createDeletePositionParser()
+      let checksum = 0
+      for (const input of inputs) {
+        const result = parser.parseMarkdown(input)
+        checksum += result.asts.length
+      }
+      return checksum
+    }, options)
+
+    bench('full parser session copying without positions', () => {
+      const parser = createPositionlessCopyParser()
       let checksum = 0
       for (const input of inputs) {
         const result = parser.parseMarkdown(input)
@@ -298,6 +428,24 @@ Middle content revision ${editIndex + 1} with **changing text**.
 const shortDocument = createDocument(2)
 const mediumDocument = createDocument(24)
 const largeDocument = createDocument(96)
+
+const retainedBaseline = createPositionedParser()
+  .parseMarkdown(largeDocument)
+const retainedDeletingPositions = createDeletePositionParser()
+  .parseMarkdown(largeDocument)
+const retainedCopyingWithoutPositions = createPositionlessCopyParser()
+  .parseMarkdown(largeDocument)
+const retainedBaselineBytes = Buffer.byteLength(JSON.stringify(retainedBaseline.asts))
+const retainedDeletingPositionsBytes = Buffer.byteLength(JSON.stringify(retainedDeletingPositions.asts))
+const retainedCopyingWithoutPositionsBytes = Buffer.byteLength(JSON.stringify(retainedCopyingWithoutPositions.asts))
+
+console.warn('large document retained AST JSON size', {
+  baselineBytes: retainedBaselineBytes,
+  copyingReduction: `${((1 - retainedCopyingWithoutPositionsBytes / retainedBaselineBytes) * 100).toFixed(1)}%`,
+  copyingWithoutPositionsBytes: retainedCopyingWithoutPositionsBytes,
+  deletingPositionsBytes: retainedDeletingPositionsBytes,
+  deletingReduction: `${((1 - retainedDeletingPositionsBytes / retainedBaselineBytes) * 100).toFixed(1)}%`,
+})
 
 benchmarkColdParse('short document', shortDocument)
 benchmarkColdParse('medium document', mediumDocument)
