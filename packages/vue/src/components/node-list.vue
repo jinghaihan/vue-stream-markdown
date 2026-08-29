@@ -13,6 +13,7 @@ interface RenderState {
   enableAnimate: boolean
   markdownParser?: MarkdownAstParser
   nodeRenderers: NodeRenderers
+  renderedTransitionKeys: Set<string>
   vnodeContext: VNodeRenderContext
 }
 
@@ -43,6 +44,7 @@ export default defineComponent({
   },
   setup(props) {
     const context = useContext()
+    const animatedNodeKeys = new Set<string>()
     const animatedTextKeys = new Set<string>()
 
     function renderNodes(
@@ -78,13 +80,21 @@ export default defineComponent({
           hideCaret: props.hideCaret,
         }
         const vnodeRenderer = VNODE_RENDERERS[item.node.type as keyof typeof VNODE_RENDERERS] as VNodeRenderer | undefined
+        const usesVNodeRenderer = !item.renderer && !!vnodeRenderer
         const vnode = item.renderer
           ? h(item.renderer, { ...rendererProps, key: item.key })
           : vnodeRenderer
             ? vnodeRenderer(rendererProps, state.vnodeContext)
             : h(Comment as unknown as Component, { key: item.key })
 
-        if (!item.supportsTransition)
+        if (item.shouldTransition)
+          animatedNodeKeys.add(item.key)
+        if (item.supportsTransition)
+          state.renderedTransitionKeys.add(item.key)
+
+        const supportsTransition = animatedNodeKeys.has(item.key)
+          && (!usesVNodeRenderer || options.deep === 0)
+        if (!supportsTransition)
           return vnode
 
         return h(Transition, {
@@ -97,6 +107,7 @@ export default defineComponent({
 
     return () => {
       let state: RenderState
+      const renderedTransitionKeys = new Set<string>()
       const renderedTextKeys = new Set<string>()
       const vnodeContext: VNodeRenderContext = {
         animatedTextKeys,
@@ -115,6 +126,7 @@ export default defineComponent({
         enableAnimate: vnodeContext.enableAnimate,
         markdownParser: props.markdownParser ?? context.markdownParser,
         nodeRenderers: props.nodeRenderers ?? context.nodeRenderers.value,
+        renderedTransitionKeys,
         vnodeContext,
       }
 
@@ -126,6 +138,10 @@ export default defineComponent({
       for (const key of animatedTextKeys) {
         if (!renderedTextKeys.has(key))
           animatedTextKeys.delete(key)
+      }
+      for (const key of animatedNodeKeys) {
+        if (!renderedTransitionKeys.has(key))
+          animatedNodeKeys.delete(key)
       }
       return vnodes
     }

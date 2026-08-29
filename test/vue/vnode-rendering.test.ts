@@ -11,6 +11,7 @@ function mountNodeList(
   nodes: Ref<ParsedNode[]>,
   options: {
     dir?: StreamMarkdownProps['dir']
+    enableAnimate?: Ref<boolean>
     mode?: Ref<'static' | 'streaming'>
     nodeRenderers?: NodeRenderers
   } = {},
@@ -20,6 +21,7 @@ function mountNodeList(
       const { provideContext } = useContext()
       provideContext({
         dir: options.dir,
+        enableAnimate: options.enableAnimate,
         mode: options.mode ?? ref<'static' | 'streaming'>('static'),
         nodeRenderers: options.nodeRenderers,
       })
@@ -112,6 +114,55 @@ describe('vnode rendering', () => {
     expect(received.value?.node.type).toBe('heading')
     expect(received.value?.nextNode?.type).toBe('paragraph')
     expect(received.value?.deep).toBe(0)
+  })
+
+  it('avoids disabled transitions for non-animated nodes', () => {
+    const nodes = ref<ParsedNode[]>([{
+      type: 'paragraph',
+      children: [{
+        type: 'strong',
+        children: [{ type: 'text', value: 'Nested' }],
+      }],
+    }])
+    const wrapper = mountNodeList(nodes)
+
+    expect(wrapper.findAll('transition-stub')).toHaveLength(0)
+  })
+
+  it('only transitions the top-level built-in VNode renderer', () => {
+    const nodes = ref<ParsedNode[]>([{
+      type: 'paragraph',
+      children: [{
+        type: 'strong',
+        children: [{ type: 'text', value: 'Nested' }],
+      }],
+    }])
+    const wrapper = mountNodeList(nodes, {
+      mode: ref('streaming'),
+    })
+
+    expect(wrapper.findAll('transition-stub')).toHaveLength(1)
+  })
+
+  it('preserves transitions around custom nested renderers', () => {
+    const CustomStrong = defineComponent({
+      setup() {
+        return () => h('strong', 'Custom')
+      },
+    })
+    const nodes = ref<ParsedNode[]>([{
+      type: 'paragraph',
+      children: [{
+        type: 'strong',
+        children: [{ type: 'text', value: 'Nested' }],
+      }],
+    }])
+    const wrapper = mountNodeList(nodes, {
+      mode: ref('streaming'),
+      nodeRenderers: { strong: CustomStrong },
+    })
+
+    expect(wrapper.findAll('transition-stub')).toHaveLength(2)
   })
 
   it('keeps stable elements while streaming content grows', async () => {
