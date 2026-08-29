@@ -2,255 +2,142 @@
 title: Mermaid Diagrams
 navigation:
   icon: i-lucide-chart-network
-description: Built-in support for Mermaid diagrams including flowcharts, sequence diagrams, state diagrams, and more.
+description: Add standard Mermaid, Beautiful Mermaid, or both with deterministic fallback behavior.
 ---
 
-vue-stream-markdown includes built-in support for [Mermaid](https://mermaid.js.org/) diagrams, allowing you to create flowcharts, sequence diagrams, state diagrams, and more using simple text-based syntax. Each diagram includes interactive controls for fullscreen viewing, downloading, and copying.
+Mermaid fences remain ordinary code blocks until a diagram extension is supplied. This keeps the main package independent of large diagram runtimes.
 
-## Basic Usage
+## Standard Mermaid
 
-Create Mermaid diagrams using code blocks with the `mermaid` language identifier:
+Standard Mermaid supports all diagram types provided by the installed Mermaid version:
+
+```sh
+pnpm add @stream-markdown/mermaid mermaid
+```
+
+```vue
+<script setup lang="ts">
+import { mermaid } from '@stream-markdown/mermaid'
+import { Markdown } from 'vue-stream-markdown'
+
+const extensions = {
+  mermaid: mermaid({
+    theme: ['neutral', 'dark'],
+  }),
+}
+</script>
+
+<template>
+  <Markdown :content="content" :extensions="extensions" />
+</template>
+```
+
+## Beautiful Mermaid
+
+Beautiful Mermaid provides a smaller renderer with polished built-in themes for its supported diagram types:
+
+```sh
+pnpm add @stream-markdown/beautiful-mermaid
+```
+
+```ts
+import { beautifulMermaid } from '@stream-markdown/beautiful-mermaid'
+
+const extensions = {
+  beautifulMermaid: beautifulMermaid({
+    theme: ['github-light', 'github-dark'],
+    config: { padding: 12 },
+  }),
+}
+```
+
+## Use both with fallback
+
+Both extensions can coexist:
+
+```ts
+import { beautifulMermaid } from '@stream-markdown/beautiful-mermaid'
+import { mermaid } from '@stream-markdown/mermaid'
+
+const extensions = {
+  beautifulMermaid: beautifulMermaid(),
+  mermaid: mermaid(),
+}
+```
+
+The selection order is deterministic:
+
+1. Beautiful Mermaid renders diagram types it supports.
+2. Standard Mermaid renders unsupported Beautiful Mermaid diagram types.
+3. If no configured extension supports the diagram, the source code block stays visible.
+
+This means installing only Beautiful Mermaid does not implicitly require Mermaid.
+
+## Basic syntax
+
+Create diagrams using a fenced code block with the `mermaid` language:
 
 ````markdown
 ```mermaid
-graph TD
+flowchart LR
     A[Start] --> B{Decision}
     B -->|Yes| C[Success]
     B -->|No| D[Try Again]
-    D --> B
 ```
 ````
-
-vue-stream-markdown will render the diagram as an interactive SVG with controls.
 
 ::stream-markdown{example="feature-mermaid.basicFlowchart"}
 ::
 
-## Diagram Types
+## Diagram examples
 
-### Flowcharts
-
-Create flowcharts to visualize processes and workflows:
+### Flowchart
 
 ::stream-markdown{example="feature-mermaid.flowchart"}
 ::
 
-**Node Shapes:**
-
-- `[text]` - Rectangle
-- `(text)` - Rounded rectangle
-- `{text}` - Rhombus (decision)
-- `((text))` - Circle
-- `[[text]]` - Subroutine shape
-
-**Direction:**
-
-- `graph TD` - Top to bottom
-- `graph LR` - Left to right
-- `graph BT` - Bottom to top
-- `graph RL` - Right to left
-
-### Sequence Diagrams
-
-Visualize interactions between different actors or systems:
+### Sequence diagram
 
 ::stream-markdown{example="feature-mermaid.sequenceDiagram"}
 ::
 
-**Arrow Types:**
-
-- `->` - Solid line
-- `-->` - Dotted line
-- `->>` - Solid arrow
-- `-->>` - Dotted arrow
-
-### State Diagrams
-
-Model state machines and state transitions:
+### State diagram
 
 ::stream-markdown{example="feature-mermaid.stateDiagram"}
 ::
 
-### Class Diagrams
-
-Document object-oriented designs:
+### Class diagram
 
 ::stream-markdown{example="feature-mermaid.classDiagram"}
 ::
 
-### Pie Charts
-
-Display proportional data:
-
-::stream-markdown{example="feature-mermaid.pieChart"}
-::
-
-### Gantt Charts
-
-Plan and track project timelines:
-
-::stream-markdown{example="feature-mermaid.ganttChart"}
-::
-
-### Entity Relationship Diagrams
-
-Model database relationships:
+### Entity relationship diagram
 
 ::stream-markdown{example="feature-mermaid.erDiagram"}
 ::
 
-### Git Graphs
+### Pie and Gantt charts
 
-Visualize Git workflows:
+These examples demonstrate the standard Mermaid fallback when both extensions are enabled:
 
-::stream-markdown{example="feature-mermaid.gitGraph"}
+::stream-markdown{example="feature-mermaid.pieChart"}
 ::
 
-## Renderers
+::stream-markdown{example="feature-mermaid.ganttChart"}
+::
 
-::: tip Try it out
-Visit the [Playground](https://play-vue-stream-markdown.netlify.app/) to compare vanilla vs beautiful renderer effects.
-:::
+## Provider configuration
 
-vue-stream-markdown supports two Mermaid rendering engines:
+Configuration is passed directly to the extension factory:
 
-When `mermaidOptions.renderer` is not set, vue-stream-markdown automatically uses `beautiful` if `beautiful-mermaid` is available; otherwise it uses `vanilla`.
+```ts
+import type { MermaidExtensionOptions } from '@stream-markdown/mermaid'
+import { mermaid } from '@stream-markdown/mermaid'
 
-### Vanilla Renderer
-
-The standard Mermaid.js renderer that supports all diagram types including flowcharts, sequence diagrams, state diagrams, class diagrams, ER diagrams, pie charts, Gantt charts, git graphs, and more.
-
-### Beautiful Renderer
-
-A beautiful-mermaid integration that creates more aesthetically pleasing diagrams with Shiki theme integration. The beautiful renderer provides:
-
-- Enhanced visual styling with modern design
-- Automatic theme synchronization with Shiki syntax highlighting
-- Smooth gradients and refined typography
-- Support for common diagram types
-- **Automatic fallback** to vanilla renderer for unsupported diagram types
-
-**Supported Diagram Types:**
-
-The beautiful renderer's supported diagram types follow the installed `beautiful-mermaid` version. For the complete and up-to-date list, please refer to the [beautiful-mermaid documentation](https://github.com/lukilabs/beautiful-mermaid).
-
-## Configuration
-
-### Choosing a Renderer
-
-Select the renderer using the `renderer` property in `mermaidOptions`:
-
-```vue
-<script setup lang="ts">
-import type { MermaidOptions } from 'vue-stream-markdown'
-import { Markdown } from 'vue-stream-markdown'
-
-const mermaidOptions: MermaidOptions = {
-  renderer: 'beautiful', // or 'vanilla' (default is auto when omitted)
-}
-</script>
-
-<template>
-  <Markdown :mermaid-options="mermaidOptions" />
-</template>
-```
-
-### Theme Customization
-
-Customize the Mermaid theme using the `mermaidOptions` prop. vue-stream-markdown supports dual themes for light and dark modes.
-
-```vue
-<script setup lang="ts">
-import type { MermaidOptions } from 'vue-stream-markdown'
-import { Markdown } from 'vue-stream-markdown'
-
-const mermaidOptions: MermaidOptions = {
-  theme: ['default', 'dark'],
-  config: {
-    themeVariables: {
-      primaryColor: '#ff6b6b',
-      primaryTextColor: '#fff',
-      primaryBorderColor: '#ff6b6b',
-      lineColor: '#f5f5f5',
-      secondaryColor: '#4ecdc4',
-      tertiaryColor: '#45b7d1'
-    }
-  }
-}
-</script>
-
-<template>
-  <Markdown :mermaid-options="mermaidOptions" />
-</template>
-```
-
-The `theme` property accepts an array of two theme names: `[lightTheme, darkTheme]`. vue-stream-markdown will automatically switch between themes based on the current color mode.
-
-### Beautiful Renderer Themes
-
-```vue
-<script setup lang="ts">
-import type { MermaidOptions } from 'vue-stream-markdown'
-import { Markdown } from 'vue-stream-markdown'
-
-const mermaidOptions: MermaidOptions = {
-  renderer: 'beautiful',
-  beautifulTheme: ['github-light', 'github-dark'],
-  beautifulConfig: {
-    padding: 12,
-  },
-}
-</script>
-
-<template>
-  <Markdown :mermaid-options="mermaidOptions" />
-</template>
-```
-
-**Theme Fallback:**
-
-If theme not found in `beautiful-mermaid`'s built-ins, falls back to `shiki` themes. This means any `shiki` theme works for diagrams.
-
-### Available Themes
-
-- `default` - Classic Mermaid theme
-- `dark` - Dark mode optimized
-- `forest` - Green tones
-- `neutral` - Minimal styling
-- `base` - Clean, modern style
-
-**Example:**
-
-```vue
-<script setup lang="ts">
-import { Markdown } from 'vue-stream-markdown'
-
-const mermaidOptions = {
-  theme: ['base', 'dark']
-}
-</script>
-
-<template>
-  <Markdown :mermaid-options="mermaidOptions" />
-</template>
-```
-
-### Advanced Configuration
-
-Customize specific diagram types and styling through the `config` property:
-
-```vue
-<script setup lang="ts">
-import type { MermaidOptions } from 'vue-stream-markdown'
-import { Markdown } from 'vue-stream-markdown'
-
-const mermaidOptions: MermaidOptions = {
+const options: MermaidExtensionOptions = {
   theme: ['base', 'dark'],
   config: {
-    themeVariables: {
-      fontSize: '16px',
-      fontFamily: 'Inter, sans-serif',
-    },
+    securityLevel: 'strict',
     flowchart: {
       nodeSpacing: 50,
       rankSpacing: 50,
@@ -258,88 +145,32 @@ const mermaidOptions: MermaidOptions = {
     },
     sequence: {
       actorMargin: 50,
-      boxMargin: 10,
-      boxTextMargin: 5,
     },
-  }
+  },
 }
-</script>
 
-<template>
-  <Markdown :mermaid-options="mermaidOptions" />
-</template>
+const mermaidExtension = mermaid(options)
 ```
 
-The `config` property accepts a `MermaidConfig` object from the Mermaid library, allowing you to customize all aspects of diagram rendering.
+See [Optional Extensions](/config/external-options) for CDN loading, error components, and all factory options.
 
-## Interactive Controls
+## Interactive controls
 
-Mermaid diagrams include interactive buttons such as fullscreen, download, and copy. To configure these controls, see the [Controls](/config/controls) documentation.
+Rendered diagrams use the normal code-block preview/source switch and support fullscreen, SVG/PNG download, and zoom controls. See [Controls](/config/controls) for customization.
 
-## Syntax Reference
+## Streaming behavior
 
-### Flowchart Links
+During streaming, incomplete Mermaid fences remain readable and preview rendering is throttled. A diagram becomes previewable only when at least one configured extension reports that it supports the current source.
 
-```
-A --> B         // Arrow
-A --- B         // Line
-A -.-> B        // Dotted arrow
-A ==> B         // Thick arrow
-A -->|Label| B  // Labeled arrow
-```
+## Troubleshooting
 
-### Sequence Diagram Actors
-
-```
-participant A as Alice
-actor B as Bob
-```
-
-### Styling Nodes
-
-::stream-markdown{example="feature-mermaid.styledNode"}
-::
-
-### Subgraphs
-
-::stream-markdown{example="feature-mermaid.subgraph"}
-::
-
-## Streaming Considerations
-
-Mermaid diagrams work seamlessly with streaming content:
-
-### Initial Render
-
-When Mermaid diagrams are first streamed in, they appear as code blocks until the diagram syntax is complete. vue-stream-markdown's parser ensures the code block is properly formatted during streaming.
-
-## Common Issues
-
-### Diagram Not Rendering
-
-1. Verify the syntax is correct (check [Mermaid Live Editor](https://mermaid.live/))
-2. Ensure the code block uses ` ```mermaid `
-3. Check browser console for JavaScript errors
-4. Verify Mermaid is not being blocked by CSP
-
-### Performance with Large Diagrams
-
-Large diagrams may take time to render. Consider:
-
-- Breaking into smaller diagrams
-- Simplifying node relationships
-- Using subgraphs for organization
-- Lazy loading diagram-heavy pages
-
-### Theme Not Applying
-
-1. Verify `mermaidOptions` is properly passed
-2. Check that theme names are spelled correctly (for dual themes, use `[lightTheme, darkTheme]`)
-3. Ensure custom theme variables are valid
+- Confirm the fence language is `mermaid`.
+- Verify the corresponding extension instance is included in `extensions`.
+- Install the `mermaid` peer dependency when using `@stream-markdown/mermaid`.
+- Test syntax in the [Mermaid Live Editor](https://mermaid.live/).
+- Use both diagram extensions when you want Beautiful Mermaid styling plus full syntax coverage.
 
 ## Resources
 
-- [Mermaid Documentation](https://mermaid.js.org/intro/) - Official docs
-- [Mermaid Live Editor](https://mermaid.live/) - Test diagrams online
-- [Syntax Reference](https://mermaid.js.org/intro/syntax-reference.html) - Complete syntax guide
-- [Mermaid Examples](https://mermaid.js.org/ecosystem/integrations.html) - Gallery of examples
+- [Mermaid documentation](https://mermaid.js.org/intro/)
+- [Beautiful Mermaid documentation](https://github.com/lukilabs/beautiful-mermaid)

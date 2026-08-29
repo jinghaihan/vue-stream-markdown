@@ -4,6 +4,7 @@
     "paths": {
       "@stream-markdown/core": ["../../packages/core/src/index.ts"],
       "@stream-markdown/code": ["../../packages/extensions/code/src/index.ts"],
+      "@stream-markdown/beautiful-mermaid": ["../../packages/extensions/beautiful-mermaid/src/index.ts"],
       "@stream-markdown/mermaid": ["../../packages/extensions/mermaid/src/index.ts"],
       "@stream-markdown/math": ["../../packages/extensions/math/src/index.ts"],
       "@markmend/core": ["../../packages/markmend/core/src/index.ts"],

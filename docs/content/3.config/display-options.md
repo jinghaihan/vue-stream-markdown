@@ -356,8 +356,8 @@ When `isDark` is `undefined`, it will automatically detect dark mode by checking
 
 When `isDark` is set, it affects:
 
-- **Shiki**: Selects the dark theme from the theme pair configured in `shikiOptions.theme`
-- **Mermaid**: Selects the dark theme from the theme pair configured in `mermaidOptions.theme`
+- **Code extension**: Selects the dark theme configured by `code({ theme })`
+- **Diagram extensions**: Select the dark theme configured by `mermaid({ theme })` or `beautifulMermaid({ theme })`
 - **Tooltips**: Adjusts tooltip theme for better visibility
 
 ### Usage Example

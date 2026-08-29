@@ -353,6 +353,18 @@ importers:
       '@shikijs/themes':
         specifier: ^4.4.1
         version: 4.4.1
+      '@stream-markdown/beautiful-mermaid':
+        specifier: workspace:*
+        version: link:../packages/extensions/beautiful-mermaid
+      '@stream-markdown/code':
+        specifier: workspace:*
+        version: link:../packages/extensions/code
+      '@stream-markdown/math':
+        specifier: workspace:*
+        version: link:../packages/extensions/math
+      '@stream-markdown/mermaid':
+        specifier: workspace:*
+        version: link:../packages/extensions/mermaid
       '@vueuse/core':
         specifier: catalog:frontend
         version: 14.4.0(vue@3.5.42(typescript@6.0.3))
@@ -362,6 +374,9 @@ importers:
       katex:
         specifier: ^0.16.38
         version: 0.16.47
+      mermaid:
+        specifier: ^11.13.0
+        version: 11.16.0
       nuxt:
         specifier: catalog:playground
         version: 4.5.2(2dc2158d72b3ef65baf81dfd1d054ffc)
@@ -497,6 +512,21 @@ importers:
       '@shikijs/monaco':
         specifier: catalog:playground
         version: 4.4.3
+      '@stream-markdown/beautiful-mermaid':
+        specifier: workspace:*
+        version: link:../../packages/extensions/beautiful-mermaid
+      '@stream-markdown/code':
+        specifier: workspace:*
+        version: link:../../packages/extensions/code
+      '@stream-markdown/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@stream-markdown/math':
+        specifier: workspace:*
+        version: link:../../packages/extensions/math
+      '@stream-markdown/mermaid':
+        specifier: workspace:*
+        version: link:../../packages/extensions/mermaid
       '@unocss/nuxt':
         specifier: catalog:playground
         version: 66.8.1(esbuild@0.28.1)(magic-string@1.2.3)(magicast@0.5.4)(oxc-parser@0.143.0)(rolldown@1.2.6)(rollup@4.62.4)(unplugin@3.3.0(esbuild@0.28.1)(rolldown@1.2.6)(rollup@4.62.4)(vite@8.2.2(@types/node@26.4.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.12)(yaml@2.9.0))(webpack@5.109.2(cssnano@8.0.2(postcss@8.5.26))(csso@5.0.5)(esbuild@0.28.1)(lightningcss@1.33.0)(postcss@8.5.26)))(vite@8.2.2(@types/node@26.4.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.12)(yaml@2.9.0))(webpack@5.109.2(cssnano@8.0.2(postcss@8.5.26))(csso@5.0.5)(esbuild@0.28.1)(lightningcss@1.33.0)(postcss@8.5.26))
@@ -521,6 +551,9 @@ importers:
       lz-string:
         specifier: catalog:playground
         version: 1.5.0
+      mermaid:
+        specifier: ^11.13.0
+        version: 11.16.0
       nuxt:
         specifier: catalog:playground
         version: 4.5.2(37b39b5615d33f2487fda8d5f9ee97c2)

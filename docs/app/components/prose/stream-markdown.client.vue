@@ -5,6 +5,10 @@ import type {
   ImageOptions,
   PreviewerConfig,
 } from 'vue-stream-markdown'
+import { beautifulMermaid } from '@stream-markdown/beautiful-mermaid'
+import { code } from '@stream-markdown/code'
+import { math } from '@stream-markdown/math'
+import { mermaid } from '@stream-markdown/mermaid'
 import { useMediaQuery } from '@vueuse/core'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { Markdown } from 'vue-stream-markdown'
@@ -92,6 +96,18 @@ const imageOptions = computed<ImageOptions | undefined>(() => {
 const playable = computed(() => props.mode === 'static')
 const isMermaid = computed(() => content.value.includes('```mermaid'))
 const mermaidRenderer = ref<'vanilla' | 'beautiful'>('beautiful')
+const codeExtension = code({ theme: ['github-light', 'github-dark'] })
+const mathExtension = math()
+const mermaidExtension = mermaid()
+const beautifulMermaidExtension = beautifulMermaid()
+const extensions = computed(() => ({
+  code: codeExtension,
+  math: mathExtension,
+  mermaid: mermaidExtension,
+  ...(mermaidRenderer.value === 'beautiful'
+    ? { beautifulMermaid: beautifulMermaidExtension }
+    : {}),
+}))
 
 function toggleTyping() {
   if (isTyping.value) {
@@ -146,8 +162,7 @@ onBeforeUnmount(stopTyping)
       :content="renderedContent"
       :caret="caret"
       :is-dark="isDark"
-      :shiki-options="{ theme: ['github-light', 'github-dark'] }"
-      :mermaid-options="{ renderer: mermaidRenderer }"
+      :extensions="extensions"
       :code-options="codeOptions"
       :controls="controls"
       :previewers="previewers"

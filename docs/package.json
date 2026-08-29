@@ -12,8 +12,13 @@
     "@vueuse/core": "catalog:frontend",
     "nuxt": "catalog:playground",
     "@shikijs/themes": "^4.4.1",
+    "@stream-markdown/beautiful-mermaid": "workspace:*",
+    "@stream-markdown/code": "workspace:*",
+    "@stream-markdown/math": "workspace:*",
+    "@stream-markdown/mermaid": "workspace:*",
     "comark-docs": "github:comarkdown/comark-docs#fad7fbfd4e05cfaabc6ace410bee4c068665f37f",
     "katex": "^0.16.38",
+    "mermaid": "^11.13.0",
     "vue-stream-markdown": "workspace:*"
   }
 }

@@ -1,16 +1,18 @@
 <script setup lang="ts">
+import type { CdnOptions } from '@stream-markdown/core'
 import type {
-  CdnOptions,
   CodeOptions,
   ControlsConfig,
-  MermaidOptions,
   PreviewerConfig,
   SelectOption,
-  ShikiOptions,
   StreamMarkdownProps,
   UIOptions,
 } from 'vue-stream-markdown'
 import { throttle } from '@antfu/utils'
+import { beautifulMermaid } from '@stream-markdown/beautiful-mermaid'
+import { code } from '@stream-markdown/code'
+import { math } from '@stream-markdown/math'
+import { mermaid } from '@stream-markdown/mermaid'
 import { useCycleList, useResizeObserver } from '@vueuse/core'
 import * as LZString from 'lz-string'
 import { hydrateOnVisible } from 'vue'
@@ -19,12 +21,12 @@ import { ChartPie } from './icons'
 import { DEFAULT_MARKDOWN_PATH, getPresetContent } from './markdown'
 import { getContentFromUrl } from './utils'
 
-const GitHubComponent = defineAsyncComponent({
+const githubComponent = defineAsyncComponent({
   loader: () => import('./components/github-card.vue'),
   hydrate: hydrateOnVisible(),
 })
 const markdownComponents: StreamMarkdownProps['components'] = {
-  github: GitHubComponent,
+  github: githubComponent,
 }
 
 const { cssVariables } = useTailwindV3Theme({})
@@ -80,15 +82,6 @@ const copyContent = computed(() => {
   return markdownContent.value
 })
 
-const shikiOptions = computed((): ShikiOptions => {
-  return {
-    theme: [userConfig.value.shikiLightTheme, userConfig.value.shikiDarkTheme],
-    langAlias: {
-      echarts: 'json',
-    },
-  }
-})
-
 const codeOptions = computed((): CodeOptions => {
   const options: CodeOptions = {
     languageIcon: !isMobile.value,
@@ -104,20 +97,6 @@ const codeOptions = computed((): CodeOptions => {
         languageIcon: options.languageIcon === false ? false : ChartPie,
       },
     },
-  }
-})
-
-const mermaidOptions = computed((): MermaidOptions => {
-  return {
-    renderer: userConfig.value.mermaidRenderer,
-    theme: [
-      userConfig.value.mermaidLightTheme,
-      userConfig.value.mermaidDarkTheme,
-    ],
-    beautifulTheme: [
-      userConfig.value.mermaidBeautifulLightTheme,
-      userConfig.value.mermaidBeautifulDarkTheme,
-    ],
   }
 })
 
@@ -145,6 +124,34 @@ const cdnOptions: CdnOptions = {
     }
   },
 }
+
+const codeExtension = code({
+  cdnOptions,
+  theme: () => [userConfig.value.shikiLightTheme, userConfig.value.shikiDarkTheme],
+  langAlias: {
+    echarts: 'json',
+  },
+})
+const mathExtension = math({ cdnOptions })
+const mermaidExtension = mermaid({
+  cdnOptions,
+  theme: () => [userConfig.value.mermaidLightTheme, userConfig.value.mermaidDarkTheme],
+})
+const beautifulMermaidExtension = beautifulMermaid({
+  cdnOptions,
+  theme: () => [
+    userConfig.value.mermaidBeautifulLightTheme,
+    userConfig.value.mermaidBeautifulDarkTheme,
+  ],
+})
+const extensions = computed(() => ({
+  code: codeExtension,
+  math: mathExtension,
+  mermaid: mermaidExtension,
+  ...(userConfig.value.mermaidRenderer === 'beautiful'
+    ? { beautifulMermaid: beautifulMermaidExtension }
+    : {}),
+}))
 
 const controlsConfig = computed((): ControlsConfig => {
   return {
@@ -320,7 +327,7 @@ onMounted(() => {
         <Monaco
           ref="monacoRef"
           :content="content"
-          :theme="shikiOptions.theme"
+          :theme="[userConfig.shikiLightTheme, userConfig.shikiDarkTheme]"
           @change="onEditorChange"
         />
       </ClientOnly>
@@ -352,11 +359,9 @@ onMounted(() => {
           :previewers="previewerConfig"
           :components="markdownComponents"
           :locale="locale"
-          :shiki-options="shikiOptions"
           :code-options="codeOptions"
-          :mermaid-options="mermaidOptions"
+          :extensions="extensions"
           :ui-options="uiOptions"
-          :cdn-options="cdnOptions"
         />
       </div>
     </template>
