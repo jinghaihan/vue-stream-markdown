@@ -10,9 +10,9 @@ Vue Stream Markdown separates syntax completion, incremental parsing, and Vue re
 ## Rendering pipeline
 
 1. The component receives the complete Markdown source on every update.
-2. A long-lived [Comark](https://github.com/comarkdown/comark) parser reuses the stable source prefix and isolates the changed tail.
-3. While `mode="streaming"`, Comark calls the Markmend completion function for that unstable tail.
-4. Comark plugins apply security, footnote, math, and user-defined transformations.
+2. `@markmend/parser` owns a long-lived [Comark](https://github.com/comarkdown/comark) parser, which reuses the stable source prefix and isolates the changed tail.
+3. While `mode="streaming"`, it calls the pure completion function from `@markmend/core` for that unstable tail.
+4. `@markmend/parser` applies CJK support and the security, footnote, math, and user-defined Comark plugins.
 5. The compact Comark `MarkdownDocument` is rendered directly to Vue VNodes. There is no compatibility-tree conversion.
 
 Parser calls are serialized in source order. If parsing one update fails, the renderer keeps the last successfully parsed document instead of replacing the UI with an error state.

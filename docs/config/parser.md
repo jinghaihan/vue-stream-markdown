@@ -7,6 +7,10 @@ description: Configure Comark plugins and streaming Markdown completion.
 
 Vue Stream Markdown uses one long-lived [Comark](https://github.com/comarkdown/comark) parser for each component instance. Pass the complete source to `content`; Comark retains incremental state and reuses the stable prefix between updates.
 
+The same parser layer is available independently from Vue through
+`createMarkmendParser()` in `@markmend/parser`. `@markmend/core` remains the
+smaller parser-independent package for completion alone.
+
 ## completion
 
 `completion` controls how incomplete Markdown is completed in streaming mode. It accepts Markmend options or a custom function:

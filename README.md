@@ -37,7 +37,9 @@ pnpm add vue-stream-markdown
 ```
 
 > [!TIP]
-> The streaming completion layer is also available as the standalone `@markmend/core` package.
+> `@markmend/core` provides standalone Markdown completion, while
+> `@markmend/parser` combines it with Comark, CJK support, and ordered stateful
+> parsing for non-Vue consumers.
 
 For detailed usage and API documentation, please refer to the [Documentation](https://docs-vue-stream-markdown.netlify.app/).
 
@@ -101,7 +103,7 @@ This project also uses and benefits from:
 - [ast-explorer](https://github.com/sxzz/ast-explorer) - Playground layout and document inspection inspiration
 - [medium-zoom](https://github.com/francoischalifour/medium-zoom) - Inspired the custom image zoom implementation
 - [markdown-sanitizers](https://github.com/vercel-labs/markdown-sanitizers) - URL validation and security hardening logic in `src/utils/harden.ts` is ported from `rehype-harden`
-- [dify](https://github.com/langgenius/dify) - LaTeX preprocessing logic in `src/preprocess/vendored/markdown-utils.ts` is ported from Dify
+- [dify](https://github.com/langgenius/dify) - LaTeX normalization logic in `src/completion/vendored/markdown-utils.ts` is ported from Dify
 
 ## Acknowledgments
 
