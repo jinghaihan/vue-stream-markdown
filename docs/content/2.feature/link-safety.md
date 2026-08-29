@@ -1,5 +1,7 @@
 ---
 title: Link Safety
+navigation:
+  icon: i-lucide-link
 description: Configurable confirmation modal for external links to protect users from malicious URLs in AI-generated content.
 ---
 

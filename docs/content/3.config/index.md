@@ -1,5 +1,7 @@
 ---
 title: Configuration Overview
+navigation:
+  icon: i-lucide-settings
 description: Configure parsing, rendering, controls, security, and integrations.
 ---
 

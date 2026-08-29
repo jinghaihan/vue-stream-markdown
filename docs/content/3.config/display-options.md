@@ -1,5 +1,7 @@
 ---
 title: Display Options
+navigation:
+  icon: i-lucide-monitor-cog
 description: Configure display settings for code blocks, tables, images, and themes including height limits, language indicators, line numbers, and captions.
 ---
 

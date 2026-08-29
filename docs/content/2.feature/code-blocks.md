@@ -1,5 +1,7 @@
 ---
 title: Code Blocks
+navigation:
+  icon: i-lucide-code-xml
 description: Beautiful, interactive code blocks with syntax highlighting powered by Shiki, supporting 200+ programming languages.
 ---
 

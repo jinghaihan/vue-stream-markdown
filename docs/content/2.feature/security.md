@@ -1,5 +1,7 @@
 ---
 title: Security
+navigation:
+  icon: i-lucide-shield
 description: Security features for protecting against malicious content including URL sanitization and validation.
 ---
 

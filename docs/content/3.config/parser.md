@@ -1,5 +1,7 @@
 ---
 title: Parser
+navigation:
+  icon: i-lucide-scan-text
 description: Configure Comark plugins and streaming Markdown completion.
 ---
 

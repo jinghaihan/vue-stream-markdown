@@ -1,5 +1,7 @@
 ---
 title: Mathematics
+navigation:
+  icon: i-lucide-sigma
 description: Built-in support for rendering mathematical expressions using LaTeX syntax powered by KaTeX.
 ---
 

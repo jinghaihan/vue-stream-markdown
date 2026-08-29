@@ -1,5 +1,7 @@
 ---
 title: Security Configuration
+navigation:
+  icon: i-lucide-shield-check
 description: Configure URL sanitization and validation for links and images to protect against malicious content.
 ---
 

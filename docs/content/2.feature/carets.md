@@ -1,5 +1,7 @@
 ---
 title: Carets
+navigation:
+  icon: i-lucide-text-cursor-input
 description: Built-in caret (cursor) indicators that display at the end of streaming content to show active generation.
 ---
 

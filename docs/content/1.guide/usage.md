@@ -1,5 +1,7 @@
 ---
 title: Usage
+navigation:
+  icon: i-lucide-rocket
 description: Install and use vue-stream-markdown in streaming and static modes.
 ---
 

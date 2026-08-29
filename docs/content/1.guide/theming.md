@@ -1,5 +1,7 @@
 ---
 title: Theming
+navigation:
+  icon: i-lucide-palette
 description: Learn how to customize the appearance of vue-stream-markdown components using CSS variables and data attributes.
 ---
 

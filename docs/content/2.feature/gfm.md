@@ -1,5 +1,7 @@
 ---
 title: GitHub Flavored Markdown
+navigation:
+  icon: i-lucide-github
 description: Full support for GFM including tables, task lists, strikethrough, and autolinks.
 ---
 

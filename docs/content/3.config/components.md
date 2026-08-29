@@ -1,5 +1,7 @@
 ---
 title: Components
+navigation:
+  icon: i-lucide-component
 description: Map Markdown and custom HTML-like tags to Vue components.
 ---
 

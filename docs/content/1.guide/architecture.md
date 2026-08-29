@@ -1,5 +1,7 @@
 ---
 title: Architecture
+navigation:
+  icon: i-lucide-network
 description: How Comark, Markmend, and Vue cooperate during streaming Markdown rendering.
 ---
 

@@ -1,5 +1,7 @@
 ---
 title: CJK Language Support
+navigation:
+  icon: i-lucide-languages
 description: Built-in support for Chinese, Japanese, and Korean languages with proper handling of emphasis markers and ideographic punctuation.
 ---
 

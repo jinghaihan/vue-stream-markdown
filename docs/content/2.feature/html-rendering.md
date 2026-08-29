@@ -1,5 +1,7 @@
 ---
 title: HTML Rendering
+navigation:
+  icon: i-lucide-file-code-2
 description: Render native and custom HTML-like tags through Comark.
 ---
 

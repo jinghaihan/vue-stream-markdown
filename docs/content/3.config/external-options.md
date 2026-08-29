@@ -1,5 +1,7 @@
 ---
 title: External Options
+navigation:
+  icon: i-lucide-plug
 description: Configure external libraries including Shiki for syntax highlighting, Mermaid for diagrams, and KaTeX for math rendering.
 ---
 

@@ -1,5 +1,7 @@
 ---
 title: Mermaid Diagrams
+navigation:
+  icon: i-lucide-chart-network
 description: Built-in support for Mermaid diagrams including flowcharts, sequence diagrams, state diagrams, and more.
 ---
 

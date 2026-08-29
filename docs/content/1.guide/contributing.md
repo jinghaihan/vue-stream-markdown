@@ -1,5 +1,7 @@
 ---
 title: Contributing
+navigation:
+  icon: i-lucide-git-pull-request
 description: Guidelines for reporting issues and contributing to the vue-stream-markdown project effectively.
 ---
 

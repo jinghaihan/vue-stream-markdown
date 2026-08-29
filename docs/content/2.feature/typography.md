@@ -1,5 +1,7 @@
 ---
 title: Typography
+navigation:
+  icon: i-lucide-type
 description: Beautiful, built-in typography styles for all standard Markdown elements with responsive design.
 ---
 

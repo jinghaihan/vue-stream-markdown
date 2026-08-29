@@ -1,5 +1,7 @@
 ---
 title: Enhanced Unterminated Block Parsing
+navigation:
+  icon: i-lucide-braces
 description: Powerful unterminated block parsing capabilities for handling incomplete markdown during streaming.
 ---
 

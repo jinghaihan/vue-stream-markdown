@@ -1,5 +1,7 @@
 ---
 title: Performance
+navigation:
+  icon: i-lucide-gauge
 description: Incremental Comark parsing, stable Vue rendering, and token-level code updates.
 ---
 

@@ -1,5 +1,7 @@
 ---
 title: Introduction
+navigation:
+  icon: i-lucide-book-open
 description: Learn about vue-stream-markdown, a Vue 3 component library designed for streaming Markdown rendering, especially optimized for AI model outputs.
 ---
 

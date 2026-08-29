@@ -1,5 +1,7 @@
 ---
 title: Previewers
+navigation:
+  icon: i-lucide-eye
 description: Configure preview components for code blocks, enabling live HTML and Mermaid diagram rendering.
 ---
 

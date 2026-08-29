@@ -1,5 +1,7 @@
 ---
 title: Static Mode
+navigation:
+  icon: i-lucide-file-text
 description: Static mode for rendering pre-generated markdown content like blog posts and documentation.
 ---
 

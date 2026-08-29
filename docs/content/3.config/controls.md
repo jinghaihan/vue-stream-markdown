@@ -1,5 +1,7 @@
 ---
 title: Controls
+navigation:
+  icon: i-lucide-sliders-horizontal
 description: Configure interactive controls for tables, code blocks, images, and Mermaid diagrams including copy, download, and zoom.
 ---
 

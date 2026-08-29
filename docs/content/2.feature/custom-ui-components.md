@@ -1,5 +1,7 @@
 ---
 title: Custom UI Components
+navigation:
+  icon: i-lucide-blocks
 description: Replace built-in UI components with your own implementations
 ---
 
