@@ -7,9 +7,15 @@ import NodeList from '../node-list.vue'
 
 const props = withDefaults(defineProps<ParagraphNodeRendererProps>(), {})
 
-const model = computed(() => createParagraphModel(props))
-const marginBottom = computed(() => model.value.marginBottom)
-const lineHeight = computed(() => model.value.lineHeight)
+const paragraphStyle = computed(() => {
+  const { marginBottom, lineHeight } = createParagraphModel(props)
+  const declarations: string[] = []
+  if (marginBottom)
+    declarations.push(`margin-bottom:${marginBottom}`)
+  if (lineHeight)
+    declarations.push(`line-height:${lineHeight}`)
+  return declarations.join(';')
+})
 const direction = useTextDirection(() => props.node)
 </script>
 
@@ -18,10 +24,7 @@ const direction = useTextDirection(() => props.node)
     data-stream-markdown="paragraph"
     :dir="direction"
     class="my-4 align-middle transition-[height] duration-[var(--default-transition-duration)] ease"
-    :style="{
-      marginBottom,
-      lineHeight,
-    }"
+    :style="paragraphStyle"
   >
     <NodeList v-bind="props" :parent-node="node" :nodes="node.children" :deep="deep + 1" />
   </p>
