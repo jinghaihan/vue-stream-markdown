@@ -15,6 +15,7 @@ allowBuilds:
   unrs-resolver: true
 catalogs:
   benchmark:
+    '@streamdown/code': ^1.1.1
     '@types/react': ^18.3.24
     '@types/react-dom': ^18.3.7
     comark: 0.6.2
