@@ -16,7 +16,7 @@ import {
 import { computed, onBeforeUnmount, onMounted, shallowRef, toRefs, watch } from 'vue'
 import { UI } from './components'
 import { ICONS } from './components/icons'
-import ComarkNodeList from './components/renderers/node-list'
+import MarkdownNodes from './components/renderers/markdown-nodes'
 import {
   useContext,
   useDarkDetector,
@@ -215,7 +215,7 @@ defineExpose({
     :dir="dir === 'auto' ? undefined : dir"
     :style="rootStyle"
   >
-    <ComarkNodeList
+    <MarkdownNodes
       :components="components"
       :loading="mode === 'streaming'"
       :nodes="document.nodes"
