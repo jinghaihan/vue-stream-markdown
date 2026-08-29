@@ -7,7 +7,7 @@
     "bench:parser": "vitest bench --run markmend-parser.bench.ts",
     "bench:position-memory": "node --expose-gc --import tsx markmend-position-memory.ts",
     "bench:render": "vitest bench --run streaming-render.bench.ts",
-    "bench:render:prototype": "vitest bench --run direct-ast-render.bench.ts"
+    "bench:render:vnode": "vitest bench --run vnode-rendering.bench.ts"
   },
   "devDependencies": {
     "@types/react": "catalog:benchmark",

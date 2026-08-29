@@ -19,7 +19,7 @@ import {
   resolvePreloadNodeRenderers,
 } from '@stream-markdown/core'
 import { computed, onBeforeUnmount, onMounted, ref, toRefs, watch } from 'vue'
-import { NODE_RENDERERS, UI } from './components'
+import { COMPONENT_RENDERERS, UI } from './components'
 import { ICONS } from './components/icons'
 import NodeList from './components/node-list.vue'
 import {
@@ -118,7 +118,7 @@ const processedContent = computed(() => processed.value.processedContent)
 const rootStyle = computed(() => createRootStyle(cssVariables.value, props.animationDuration))
 
 const nodeRenderers = computed((): NodeRenderers => ({
-  ...NODE_RENDERERS,
+  ...COMPONENT_RENDERERS,
   ...props.nodeRenderers,
 }))
 

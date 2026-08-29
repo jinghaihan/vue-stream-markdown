@@ -1,82 +1,134 @@
-<script setup lang="ts">
-import type { NodeRendererListProps } from '../types'
+<script lang="ts">
+import type { Component, PropType, VNode } from 'vue'
+import type { MarkdownAstParser, NodeRenderers, ParsedNode, SyntaxTree } from '../types'
+import type { VNodeRenderContext, VNodeRenderer } from './renderers/types'
 import { createNodeListModel, DISABLED_TRANSITION_NAME } from '@stream-markdown/core'
-import { computed } from 'vue'
+import { Comment, defineComponent, h, Transition } from 'vue'
 import { useContext } from '../composables'
+import { VNODE_RENDERERS } from './renderers'
 
-defineOptions({
+interface RenderState {
+  animation: VNodeRenderContext['animation']
+  blocks: SyntaxTree[]
+  enableAnimate: boolean
+  markdownParser?: MarkdownAstParser
+  nodeRenderers: NodeRenderers
+  vnodeContext: VNodeRenderContext
+}
+
+export default defineComponent({
+  name: 'NodeList',
   inheritAttrs: false,
+  props: {
+    markdownParser: Object as PropType<MarkdownAstParser>,
+    nodeRenderers: Object as PropType<NodeRenderers>,
+    nodes: {
+      type: Array as PropType<ParsedNode[]>,
+      default: () => [],
+    },
+    nodeKey: String,
+    blockIndex: {
+      type: Number,
+      default: 0,
+    },
+    deep: {
+      type: Number,
+      required: true,
+    },
+    parentNode: Object as PropType<ParsedNode>,
+    prevNode: Object as PropType<ParsedNode>,
+    nextNode: Object as PropType<ParsedNode>,
+    hideCaret: Boolean,
+    blocks: Array as PropType<SyntaxTree[]>,
+  },
+  setup(props) {
+    const context = useContext()
+    const animatedTextKeys = new Set<string>()
+
+    function renderNodes(
+      nodes: ParsedNode[],
+      options: {
+        deep: number
+        nodeKey?: string
+        parentNode?: ParsedNode
+      },
+      state: RenderState,
+    ): VNode[] {
+      const model = createNodeListModel<ParsedNode, Component>({
+        nodes,
+        blocks: state.blocks,
+        blockIndex: props.blockIndex,
+        deep: options.deep,
+        nodeKey: options.nodeKey,
+        nodeRenderers: state.nodeRenderers,
+        enableAnimate: state.enableAnimate,
+        animation: state.animation,
+      })
+
+      return model.items.map((item) => {
+        const rendererProps = {
+          markdownParser: state.markdownParser,
+          nodeRenderers: state.nodeRenderers,
+          deep: options.deep,
+          node: item.node,
+          parentNode: options.parentNode,
+          prevNode: item.prevNode,
+          nextNode: item.nextNode,
+          nodeKey: item.key,
+          hideCaret: props.hideCaret,
+        }
+        const vnodeRenderer = VNODE_RENDERERS[item.node.type as keyof typeof VNODE_RENDERERS] as VNodeRenderer | undefined
+        const vnode = item.renderer
+          ? h(item.renderer, { ...rendererProps, key: item.key })
+          : vnodeRenderer
+            ? vnodeRenderer(rendererProps, state.vnodeContext)
+            : h(Comment as unknown as Component, { key: item.key })
+
+        if (!item.supportsTransition)
+          return vnode
+
+        return h(Transition, {
+          key: item.key,
+          name: item.shouldTransition ? model.transitionName : DISABLED_TRANSITION_NAME,
+          appear: true,
+        }, { default: () => vnode })
+      })
+    }
+
+    return () => {
+      let state: RenderState
+      const renderedTextKeys = new Set<string>()
+      const vnodeContext: VNodeRenderContext = {
+        animatedTextKeys,
+        animation: context.animation.value,
+        animationSplit: context.animationSplit.value,
+        caret: context.caret.value,
+        direction: context.dir.value,
+        enableAnimate: context.enableAnimate.value,
+        enableCaret: context.enableCaret.value,
+        renderedTextKeys,
+        renderChildren: (children, childOptions) => renderNodes(children, childOptions, state),
+      }
+      state = {
+        animation: vnodeContext.animation,
+        blocks: context.blocks.value,
+        enableAnimate: vnodeContext.enableAnimate,
+        markdownParser: props.markdownParser ?? context.markdownParser,
+        nodeRenderers: props.nodeRenderers ?? context.nodeRenderers.value,
+        vnodeContext,
+      }
+
+      const vnodes = renderNodes(props.nodes, {
+        deep: props.deep,
+        nodeKey: props.nodeKey,
+        parentNode: props.parentNode,
+      }, state)
+      for (const key of animatedTextKeys) {
+        if (!renderedTextKeys.has(key))
+          animatedTextKeys.delete(key)
+      }
+      return vnodes
+    }
+  },
 })
-
-const props = withDefaults(defineProps<NodeRendererListProps>(), {
-  nodes: () => [],
-  blockIndex: 0,
-})
-
-const {
-  enableAnimate,
-  animation,
-  blocks,
-  nodeRenderers: contextNodeRenderers,
-  markdownParser: contextMarkdownParser,
-} = useContext()
-
-const activeNodeRenderers = computed(() => {
-  if (props.nodeRenderers)
-    return props.nodeRenderers
-  return contextNodeRenderers.value
-})
-
-const activeMarkdownParser = computed(() => props.markdownParser ?? contextMarkdownParser)
-
-const model = computed(() => createNodeListModel({
-  nodes: props.nodes,
-  blocks: blocks.value,
-  blockIndex: props.blockIndex,
-  deep: props.deep,
-  nodeKey: props.nodeKey,
-  nodeRenderers: activeNodeRenderers.value,
-  enableAnimate: enableAnimate.value,
-  animation: animation.value,
-}))
-
-const items = computed(() => model.value.items)
-const transitionName = computed(() => model.value.transitionName)
 </script>
-
-<template>
-  <template v-for="item in items" :key="item.key">
-    <Transition
-      v-if="item.supportsTransition"
-      :name="item.shouldTransition ? transitionName : DISABLED_TRANSITION_NAME"
-      appear
-    >
-      <component
-        :is="item.renderer"
-        :markdown-parser="activeMarkdownParser"
-        :node-renderers="activeNodeRenderers"
-        :deep="deep"
-        :node="item.node"
-        :parent-node="parentNode"
-        :prev-node="item.prevNode"
-        :next-node="item.nextNode"
-        :node-key="item.key"
-        :hide-caret="hideCaret"
-      />
-    </Transition>
-
-    <component
-      :is="item.renderer"
-      v-else
-      :markdown-parser="activeMarkdownParser"
-      :node-renderers="activeNodeRenderers"
-      :deep="deep"
-      :node="item.node"
-      :parent-node="parentNode"
-      :prev-node="item.prevNode"
-      :next-node="item.nextNode"
-      :node-key="item.key"
-      :hide-caret="hideCaret"
-    />
-  </template>
-</template>

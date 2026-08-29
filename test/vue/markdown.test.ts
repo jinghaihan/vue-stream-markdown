@@ -3,9 +3,7 @@ import { flushPromises, mount, shallowMount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, markRaw, nextTick, onMounted, onUnmounted } from 'vue'
 import LinkRenderer from '../../packages/vue/src/components/renderers/link.vue'
-import ParagraphRenderer from '../../packages/vue/src/components/renderers/paragraph.vue'
 import TableRenderer from '../../packages/vue/src/components/renderers/table.vue'
-import TextRenderer from '../../packages/vue/src/components/renderers/text.vue'
 import Markdown from '../../packages/vue/src/index.vue'
 
 // These tests exercise Markdown processing, not background UI component loading.
@@ -101,8 +99,6 @@ describe('stream markdown', () => {
         mode: 'streaming',
         nodeRenderers: {
           link: markRaw(LinkRenderer),
-          paragraph: markRaw(ParagraphRenderer),
-          text: markRaw(TextRenderer),
         },
       },
     })
@@ -128,7 +124,6 @@ describe('stream markdown', () => {
         controls: false,
         nodeRenderers: {
           table: markRaw(TableRenderer),
-          text: markRaw(TextRenderer),
         },
       },
     })

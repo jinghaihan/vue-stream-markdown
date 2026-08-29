@@ -14,7 +14,10 @@ const ROOT_DIR = fileURLToPath(new URL('..', import.meta.url))
 const SRC_DIR = join(ROOT_DIR, 'src')
 const STYLE_FILE = join(SRC_DIR, 'style.css')
 const OUTPUT_FILE = join(ROOT_DIR, 'dist', CSS_NAME)
-const SOURCE_GLOBS = ['**/*.vue']
+const SOURCE_GLOBS = [
+  '**/*.vue',
+  'components/renderers/{blockquote,break,delete,emphasis,heading,inline-code,list,list-item,paragraph,strong,text,thematic-break}.ts',
+]
 const NAMESPACE = '.stream-markdown'
 const VARIABLE_PREFIX = 'stream-markdown-'
 const UNO_VARIABLE_PREFIX = 'un-'

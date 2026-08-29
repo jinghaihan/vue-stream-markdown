@@ -1,16 +1,13 @@
 // @vitest-environment happy-dom
 import type { Ref } from 'vue'
 import type {
-  MarkdownAstParser,
-  NodeRenderers,
   StreamMarkdownProvideContext,
   TextNode,
 } from 'vue-stream-markdown'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import { defineComponent, h, nextTick, ref } from 'vue'
-import Caret from '../../packages/vue/src/components/caret.vue'
-import TextRenderer from '../../packages/vue/src/components/renderers/text.vue'
+import NodeList from '../../packages/vue/src/components/node-list.vue'
 import { useContext } from '../../packages/vue/src/composables'
 
 function mountText(
@@ -22,28 +19,27 @@ function mountText(
     mode?: Ref<'static' | 'streaming'>
   } = {},
 ) {
-  const textRendererProps = {
-    markdownParser: {} as MarkdownAstParser,
-    nodeRenderers: {} as NodeRenderers,
-    node: {
-      type: 'text',
-      value,
-      loading: options.loading,
-    } as TextNode,
-    nodeKey: 'stream-markdown-block-0-text-0',
-    deep: 1,
-    hideCaret: options.hideCaret,
-  }
+  const node = {
+    type: 'text',
+    value,
+    loading: options.loading,
+  } as TextNode
 
   const WrappedTextRenderer = defineComponent({
     setup() {
       const { provideContext } = useContext()
       provideContext({
         animationSplit: options.animationSplit,
+        enableCaret: true,
         mode: options.mode,
       })
 
-      return () => h(TextRenderer, textRendererProps)
+      return () => h(NodeList, {
+        nodes: [node],
+        nodeKey: 'stream-markdown-block-0',
+        deep: 1,
+        hideCaret: options.hideCaret,
+      })
     },
   })
 
@@ -87,8 +83,8 @@ describe('text renderer', () => {
   })
 
   it('does not render the caret when hidden by a parent renderer', () => {
-    expect(mountText('Loading', { loading: true }).findComponent(Caret).exists()).toBe(true)
-    expect(mountText('Loading', { loading: true, hideCaret: true }).findComponent(Caret).exists()).toBe(false)
+    expect(mountText('Loading', { loading: true }).find('[data-stream-markdown="caret"]').exists()).toBe(true)
+    expect(mountText('Loading', { loading: true, hideCaret: true }).find('[data-stream-markdown="caret"]').exists()).toBe(false)
   })
 
   it('inherits text decorations through animated wrappers', () => {

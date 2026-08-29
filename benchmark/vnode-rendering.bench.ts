@@ -214,7 +214,7 @@ function renderNodes(nodes: ParsedNode[], options: RenderOptions) {
   ))
 }
 
-const DirectAstBlock = defineComponent({
+const VNodeBlock = defineComponent({
   props: {
     animate: Boolean,
     block: {
@@ -239,7 +239,7 @@ const DirectAstBlock = defineComponent({
   },
 })
 
-const DirectAstMarkdown = defineComponent({
+const VNodeMarkdown = defineComponent({
   props: {
     animate: Boolean,
     content: {
@@ -255,7 +255,7 @@ const DirectAstMarkdown = defineComponent({
         class: 'stream-markdown light',
         dir: 'auto',
         style: '--stream-markdown-animation-duration:0ms',
-      }, blocks.map((block, blockIndex) => h(DirectAstBlock, {
+      }, blocks.map((block, blockIndex) => h(VNodeBlock, {
         animate: props.animate,
         block,
         blockIndex,
@@ -280,8 +280,8 @@ function renderCurrentVue(host: HTMLElement, content: string, animate: boolean):
   }), host)
 }
 
-function renderDirectVue(host: HTMLElement, content: string, animate: boolean): void {
-  render(h(DirectAstMarkdown, { animate, content }), host)
+function renderVNodeVue(host: HTMLElement, content: string, animate: boolean): void {
+  render(h(VNodeMarkdown, { animate, content }), host)
 }
 
 function renderReact(root: ReactRoot, content: string, animate: boolean): void {
@@ -440,16 +440,16 @@ function averageTimings(runs: AnimatedTimings[]) {
 
 async function measureSettledAnimatedSessions() {
   const currentVue: AnimatedTimings[] = []
-  const directVue: AnimatedTimings[] = []
+  const vnodeVue: AnimatedTimings[] = []
   const streamdown: AnimatedTimings[] = []
   for (let run = 0; run < 3; run += 1) {
     currentVue.push(await measureAnimatedVueSession(renderCurrentVue))
-    directVue.push(await measureAnimatedVueSession(renderDirectVue))
+    vnodeVue.push(await measureAnimatedVueSession(renderVNodeVue))
     streamdown.push(await measureAnimatedReactSession())
   }
   return {
-    directAstPrototype: {
-      ...averageTimings(directVue),
+    vnodePrototype: {
+      ...averageTimings(vnodeVue),
       blockRenderCount: prototypeBlockRenderCount,
     },
     streamdown: averageTimings(streamdown),
@@ -470,12 +470,12 @@ beforeAll(async () => {
 
 describe('non-animated simple document initial render', () => {
   bench('vue-stream-markdown', () => runVueSession(renderCurrentVue, false, 0), benchmarkOptions)
-  bench('direct AST to VNode prototype', () => runVueSession(renderDirectVue, false, 0), benchmarkOptions)
+  bench('ast to VNode prototype', () => runVueSession(renderVNodeVue, false, 0), benchmarkOptions)
   bench('streamdown', () => runReactSession(false, 0), benchmarkOptions)
 })
 
 describe('non-animated simple document with 20 streaming appends', () => {
   bench('vue-stream-markdown', () => runVueSession(renderCurrentVue, false, 20), benchmarkOptions)
-  bench('direct AST to VNode prototype', () => runVueSession(renderDirectVue, false, 20), benchmarkOptions)
+  bench('ast to VNode prototype', () => runVueSession(renderVNodeVue, false, 20), benchmarkOptions)
   bench('streamdown', () => runReactSession(false, 20), benchmarkOptions)
 })
