@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CodeNodeRendererProps, Control } from '../../types'
+import type { CodeBlockProps, Control } from '../../types'
 import { throttle } from '@antfu/utils'
 import {
   applyMermaidRenderResult,
@@ -14,7 +14,7 @@ import { useResizeObserver } from '@vueuse/core'
 import { computed, nextTick, ref, watch } from 'vue'
 import { useContext, useControls, useDeferredRender, useMermaid } from '../../composables'
 
-const props = withDefaults(defineProps<CodeNodeRendererProps & {
+const props = withDefaults(defineProps<CodeBlockProps & {
   interactive?: boolean
   throttle?: number
   minHeight?: number
@@ -112,7 +112,7 @@ function eagerRender() {
 }
 
 const mermaidControls = computed(
-  (): Control[] => resolveControls<CodeNodeRendererProps>('mermaid', [], props),
+  (): Control[] => resolveControls<CodeBlockProps>('mermaid', [], props),
 )
 
 watch(

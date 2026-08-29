@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ElementNode } from 'comark'
-import type { CodeNode, MarkdownAstParser, NodeRenderers } from '../types'
+import type { CodeBlockNode } from '../types'
 import { computed } from 'vue'
 import CodeRenderer from './renderers/code/index.vue'
 
@@ -10,10 +10,7 @@ const props = defineProps<{
   nodeKey: string
 }>()
 
-const markdownParser = {} as MarkdownAstParser
-const nodeRenderers: NodeRenderers = {}
-
-const codeNode = computed<CodeNode>(() => {
+const codeNode = computed<CodeBlockNode>(() => {
   const [, attrs, ...children] = props.node
   const codeElement = children.find(
     child => Array.isArray(child) && child[0] === 'code',
@@ -31,7 +28,6 @@ const codeNode = computed<CodeNode>(() => {
     type: 'code',
     value: code.replace(/\n$/, ''),
     lang: language,
-    meta: null,
     loading: props.loading,
   }
 })
@@ -41,8 +37,5 @@ const codeNode = computed<CodeNode>(() => {
   <CodeRenderer
     :node="codeNode"
     :node-key="nodeKey"
-    :deep="0"
-    :markdown-parser="markdownParser"
-    :node-renderers="nodeRenderers"
   />
 </template>

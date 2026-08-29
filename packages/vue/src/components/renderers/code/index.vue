@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { TokensResult } from 'shiki'
-import type { CodeNodeRendererProps } from '../../../types'
+import type { CodeBlockProps } from '../../../types'
 import { createCodeRendererModel } from '@stream-markdown/core'
 import { computed, shallowRef, watch } from 'vue'
 import { useCodeOptions, useContext, useShiki } from '../../../composables'
 import CodeContent from './content.vue'
 
-const props = withDefaults(defineProps<CodeNodeRendererProps & {
+const props = withDefaults(defineProps<CodeBlockProps & {
   showHeader?: boolean
 }>(), {
   showHeader: true,

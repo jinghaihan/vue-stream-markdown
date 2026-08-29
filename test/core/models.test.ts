@@ -170,7 +170,7 @@ describe('core models', () => {
 
   it('creates code block model for preview and download decisions', () => {
     const model = createCodeBlockModel({
-      node: { type: 'code', lang: 'mermaid', value: 'graph TD' },
+      node: { lang: 'mermaid', value: 'graph TD' },
       codeOptions: { maxHeight: 240 },
       previewers: true,
       controls: true,
@@ -185,14 +185,14 @@ describe('core models', () => {
     expect(model.downloadOptions.map(option => option.value)).toEqual(['svg', 'png', 'code'])
     expect(getCodeFileExtension('typescript')).toBe('ts')
     expect(syncCodeBlockMode({ mode: 'source' }, true)).toEqual({ mode: 'preview' })
-    expect(createCodeRendererModel({ type: 'code', lang: 'ts', value: ' const a = 1\n' })).toMatchObject({
+    expect(createCodeRendererModel({ lang: 'ts', value: ' const a = 1\n' })).toMatchObject({
       code: 'const a = 1',
       lang: 'ts',
       languageClass: 'language-ts',
       lines: ['const a = 1'],
     })
     expect(createCodeBlockModel({
-      node: { type: 'code', lang: 'typescript', value: 'const a = 1' },
+      node: { lang: 'typescript', value: 'const a = 1' },
       codeOptions: {
         maxHeight: 300,
         language: { typescript: { maxHeight: 0 } },
@@ -311,7 +311,7 @@ describe('core models', () => {
       showLink: true,
     })
     expect(createMathRendererModel({
-      node: { type: 'inlineMath', value: 'x', loading: false },
+      node: { value: 'x', display: false, loading: false },
       installed: false,
     })).toMatchObject({
       code: 'x',
@@ -319,7 +319,7 @@ describe('core models', () => {
       error: true,
     })
     expect(createMathRendererModel({
-      node: { type: 'math', value: '\\frac{1}{', loading: true },
+      node: { value: '\\frac{1}{', display: true, loading: true },
       installed: true,
       renderFlag: true,
       renderingCode: '\\frac{1}{',
@@ -330,7 +330,7 @@ describe('core models', () => {
       error: false,
     })
     expect(createMathRendererModel({
-      node: { type: 'math', value: '\\frac{1}{', loading: false },
+      node: { value: '\\frac{1}{', display: true, loading: false },
       installed: true,
       renderFlag: true,
       renderingCode: '\\frac{1}{',
@@ -481,7 +481,7 @@ describe('core models', () => {
     const codeState = await handleCodeBlockControlAction({
       key: 'download',
       state: { collapsed: false, fullscreen: false },
-      node: { type: 'code', lang: 'ts', value: 'const a = 1' },
+      node: { lang: 'ts', value: 'const a = 1' },
       language: 'typescript',
       saveFile: (filename) => {
         codeDownloads.push(filename)
@@ -494,7 +494,7 @@ describe('core models', () => {
       key: 'download',
       filename: 'myScript',
       state: { collapsed: false, fullscreen: false },
-      node: { type: 'code', lang: 'ts', value: 'const a = 1' },
+      node: { lang: 'ts', value: 'const a = 1' },
       language: 'typescript',
       saveFile: (filename) => {
         codeDownloads.push(filename)
@@ -508,7 +508,7 @@ describe('core models', () => {
       select: { label: 'SVG', value: 'svg' },
       filename: 'flowchart',
       state: { collapsed: false, fullscreen: false },
-      node: { type: 'code', lang: 'mermaid', value: 'graph TD' },
+      node: { lang: 'mermaid', value: 'graph TD' },
       language: 'mermaid',
       saveMermaid: (format, _code, filename) => {
         mermaidDownloads.push({ format, filename })
@@ -521,7 +521,7 @@ describe('core models', () => {
       select: { label: 'MMD', value: 'code' },
       filename: 'flowchart',
       state: { collapsed: false, fullscreen: false },
-      node: { type: 'code', lang: 'mermaid', value: 'graph TD' },
+      node: { lang: 'mermaid', value: 'graph TD' },
       language: 'mermaid',
       saveFile: (filename) => {
         codeDownloads.push(filename)

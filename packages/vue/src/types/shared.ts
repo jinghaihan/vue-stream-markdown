@@ -28,9 +28,8 @@ import type { BuiltinTheme, BundledLanguage, BundledTheme, CodeToTokensOptions, 
 import type { Component } from 'vue'
 import type { ICONS } from '../components/icons'
 import type {
-  CodeNodeRendererProps,
+  CodeBlockProps,
   ImageNodeRendererProps,
-  NodeRendererProps,
   TableNodeRendererProps,
 } from './renderer'
 import type { UIButtonProps } from './ui'
@@ -58,21 +57,21 @@ export type Icons = CoreIcons<Component, IconName, OptionalIconName>
 
 export type Control = CoreControl<UIButtonProps>
 
-export type ControlTransformer<T extends NodeRendererProps = NodeRendererProps> = CoreControlTransformer<Control, T>
+export type ControlTransformer<T = unknown> = CoreControlTransformer<Control, T>
 
 export type TableControlsConfig = CoreTableControlsConfig<ControlTransformer<TableNodeRendererProps>>
 
-export type CodeControlsConfig = CoreCodeControlsConfig<ControlTransformer<CodeNodeRendererProps>>
+export type CodeControlsConfig = CoreCodeControlsConfig<ControlTransformer<CodeBlockProps>>
 
 export type ImageControlsConfig = CoreImageControlsConfig<ControlTransformer<ImageNodeRendererProps>>
 
-export type MermaidControlsConfig = CoreMermaidControlsConfig<ControlTransformer<CodeNodeRendererProps>>
+export type MermaidControlsConfig = CoreMermaidControlsConfig<ControlTransformer<CodeBlockProps>>
 
 export type ControlsConfig = CoreControlsConfig<
   ControlTransformer<TableNodeRendererProps>,
-  ControlTransformer<CodeNodeRendererProps>,
+  ControlTransformer<CodeBlockProps>,
   ControlTransformer<ImageNodeRendererProps>,
-  ControlTransformer<CodeNodeRendererProps>
+  ControlTransformer<CodeBlockProps>
 >
 
 export type PreviewerConfig = CorePreviewerConfig<Component>

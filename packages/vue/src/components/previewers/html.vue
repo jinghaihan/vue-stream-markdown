@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CodeNodeRendererProps } from '../../types'
+import type { CodeBlockProps } from '../../types'
 import {
   clampHtmlPreviewHeight,
   createHtmlPreviewModel,
@@ -17,7 +17,7 @@ import { useEventListener, useResizeObserver } from '@vueuse/core'
 import { computed, ref, watch } from 'vue'
 import { useContext } from '../../composables'
 
-const props = withDefaults(defineProps<CodeNodeRendererProps>(), {})
+const props = withDefaults(defineProps<CodeBlockProps>(), {})
 const { previewers } = useContext()
 
 const iframeRef = ref<HTMLIFrameElement>()

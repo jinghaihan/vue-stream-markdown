@@ -32,6 +32,27 @@ import type {
 } from '@stream-markdown/core'
 import type { NodeRenderers } from './core'
 
+export interface CodeBlockNode {
+  value: string
+  lang?: string | null
+  loading?: boolean
+}
+
+export interface CodeBlockProps {
+  node: CodeBlockNode
+  nodeKey: string
+}
+
+export interface MathRenderNode {
+  value: string
+  display: boolean
+  loading?: boolean
+}
+
+export interface MathRenderProps {
+  node: MathRenderNode
+}
+
 export type NodeRendererListProps = CoreNodeRendererListProps<NodeRenderers>
 
 export type NodeRendererProps<TNode extends ParsedNode = ParsedNode> = CoreNodeRendererProps<TNode, NodeRenderers>
