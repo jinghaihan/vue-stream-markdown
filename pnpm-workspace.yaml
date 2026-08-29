@@ -16,6 +16,7 @@ allowBuilds:
   unrs-resolver: true
   vue-demi: true
 patchedDependencies:
+  comark-docs@0.0.1: patches/comark-docs@0.0.1.patch
   comark@0.6.2: patches/comark@0.6.2.patch
 catalogs:
   benchmark:

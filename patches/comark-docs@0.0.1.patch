@@ -1,0 +1,30 @@
+--- a/server/utils/content.ts
++++ b/server/utils/content.ts
+@@ -1,15 +1,16 @@
+ import { defineContentPlugin, type ComarkContent, type CacheOptions, comarkContent  } from 'comark-content';
+ import fs from 'comark-content/sources/fs'
+ import github from 'comark-content/sources/github'
+-import rangi from 'comark/plugins/rangi'
++import shiki from 'comark/plugins/shiki'
+ import security from 'comark/plugins/security'
+ import emoji from 'comark/plugins/emoji'
+ import toc from 'comark/plugins/toc'
+ import mermaid from 'comark/plugins/mermaid'
+ import yaml from 'comark-content/plugins/yaml'
+ import tracingOtel from 'comark-content/plugins/tracing/otel'
++import githubDark from '@shikijs/themes/github-dark'
++import githubLight from '@shikijs/themes/github-light'
+ import { contentTracer } from './tracer.ts'
+-import { geistTheme } from '../../utils/geist-theme.ts'
+ 
+ // Rebuilt only when the head advances (see `getProdContent`). Holds the *promise*, not the instance: the
+ // assignment lands after the await, so two requests on a cold instance would each build a CMS.
+@@ -18,7 +19,7 @@
+ // Bump CONTENT_PARSER_VERSION in `cache.ts` when these plugins or their options change cached output.
+ const comarkPlugins = [
+   mermaid({ theme: 'zinc-light', themeDark: 'zinc-dark' }),
+-  rangi({ theme: geistTheme }),
++  shiki({ registerDefaultThemes: false, themes: { light: githubLight, dark: githubDark } }),
+   toc({ depth: 3 }),
+   emoji(),
+   security({

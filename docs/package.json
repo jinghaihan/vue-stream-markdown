@@ -11,6 +11,7 @@
   "dependencies": {
     "@vueuse/core": "catalog:frontend",
     "nuxt": "catalog:playground",
+    "@shikijs/themes": "^4.4.1",
     "comark-docs": "github:comarkdown/comark-docs#fad7fbfd4e05cfaabc6ace410bee4c068665f37f",
     "katex": "^0.16.38",
     "vue-stream-markdown": "workspace:*"
