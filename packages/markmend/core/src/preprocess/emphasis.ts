@@ -42,6 +42,14 @@ export function fixEmphasis(
   if (!content.includes('*') && !content.includes('_'))
     return content
 
+  const hasOddAsteriskRun = hasOddMarkerRun(content, '*')
+  const hasOddUnderscoreRun = hasOddMarkerRun(content, '_')
+  if (!hasOddAsteriskRun && !hasOddUnderscoreRun) {
+    const hiddenBareMarker = hideBareFormattingMarker(content, ['*', '_'])
+    if (hiddenBareMarker === undefined)
+      return content
+  }
+
   const analysis = getPreprocessAnalysis(content, options)
   // Don't process if we're inside a code block (unclosed)
   if (analysis.hasUnclosedCodeBlock) {
@@ -56,7 +64,7 @@ export function fixEmphasis(
   if (hiddenBareMarker !== undefined)
     return options?.hideBareFormattingMarkers === false ? content : hiddenBareMarker
 
-  if (!hasOddMarkerRun(content, '*') && !hasOddMarkerRun(content, '_'))
+  if (!hasOddAsteriskRun && !hasOddUnderscoreRun)
     return content
 
   // Find the last paragraph

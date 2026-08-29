@@ -41,6 +41,9 @@ import {
  * // Returns: '```' (no completion, code block has no content)
  */
 export function fixCode(content: string): string {
+  if (!content.includes('`'))
+    return content
+
   const completedInlineTripleBacktickSpan = completePartialInlineTripleBacktickSpan(content)
   if (completedInlineTripleBacktickSpan !== undefined)
     return completedInlineTripleBacktickSpan
