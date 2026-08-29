@@ -143,6 +143,10 @@ export default defineComponent({
         if (!renderedTransitionKeys.has(key))
           animatedNodeKeys.delete(key)
       }
+      if (vnodes.length === 0)
+        return null
+      if (vnodes.length === 1)
+        return vnodes[0]
       return vnodes
     }
   },

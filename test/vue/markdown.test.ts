@@ -2,6 +2,7 @@
 import { flushPromises, mount, shallowMount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, markRaw, nextTick, onMounted, onUnmounted } from 'vue'
+import NodeList from '../../packages/vue/src/components/node-list.vue'
 import LinkRenderer from '../../packages/vue/src/components/renderers/link.vue'
 import TableRenderer from '../../packages/vue/src/components/renderers/table.vue'
 import Markdown from '../../packages/vue/src/index.vue'
@@ -24,6 +25,19 @@ interface TableRendererVm {
 }
 
 describe('stream markdown', () => {
+  it('does not mount node lists for empty streaming blocks', () => {
+    const wrapper = mount(Markdown, {
+      props: {
+        content: '# Heading\n\nParagraph',
+        enableAnimate: false,
+        mode: 'streaming',
+      },
+    })
+
+    expect(wrapper.findAllComponents(NodeList)).toHaveLength(2)
+    wrapper.unmount()
+  })
+
   it('preserves bare formatting markers when configured', () => {
     const wrapper = shallowMount(Markdown, {
       props: {

@@ -114,6 +114,9 @@ const processed = computed(() => {
 const blocks = computed(() => processed.value.blocks)
 const parsedNodes = computed(() => processed.value.parsedNodes)
 const processedContent = computed(() => processed.value.processedContent)
+const renderableBlocks = computed(() => blocks.value.flatMap((block, index) => (
+  block.children.length ? [{ block, index }] : []
+)))
 
 const rootStyle = computed(() => createRootStyle(cssVariables.value, props.animationDuration))
 
@@ -224,13 +227,13 @@ defineExpose<StreamMarkdownExpose>({
     :dir="dir === 'auto' ? undefined : dir"
     :style="rootStyle"
   >
-    <template v-for="(block, index) in blocks" :key="index">
-      <NodeList
-        :nodes="block.children"
-        :block-index="index"
-        :node-key="`stream-markdown-block-${index}`"
-        :deep="0"
-      />
-    </template>
+    <NodeList
+      v-for="({ block, index }) in renderableBlocks"
+      :key="index"
+      :nodes="block.children"
+      :block-index="index"
+      :node-key="`stream-markdown-block-${index}`"
+      :deep="0"
+    />
   </div>
 </template>

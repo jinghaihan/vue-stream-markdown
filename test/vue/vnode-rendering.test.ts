@@ -39,6 +39,16 @@ function mountNodeList(
 }
 
 describe('vnode rendering', () => {
+  it('returns a single node without fragment anchors', () => {
+    const nodes = ref<ParsedNode[]>([{
+      type: 'paragraph',
+      children: [{ type: 'text', value: 'Single' }],
+    }])
+    const wrapper = mountNodeList(nodes)
+
+    expect(wrapper.element.tagName).toBe('P')
+  })
+
   it('renders simple built-in nodes with their existing semantics', () => {
     const nodes = ref<ParsedNode[]>([
       {
