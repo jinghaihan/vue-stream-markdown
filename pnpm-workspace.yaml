@@ -20,7 +20,6 @@ catalogs:
     '@streamdown/code': ^1.1.1
     '@types/react': ^19.2.18
     '@types/react-dom': ^19.2.5
-    comark: 0.6.2
     jsdom: ^30.0.1
     react: 18.3.1
     react-dom: 18.3.1
@@ -71,6 +70,7 @@ catalogs:
     eslint-plugin-format: ^2.0.1
     vue-tsc: ^3.3.11
   parser:
+    comark: 0.6.2
     marked: ^18.0.11
     mdast-util-from-markdown: ^2.0.3
     mdast-util-frontmatter: ^2.0.1

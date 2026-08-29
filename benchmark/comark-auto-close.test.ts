@@ -1,20 +1,22 @@
+import type { ComarkPlugin } from 'comark'
 import { createMarkdownParser } from 'comark'
 import { describe, expect, it } from 'vitest'
 
 describe('patched Comark autoClose', () => {
   it('runs a custom function on the unstable tail before pre plugins', async () => {
     const events: Array<[stage: string, markdown: string]> = []
-    const parse = createMarkdownParser({
+    const observePre: ComarkPlugin = {
+      name: 'observe-pre',
+      pre(state) {
+        events.push(['pre', state.markdown])
+      },
+    }
+    const parse = createMarkdownParser<readonly [ComarkPlugin]>({
       autoClose(markdown) {
         events.push(['autoClose', markdown])
         return `${markdown}\n<!-- completed -->`
       },
-      plugins: [{
-        name: 'observe-pre',
-        pre(state) {
-          events.push(['pre', state.markdown])
-        },
-      }],
+      plugins: [observePre],
     })
 
     await parse('# Stable\n\nFirst paragraph', { streaming: true })

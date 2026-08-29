@@ -14,7 +14,6 @@
     "@streamdown/code": "catalog:benchmark",
     "@types/react": "catalog:benchmark",
     "@types/react-dom": "catalog:benchmark",
-    "comark": "catalog:benchmark",
     "jsdom": "catalog:benchmark",
     "react": "catalog:benchmark",
     "react-dom": "catalog:benchmark",
@@ -24,6 +23,7 @@
     "streamdown": "catalog:benchmark",
     "unified": "catalog:benchmark",
     "vue": "catalog:frontend",
+    "comark": "catalog:parser",
     "vitest": "catalog:test",
     "@types/node": "catalog:types",
     "vue-stream-markdown": "workspace:*"
