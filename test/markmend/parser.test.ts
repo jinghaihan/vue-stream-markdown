@@ -319,6 +319,25 @@ describe('markdown-parser', () => {
     expect(changedCompletedBlocks).toBe(0)
   })
 
+  it('should run postnormalize before postprocess', () => {
+    const hooks: string[] = []
+    const parser = new MarkdownAstParser({
+      mode: 'streaming',
+      postnormalize: (data) => {
+        hooks.push('postnormalize')
+        return data
+      },
+      postprocess: (data) => {
+        hooks.push('postprocess')
+        return data
+      },
+    })
+
+    parser.parseMarkdown('plain')
+
+    expect(hooks).toEqual(['postnormalize', 'postprocess'])
+  })
+
   it('should skip postprocess when mode is static', () => {
     const parser = new MarkdownAstParser({
       mode: 'static',

@@ -2,7 +2,7 @@ import type { SyntaxTree } from '../types'
 import { flow } from '@markmend/core'
 import { postFixFootnote } from './footnote'
 
-export function postNormalize(data: SyntaxTree): SyntaxTree {
+export function postnormalize(data: SyntaxTree): SyntaxTree {
   return flow([
     postFixFootnote,
   ])(data)

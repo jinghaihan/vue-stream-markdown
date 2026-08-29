@@ -186,7 +186,7 @@ Function to preprocess the markdown content before parsing.
 
 Override individual built-in preprocess steps while keeping the default order.
 
-### postNormalize
+### postnormalize
 
 - **Type:** `(data: SyntaxTree) => SyntaxTree`
 
@@ -196,7 +196,7 @@ Function to normalize the syntax tree after parsing but before postprocess. Used
 
 - **Type:** `(content: SyntaxTree) => SyntaxTree`
 
-Function to postprocess the syntax tree after postNormalize. In streaming mode, this is always applied; in static mode, it is skipped.
+Function to postprocess the syntax tree after postnormalize. In streaming mode, this is always applied; in static mode, it is skipped.
 
 ### controls
 

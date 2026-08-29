@@ -16,7 +16,7 @@ import {
   BUILTIN_MICROMARK_EXTENSIONS,
   BUILTIN_TO_MDAST_EXTENSIONS,
 } from './constants'
-import { postNormalize, postprocess } from './postprocess'
+import { postnormalize, postprocess } from './postprocess'
 import { findLastLeafNode, resolveBuiltinExtensions } from './utils'
 
 export interface Options extends MarkdownAstParserOptions {
@@ -267,7 +267,7 @@ export class MarkdownAstParser {
       mdastExtensions: this.fromMdastExtensions,
     })
 
-    const normalize = this.options.postNormalize ?? postNormalize
+    const normalize = this.options.postnormalize ?? postnormalize
     const treeData = normalize(data)
 
     const post = this.options.postprocess ?? postprocess

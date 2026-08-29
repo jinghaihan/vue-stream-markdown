@@ -17,7 +17,7 @@ export interface MarkdownAstParserResult {
 
 export interface MarkdownAstParserOptions extends MarkdownProcessorOptions {
   mdastOptions?: MdastOptions
-  postNormalize?: (data: SyntaxTree) => SyntaxTree
+  postnormalize?: (data: SyntaxTree) => SyntaxTree
   postprocess?: (data: SyntaxTree) => SyntaxTree
 }
 
