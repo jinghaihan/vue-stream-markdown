@@ -22,7 +22,6 @@ import {
   useDarkDetector,
   useLocaleDetector,
   useMermaid,
-  useShiki,
   useTailwindV3Theme,
 } from './composables'
 import { loadLocaleMessages } from './locales'
@@ -76,10 +75,6 @@ const { cssVariables, stop: stopTailwindV3ThemeObserver } = useTailwindV3Theme({
 const { isDark, stop: stopDarkModeObserver } = useDarkDetector(darkProp, cssVariables)
 const { locale } = useLocaleDetector(localeProp)
 
-const { preload: preloadShiki, dispose: disposeShiki } = useShiki({
-  shikiOptions,
-  cdnOptions: props.cdnOptions,
-})
 const { preload: preloadMermaid, dispose: disposeMermaid } = useMermaid({
   mermaidOptions,
   cdnOptions: props.cdnOptions,
@@ -146,7 +141,6 @@ function getContainer(): HTMLElement | undefined {
 
 async function bootstrap() {
   const tasks = [
-    preloadShiki(),
     preloadMermaid(),
     ...Object.values(props.extensions ?? {}).map(extension => extension.preload?.()),
     preloadAsyncComponents(icons.value),
@@ -194,7 +188,6 @@ provideContext({
 
 onBeforeUnmount(() => {
   active = false
-  disposeShiki()
   disposeMermaid()
   for (const extension of Object.values(props.extensions ?? {}))
     void extension.dispose?.()
