@@ -46,7 +46,7 @@ Use **strong text**, _emphasis_, `inline code`, and safe links like [the playgro
 
 ## Math and diagrams
 
-Inline math such as $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$ can live beside normal prose.
+Inline math such as $x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$ can live beside normal prose.
 
 $$
 f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2}

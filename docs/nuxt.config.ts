@@ -15,6 +15,7 @@ export default defineNuxtConfig({
   },
 
   css: [
+    'katex/dist/katex.min.css',
     'vue-stream-markdown/index.css',
     'vue-stream-markdown/theme.css',
     '~/assets/css/docs.css',
