@@ -57,6 +57,7 @@ const fullscreenTableRef = ref<{ $el?: HTMLElement }>()
 const tableScrollRef = ref<HTMLElement>()
 const fullscreenScrollRef = ref<HTMLElement>()
 const fullscreen = ref(false)
+const modalMounted = ref(false)
 
 const tableModel = computed(() => {
   const isStreaming = mode.value === 'streaming'
@@ -169,6 +170,9 @@ async function handleControlClick(key: string, item?: SelectOption) {
     saveFile: save,
   })
 
+  if (state.fullscreen)
+    modalMounted.value = true
+
   fullscreen.value = state.fullscreen
 }
 </script>
@@ -217,6 +221,7 @@ async function handleControlClick(key: string, item?: SelectOption) {
 
     <component
       :is="UI.Modal"
+      v-if="modalMounted"
       v-model:open="fullscreen"
       :aria-label="modalLabel"
       :header-style="{

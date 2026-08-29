@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { mount } from '@vue/test-utils'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, nextTick } from 'vue'
 import Button from '../../packages/vue/src/components/button.vue'
 import Modal from '../../packages/vue/src/components/modal.vue'
@@ -44,6 +44,7 @@ function mountButton(props: { name: string, announcement?: string }) {
 }
 
 afterEach(() => {
+  vi.restoreAllMocks()
   document.body.innerHTML = ''
 })
 
@@ -65,6 +66,27 @@ describe('button accessibility', () => {
 })
 
 describe('modal accessibility', () => {
+  it('listens for Escape only while open', async () => {
+    const addEventListener = vi.spyOn(document, 'addEventListener')
+    const removeEventListener = vi.spyOn(document, 'removeEventListener')
+    const wrapper = mount(Modal, {
+      attachTo: document.body,
+      props: {
+        open: false,
+        transition: '',
+      },
+    })
+    await nextTick()
+
+    expect(addEventListener.mock.calls.some(([type]) => type === 'keyup')).toBe(false)
+
+    await wrapper.setProps({ open: true } as never)
+    expect(addEventListener.mock.calls.some(([type]) => type === 'keyup')).toBe(true)
+
+    await wrapper.setProps({ open: false } as never)
+    expect(removeEventListener.mock.calls.some(([type]) => type === 'keyup')).toBe(true)
+  })
+
   it('exposes modal semantics and uses its title as the accessible name', async () => {
     mount(Modal, {
       attachTo: document.body,

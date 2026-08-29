@@ -32,6 +32,7 @@ const [DefineTemplate, ReuseTemplate] = createReusableTemplate()
 
 const confirmLabel = computed(() => props.confirmText || t('button.confirm'))
 const cancelLabel = computed(() => props.cancelText || t('button.cancel'))
+const keyupTarget = computed(() => open.value ? getDocument() : undefined)
 
 function handleConfirm() {
   emits('confirm')
@@ -43,12 +44,13 @@ function handleCancel() {
   open.value = false
 }
 
+useEventListener(keyupTarget, 'keyup', (event) => {
+  if (isEscapeKeyEvent(event))
+    handleCancel()
+})
+
 onMounted(() => {
   container.value = getOverlayContainer() || getDocumentBody() || undefined
-  useEventListener(getDocument(), 'keyup', (event) => {
-    if (isEscapeKeyEvent(event))
-      handleCancel()
-  })
 })
 </script>
 

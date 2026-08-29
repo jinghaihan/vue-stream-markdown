@@ -28,17 +28,19 @@ const modalStyle = computed(() => ({
 }))
 const showHeader = computed(() => !!props.title || !!slots.title || !!slots.extra)
 const accessibleLabel = computed(() => props.ariaLabel || (!props.titleId ? props.title : undefined))
+const keyupTarget = computed(() => open.value ? getDocument() : undefined)
+
+useEventListener(keyupTarget, 'keyup', (event) => {
+  if (isEscapeKeyEvent(event)) {
+    if (props.close)
+      props.close()
+    else
+      open.value = false
+  }
+})
 
 onMounted(() => {
   container.value = getOverlayContainer() || getDocumentBody() || undefined
-  useEventListener(getDocument(), 'keyup', (event) => {
-    if (isEscapeKeyEvent(event)) {
-      if (props.close)
-        props.close()
-      else
-        open.value = false
-    }
-  })
 })
 </script>
 

@@ -16,6 +16,7 @@ const { uiComponents: UI, linkOptions, hardenOptions, mode } = useContext()
 const { t } = useI18n()
 
 const open = ref<boolean>(false)
+const alertMounted = ref<boolean>(false)
 
 const { copy, copied } = useClipboard({
   legacy: true,
@@ -69,6 +70,7 @@ async function handleClick(event: MouseEvent) {
     return
   }
 
+  alertMounted.value = true
   open.value = true
 }
 
@@ -108,6 +110,7 @@ function handleClose() {
 
     <component
       :is="UI.Alert"
+      v-if="alertMounted"
       v-model:open="open"
       :title="t('link.title')"
       :description="`${t('link.description')}`"
