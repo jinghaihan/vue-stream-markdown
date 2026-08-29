@@ -1,7 +1,7 @@
 import { autoCloseMarkdown } from 'comark'
 import remend from 'remend'
 import { afterAll, bench, describe } from 'vitest'
-import { completeMarkdown } from '../packages/markmend/core/src/preprocess'
+import { completeMarkdown } from '../packages/markmend/core/src/completion'
 
 type CompleteMarkdown = (content: string) => string
 

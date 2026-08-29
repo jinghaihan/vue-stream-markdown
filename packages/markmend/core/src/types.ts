@@ -6,4 +6,4 @@ export interface CompletionOptions {
   singleDollarTextMath?: boolean
 }
 
-export type PreprocessContext = CompletionOptions
+export type CompletionContext = CompletionOptions

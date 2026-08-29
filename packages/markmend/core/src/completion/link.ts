@@ -1,0 +1,163 @@
+import type { CompletionContext } from '../types'
+import { getCompletionAnalysis } from './context'
+import { codeBlockPattern, incompleteBracketPattern, incompleteLinkTextPattern, standaloneBracketPattern } from './pattern'
+import { findLastNonEmptyLineIndex, isEscapedCharacter } from './utils'
+
+function hasTrailingIncompleteLinkUrl(content: string): boolean {
+  const urlStart = content.lastIndexOf('](')
+  if (urlStart === -1 || content.slice(urlStart + 2).includes(')'))
+    return false
+
+  let bracketDepth = 0
+  for (let index = urlStart; index >= 0; index--) {
+    const character = content[index]
+    if (isEscapedCharacter(content, index))
+      continue
+
+    if (character === ']') {
+      bracketDepth += 1
+      continue
+    }
+
+    if (character !== '[')
+      continue
+
+    bracketDepth -= 1
+    if (bracketDepth === 0)
+      return true
+  }
+
+  return false
+}
+
+/**
+ * Fix unclosed link/image syntax in streaming markdown
+ *
+ * Link syntax: [text](url "title")
+ * Image syntax: ![alt](url "title")
+ *
+ * Only processes the last paragraph (content after the last blank line).
+ * This respects Markdown's rule that links cannot span across paragraphs.
+ *
+ * @param content - Markdown content (potentially incomplete in stream mode)
+ * @returns Content with auto-completed link/image syntax if needed
+ *
+ * @example
+ * fixLink('[Google](https://www.goo')
+ * // Returns: '[Google](https://www.goo)'
+ *
+ * @example
+ * fixLink('[text](')
+ * // Returns: '[text]()'
+ *
+ * @example
+ * fixLink('[text]')
+ * // Returns: '[text]()'
+ *
+ * @example
+ * fixLink('[text')
+ * // Returns: '[text]()'
+ *
+ * @example
+ * fixLink('![alt](https://image.png')
+ * // Returns: '![alt](https://image.png)'
+ *
+ * @example
+ * fixLink('Text [')
+ * // Returns: 'Text '
+ * // Removes trailing standalone [ without content
+ *
+ * @example
+ * fixLink('Text [\n')
+ * // Returns: 'Text '
+ * // Removes trailing standalone bracket and trailing newline
+ */
+export function fixLink(content: string, context?: CompletionContext): string {
+  if (!content.includes('['))
+    return content
+
+  const analysis = getCompletionAnalysis(content, context)
+  // Don't process if we're inside a code block (unclosed)
+  if (analysis.hasUnclosedCodeBlock) {
+    return content
+  }
+
+  if (analysis.isFullyCodeBlock)
+    return content
+
+  // Find the last paragraph (after the last blank line)
+  const { lines } = analysis
+  const paragraph = analysis.getLastParagraph()
+  const lastParagraph = paragraph.content
+
+  // Remove code blocks from the last paragraph to avoid processing links inside them
+  const lastParagraphWithoutCodeBlocks = lastParagraph.replace(codeBlockPattern, '')
+
+  // Check the last non-empty line for trailing standalone bracket
+  // This handles cases where content ends with [\n or [ with trailing whitespace
+  // Start from the last line and work backwards to find the last non-empty line
+  const lastNonEmptyLineIndex = findLastNonEmptyLineIndex(lines)
+
+  // Process if we found a non-empty line (regardless of paragraph boundaries)
+  // This ensures we remove trailing standalone brackets even when content ends with newline
+  if (lastNonEmptyLineIndex >= 0) {
+    const lastLine = lines[lastNonEmptyLineIndex] ?? ''
+
+    // First, remove trailing standalone [ or ![ (without any content after)
+    // This prevents showing incomplete brackets that would create empty links
+    // Check for both [ and ![ patterns
+    const standaloneBracketMatch = lastLine.match(standaloneBracketPattern)
+    if (standaloneBracketMatch && standaloneBracketMatch[1]) {
+      const bracket = standaloneBracketMatch[1]
+      const bracketPos = lastLine.lastIndexOf(bracket)
+
+      // Remove the bracket and all trailing whitespace after it in this line
+      // But keep any whitespace before the bracket
+      const beforeBracket = lastLine.substring(0, bracketPos).trimEnd()
+      const newLine = beforeBracket
+
+      // Reconstruct content with the modified line
+      const newLines = [...lines]
+      newLines[lastNonEmptyLineIndex] = newLine
+
+      // If the next line after the modified line is empty, remove it too
+      // This handles cases like "Text [\n" where we want to remove both [ and the newline
+      // But only if the bracket was at the end of the line (no content after it on the same line)
+      if (lastNonEmptyLineIndex + 1 < newLines.length) {
+        const nextLine = newLines[lastNonEmptyLineIndex + 1] as string
+        if (nextLine.trim() === '') {
+          newLines.splice(lastNonEmptyLineIndex + 1, 1)
+        }
+      }
+
+      const result = newLines.join('\n')
+
+      // Return immediately after removing standalone bracket
+      return result
+    }
+  }
+
+  // Check for unclosed link/image syntax at the end
+  // Using multiple specific patterns to avoid backtracking issues
+  // Use lastParagraphWithoutCodeBlocks to avoid matching inside code blocks
+
+  // Pattern 1: [text or ![text - incomplete bracket (no closing ])
+  if (incompleteBracketPattern.test(lastParagraphWithoutCodeBlocks)) {
+    return `${content}]()`
+  }
+
+  // Pattern 2: [text] or ![text] - missing URL part (has ] but no opening ())
+  if (incompleteLinkTextPattern.test(lastParagraphWithoutCodeBlocks)) {
+    return `${content}()`
+  }
+
+  // Pattern 3: [text]( or [text](url or ![text]( or ![text](url - incomplete URL (has ]( but no closing ))
+  // Match link/image that has ]( but no closing )
+  // Note: We don't check for markdown syntax in URLs because URLs commonly contain
+  // characters like _, *, ~ which should not be treated as markdown syntax
+  if (hasTrailingIncompleteLinkUrl(lastParagraphWithoutCodeBlocks)) {
+    return `${content})`
+  }
+
+  return content
+}
