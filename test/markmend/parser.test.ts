@@ -377,6 +377,36 @@ describe('markdown-parser', () => {
     }
   })
 
+  it.each([
+    [
+      'nested HTML',
+      '# Stable\n\n<div>\n<div>\ninner\n</div>\n\nafter inner\n</div>\n\noutside',
+    ],
+    [
+      'custom HTML',
+      '# Stable\n\n<my-box>\ninside\n</my-box>\n\noutside',
+    ],
+    [
+      'math split across lexer tokens',
+      '# Stable\n\nBefore $$\nx\n=\ny\n$$\n\nafter',
+    ],
+    [
+      'regex-like text',
+      '# Stable\n\nPattern [^\\s+] example.\n\nNext paragraph.',
+    ],
+  ])('should preserve %s block boundaries while appending', (_, document) => {
+    const parser = new MarkdownAstParser({ mode: 'streaming' })
+
+    for (let end = 1; end <= document.length; end += 5) {
+      const content = document.slice(0, end)
+      const result = parser.parseMarkdown(content)
+      const freshResult = new MarkdownAstParser({ mode: 'streaming' })
+        .parseMarkdown(content)
+
+      expect(omitFalseLoading(result)).toEqual(omitFalseLoading(freshResult))
+    }
+  })
+
   it('should allow overriding a single preprocess step', () => {
     const html = vi.fn((content: string) => `${content}>`)
     const parser = new MarkdownAstParser({
