@@ -20,7 +20,6 @@ import MarkdownNodes from './components/renderers/markdown'
 import {
   useContext,
   useDarkDetector,
-  useKatex,
   useLocaleDetector,
   useMermaid,
   useShiki,
@@ -60,10 +59,10 @@ const {
   tableOptions,
   imageOptions,
   linkOptions,
-  katexOptions,
   hardenOptions,
   shikiOptions,
   mermaidOptions,
+  extensions,
   uiOptions,
   cdnOptions,
   animation,
@@ -85,11 +84,6 @@ const { preload: preloadMermaid, dispose: disposeMermaid } = useMermaid({
   mermaidOptions,
   cdnOptions: props.cdnOptions,
 })
-const { preload: preloadKatex, dispose: disposeKatex } = useKatex({
-  markdown: content,
-  cdnOptions: props.cdnOptions,
-})
-
 const containerRef = shallowRef<HTMLDivElement>()
 const document = shallowRef<MarkdownDocument>({
   frontmatter: {},
@@ -99,7 +93,13 @@ const document = shallowRef<MarkdownDocument>({
 
 const parser = createMarkmendParser({
   completion: props.completion,
-  parserOptions: props.parserOptions,
+  parserOptions: {
+    ...props.parserOptions,
+    plugins: [
+      ...(props.parserOptions?.plugins ?? []),
+      ...(props.extensions?.math ? [props.extensions.math.parserPlugin] : []),
+    ],
+  },
   syntax: {
     security: {
       allowedImagePrefixes: props.hardenOptions?.allowedImagePrefixes,
@@ -148,7 +148,7 @@ async function bootstrap() {
   const tasks = [
     preloadShiki(),
     preloadMermaid(),
-    preloadKatex(),
+    ...Object.values(props.extensions ?? {}).map(extension => extension.preload?.()),
     preloadAsyncComponents(icons.value),
     preloadAsyncComponents(uiComponents.value),
   ]
@@ -164,9 +164,9 @@ onMounted(bootstrap)
 provideContext({
   controls,
   previewers,
+  extensions,
   shikiOptions,
   mermaidOptions,
-  katexOptions,
   hardenOptions,
   codeOptions,
   tableOptions,
@@ -196,7 +196,8 @@ onBeforeUnmount(() => {
   active = false
   disposeShiki()
   disposeMermaid()
-  disposeKatex()
+  for (const extension of Object.values(props.extensions ?? {}))
+    void extension.dispose?.()
 
   stopTailwindV3ThemeObserver()
   stopDarkModeObserver()

@@ -1,4 +1,5 @@
 import { createMarkmendParser } from '@markmend/parser'
+import { math } from '@stream-markdown/math'
 import { describe, expect, it, vi } from 'vitest'
 
 describe('markmend parser', () => {
@@ -95,6 +96,24 @@ describe('markmend parser', () => {
 
     expect(document.nodes).toEqual([
       ['p', {}, ['strong', {}, '中文加粗。'], '后文'],
+    ])
+  })
+
+  it('enables math only when the extension contributes its parser plugin', async () => {
+    const input = 'Inline $x^2$'
+    const plainDocument = await createMarkmendParser().parse(input, 'static')
+    const mathExtension = math()
+    const mathDocument = await createMarkmendParser({
+      parserOptions: {
+        plugins: [mathExtension.parserPlugin],
+      },
+    }).parse(input, 'static')
+
+    expect(plainDocument.nodes).toEqual([
+      ['p', {}, input],
+    ])
+    expect(mathDocument.nodes).toEqual([
+      ['p', {}, 'Inline ', ['math', { class: 'math inline', content: 'x^2' }, 'x^2']],
     ])
   })
 })

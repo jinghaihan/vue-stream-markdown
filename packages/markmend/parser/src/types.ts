@@ -6,7 +6,6 @@ import type {
   ParserOptions,
 } from 'comark'
 import type { FootnotesConfig } from 'comark/plugins/footnotes'
-import type { MathConfig } from 'comark/plugins/math'
 import type security from 'comark/plugins/security'
 
 export type CompletionFunction = (markdown: string) => string
@@ -22,7 +21,6 @@ export type SecurityOptions = NonNullable<Parameters<typeof security>[0]>
 export interface MarkmendSyntaxOptions {
   cjk?: boolean
   footnotes?: false | FootnotesConfig
-  math?: false | MathConfig
   security?: false | SecurityOptions
 }
 

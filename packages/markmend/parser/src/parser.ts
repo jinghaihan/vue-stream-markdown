@@ -8,7 +8,6 @@ import type {
 import { completeMarkdown } from '@markmend/core'
 import { createMarkdownParser } from 'comark'
 import footnotes from 'comark/plugins/footnotes'
-import math from 'comark/plugins/math'
 import security from 'comark/plugins/security'
 import cjkFriendly from 'markdown-it-cjk-friendly'
 
@@ -52,9 +51,6 @@ export function createMarkmendParser(
       ...(options.syntax?.footnotes === false
         ? []
         : [footnotes(options.syntax?.footnotes)]),
-      ...(options.syntax?.math === false
-        ? []
-        : [math(options.syntax?.math)]),
     ],
     autoClose(markdown) {
       return activeMode === 'streaming' ? complete(markdown) : markdown

@@ -1,6 +1,5 @@
-import type { CdnOptions } from '@stream-markdown/core'
 import type { MaybeRefOrGetter } from 'vue'
-import type { KatexOptions, MathRenderNode } from '../types'
+import type { Extensions, MathRenderNode } from '../types'
 import { throttle } from '@antfu/utils'
 import {
   applyMathRendererResult,
@@ -8,29 +7,23 @@ import {
   createMathRendererState,
 } from '@stream-markdown/core'
 import { computed, ref, toValue, watch } from 'vue'
-import { useKatex } from './use-katex'
 
 interface UseMathRendererOptions {
   node: MaybeRefOrGetter<MathRenderNode>
-  katexOptions?: MaybeRefOrGetter<KatexOptions | undefined>
-  cdnOptions?: CdnOptions
+  extension?: MaybeRefOrGetter<Extensions['math'] | undefined>
   throttle?: MaybeRefOrGetter<number>
 }
 
 export function useMathRenderer(options: UseMathRendererOptions) {
-  const { installed, render: renderKatex } = useKatex({
-    cdnOptions: options.cdnOptions,
-  })
-
   const state = ref(createMathRendererState())
 
   const node = computed(() => toValue(options.node))
-  const katexOptions = computed(() => toValue(options.katexOptions)?.config ?? {})
+  const extension = computed(() => toValue(options.extension))
   const throttleTime = computed(() => toValue(options.throttle) ?? 150)
 
   const model = computed(() => createMathRendererModel({
     node: node.value,
-    installed: installed.value,
+    installed: !!extension.value,
     renderFlag: state.value.renderFlag,
     renderingCode: state.value.renderingCode,
     errorMessage: state.value.errorMessage,
@@ -43,13 +36,14 @@ export function useMathRenderer(options: UseMathRendererOptions) {
   const errorMessage = computed(() => state.value.errorMessage)
 
   const render = throttle(throttleTime, async () => {
-    const result = await renderKatex(
-      code.value,
-      {
-        ...katexOptions,
-        displayMode: isDisplayMode.value,
-      },
-    )
+    if (!extension.value)
+      return
+
+    await extension.value.ensureCss?.()
+    const result = await extension.value.render({
+      code: code.value,
+      displayMode: isDisplayMode.value,
+    })
     state.value = applyMathRendererResult(state.value, code.value, result)
   })
 

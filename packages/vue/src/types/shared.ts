@@ -10,21 +10,21 @@ import type {
   Icons as CoreIcons,
   ImageControlsConfig as CoreImageControlsConfig,
   ImageOptions as CoreImageOptions,
-  KatexOptions as CoreKatexOptions,
   MermaidControlsConfig as CoreMermaidControlsConfig,
   MermaidOptions as CoreMermaidOptions,
   PreviewerConfig as CorePreviewerConfig,
   ShikiOptions as CoreShikiOptions,
+  StreamMarkdownExtensions as CoreStreamMarkdownExtensions,
   TableControlsConfig as CoreTableControlsConfig,
   TableOptions as CoreTableOptions,
   UIComponents as CoreUIComponents,
 } from '@stream-markdown/core'
 import type { RenderOptions as BeautifulMermaidConfig, ThemeName } from 'beautiful-mermaid'
-import type { KatexOptions as KatexConfig } from 'katex'
 import type { MermaidConfig } from 'mermaid'
 import type { BuiltinTheme, BundledLanguage, BundledTheme, CodeToTokensOptions, RegexEngine } from 'shiki'
 import type { Component } from 'vue'
 import type { ICONS } from '../components/icons'
+import type { ComarkPlugin } from './parser'
 import type {
   CodeBlockProps,
   MarkdownControlContext,
@@ -86,7 +86,7 @@ export type MermaidOptions = CoreMermaidOptions<
   BeautifulMermaidConfig
 >
 
-export type KatexOptions = CoreKatexOptions<Component, KatexConfig>
+export type Extensions = CoreStreamMarkdownExtensions<ComarkPlugin<any, any>, Component>
 
 export type ImageOptions = CoreImageOptions<Component>
 

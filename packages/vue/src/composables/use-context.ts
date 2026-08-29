@@ -37,7 +37,7 @@ function resolveContext(context: StreamMarkdownProvideContext): StreamMarkdownRe
   const previewers = computed(() => toValue(context.previewers))
   const shikiOptions = computed(() => toValue(context.shikiOptions))
   const mermaidOptions = computed(() => toValue(context.mermaidOptions))
-  const katexOptions = computed(() => toValue(context.katexOptions))
+  const extensions = computed(() => toValue(context.extensions))
   const hardenOptions = computed(() => toValue(context.hardenOptions))
   const codeOptions = computed(() => toValue(context.codeOptions))
   const tableOptions = computed(() => toValue(context.tableOptions))
@@ -76,7 +76,7 @@ function resolveContext(context: StreamMarkdownProvideContext): StreamMarkdownRe
     previewers,
     shikiOptions,
     mermaidOptions,
-    katexOptions,
+    extensions,
     hardenOptions,
     codeOptions,
     tableOptions,

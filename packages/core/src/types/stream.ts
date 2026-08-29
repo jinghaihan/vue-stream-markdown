@@ -10,24 +10,24 @@ export interface StreamMarkdownContext<
   TPreviewers = unknown,
   TShikiOptions = unknown,
   TMermaidOptions = unknown,
-  TKatexOptions = unknown,
   THardenOptions = unknown,
   TCodeOptions = unknown,
   TImageOptions = unknown,
   TLinkOptions = unknown,
   TUIOptions = unknown,
+  TExtensions = unknown,
 > {
   controls?: TControls
   previewers?: TPreviewers
   shikiOptions?: TShikiOptions
   mermaidOptions?: TMermaidOptions
-  katexOptions?: TKatexOptions
   hardenOptions?: THardenOptions
   codeOptions?: TCodeOptions
   tableOptions?: TableOptions
   imageOptions?: TImageOptions
   linkOptions?: TLinkOptions
   uiOptions?: TUIOptions
+  extensions?: TExtensions
   cdnOptions?: CdnOptions
   isDark?: boolean
 }
@@ -67,23 +67,23 @@ export type StreamMarkdownProps<
   TPreviewers = unknown,
   TShikiOptions = unknown,
   TMermaidOptions = unknown,
-  TKatexOptions = unknown,
   THardenOptions = unknown,
   TCodeOptions = unknown,
   TImageOptions = unknown,
   TLinkOptions = unknown,
   TUIOptions = unknown,
+  TExtensions = unknown,
 > = StreamMarkdownContext<
   TControls,
   TPreviewers,
   TShikiOptions,
   TMermaidOptions,
-  TKatexOptions,
   THardenOptions,
   TCodeOptions,
   TImageOptions,
   TLinkOptions,
-  TUIOptions
+  TUIOptions,
+  TExtensions
 >
 & StreamMarkdownViewProps<TMarkdownComponents, TIcons, TUIComponents, TCaret>
 & StreamMarkdownHooks

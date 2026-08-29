@@ -9,10 +9,10 @@ import type { Completion, StreamMarkdownParserOptions } from './parser'
 import type {
   CodeOptions,
   ControlsConfig,
+  Extensions,
   HardenOptions,
   Icons,
   ImageOptions,
-  KatexOptions,
   LinkOptions,
   MermaidOptions,
   PreviewerConfig,
@@ -29,12 +29,12 @@ export type StreamMarkdownContext = CoreStreamMarkdownContext<
   PreviewerConfig,
   ShikiOptions,
   MermaidOptions,
-  KatexOptions,
   HardenOptions,
   CodeOptions,
   ImageOptions,
   LinkOptions,
-  UIOptions
+  UIOptions,
+  Extensions
 >
 
 type BaseStreamMarkdownProps = CoreStreamMarkdownProps<
@@ -46,12 +46,12 @@ type BaseStreamMarkdownProps = CoreStreamMarkdownProps<
   PreviewerConfig,
   ShikiOptions,
   MermaidOptions,
-  KatexOptions,
   HardenOptions,
   CodeOptions,
   ImageOptions,
   LinkOptions,
-  UIOptions
+  UIOptions,
+  Extensions
 >
 
 export type StreamMarkdownProps = BaseStreamMarkdownProps & {
@@ -64,7 +64,7 @@ export interface StreamMarkdownProvideContext {
   previewers?: MaybeRefOrGetter<StreamMarkdownContext['previewers']>
   shikiOptions?: MaybeRefOrGetter<StreamMarkdownContext['shikiOptions']>
   mermaidOptions?: MaybeRefOrGetter<StreamMarkdownContext['mermaidOptions']>
-  katexOptions?: MaybeRefOrGetter<StreamMarkdownContext['katexOptions']>
+  extensions?: MaybeRefOrGetter<Extensions | undefined>
   hardenOptions?: MaybeRefOrGetter<StreamMarkdownContext['hardenOptions']>
   codeOptions?: MaybeRefOrGetter<StreamMarkdownContext['codeOptions']>
   tableOptions?: MaybeRefOrGetter<TableOptions | undefined>
@@ -98,7 +98,7 @@ export interface StreamMarkdownResolvedContext {
   previewers: ComputedRef<StreamMarkdownContext['previewers']>
   shikiOptions: ComputedRef<StreamMarkdownContext['shikiOptions']>
   mermaidOptions: ComputedRef<StreamMarkdownContext['mermaidOptions']>
-  katexOptions: ComputedRef<StreamMarkdownContext['katexOptions']>
+  extensions: ComputedRef<Extensions | undefined>
   hardenOptions: ComputedRef<StreamMarkdownContext['hardenOptions']>
   codeOptions: ComputedRef<StreamMarkdownContext['codeOptions']>
   tableOptions: ComputedRef<TableOptions | undefined>

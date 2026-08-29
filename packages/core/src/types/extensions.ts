@@ -57,7 +57,7 @@ export interface MermaidRenderInput {
   theme?: Record<string, unknown> | null
 }
 
-export interface MermaidRenderResult {
+export interface MermaidExtensionRenderResult {
   error?: string
   supported?: boolean
   svg?: string
@@ -66,7 +66,7 @@ export interface MermaidRenderResult {
 
 export interface MermaidExtension<TErrorComponent = unknown> extends ExtensionRuntime {
   errorComponent?: TErrorComponent
-  render: (input: MermaidRenderInput) => Promise<MermaidRenderResult>
+  render: (input: MermaidRenderInput) => Promise<MermaidExtensionRenderResult>
   supports: (code: string) => boolean
 }
 
