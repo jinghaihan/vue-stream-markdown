@@ -1,3 +1,4 @@
+export * from './comark'
 export * from './context'
 export * from './core'
 export * from './parser'
