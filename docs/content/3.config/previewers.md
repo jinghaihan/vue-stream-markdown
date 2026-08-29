@@ -1,0 +1,280 @@
+---
+title: Previewers
+description: Configure preview components for code blocks, enabling live HTML and Mermaid diagram rendering.
+---
+
+The previewers configuration allows you to enable, disable, or customize preview components for any programming language in code blocks. By default, HTML and Mermaid diagrams have built-in previewers, but you can add custom previewers for any language.
+
+## previewers
+
+- **Type:** `boolean | PreviewerConfig`
+- **Default:** `true` (built-in previewers enabled by default)
+
+Configuration for code block previewers. Set to `false` to disable all previewers, or configure specific previewer types. When `previewers` is set to `true`, only HTML and Mermaid have default previewers enabled. For other languages, you need to explicitly configure a custom previewer component.
+
+### PreviewerConfig Interface
+
+```typescript
+type PreviewerConfig
+  = | boolean
+    | {
+      placement?: PreviewSegmentedPlacement
+      progressive?: Record<string, boolean>
+      html?: {
+        autoHeight?: boolean
+        height?: number | string
+        maxHeight?: number | string
+        sandbox?: string
+      }
+      components?: {
+        mermaid?: boolean | Component
+        html?: boolean | Component
+      } & Record<string, Component>
+    }
+```
+
+The `PreviewerConfig` is an object that can contain:
+
+- **placement**: Optional placement configuration for preview components (see [placement](#placement) section below)
+- **progressive**: Optional configuration for progressive rendering (see [progressive](#progressive) section below)
+- **html**: Optional configuration for the built-in HTML previewer, including the iframe sandbox permissions
+- **components**: Optional object containing language-specific previewer configurations
+  - For `html` and `mermaid`: `boolean` (to enable/disable default previewer) or `Component` (custom previewer)
+  - For all other languages: `Component` only (no built-in previewers available)
+
+### Default Behavior
+
+When `previewers` is set to `true`:
+
+- HTML code blocks use the default HTML previewer (sandboxed iframe)
+- Mermaid code blocks use the default Mermaid previewer (SVG rendering) with progressive rendering enabled by default
+- All other languages have no previewer by default
+
+To add previewers for other languages, you must explicitly configure them with custom components.
+
+## progressive
+
+- **Type:** `Record<string, boolean>`
+- **Default:** `{ mermaid: true }`
+
+Controls progressive rendering for previewers. When enabled for a language, the preview component will be displayed even while the code block is still loading (streaming). The previewer component can use `props.node.loading` to display loading states. When disabled, the preview component only appears after the code block has finished loading.
+
+## placement
+
+- **Type:** `'left' | 'center' | 'right' | 'auto'`
+- **Default:** `'auto'`
+
+Controls the position of the preview component relative to the code block in the segmented view. The preview component can be displayed on the left, center, or right side of the code block.
+
+### Placement Options
+
+- **`'left'`**: Preview component appears on the left side of the code block
+- **`'center'`**: Preview component appears in the center (between code and other content)
+- **`'right'`**: Preview component appears on the right side of the code block
+- **`'auto'`**: Automatically determines placement based on whether the code block has a language icon or language name:
+  - If language icon or language name is shown: uses `'center'`
+  - If neither is shown: uses `'left'`
+
+### Examples
+
+**Set placement to right:**
+
+```vue
+<script setup lang="ts">
+import type { PreviewerConfig } from 'vue-stream-markdown'
+import { Markdown } from 'vue-stream-markdown'
+
+const previewers: PreviewerConfig = {
+  placement: 'right',
+}
+</script>
+
+<template>
+  <Markdown :content="content" :previewers="previewers" />
+</template>
+```
+
+## html
+
+- **Sandbox type:** `string`
+- **Default sandbox:** `'allow-scripts'`
+- **Height type:** `number | string`
+- **Default height:** `360`
+- **Auto height cap:** `1000` by default; numeric or `px` `maxHeight` overrides this cap
+- **Auto height type:** `boolean`
+- **Default auto height:** `true`
+- **Component type:** `boolean | Component | undefined` (within `components.html`)
+
+HTML code blocks use the built-in iframe previewer by default. Configure `html.sandbox` to change the iframe `sandbox` attribute, `html.height`/`html.maxHeight` to control fallback sizing, or `components.html` to disable or replace the previewer.
+
+The built-in previewer auto-sizes in layers:
+
+- With `allow-same-origin`, it measures the iframe document directly.
+- With `allow-scripts`, it injects an internal measurement script that reports height to the parent frame.
+- When auto-sizing is unavailable or disabled, it falls back to `html.height`.
+
+**HTML code block with preview:**
+
+::stream-markdown{example="config-previewers.htmlExample"}
+::
+
+**Configure HTML previewer:**
+
+```vue
+<script setup lang="ts">
+import type { PreviewerConfig } from 'vue-stream-markdown'
+import { Markdown } from 'vue-stream-markdown'
+
+const previewers: PreviewerConfig = {
+  html: {
+    height: 420,
+    maxHeight: '80vh',
+    sandbox: 'allow-scripts allow-same-origin allow-forms',
+  },
+  components: {
+    html: true, // Set to false to disable the HTML previewer
+  },
+}
+</script>
+
+<template>
+  <Markdown :content="content" :previewers="previewers" />
+</template>
+```
+
+**Custom HTML previewer:**
+
+```vue
+<script setup lang="ts">
+import type { PreviewerConfig } from 'vue-stream-markdown'
+import { Markdown } from 'vue-stream-markdown'
+import CustomHtmlPreviewer from './CustomHtmlPreviewer.vue'
+
+const previewers: PreviewerConfig = {
+  components: {
+    html: CustomHtmlPreviewer, // Custom component
+  },
+}
+</script>
+
+<template>
+  <Markdown :content="content" :previewers="previewers" />
+</template>
+```
+
+When using a custom component, it will receive the same props as the default HTML previewer component, which includes the code block node data.
+
+## mermaid
+
+- **Type:** `boolean | Component | undefined` (within `components` object)
+- **Default:** `true` (Mermaid previewer enabled when `previewers` is `true`)
+
+Controls the Mermaid previewer for Mermaid code blocks. This option must be specified within the `components` object. When set to `true`, the default Mermaid previewer is used, which renders Mermaid diagrams as SVG. When set to `false`, the previewer is disabled and only the code is shown. When set to a Vue component, that component is used as the custom previewer.
+
+The default Mermaid previewer automatically renders Mermaid diagrams with support for:
+
+- Progressive rendering (enabled by default, shows diagram as it streams in)
+- Dark mode theming (automatically switches based on `isDark` prop)
+- Zoom controls (configurable via `controls.mermaid`)
+- Responsive sizing (automatically adjusts height based on diagram dimensions)
+- Error handling (displays error component on render failure)
+
+**Mermaid diagram with preview:**
+
+::stream-markdown{example="config-previewers.mermaidExample"}
+::
+
+**Disable Mermaid previewer:**
+
+::stream-markdown{example="config-previewers.mermaidExample" previewers-example="config-previewers.disableMermaidPreviewer"}
+::
+
+```vue
+<script setup lang="ts">
+import type { PreviewerConfig } from 'vue-stream-markdown'
+import { Markdown } from 'vue-stream-markdown'
+
+const previewers: PreviewerConfig = {
+  components: {
+    mermaid: false,
+  },
+}
+</script>
+
+<template>
+  <Markdown :content="content" :previewers="previewers" />
+</template>
+```
+
+**Custom Mermaid previewer:**
+
+```vue
+<script setup lang="ts">
+import type { PreviewerConfig } from 'vue-stream-markdown'
+import { Markdown } from 'vue-stream-markdown'
+import CustomMermaidPreviewer from './CustomMermaidPreviewer.vue'
+
+const previewers: PreviewerConfig = {
+  components: {
+    mermaid: CustomMermaidPreviewer, // Custom component
+  },
+}
+</script>
+
+<template>
+  <Markdown :content="content" :previewers="previewers" />
+</template>
+```
+
+When using a custom component, it receives `CodeBlockProps` (including code block data). For context configuration such as Mermaid options and dark mode state, use `useContext()` inside your previewer component.
+
+## Custom Previewers for Other Languages
+
+For languages other than `html` and `mermaid`, you must provide a custom `Component` (boolean values are not accepted since there are no built-in previewers for these languages).
+
+The previewer component receives `CodeBlockProps`, which includes code block data (`props.node.value` for code content and `props.node.loading` for loading state). If progressive rendering is enabled, handle `props.node.loading` to show appropriate loading states.
+
+```vue
+<!-- JavaScriptPreviewer.vue -->
+<script setup lang="ts">
+import type { CodeBlockProps } from 'vue-stream-markdown'
+
+const props = defineProps<CodeBlockProps>()
+</script>
+
+<template>
+  <div class="js-previewer">
+    <!-- Your custom preview rendering -->
+  </div>
+</template>
+```
+
+```vue
+<script setup lang="ts">
+import type { PreviewerConfig } from 'vue-stream-markdown'
+import { Markdown } from 'vue-stream-markdown'
+import JavaScriptPreviewer from './JavaScriptPreviewer.vue'
+
+const previewers: PreviewerConfig = {
+  components: {
+    javascript: JavaScriptPreviewer,
+  },
+}
+</script>
+
+<template>
+  <Markdown :content="content" :previewers="previewers" />
+</template>
+```
+
+## Disabling All Previewers
+
+To disable all previewers, set `previewers` to `false`:
+
+```vue
+<template>
+  <Markdown :content="content" :previewers="false" />
+</template>
+```
+
+When previewers are disabled, code blocks will only display the code content without any preview functionality.

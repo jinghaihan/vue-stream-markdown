@@ -4,17 +4,14 @@
   "version": "1.1.0",
   "private": true,
   "scripts": {
-    "dev": "vitepress dev",
-    "build": "vitepress build",
-    "preview": "vitepress preview"
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "preview": "nuxt preview"
   },
   "dependencies": {
     "@vueuse/core": "catalog:frontend",
-    "vue": "catalog:frontend",
+    "nuxt": "catalog:playground",
+    "comark-docs": "github:comarkdown/comark-docs#fad7fbfd4e05cfaabc6ace410bee4c068665f37f",
     "vue-stream-markdown": "workspace:*"
-  },
-  "devDependencies": {
-    "vitepress": "catalog:docs",
-    "vitepress-plugin-llms": "catalog:docs"
   }
 }

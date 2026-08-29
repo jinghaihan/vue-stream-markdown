@@ -90,7 +90,7 @@ This project is inspired by [streamdown](https://streamdown.ai/) and uses [Comar
 
 This project also uses and benefits from:
 
-- [Comark](https://github.com/comarkdown/comark) - Compact document model and stateful incremental Markdown parser
+- [comark](https://github.com/comarkdown/comark) - Compact document model and stateful incremental Markdown parser
 - [shiki](https://shiki.style/) - Beautiful syntax highlighting
 - [mermaid](https://mermaid.js.org/) - Diagramming and charting tool
 - [beautiful-mermaid](https://github.com/lukilabs/beautiful-mermaid) - Beautiful Mermaid diagram renderer with Shiki integration
@@ -99,8 +99,8 @@ This project also uses and benefits from:
 
 ### Code Sources
 
-- [markstream-vue](https://github.com/Simon-He95/markstream-vue) - The original inspiration for learning AST-based custom markdown rendering, and the source of the animation implementation used in this project
-- [ast-explorer](https://github.com/sxzz/ast-explorer) - Playground layout and document inspection inspiration
+- [markstream-vue](https://github.com/Simon-He95/markstream-vue) - The original inspiration for custom Markdown rendering, and the source of the animation implementation used in this project
+- [ast-explorer](https://github.com/sxzz/ast-explorer) - Playground layout and Comark document inspection inspiration
 - [medium-zoom](https://github.com/francoischalifour/medium-zoom) - Inspired the custom image zoom implementation
 - [markdown-sanitizers](https://github.com/vercel-labs/markdown-sanitizers) - URL validation and security hardening logic in `src/utils/harden.ts` is ported from `rehype-harden`
 - [dify](https://github.com/langgenius/dify) - LaTeX normalization logic in `src/completion/vendored/markdown-utils.ts` is ported from Dify
