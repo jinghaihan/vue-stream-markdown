@@ -52,6 +52,24 @@ describe('comark renderer', () => {
     expect(wrapper.get('a').classes()).toContain('underline')
     expect(wrapper.get('input').element).toMatchObject({ checked: true, disabled: true })
     expect(wrapper.get('[data-stream-markdown="table-wrapper"]')).toBeTruthy()
+    expect(wrapper.get('th').classes()).toContain('text-left')
+    wrapper.unmount()
+  })
+
+  it('keeps explicit table alignment over the left-aligned header default', async () => {
+    const nodes = shallowRef<Node[]>([
+      ['table', {}, ['thead', {}, ['tr', {}, ['th', { style: 'text-align:left' }, 'Left'], ['th', { style: 'text-align:center' }, 'Center'], ['th', { style: 'text-align:right' }, 'Right']]]],
+    ])
+    const wrapper = mountNodes(nodes)
+    await vi.dynamicImportSettled()
+    await flushPromises()
+
+    const headers = wrapper.findAll('th')
+    expect(headers.map(header => header.attributes('style'))).toEqual([
+      'text-align: left;',
+      'text-align: center;',
+      'text-align: right;',
+    ])
     wrapper.unmount()
   })
 

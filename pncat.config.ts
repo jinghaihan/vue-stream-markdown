@@ -35,7 +35,7 @@ export default defineConfig({
     },
     {
       name: 'parser',
-      match: ['comark'],
+      match: ['comark', 'markdown-it-cjk-friendly'],
       priority: 0,
     },
     {

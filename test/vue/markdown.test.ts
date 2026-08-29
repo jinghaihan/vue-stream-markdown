@@ -55,6 +55,41 @@ describe('stream markdown', () => {
     wrapper.unmount()
   })
 
+  it('parses emphasis next to CJK text consistently', async () => {
+    const wrapper = mount(Markdown, {
+      props: {
+        content: '**中文加粗。**后文\n\n*日本語の強調。*後文\n\n~~한국어 삭제.~~다음',
+        enableAnimate: false,
+        mode: 'static',
+      },
+    })
+
+    await flushPromises()
+
+    expect(wrapper.get('strong').text()).toBe('中文加粗。')
+    expect(wrapper.get('em').text()).toBe('日本語の強調。')
+    expect(wrapper.get('del').text()).toBe('한국어 삭제.')
+    expect(wrapper.text()).not.toContain('**')
+    expect(wrapper.text()).not.toContain('~~')
+    wrapper.unmount()
+  })
+
+  it('does not expose transient math errors while streaming', async () => {
+    const wrapper = mount(Markdown, {
+      props: {
+        content: '$$\n\\frac{1}{',
+        enableAnimate: false,
+        mode: 'streaming',
+      },
+    })
+
+    await vi.dynamicImportSettled()
+    await flushPromises()
+
+    expect(wrapper.find('[data-stream-markdown="error-component"]').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
   it('passes raw Comark nodes to custom components', async () => {
     let receivedNode: MarkdownElement | undefined
     const Callout = defineComponent({

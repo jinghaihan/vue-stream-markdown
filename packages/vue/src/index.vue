@@ -16,6 +16,7 @@ import {
 import footnotes from 'comark/plugins/footnotes'
 import math from 'comark/plugins/math'
 import security from 'comark/plugins/security'
+import cjkFriendly from 'markdown-it-cjk-friendly'
 import { computed, onBeforeUnmount, onMounted, shallowRef, toRefs, watch } from 'vue'
 import { UI } from './components'
 import { ICONS } from './components/icons'
@@ -105,6 +106,10 @@ const parserOptions: StreamMarkdownParserOptions = {
   ...props.parserOptions,
   plugins: [
     ...(props.parserOptions?.plugins ?? []),
+    {
+      name: 'cjk-friendly',
+      markdownItPlugins: [cjkFriendly],
+    },
     security({
       allowedImagePrefixes: props.hardenOptions?.allowedImagePrefixes,
       allowedLinkPrefixes: props.hardenOptions?.allowedLinkPrefixes,

@@ -69,6 +69,7 @@ catalogs:
     vue-tsc: ^3.3.11
   parser:
     comark: 0.6.2
+    markdown-it-cjk-friendly: ^3.0.0
   playground:
     '@monaco-editor/loader': ^1.7.0
     '@nuxt/devtools': ^3.4.2

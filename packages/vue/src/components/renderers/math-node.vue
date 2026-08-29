@@ -6,6 +6,7 @@ import InlineMathRenderer from './inline-math.vue'
 import MathRenderer from './math.vue'
 
 const props = defineProps<{
+  loading?: boolean
   node: ElementNode
   nodeKey: string
 }>()
@@ -13,6 +14,7 @@ const props = defineProps<{
 const inline = computed(() => String(props.node[1].class ?? '').split(/\s+/).includes('inline'))
 const mathNode = computed<MathRenderNode>(() => ({
   display: !inline.value,
+  loading: props.loading,
   value: String(props.node[1].content ?? props.node[2] ?? ''),
 }))
 </script>
