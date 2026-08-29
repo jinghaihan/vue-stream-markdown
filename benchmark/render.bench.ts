@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 
 import type { Root } from 'react-dom/client'
+import { code } from '@streamdown/code'
 import { createElement } from 'react'
 import { flushSync } from 'react-dom'
 import { createRoot } from 'react-dom/client'
@@ -56,8 +57,10 @@ const TAIL_WORDS = [
 
 const scenarios = [
   ['prose document', PROSE],
-  ['document with a code block', WITH_CODE],
+  ['document with a stable code block', WITH_CODE],
 ] as const
+
+const streamdownCodePlugins = { code }
 
 const benchmarkOptions = {
   time: 1000,
@@ -110,6 +113,7 @@ function renderReact(root: Root, content: string): void {
       controls: false,
       isAnimating: false,
       mode: 'streaming',
+      plugins: content.includes('```') ? streamdownCodePlugins : undefined,
     }, content))
   })
 }
@@ -118,31 +122,67 @@ function expectedStableText(document: string): string {
   return document === WITH_CODE ? 'export const rate' : 'EMEA'
 }
 
+function expectsHighlight(document: string): boolean {
+  return document === WITH_CODE
+}
+
+function hasStreamdownHighlight(host: HTMLElement): boolean {
+  const tokens = host.querySelectorAll<HTMLElement>(
+    '[data-streamdown="code-block-body"] code > span > span',
+  )
+  return Array.from(tokens).some((token) => {
+    const color = token.style.getPropertyValue('--sdm-c')
+    return color !== '' && color !== 'inherit'
+  })
+}
+
 async function waitForVue(
   host: HTMLElement,
   expectedText: string,
+  highlight: boolean,
 ): Promise<void> {
-  for (let attempt = 0; attempt < 100; attempt += 1) {
+  const deadline = performance.now() + 10_000
+  while (performance.now() < deadline) {
     await Promise.resolve()
     await nextTick()
-    if (host.textContent?.includes(expectedText))
+    await new Promise(resolve => setTimeout(resolve, 0))
+    if (host.textContent?.includes(expectedText)
+      && (!highlight || host.querySelector('[data-stream-markdown="shiki"]'))) {
       return
+    }
   }
 
   throw new Error(`Timed out waiting for Vue output: ${expectedText}`)
 }
 
+async function waitForReact(
+  host: HTMLElement,
+  expectedText: string,
+  highlight: boolean,
+): Promise<void> {
+  const deadline = performance.now() + 10_000
+  while (performance.now() < deadline) {
+    await new Promise(resolve => setTimeout(resolve, 0))
+    if (host.textContent?.includes(expectedText)
+      && (!highlight || hasStreamdownHighlight(host))) {
+      return
+    }
+  }
+
+  throw new Error(`Timed out waiting for Streamdown output: ${expectedText}`)
+}
+
 async function runVueSession(document: string, steps: number): Promise<number> {
   const host = createHost()
   renderVue(host, document)
-  await waitForVue(host, expectedStableText(document))
+  await waitForVue(host, expectedStableText(document), expectsHighlight(document))
 
   let tail = ''
   for (let step = 0; step < steps; step += 1) {
     const content = appendTail(document, step, tail)
     tail = content.slice(document.length + 2)
     renderVue(host, content)
-    await waitForVue(host, tail.trimEnd())
+    await waitForVue(host, tail.trimEnd(), expectsHighlight(document))
   }
 
   const checksum = host.textContent?.length ?? 0
@@ -151,16 +191,18 @@ async function runVueSession(document: string, steps: number): Promise<number> {
   return checksum
 }
 
-function runReactSession(document: string, steps: number): number {
+async function runReactSession(document: string, steps: number): Promise<number> {
   const host = createHost()
   const root = createRoot(host)
   renderReact(root, document)
+  await waitForReact(host, expectedStableText(document), expectsHighlight(document))
 
   let tail = ''
   for (let step = 0; step < steps; step += 1) {
     const content = appendTail(document, step, tail)
     tail = content.slice(document.length + 2)
     renderReact(root, content)
+    await waitForReact(host, tail.trimEnd(), expectsHighlight(document))
   }
 
   const checksum = host.textContent?.length ?? 0
@@ -195,15 +237,8 @@ function collectMutations(observer: MutationObserver, stats: MutationStats): voi
   collectMutationRecords(observer.takeRecords(), stats)
 }
 
-function inspectSession(
-  document: string,
-  mount: (host: HTMLElement, content: string) => () => void,
-): MutationStats {
-  const host = createHost()
-  const unmount = mount(host, document)
-  const heading = host.querySelector('h1')
-  const observer = new MutationObserver(() => {})
-  const stats: MutationStats = {
+function createMutationStats(): MutationStats {
+  return {
     addedNodes: 0,
     attributeNames: {},
     attributes: 0,
@@ -214,6 +249,17 @@ function inspectSession(
     stableHeading: false,
     textLength: 0,
   }
+}
+
+async function inspectReactSession(document: string): Promise<MutationStats> {
+  const host = createHost()
+  const root = createRoot(host)
+  renderReact(root, document)
+  await waitForReact(host, expectedStableText(document), expectsHighlight(document))
+
+  const heading = host.querySelector('h1')
+  const stats = createMutationStats()
+  const observer = new MutationObserver(records => collectMutationRecords(records, stats))
   observer.observe(host, {
     attributes: true,
     characterData: true,
@@ -225,7 +271,8 @@ function inspectSession(
   for (let step = 0; step < 20; step += 1) {
     const content = appendTail(document, step, tail)
     tail = content.slice(document.length + 2)
-    mount(host, content)
+    renderReact(root, content)
+    await waitForReact(host, tail.trimEnd(), expectsHighlight(document))
     collectMutations(observer, stats)
   }
 
@@ -233,41 +280,18 @@ function inspectSession(
   stats.elementCount = host.querySelectorAll('*').length
   stats.textLength = host.textContent?.length ?? 0
   observer.disconnect()
-  unmount()
+  flushSync(() => root.unmount())
   host.remove()
   return stats
-}
-
-function createReactMount(): (host: HTMLElement, content: string) => () => void {
-  let root: Root | undefined
-  return (host, content) => {
-    root ??= createRoot(host)
-    renderReact(root, content)
-    return () => {
-      if (root) {
-        flushSync(() => root?.unmount())
-      }
-    }
-  }
 }
 
 async function inspectVueSession(document: string): Promise<MutationStats> {
   const host = createHost()
   renderVue(host, document)
-  await waitForVue(host, expectedStableText(document))
+  await waitForVue(host, expectedStableText(document), expectsHighlight(document))
 
   const heading = host.querySelector('h1')
-  const stats: MutationStats = {
-    addedNodes: 0,
-    attributeNames: {},
-    attributes: 0,
-    characterData: 0,
-    elementCount: 0,
-    records: 0,
-    removedNodes: 0,
-    stableHeading: false,
-    textLength: 0,
-  }
+  const stats = createMutationStats()
   const observer = new MutationObserver(records => collectMutationRecords(records, stats))
   observer.observe(host, {
     attributes: true,
@@ -281,7 +305,7 @@ async function inspectVueSession(document: string): Promise<MutationStats> {
     const content = appendTail(document, step, tail)
     tail = content.slice(document.length + 2)
     renderVue(host, content)
-    await waitForVue(host, tail.trimEnd())
+    await waitForVue(host, tail.trimEnd(), expectsHighlight(document))
     collectMutations(observer, stats)
   }
 
@@ -295,17 +319,13 @@ async function inspectVueSession(document: string): Promise<MutationStats> {
 }
 
 beforeAll(async () => {
-  const vueHost = createHost()
-  renderVue(vueHost, WITH_CODE)
-  await new Promise(resolve => setTimeout(resolve, 1000))
-  await nextTick()
-  render(null, vueHost)
-  vueHost.remove()
+  await runVueSession(WITH_CODE, 0)
+  await runReactSession(WITH_CODE, 0)
 
   for (const [name, document] of scenarios) {
     console.error('streaming render DOM diagnostics', {
       name,
-      streamdown: inspectSession(document, createReactMount()),
+      streamdown: await inspectReactSession(document),
       vueStreamMarkdown: await inspectVueSession(document),
     })
   }
@@ -316,8 +336,8 @@ for (const [name, document] of scenarios) {
     bench('vue-stream-markdown', async () => {
       benchmarkResult = await runVueSession(document, 0)
     }, benchmarkOptions)
-    bench('streamdown', () => {
-      benchmarkResult = runReactSession(document, 0)
+    bench('streamdown', async () => {
+      benchmarkResult = await runReactSession(document, 0)
     }, benchmarkOptions)
   })
 
@@ -325,8 +345,8 @@ for (const [name, document] of scenarios) {
     bench('vue-stream-markdown', async () => {
       benchmarkResult = await runVueSession(document, 20)
     }, benchmarkOptions)
-    bench('streamdown', () => {
-      benchmarkResult = runReactSession(document, 20)
+    bench('streamdown', async () => {
+      benchmarkResult = await runReactSession(document, 20)
     }, benchmarkOptions)
   })
 }

@@ -14,6 +14,33 @@ describe('markmend parser', () => {
     expect(staticDocument.nodes[0]?.[2]).toBe('static')
   })
 
+  it('completes the unstable tail before parser pre plugins', async () => {
+    const events: Array<[stage: string, markdown: string]> = []
+    const engine = createMarkmendParser({
+      completion(markdown) {
+        events.push(['completion', markdown])
+        return `${markdown}\n<!-- completed -->`
+      },
+      parserOptions: {
+        plugins: [{
+          name: 'observe-pre',
+          pre(state) {
+            events.push(['pre', state.markdown])
+          },
+        }],
+      },
+    })
+
+    await engine.parse('# Stable\n\nFirst paragraph', 'streaming')
+    events.length = 0
+    await engine.parse('# Stable\n\nFirst paragraph extended', 'streaming')
+
+    expect(events).toEqual([
+      ['completion', '\nFirst paragraph extended'],
+      ['pre', '\nFirst paragraph extended\n<!-- completed -->'],
+    ])
+  })
+
   it('publishes queued parses in request order', async () => {
     const observed: string[] = []
     const engine = createMarkmendParser({

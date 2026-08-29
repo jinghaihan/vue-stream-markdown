@@ -4,18 +4,19 @@ import { afterAll, bench, describe } from 'vitest'
 import { completeMarkdown } from '../packages/markmend/core/src/completion'
 
 type CompleteMarkdown = (content: string) => string
+type BenchOptions = NonNullable<Parameters<typeof bench>[2]>
 
 const implementations: Array<{
   name: string
   complete: CompleteMarkdown
 }> = [
   { name: 'markmend', complete: completeMarkdown },
-  { name: 'streamdown/remend', complete: remend },
+  { name: 'remend (streamdown)', complete: remend },
   { name: 'comark', complete: autoCloseMarkdown },
 ]
 
-const standardOptions = { iterations: 1000 }
-const pathologicalOptions = { iterations: 10 }
+const standardOptions: BenchOptions = { time: 500, warmupTime: 100 }
+const pathologicalOptions: BenchOptions = { iterations: 10, warmupIterations: 2 }
 let benchmarkResult: unknown
 
 afterAll(() => {
@@ -78,36 +79,16 @@ $$
 \\int_0^\\infty x^2 dx
 `
 
-benchmarkInput('basic formatting', 'short text with incomplete bold', 'This is **bold text')
 benchmarkInput('basic formatting', 'medium text with mixed formatting', mediumText)
 benchmarkInput('basic formatting', 'long text with complex formatting', longText)
 
-benchmarkInput('incomplete patterns', 'bold (**)', 'Some text with **incomplete bold')
-benchmarkInput('incomplete patterns', 'italic (*)', 'Some text with *incomplete italic')
-benchmarkInput('incomplete patterns', 'italic (__)', 'Some text with __incomplete italic')
 benchmarkInput('incomplete patterns', 'inline code (`)', 'Some text with `incomplete code')
-benchmarkInput('incomplete patterns', 'strikethrough (~~)', 'Some text with ~~incomplete strikethrough')
-benchmarkInput('incomplete patterns', 'bold-italic (***)', 'Some text with ***incomplete bold-italic')
 benchmarkInput('incomplete patterns', 'link destination', 'Some text with [incomplete link](')
-benchmarkInput('incomplete patterns', 'link text', 'Some text with [incomplete')
 benchmarkInput('incomplete patterns', 'block math ($$)', '$$\nE = mc^2\n')
 
 const incompleteCodeBlock = '```javascript\nconst x = 1;\n'
-const completeCodeBlock = '```javascript\nconst x = 1;\n```'
-const multipleCodeBlocks = `
-\`\`\`javascript
-const x = 1;
-\`\`\`
-
-Some text
-
-\`\`\`python
-y = 2
-`
 
 benchmarkInput('code blocks', 'incomplete code block', incompleteCodeBlock)
-benchmarkInput('code blocks', 'complete code block', completeCodeBlock)
-benchmarkInput('code blocks', 'multiple code blocks (one incomplete)', multipleCodeBlocks)
 
 benchmarkStream('streaming simulation', 'bold text (10 steps)', [
   '**',
@@ -122,21 +103,8 @@ benchmarkStream('streaming simulation', 'bold text (10 steps)', [
   '**Bold text',
 ])
 
-benchmarkStream('streaming simulation', 'inline code (6 steps)', [
-  '`',
-  '`c',
-  '`co',
-  '`cod',
-  '`code',
-  '`code`',
-])
-
-benchmarkInput('edge cases', 'empty string', '')
 benchmarkInput('edge cases', 'plain text', 'This is plain text without any markdown formatting.')
-benchmarkInput('edge cases', 'many asterisks', '****************************')
 benchmarkInput('edge cases', 'mixed emphasis markers', '**_*~`**_*~`**_*~`')
-benchmarkInput('edge cases', 'list with emphasis', '- **bold\n- *italic\n- `code')
-benchmarkInput('edge cases', 'underscores in math', '$x_1 + x_2 = x_')
 
 const largeDocument = `
 # Large Document Benchmark
@@ -155,7 +123,6 @@ ${'Regular paragraph text with some [links](https://example.com) and more conten
 `
 
 benchmarkInput('large documents', 'realistic size', largeDocument)
-benchmarkInput('large documents', '2x realistic size', largeDocument + largeDocument)
 
 const bracketHeavyLine = 'const x = arr[i]; if (map[key]) { list[j] = grid[a][b]; }\n'
 const bracketHeavyCodeBlock = `\`\`\`ts\n${bracketHeavyLine.repeat(1000)}`
