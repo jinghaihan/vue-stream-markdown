@@ -19,7 +19,10 @@ export default defineConfig({
     {
       name: 'benchmark',
       match: [
+        '@types/react',
+        '@types/react-dom',
         'comark',
+        'jsdom',
         'react',
         'react-dom',
         'remark-gfm',

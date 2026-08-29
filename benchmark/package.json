@@ -5,10 +5,14 @@
   "scripts": {
     "bench:completion": "vitest bench --run markmend.bench.ts",
     "bench:parser": "vitest bench --run markmend-parser.bench.ts",
-    "bench:position-memory": "node --expose-gc --import tsx markmend-position-memory.ts"
+    "bench:position-memory": "node --expose-gc --import tsx markmend-position-memory.ts",
+    "bench:render": "vitest bench --run streaming-render.bench.ts"
   },
   "devDependencies": {
+    "@types/react": "catalog:benchmark",
+    "@types/react-dom": "catalog:benchmark",
     "comark": "catalog:benchmark",
+    "jsdom": "catalog:benchmark",
     "react": "catalog:benchmark",
     "react-dom": "catalog:benchmark",
     "remark-gfm": "catalog:benchmark",
@@ -16,6 +20,8 @@
     "remend": "catalog:benchmark",
     "streamdown": "catalog:benchmark",
     "unified": "catalog:benchmark",
-    "vitest": "catalog:test"
+    "vue": "catalog:frontend",
+    "vitest": "catalog:test",
+    "vue-stream-markdown": "workspace:*"
   }
 }
