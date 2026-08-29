@@ -46,21 +46,6 @@ function postnormalizeDeletingPositions(data: SyntaxTree): SyntaxTree {
   return removePositions(postFixFootnote(data))
 }
 
-function copyWithoutPositions<T extends PositionableNode>(node: T): T {
-  const { children, position: _position, ...rest } = node
-  if (!children)
-    return rest as T
-
-  return {
-    ...rest,
-    children: children.map(child => copyWithoutPositions(child)),
-  } as T
-}
-
-function postnormalizeWithPositionlessCopy(data: SyntaxTree): SyntaxTree {
-  return copyWithoutPositions(postFixFootnote(data))
-}
-
 function createPositionedParser(): MarkdownAstParser {
   return new MarkdownAstParser({
     mode: 'streaming',
@@ -72,13 +57,6 @@ function createDeletePositionParser(): MarkdownAstParser {
   return new MarkdownAstParser({
     mode: 'streaming',
     postnormalize: postnormalizeDeletingPositions,
-  })
-}
-
-function createPositionlessCopyParser(): MarkdownAstParser {
-  return new MarkdownAstParser({
-    mode: 'streaming',
-    postnormalize: postnormalizeWithPositionlessCopy,
   })
 }
 
@@ -98,7 +76,7 @@ function parseStreamdownBlock(processor: Processor, content: string): number {
 
 const implementations: ParserBenchmarkImplementation[] = [
   {
-    name: 'markmend',
+    name: 'markmend/with-position',
     coldParse(content) {
       const parser = createPositionedParser()
       const result = parser.parseMarkdown(content)
@@ -132,14 +110,14 @@ const implementations: ParserBenchmarkImplementation[] = [
     },
   },
   {
-    name: 'markmend/copy-no-position',
+    name: 'markmend',
     coldParse(content) {
-      const parser = createPositionlessCopyParser()
+      const parser = new MarkdownAstParser({ mode: 'streaming' })
       const result = parser.parseMarkdown(content)
       return result.asts.reduce((total, ast) => total + ast.children.length, 0)
     },
     runStreamingSession(inputs) {
-      const parser = createPositionlessCopyParser()
+      const parser = new MarkdownAstParser({ mode: 'streaming' })
       let checksum = 0
       for (const input of inputs) {
         const result = parser.parseMarkdown(input)
@@ -326,7 +304,7 @@ function benchmarkMarkmendPipeline(
     }, options)
 
     bench('ast conversion copying without positions', () => {
-      const parser = createPositionlessCopyParser()
+      const parser = new MarkdownAstParser({ mode: 'streaming' })
       let checksum = 0
       for (const content of astMissContents)
         checksum += parser.markdownToAst(content).children.length
@@ -366,7 +344,7 @@ function benchmarkMarkmendPipeline(
     }, options)
 
     bench('full parser session copying without positions', () => {
-      const parser = createPositionlessCopyParser()
+      const parser = new MarkdownAstParser({ mode: 'streaming' })
       let checksum = 0
       for (const input of inputs) {
         const result = parser.parseMarkdown(input)
@@ -433,7 +411,7 @@ const retainedBaseline = createPositionedParser()
   .parseMarkdown(largeDocument)
 const retainedDeletingPositions = createDeletePositionParser()
   .parseMarkdown(largeDocument)
-const retainedCopyingWithoutPositions = createPositionlessCopyParser()
+const retainedCopyingWithoutPositions = new MarkdownAstParser({ mode: 'streaming' })
   .parseMarkdown(largeDocument)
 const retainedBaselineBytes = Buffer.byteLength(JSON.stringify(retainedBaseline.asts))
 const retainedDeletingPositionsBytes = Buffer.byteLength(JSON.stringify(retainedDeletingPositions.asts))

@@ -60,21 +60,34 @@ function collectGarbage(): void {
 }
 
 const mode = process.argv[2]
-if (mode !== 'baseline' && mode !== 'delete-position' && mode !== 'copy-no-position')
-  throw new Error('Expected baseline, delete-position, or copy-no-position mode')
+if (
+  mode !== 'baseline'
+  && mode !== 'delete-position'
+  && mode !== 'copy-no-position'
+  && mode !== 'production'
+) {
+  throw new Error('Expected baseline, delete-position, copy-no-position, or production mode')
+}
 
 const content = createDocument(96)
-const createParser = mode === 'baseline'
-  ? () => new MarkdownAstParser({
-      mode: 'streaming',
-      postnormalize: postFixFootnote,
-    })
-  : () => new MarkdownAstParser({
-      mode: 'streaming',
-      postnormalize: mode === 'delete-position'
-        ? postnormalizeWithoutPositions
-        : postnormalizeWithPositionlessCopy,
-    })
+let createParser: () => MarkdownAstParser
+if (mode === 'production') {
+  createParser = () => new MarkdownAstParser({ mode: 'streaming' })
+}
+else if (mode === 'baseline') {
+  createParser = () => new MarkdownAstParser({
+    mode: 'streaming',
+    postnormalize: postFixFootnote,
+  })
+}
+else {
+  createParser = () => new MarkdownAstParser({
+    mode: 'streaming',
+    postnormalize: mode === 'delete-position'
+      ? postnormalizeWithoutPositions
+      : postnormalizeWithPositionlessCopy,
+  })
+}
 
 for (let index = 0; index < 5; index++)
   createParser().parseMarkdown(content)

@@ -2,6 +2,11 @@ import type { ParsedNode, SyntaxTree } from '@markmend/ast'
 import { MarkdownAstParser } from '@markmend/ast'
 import { describe, expect, it, vi } from 'vitest'
 
+interface PositionableTestNode {
+  children?: PositionableTestNode[]
+  position?: unknown
+}
+
 function hasAnyLoading(nodes: ParsedNode[]): boolean {
   for (const node of nodes) {
     if (node.loading)
@@ -473,6 +478,36 @@ describe('markdown-parser', () => {
     parser.parseMarkdown('plain')
 
     expect(hooks).toEqual(['postnormalize', 'postprocess'])
+  })
+
+  it('should omit positions from the default normalized ast', () => {
+    const parser = new MarkdownAstParser({ mode: 'streaming' })
+    const result = parser.parseMarkdown('# Heading\n\n- [x] **completed** item')
+
+    const assertPositionless = (node: PositionableTestNode) => {
+      expect(node.position).toBeUndefined()
+      for (const child of node.children ?? [])
+        assertPositionless(child)
+    }
+
+    for (const ast of result.asts)
+      assertPositionless(ast)
+  })
+
+  it('should expose positions to a custom postnormalize hook', () => {
+    let rootPosition: SyntaxTree['position']
+    const parser = new MarkdownAstParser({
+      mode: 'streaming',
+      postnormalize: (data) => {
+        rootPosition = data.position
+        return data
+      },
+    })
+
+    const result = parser.parseMarkdown('plain')
+
+    expect(rootPosition).toBeDefined()
+    expect(result.asts[0]?.position).toBeDefined()
   })
 
   it('should skip postprocess when mode is static', () => {

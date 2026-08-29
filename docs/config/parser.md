@@ -166,7 +166,7 @@ If you customize the preprocess pipeline, ensure you maintain these ordering rul
 - **Type:** `(data: SyntaxTree) => SyntaxTree`
 - **Default:** Built-in postnormalize function
 
-The `postnormalize` function is executed after the AST (Abstract Syntax Tree) is generated, but before `postprocess`. It is used for basic AST normalization tasks, such as reorganizing footnote definitions.
+The `postnormalize` function is executed after the AST (Abstract Syntax Tree) is generated, but before `postprocess`. It is used for basic AST normalization tasks, such as reorganizing footnote definitions. The built-in implementation also returns a copy without node `position` metadata to reduce retained memory. Replacing `postnormalize` gives you full control and can preserve positions when needed.
 
 ### How It Works
 
