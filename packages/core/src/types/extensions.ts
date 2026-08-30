@@ -1,7 +1,9 @@
 import type { MaybePromise } from './common'
 
 export interface ExtensionRuntime {
+  /** Prepare extension resources. Use a no-op when no preload work is needed. */
   preload: () => MaybePromise<void>
+  /** Release extension-owned resources. Use a no-op when resources are shared or permanent. */
   dispose: () => MaybePromise<void>
 }
 

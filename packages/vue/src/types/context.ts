@@ -9,6 +9,7 @@ import type { Completion, StreamMarkdownParserOptions } from './parser'
 import type {
   CodeOptions,
   ControlsConfig,
+  ExtensionOverrides,
   Extensions,
   HardenOptions,
   Icons,
@@ -45,12 +46,18 @@ type BaseStreamMarkdownProps = CoreStreamMarkdownProps<
   ImageOptions,
   LinkOptions,
   UIOptions,
-  Extensions
+  ExtensionOverrides
 >
 
 export type StreamMarkdownProps = BaseStreamMarkdownProps & {
   completion?: Completion
   parserOptions?: StreamMarkdownParserOptions
+}
+
+export interface MarkdownProviderProps {
+  extensions?: Extensions
+  isDark?: boolean
+  themeElement?: () => HTMLElement | undefined
 }
 
 export interface StreamMarkdownProvideContext {
@@ -65,6 +72,7 @@ export interface StreamMarkdownProvideContext {
   mode?: MaybeRefOrGetter<'static' | 'streaming'>
   dir?: MaybeRefOrGetter<StreamMarkdownProps['dir']>
   isDark?: MaybeRefOrGetter<boolean>
+  rootStyle?: MaybeRefOrGetter<Record<string, string>>
   uiOptions?: MaybeRefOrGetter<UIOptions | undefined>
   icons?: MaybeRefOrGetter<Icons>
   uiComponents?: MaybeRefOrGetter<UIComponents>
@@ -97,6 +105,7 @@ export interface StreamMarkdownResolvedContext {
   icons: ComputedRef<Partial<Icons>>
   uiComponents: ComputedRef<UIComponents>
   isDark: ComputedRef<boolean>
+  rootStyle: ComputedRef<Record<string, string>>
   enableAnimate: ComputedRef<boolean>
   animation: ComputedRef<NonNullable<StreamMarkdownProps['animation']>>
   animationSplit: ComputedRef<NonNullable<StreamMarkdownProps['animationSplit']>>

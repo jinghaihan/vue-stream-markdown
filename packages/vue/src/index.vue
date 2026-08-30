@@ -23,6 +23,11 @@ import {
   useLocaleDetector,
   useTailwindV3Theme,
 } from './composables'
+import {
+  resolveExtensions,
+  resolveOwnedExtensions,
+  useMarkdownProvider,
+} from './composables/use-provider'
 import { loadLocaleMessages } from './locales'
 import { preloadAsyncComponents } from './utils'
 import './style.css'
@@ -58,7 +63,7 @@ const {
   imageOptions,
   linkOptions,
   hardenOptions,
-  extensions,
+  extensions: extensionOverrides,
   uiOptions,
   animation,
   animationSplit,
@@ -66,10 +71,36 @@ const {
 } = toRefs(props)
 
 const { provideContext } = useContext()
+const provider = useMarkdownProvider()
 
-const { cssVariables, stop: stopTailwindV3ThemeObserver } = useTailwindV3Theme({ element: props.themeElement })
-const { isDark, stop: stopDarkModeObserver } = useDarkDetector(darkProp, cssVariables)
+const observesLocalTheme = computed(() => !provider || props.themeElement !== undefined)
+const {
+  cssVariables: localCssVariables,
+  stop: stopTailwindV3ThemeObserver,
+} = useTailwindV3Theme({
+  element: props.themeElement,
+  enabled: observesLocalTheme,
+})
+const cssVariables = computed(() => {
+  return observesLocalTheme.value
+    ? localCssVariables.value
+    : provider?.cssVariables.value ?? {}
+})
+const resolvedDarkProp = computed(() => {
+  return typeof darkProp.value === 'boolean'
+    ? darkProp.value
+    : provider?.isDark.value
+})
+const { isDark, stop: stopDarkModeObserver } = useDarkDetector(
+  resolvedDarkProp,
+  cssVariables,
+  { manageOverlay: () => !provider },
+)
 const { locale } = useLocaleDetector(localeProp)
+const extensions = computed(() => resolveExtensions(
+  provider?.extensions.value,
+  extensionOverrides.value,
+))
 
 const containerRef = shallowRef<HTMLDivElement>()
 const document = shallowRef<MarkdownDocument>({
@@ -84,7 +115,7 @@ const parser = createMarkmendParser({
     ...props.parserOptions,
     plugins: [
       ...(props.parserOptions?.plugins ?? []),
-      ...(props.extensions?.math ? [props.extensions.math.parserPlugin] : []),
+      ...(extensions.value?.math ? [extensions.value.math.parserPlugin] : []),
     ],
   },
   syntax: {
@@ -113,6 +144,10 @@ const uiComponents = computed((): UIComponents => ({
 }))
 
 let active = true
+const ownedExtensions = resolveOwnedExtensions(
+  provider?.extensions.value,
+  extensionOverrides.value,
+)
 
 watch(
   [content, mode],
@@ -133,7 +168,7 @@ function getContainer(): HTMLElement | undefined {
 
 async function bootstrap() {
   const tasks = [
-    ...Object.values(props.extensions ?? {}).map(extension => extension.preload()),
+    ...ownedExtensions.map(extension => extension.preload()),
     preloadAsyncComponents(icons.value),
     preloadAsyncComponents(uiComponents.value),
   ]
@@ -161,6 +196,7 @@ provideContext({
   uiComponents,
   uiOptions,
   isDark,
+  rootStyle,
   enableAnimate,
   animation,
   animationSplit,
@@ -176,7 +212,7 @@ provideContext({
 
 onBeforeUnmount(() => {
   active = false
-  for (const extension of Object.values(props.extensions ?? {}))
+  for (const extension of ownedExtensions)
     void extension.dispose()
 
   stopTailwindV3ThemeObserver()

@@ -142,6 +142,39 @@ You can override these variables scoped to `.stream-markdown`. The library autom
 
 When using Tailwind v3 with shadcn/ui, you can configure the `themeElement` prop to specify which element the library should read CSS variables from. By default, it reads from `document.body`, but you can customize it to read from any element in your application.
 
+## Share Theme Detection Across Messages
+
+Applications commonly render each user and assistant message with a separate `Markdown` instance. Wrap the message list in `MarkdownProvider` so the instances share one theme-variable observer set and, when `isDark` is omitted, one automatic dark-mode observer:
+
+```vue
+<script setup lang="ts">
+import { Markdown, MarkdownProvider } from 'vue-stream-markdown'
+
+const themeElement = () => document.querySelector<HTMLElement>('#app') ?? undefined
+</script>
+
+<template>
+  <MarkdownProvider :theme-element="themeElement">
+    <Markdown
+      v-for="message in messages"
+      :key="message.id"
+      :content="message.content"
+    />
+  </MarkdownProvider>
+</template>
+```
+
+Provider values are defaults. An individual instance can override `isDark` or `themeElement` without changing its siblings:
+
+```vue
+<MarkdownProvider :is-dark="true">
+  <Markdown :content="first" />
+  <Markdown :content="second" :is-dark="false" />
+</MarkdownProvider>
+```
+
+Without a provider, each standalone `Markdown` owns and stops its own observers as before. The provider owns its observers for the lifetime of the wrapper and stops them when it unmounts; it does not use global reference counting.
+
 ## Best Practices
 
 - **Use CSS Variables for Colors**: Prefer overriding CSS variables over direct element styling for consistency

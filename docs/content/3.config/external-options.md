@@ -17,7 +17,7 @@ import { beautifulMermaid } from '@stream-markdown/beautiful-mermaid'
 import { code } from '@stream-markdown/code'
 import { math } from '@stream-markdown/math'
 import { mermaid } from '@stream-markdown/mermaid'
-import { Markdown } from 'vue-stream-markdown'
+import { Markdown, MarkdownProvider } from 'vue-stream-markdown'
 import 'katex/dist/katex.min.css'
 
 const extensions = {
@@ -38,11 +38,40 @@ const extensions = {
 </script>
 
 <template>
-  <Markdown :content="content" :extensions="extensions" />
+  <MarkdownProvider :extensions="extensions">
+    <Markdown :content="content" />
+  </MarkdownProvider>
 </template>
 ```
 
 Create these runtimes once rather than recreating them during every Vue render.
+
+## Shared Extension Lifecycle
+
+Every extension implements both `preload()` and `dispose()`. Wrap a message list in `MarkdownProvider` to preload provider extensions once and dispose them when the provider unmounts:
+
+```vue
+<script setup lang="ts">
+import { code } from '@stream-markdown/code'
+import { Markdown, MarkdownProvider } from 'vue-stream-markdown'
+
+const extensions = { code: code() }
+</script>
+
+<template>
+  <MarkdownProvider :extensions="extensions">
+    <Markdown v-for="message in messages" :key="message.id" :content="message.content" />
+  </MarkdownProvider>
+</template>
+```
+
+An instance can replace one provider extension or disable it with `false`:
+
+```vue
+<Markdown :extensions="{ code: false }" />
+```
+
+Provider-owned extensions are never disposed when an individual Markdown instance unmounts. An instance owns only the extensions it adds or replaces.
 
 ## Code
 
@@ -70,7 +99,7 @@ const codeExtension = code(options)
 
 The package exports its Shiki-specific option types. The main package only sees normalized token data, so applications that do not install this extension can still typecheck.
 
-The shared Shiki highlighter is retained by a module-level reference across Markdown component remounts and cannot be garbage-collected until that reference is released. Call `disposeShikiHighlighter()` from `@stream-markdown/code` manually only when syntax highlighting is no longer needed, such as during full-app or test cleanup.
+The shared Shiki highlighter is retained by a module-level reference across Markdown component remounts and cannot be garbage-collected until that reference is released. The code extension's lifecycle `dispose()` is intentionally a no-op because other providers or instances may still share that highlighter. Call `disposeShikiHighlighter()` from `@stream-markdown/code` manually only when syntax highlighting is no longer needed, such as during full-app or test cleanup.
 
 ## Math
 

@@ -69,6 +69,10 @@ export type PreviewerConfig = CorePreviewerConfig<Component>
 
 export type Extensions = CoreStreamMarkdownExtensions<ComarkPlugin<any, any>, Component>
 
+export type ExtensionOverrides = {
+  [TName in keyof Extensions]?: Exclude<Extensions[TName], undefined> | false
+}
+
 export type ImageOptions = CoreImageOptions<Component>
 
 export type CodeOptions = CoreCodeOptions<Component>

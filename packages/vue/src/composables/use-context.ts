@@ -48,6 +48,7 @@ function resolveContext(context: StreamMarkdownProvideContext): StreamMarkdownRe
   const hideTooltip = computed(() => uiOptions.value.hideTooltip ?? false)
 
   const isDark = computed(() => toValue(context.isDark) ?? false)
+  const rootStyle = computed(() => toValue(context.rootStyle) ?? {})
   const enableAnimate = computed(() => resolveEnableAnimate(mode.value, toValue(context.enableAnimate)))
   const animation = computed(() => resolveAnimation(toValue(context.animation)))
   const animationSplit = computed(() => resolveAnimationSplit(toValue(context.animationSplit)))
@@ -81,6 +82,7 @@ function resolveContext(context: StreamMarkdownProvideContext): StreamMarkdownRe
     icons,
     uiComponents,
     isDark,
+    rootStyle,
     enableAnimate,
     animation,
     animationSplit,

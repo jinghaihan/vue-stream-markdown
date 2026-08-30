@@ -58,7 +58,7 @@ import { beautifulMermaid } from '@stream-markdown/beautiful-mermaid'
 import { code } from '@stream-markdown/code'
 import { math } from '@stream-markdown/math'
 import { mermaid } from '@stream-markdown/mermaid'
-import { Markdown } from 'vue-stream-markdown'
+import { Markdown, MarkdownProvider } from 'vue-stream-markdown'
 import 'katex/dist/katex.min.css'
 import 'vue-stream-markdown/index.css'
 import 'vue-stream-markdown/theme.css'
@@ -72,11 +72,15 @@ const extensions = {
 </script>
 
 <template>
-  <Markdown :content="content" :extensions="extensions" />
+  <MarkdownProvider :extensions="extensions">
+    <Markdown :content="content" />
+  </MarkdownProvider>
 </template>
 ```
 
 When both diagram extensions are present, supported diagrams use Beautiful Mermaid and unsupported diagram types fall back to Mermaid. Without a matching diagram extension, the original code block remains visible.
+
+Use `MarkdownProvider` around a message list to share extension lifecycles and theme observation. A standalone `Markdown` remains supported, and instance props override provider defaults.
 
 ## Custom tags
 

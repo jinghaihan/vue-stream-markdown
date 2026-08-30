@@ -8,6 +8,7 @@ import {
 } from '@stream-markdown/core'
 import { createReusableTemplate, useEventListener } from '@vueuse/core'
 import { computed, onMounted, ref, useSlots } from 'vue'
+import { useContext } from '../composables'
 
 const props = withDefaults(defineProps<UIModalProps>(), {
   zIndex: 9999,
@@ -15,6 +16,7 @@ const props = withDefaults(defineProps<UIModalProps>(), {
 })
 
 const slots = useSlots()
+const { isDark, rootStyle } = useContext()
 
 const open = defineModel<boolean>('open', { required: false, default: false })
 
@@ -23,6 +25,7 @@ const container = ref<HTMLElement>()
 const [DefineTemplate, ReuseTemplate] = createReusableTemplate()
 
 const modalStyle = computed(() => ({
+  ...rootStyle.value,
   ...props.modalStyle,
   zIndex: props.zIndex,
 }))
@@ -53,7 +56,8 @@ onMounted(() => {
       aria-modal="true"
       :aria-label="accessibleLabel"
       :aria-labelledby="titleId"
-      class="bg-background flex flex-col inset-0 fixed"
+      class="stream-markdown bg-background flex flex-col inset-0 fixed"
+      :class="[isDark ? 'dark' : 'light']"
       :style="modalStyle"
     >
       <header
