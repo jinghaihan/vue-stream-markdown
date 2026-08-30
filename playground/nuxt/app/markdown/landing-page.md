@@ -1,196 +1,223 @@
-# Built-in typography styles
+# Feature Showcase
 
-> Streamdown comes with built-in Tailwind classes for common Markdown components — headings, lists, code blocks, and more.
+Edit this document, switch between static and streaming modes, or press play to watch a complete Markdown response arrive token by token.
 
-# AI Models Overview
+---
 
-Modern AI models have revolutionized how we interact with technology. From **language models** to _computer vision_, these systems demonstrate remarkable capabilities.
+## Streaming-ready text
 
-## Key Features
+Markdown stays readable while it is still arriving. Paragraphs can mix **bold**, *italic*, ***bold italic***, ~~strikethrough~~, `inline code`, and [safe links](https://github.com/jinghaihan/vue-stream-markdown).
 
-### Benefits
+> Incomplete Markdown is repaired while streaming, then parsed as the original source once the response is complete.
 
-- Natural language understanding
-- Multi-modal processing
-- Real-time inference
+### Lists and tasks
 
-### Requirements
+- Stable blocks are reused as the tail grows
+- Only unfinished content keeps changing
+  - text can animate by word or character
+  - a caret can mark the active response
+- [x] Parse partial Markdown
+- [x] Preserve completed blocks
+- [ ] Ship the next response
 
-1. GPU acceleration
-2. Model weights
-3. API access
+1. Receive a text chunk
+2. Complete unfinished syntax
+3. Parse and render the document
+4. Reuse stable Vue nodes
 
-## Architecture
+---
 
-![Model Architecture](https://placehold.co/600x400)
+## GitHub Flavored Markdown
 
-## Insights
+Tables, task lists, autolinks, and strikethrough work without additional configuration.
 
-> "The development of full artificial intelligence could spell the end of the human race." — Stephen Hawking
+| Capability | Status | Interaction |
+| :--- | :---: | ---: |
+| Tables | Ready | Copy, download, fullscreen |
+| Task lists | Ready | Native checkboxes |
+| Autolinks | Ready | Link safety checks |
+| Strikethrough | Ready | CJK-friendly |
 
-Learn more about [AI safety](https://example.com) and `transformer` architectures.
+Visit [Vue Stream Markdown](https://github.com/jinghaihan/vue-stream-markdown) or contact jhh19980114@gmail.com.
 
-# GitHub Flavored Markdown
+---
 
-> Streamdown supports GitHub Flavored Markdown (GFM) out of the box, so you get things like task lists, tables, and more.
+## CJK language support
 
-GFM extends standard Markdown with powerful features. Here's a comprehensive demo:
+Formatting remains correct next to Chinese, Japanese, and Korean punctuation.
 
-## Tables
+**重要提示（流式输出）：**中文标点不会破坏强调范围。
 
-| Feature       | Standard MD | GFM |
-| ------------- | ----------- | --- |
-| Tables        | ❌          | ✅  |
-| Task Lists    | ❌          | ✅  |
-| Strikethrough | ❌          | ✅  |
+*この文章は正しく強調されます（配信中）。*後続の文章も安定します。
 
-## Task Lists
+~~이전 응답（사용하지 않음）~~은 취소선으로 표시됩니다.
 
-- [x] Implement authentication
-- [x] Add database models
-- [ ] Write unit tests
-- [ ] Deploy to production
+---
 
-## Strikethrough
+## Links and image previews
 
-~~Old approach~~ → New approach with AI models
+Images include loading states, downloads, fullscreen previews, zoom controls, and carousel navigation. Open either image and use Previous or Next to switch between them.
 
-# CJK Language Support
+![Landscape preview](https://placehold.co/600x400?text=Landscape)
 
-> Built-in support for Chinese, Japanese, and Korean languages ensures emphasis markers work correctly with ideographic punctuation—critical for AI-generated content.
+![Portrait preview](https://placehold.co/600x500?text=Portrait)
 
-Streamdown properly handles emphasis in Chinese, Japanese, and Korean text, even with ideographic punctuation.
+---
 
-## Japanese
+## Syntax-highlighted code
 
-Standard markdown breaks with ideographic punctuation:
+Inline `const state = ref('streaming')` is rendered immediately. Fenced blocks use the optional Shiki extension and retain their controls while code grows.
 
-**この文は太字になります（This sentence will be bolded）。**この文が後に続いても大丈夫です。
-
-*斜体のテキスト【補足情報】。*この文が後に続いても大丈夫です。
-
-~~削除されたテキスト（古い情報）。~~この文は正しいです。
-
-## Chinese
-
-Works seamlessly with Chinese punctuation:
-
-**重要提示（Important Notice）：**请注意。
-
-*这是斜体文字（带括号）。*这句子继续也没问题。
-
-~~旧方法（已废弃）。~~这个句子是正确的。
-
-## Korean
-
-Korean text with mixed punctuation:
-
-**한국어 구문(괄호 포함)**을 강조.
-
-*이 텍스트(괄호 포함)*는 기울임꼴입니다.
-
-~~이 텍스트(괄호 포함)~~를 삭제합니다.
-
-# Beautiful, interactive code blocks
-
-> Streamdown uses [Shiki](https://shiki.style/) to highlight code blocks, and comes with copy and download buttons in the header.
-
-```tsx
-import React from 'react'
-
-interface ButtonProps {
-  label: string
-  onClick: () => void
+```typescript
+interface ChatMessage {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
 }
 
-export const Button: React.FC<ButtonProps> = ({ label, onClick }) => (
-  <button
-    type="button"
-    className="button"
-    onClick={onClick}
-    aria-label={label}
-  >
-    {label}
-  </button>
-)
+async function streamReply(message: ChatMessage) {
+  const response = await fetch('/api/chat', {
+    method: 'POST',
+    body: JSON.stringify(message),
+  })
+
+  if (!response.ok)
+    throw new Error('Unable to start the stream')
+
+  return response.body
+}
 ```
 
-# Mathematical Expressions
+```vue
+<script setup lang="ts">
+import { code } from '@stream-markdown/code'
+import { Markdown } from 'vue-stream-markdown'
 
-> Streamdown supports LaTeX math expressions through remark-math and KaTeX, enabling beautiful mathematical notation in your markdown.
+const extensions = [code()]
+const content = ref('')
+</script>
 
-## Inline Math
-
-The quadratic formula is $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$ for solving $$ax^2 + bx + c = 0$$.
-
-Euler's identity: $$e^{i\pi} + 1 = 0$$ combines five fundamental mathematical constants.
-
-## Block Math
-
-The normal distribution probability density function:
-
-$$
-f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2}
-$$
-
-## Summations and Integrals
-
-The sum of the first $$n$$ natural numbers: $$\sum_{i=1}^{n} i = \frac{n(n+1)}{2}$$
-
-Integration by parts: $$\int u \, dv = uv - \int v \, du$$
-
-# Interactive Mermaid Diagrams
-
-> Streamdown supports Mermaid diagrams with customizable themes and fullscreen viewing. Theme automatically adapts to light/dark mode.
-
-Interactive diagram rendering with manual control. Use the fullscreen, download, and copy buttons to interact with any Mermaid diagram.
-
-## Simple Flowchart
-
-```mermaid
-graph TD
-    A[Start] --> B{Decision}
-    B -->|Yes| C[Success]
-    B -->|No| D[Try Again]
-    D --> B
-    C --> E[End]
+<template>
+  <Markdown
+    :content="content"
+    :extensions="extensions"
+    mode="streaming"
+  />
+</template>
 ```
 
-## Process Flow
+---
+
+## Mathematical expressions
+
+The math extension renders inline expressions such as $$E = mc^2$$ and display equations with KaTeX.
+
+$$
+\int_{-\infty}^{\infty} e^{-x^2} \, dx = \sqrt{\pi}
+$$
+
+$$
+\begin{bmatrix}
+a & b \\
+c & d
+\end{bmatrix}
+\begin{bmatrix}
+x \\
+y
+\end{bmatrix}
+=
+\begin{bmatrix}
+ax + by \\
+cx + dy
+\end{bmatrix}
+$$
+
+---
+
+## Mermaid diagrams
+
+Mermaid code can stay as highlighted source, render with Beautiful Mermaid, or fall back to the official Mermaid renderer.
 
 ```mermaid
 flowchart LR
-    A[User Input] --> B[Validate]
-    B --> C{Valid?}
-    C -->|Yes| D[Process]
-    C -->|No| E[Show Error]
-    D --> F[Save Result]
-    E --> A
-    F --> G[Complete]
+    Prompt[User prompt] --> Stream[Token stream]
+    Stream --> Complete[Complete Markdown]
+    Complete --> Parse[Comark parser]
+    Parse --> Render[Stable Vue nodes]
+    Render --> UI[Interactive output]
 ```
-
-## API Sequence
 
 ```mermaid
 sequenceDiagram
-    participant U as User
-    participant A as App
-    participant S as Server
+    participant Client
+    participant Model
+    participant Renderer
 
-    U->>A: Click render
-    A->>S: API Request
-    S-->>A: Response
-    A-->>U: Show diagram
+    Client->>Model: Send prompt
+    Model-->>Client: Stream text chunks
+    Client->>Renderer: Update content
+    Renderer-->>Client: Reuse completed blocks
 ```
 
-# Style unterminated Markdown blocks
+---
 
-> Streamdown comes with built-in support for parsing unterminated Markdown blocks (# headings, `inline code`, **bold**, _italic_, [links]() and more), which makes streaming Markdown content much prettier.
+## Custom rendering
 
-**This is a very long bold text that keeps going and going without a clear end, so you can see how unterminated bold blocks are handled by the renderer.**
+Safe native HTML can be mixed with Markdown, registered tags can become Vue components, and fenced languages can use custom previewers.
 
-_Here is an equally lengthy italicized sentence that stretches on and on, never quite reaching a conclusion, so you can observe how unterminated italic blocks behave in a streaming Markdown context, particularly when the content is verbose._
+<div class="p-4 mb-4 border border-border rounded-lg">
+  <strong>Native HTML</strong> keeps allowed attributes and drops unsafe behavior.
+</div>
 
-`This is a long inline code block that should be unterminated and continues for quite a while, including some code-like content such as const foo = "bar"; and more, to see how the parser deals with it when the code block is not properly closed`
+<GitHub name="vue-stream-markdown" description="A streaming-optimized Markdown renderer for Vue" />
 
-[This is a very long link text that is unterminated and keeps going to show how unterminated links are rendered in the preview, especially when the link text is verbose and the URL is missing or incomplete](https://www.google.com)
+```echarts
+{
+  "tooltip": {},
+  "xAxis": {
+    "type": "category",
+    "data": ["Parse", "Render", "Update"]
+  },
+  "yAxis": {
+    "type": "value"
+  },
+  "series": [
+    {
+      "type": "bar",
+      "data": [92, 76, 38],
+      "itemStyle": {
+        "color": "#4f8cff"
+      }
+    }
+  ]
+}
+```
+
+---
+
+## Footnotes
+
+Streaming responses can include references without losing their place in the document.[^parser]
+
+Extensions remain opt-in, so applications only install the large renderers they actually use.[^extensions]
+
+[^parser]: Parsing is powered by Comark and adapted for stable Vue rendering.
+
+[^extensions]: Code, math, Mermaid, and Beautiful Mermaid are separate packages.
+
+---
+
+## Blockquotes and nested content
+
+> A response can contain rich nested structures.
+>
+> 1. Lists remain inside the quote.
+> 2. **Formatting** remains available.
+>
+> > Nested quotes work too.
+
+---
+
+## Streaming completion
+
+The final section is intentionally long enough to make streaming behavior visible. Start playback from the toolbar and watch headings, emphasis, code, links, equations, diagrams, custom renderers, and image controls become usable as soon as enough source has arrived. When playback ends, the renderer switches to the original completed Markdown without replacing stable blocks from earlier in the response.

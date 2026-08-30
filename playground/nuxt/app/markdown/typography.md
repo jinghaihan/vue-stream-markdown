@@ -1,10 +1,10 @@
 # Typography
 
-> Explore Streamdown's built-in Tailwind typography styles for beautiful Markdown rendering.
+> Explore the built-in typography styles used for Markdown output.
 
 ## Headings
 
-Streamdown supports all six levels of Markdown headings with responsive sizing and proper spacing:
+All six levels of Markdown headings include responsive sizing and consistent spacing:
 
 # Heading 1
 
@@ -43,13 +43,13 @@ GitHub Flavored Markdown strikethrough is fully supported:
 
 Inline code is styled with a subtle background and monospace font:
 
-Use the `Streamdown` component in your app.
+Use the `Markdown` component in your Vue app.
 
 ## Links
 
 Links are styled with underlines and appropriate colors:
 
-[Visit our website](https://streamdown.ai)
+[View the repository](https://github.com/jinghaihan/vue-stream-markdown)
 
 Features include:
 
@@ -111,7 +111,11 @@ function greet(name) {
 
 Images are responsive and properly contained:
 
-![Alt text](https://placehold.co/600x400)
+Open either image in fullscreen and use the carousel controls to move between them:
+
+![Landscape preview](https://placehold.co/600x400?text=Landscape)
+
+![Portrait preview](https://placehold.co/600x500?text=Portrait)
 
 Features:
 

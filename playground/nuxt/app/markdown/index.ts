@@ -11,11 +11,9 @@ export const DEFAULT_MARKDOWN_PATH = './landing-page.md'
 export const MARKDOWN_NAME: Record<string, string> = {
   'CJK Language Support': './cjk-support.md',
   'Code Blocks': './code-blocks.md',
-  'Custom Html Render': './html.md',
-  'Custom Previewers': './previewers.md',
+  'Custom Rendering': './custom-rendering.md',
   'Footnote': './footnote.md',
   'GitHub Flavored Markdown': './gfm.md',
-  'Image Carousel': './image-carousel.md',
   'Landing Page': './landing-page.md',
   'Mathematics': './mathematics.md',
   'Mermaid Diagrams': './mermaid.md',

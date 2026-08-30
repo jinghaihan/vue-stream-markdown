@@ -48,7 +48,7 @@ Result:
 
 ### Table Features
 
-Streamdown enhances tables with:
+The table renderer adds:
 
 - **Responsive scrolling** - Tables scroll horizontally on narrow screens
 - **Fullscreen view** - Open wide tables in a modal
@@ -60,11 +60,11 @@ Streamdown enhances tables with:
 
 Tables support inline formatting:
 
-| Name            | Description                    | Status     |
-| --------------- | ------------------------------ | ---------- |
-| **Streamdown**  | A `react-markdown` replacement | ✅ Active  |
-| _Feature X_     | Under development              | 🚧 WIP     |
-| ~~Old Package~~ | Deprecated                     | ❌ Removed |
+| Name                    | Description                | Status     |
+| ----------------------- | -------------------------- | ---------- |
+| **Vue Stream Markdown** | Streaming Markdown for Vue | ✅ Active  |
+| _Feature X_             | Under development          | 🚧 WIP     |
+| ~~Old Package~~         | Deprecated                 | ❌ Removed |
 
 ## Task Lists
 
@@ -156,9 +156,9 @@ Result:
 
 URLs and email addresses are automatically converted to links:
 
-Visit https://streamdown.ai for more info.
-Contact us at hello@streamdown.ai
-Check out github.com/vercel/streamdown
+Visit https://github.com/jinghaihan/vue-stream-markdown for more info.
+Contact us at hello@example.com
+Check out github.com/jinghaihan/vue-stream-markdown
 
 ### URL Protocols
 

@@ -14,7 +14,7 @@ Works correctly with all ideographic punctuation marks:
 
 ### Italic Text with Punctuation
 
-Streamdown includes `remark-cjk-friendly-gfm-strikethrough` for proper strikethrough support:
+The CJK parser keeps emphasis boundaries stable around ideographic punctuation:
 
 *これは斜体のテキストです（括弧付き）。*この文が後に続いても大丈夫です。
 *这是斜体文字（带括号）。*这句子继续也没问题。

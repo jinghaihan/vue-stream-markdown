@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ElementNode } from '@markmend/parser'
-import { openExternalUrl } from '@stream-markdown/core'
+import { getDocumentBody, openExternalUrl, scrollToElement } from '@stream-markdown/core'
 import { useClipboard } from '@vueuse/core'
 import { computed, ref } from 'vue'
 import { useContext, useI18n, useSanitizers } from '../../composables'
@@ -14,7 +14,7 @@ const props = defineProps<{
   nodeKey: string
 }>()
 
-const { uiComponents: UI, linkOptions, hardenOptions } = useContext()
+const { uiComponents: UI, linkOptions, hardenOptions, getContainer } = useContext()
 const { t } = useI18n()
 const open = ref(false)
 const alertMounted = ref(false)
@@ -22,6 +22,7 @@ const { copy, copied } = useClipboard({ legacy: true })
 
 const url = computed(() => String(props.attributes.href ?? ''))
 const internal = computed(() => url.value.startsWith('#'))
+const footnoteBackref = computed(() => String(props.attributes.class ?? '').split(/\s+/).includes('footnote-backref'))
 const { transformedUrl, isHardenUrl } = useSanitizers({
   url,
   hardenOptions,
@@ -54,12 +55,30 @@ function handleConfirm() {
     openExternalUrl(transformedUrl.value)
   open.value = false
 }
+
+function handleFootnoteBackref() {
+  const container = getContainer() ?? getDocumentBody()
+  if (container && internal.value)
+    scrollToElement(container, url.value)
+}
 </script>
 
 <template>
   <span data-stream-markdown="link-container" class="inline">
+    <component
+      :is="UI.Button"
+      v-if="footnoteBackref"
+      data-stream-markdown="footnote-definition-button"
+      class="ml-1 align-middle inline-block"
+      :name="t('button.back')"
+      icon="cornerDownLeft"
+      :icon-style="{ color: 'var(--primary)' }"
+      :button-style="{ padding: '0.25rem' }"
+      @click="handleFootnoteBackref"
+    />
+
     <a
-      v-if="!isHardenUrl && typeof transformedUrl === 'string'"
+      v-else-if="!isHardenUrl && typeof transformedUrl === 'string'"
       v-bind="attributes"
       :href="transformedUrl"
       data-stream-markdown="link"
