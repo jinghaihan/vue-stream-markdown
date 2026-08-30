@@ -1,9 +1,10 @@
 import type { Node } from '@markmend/parser'
 import type { PropType } from 'vue'
 import type { MarkdownComponents } from '../../../types'
-import { defineComponent } from 'vue'
+import { computed, defineComponent } from 'vue'
 import { useContext } from '../../../composables'
 import { createNodeRenderer } from './node-renderer'
+import { collectImageSources } from './node-utils'
 
 export default defineComponent({
   name: 'MarkdownNodes',
@@ -20,12 +21,14 @@ export default defineComponent({
   },
   setup(props) {
     const context = useContext()
+    const imageSources = computed(() => collectImageSources(props.nodes))
     const animatedTextKeys = new Set<string>()
     let renderedTextKeys = new Set<string>()
     const renderNodes = createNodeRenderer({
       animatedTextKeys,
       context,
       getComponents: () => props.components,
+      getImageSources: () => imageSources.value,
       markTextRendered: key => renderedTextKeys.add(key),
     })
 
