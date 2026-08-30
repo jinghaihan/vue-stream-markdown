@@ -1,11 +1,15 @@
 const fileExtensionPattern = /\.[^/.]+$/
+const UTF8_BYTE_ORDER_MARK = '\uFEFF'
 
 export function removeTrailingSlash(url: string): string {
   return url?.endsWith('/') ? url.slice(0, -1) : `${url}`
 }
 
 export function save(filename: string, content: string | Blob, mimeType: string) {
-  const blob = typeof content === 'string' ? new Blob([content], { type: mimeType }) : content
+  const prefix = typeof content === 'string' && mimeType.startsWith('text/csv')
+    ? UTF8_BYTE_ORDER_MARK
+    : ''
+  const blob = typeof content === 'string' ? new Blob([prefix, content], { type: mimeType }) : content
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url

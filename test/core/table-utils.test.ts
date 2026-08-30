@@ -3,6 +3,7 @@ import {
   escapeMarkdownTableCell,
   extractTableDataFromElement,
   getTableCsvSeparator,
+  save,
   tableDataToCSV,
   tableDataToMarkdown,
   tableDataToTSV,
@@ -93,5 +94,17 @@ describe('csv separators', () => {
     expect(getTableCsvSeparator({ table: { csvSeparator: 'auto' } })).toBe('auto')
     expect(getTableCsvSeparator({ table: { csvSeparator: 'invalid' } })).toBe(',')
     expect(getTableCsvSeparator(false)).toBe(',')
+  })
+})
+
+describe('csv downloads', () => {
+  it('prefixes downloaded CSV text with a UTF-8 byte order mark', async () => {
+    const createObjectURL = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:table')
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
+
+    save('table.csv', '名称\n示例', 'text/csv')
+
+    const blob = createObjectURL.mock.calls[0]?.[0] as Blob
+    expect(await blob.text()).toBe('\uFEFF名称\n示例')
   })
 })

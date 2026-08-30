@@ -112,6 +112,8 @@ Enable the table download button. A string keeps the existing custom-label behav
 
 Set the delimiter used when copying or downloading CSV. In `auto` mode, comma-decimal locales use a semicolon and other locales use a comma. TSV and Markdown serialization are unchanged.
 
+Downloaded CSV files include a UTF-8 signature so Excel opens non-ASCII text correctly. Copied CSV text remains unchanged.
+
 **Only download button enabled:**
 
 ::stream-markdown{example="config-controls.tableExample" controls-example="config-controls.tableOnlyDownload"}
