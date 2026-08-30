@@ -19,9 +19,9 @@ A markdown renderer specially optimized for streaming scenarios, inspired by [st
 ## Features
 
 - **Streaming-optimized rendering** - Incomplete node completion with loading states for images, tables, and code blocks to prevent visual jitter
-- **Optional syntax highlighting** - Add Shiki through `@stream-markdown/code` without coupling its types to the main package
-- **Optional diagram rendering** - Combine independent Mermaid and Beautiful Mermaid extensions with deterministic fallback
-- **Optional LaTeX rendering** - Add comark math parsing and KaTeX rendering through `@stream-markdown/math`
+- **Syntax highlighting** - Highlight code with Shiki through the independently installable `@stream-markdown/code` extension
+- **Diagram rendering** - Combine Mermaid and Beautiful Mermaid renderers with deterministic fallback
+- **Mathematical typesetting** - Parse mathematical notation with comark and render it with KaTeX
 - **Native HTML and custom tags** - Render safe HTML and map custom tags directly to Vue components
 - **Interactive controls** - Copy and download buttons for images, tables, and code blocks
 - **Fully customizable** - Replace any comark/native tag or UI component with your own Vue components
