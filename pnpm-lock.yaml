@@ -197,7 +197,7 @@ overrides:
   vue: ^3.5.42
 
 patchedDependencies:
-  comark-docs@0.0.1: 9ef7e05a88c9683e91f25e7b6972b8f06a7644946defde121d9b03a66d053e33
+  comark-docs@0.0.1: 816483fbd351359690546bd0ade5013bcf553a8ddad81efa3776235ce8790fc7
   comark@0.6.2: 113b0ea4ae50dd45053b16038f1f582232bd56ab9c601d980fd07abfef1ca745
 
 importers:
@@ -374,7 +374,7 @@ importers:
         version: 14.4.0(vue@3.5.42(typescript@6.0.3))
       comark-docs:
         specifier: github:comarkdown/comark-docs#fad7fbfd4e05cfaabc6ace410bee4c068665f37f
-        version: https://codeload.github.com/comarkdown/comark-docs/tar.gz/fad7fbfd4e05cfaabc6ace410bee4c068665f37f(patch_hash=9ef7e05a88c9683e91f25e7b6972b8f06a7644946defde121d9b03a66d053e33)(6b173de15bc84e925263c74e1c5d17ef)
+        version: https://codeload.github.com/comarkdown/comark-docs/tar.gz/fad7fbfd4e05cfaabc6ace410bee4c068665f37f(patch_hash=816483fbd351359690546bd0ade5013bcf553a8ddad81efa3776235ce8790fc7)(6b173de15bc84e925263c74e1c5d17ef)
       katex:
         specifier: ^0.16.38
         version: 0.16.47
@@ -14547,7 +14547,7 @@ snapshots:
       - shiki
       - uploadthing
 
-  comark-docs@https://codeload.github.com/comarkdown/comark-docs/tar.gz/fad7fbfd4e05cfaabc6ace410bee4c068665f37f(patch_hash=9ef7e05a88c9683e91f25e7b6972b8f06a7644946defde121d9b03a66d053e33)(6b173de15bc84e925263c74e1c5d17ef):
+  comark-docs@https://codeload.github.com/comarkdown/comark-docs/tar.gz/fad7fbfd4e05cfaabc6ace410bee4c068665f37f(patch_hash=816483fbd351359690546bd0ade5013bcf553a8ddad81efa3776235ce8790fc7)(6b173de15bc84e925263c74e1c5d17ef):
     dependencies:
       '@ai-sdk/gateway': 4.0.67(zod@4.4.3)
       '@ai-sdk/vue': 4.0.83(vue@3.5.42(typescript@6.0.3))(zod@4.4.3)

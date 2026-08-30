@@ -1,6 +1,14 @@
 import { version } from '../../packages/vue/package.json'
 
 export default defineAppConfig({
+  github: {
+    owner: 'jinghaihan',
+    name: 'vue-stream-markdown',
+    url: 'https://github.com/jinghaihan/vue-stream-markdown',
+    branch: 'main',
+    contentDir: 'docs/content',
+  },
+
   seo: {
     siteName: 'Vue Stream Markdown',
   },

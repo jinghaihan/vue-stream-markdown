@@ -27,8 +27,40 @@ export default defineNuxtConfig({
     description: 'A Vue renderer for complete and streaming Markdown.',
   },
 
+  runtimeConfig: {
+    docs: {
+      github: {
+        owner: 'jinghaihan',
+        repo: 'vue-stream-markdown',
+        branch: 'main',
+      },
+    },
+  },
+
+  nitro: {
+    routeRules: {
+      '/api/content/**': {
+        headers: {
+          'content-type': 'application/json; charset=utf-8',
+        },
+      },
+    },
+    prerender: {
+      concurrency: 2,
+      crawlLinks: true,
+      routes: [
+        '/',
+        '/guide',
+        '/logos',
+        '/api/content/navigation',
+        '/api/content/search-sections',
+      ],
+    },
+  },
+
   comarkDocs: {
     contentDir: 'docs/content',
+    isr: false,
   },
 
   llms: {

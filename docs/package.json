@@ -7,7 +7,7 @@
     "predev": "pnpm -w build",
     "dev": "nuxt dev",
     "prebuild": "pnpm -w build",
-    "build": "nuxt build",
+    "build": "nuxt generate",
     "preview": "nuxt preview"
   },
   "dependencies": {

@@ -50,3 +50,6 @@ index 9ac948d4b37ae5b9336a456b896f058befaae78e..53ae3ec831ecb950f6af375fdde0e41f
      ],
      cache: opts.cache,
      basePath: opts.basePath,
+@@ -138 +132 @@ function contentSource(ref: string, opts: { remote?: boolean } = {}) {
+-  if (import.meta.dev) {
++  if (import.meta.dev || import.meta.prerender) {
