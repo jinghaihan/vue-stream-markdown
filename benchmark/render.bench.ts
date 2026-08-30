@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 
 import type { Root } from 'react-dom/client'
+import { code as createCodeExtension } from '@stream-markdown/code'
 import { code } from '@streamdown/code'
 import { createElement } from 'react'
 import { flushSync } from 'react-dom'
@@ -61,6 +62,7 @@ const scenarios = [
 ] as const
 
 const streamdownCodePlugins = { code }
+const vueExtensions = { code: createCodeExtension() }
 
 const benchmarkOptions = {
   time: 1000,
@@ -101,6 +103,7 @@ function renderVue(host: HTMLElement, content: string): void {
     content,
     controls: false,
     enableAnimate: false,
+    extensions: vueExtensions,
     isDark: false,
     mode: 'streaming',
     previewers: false,

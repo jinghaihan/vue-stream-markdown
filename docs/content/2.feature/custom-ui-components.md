@@ -25,13 +25,13 @@ const props = defineProps<UIButtonProps>()
 
 ```vue
 <script setup lang="ts">
-import myButton from './button.vue'
+import MyButton from './button.vue'
 </script>
 
 <template>
   <Markdown
     :content="content"
-    :ui-components="{ Button: myButton }"
+    :ui-components="{ Button: MyButton }"
   />
 </template>
 ```

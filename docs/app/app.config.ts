@@ -10,6 +10,14 @@ export default defineAppConfig({
       primary: 'emerald',
       neutral: 'neutral',
     },
+    prose: {
+      pre: {
+        slots: {
+          base: 'text-sm/6',
+          filename: 'text-sm/6',
+        },
+      },
+    },
   },
 
   header: {

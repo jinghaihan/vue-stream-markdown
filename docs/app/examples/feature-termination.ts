@@ -3,8 +3,8 @@ const completeFootnote = `> "Knowledge is power—but digital knowledge is accel
 
 [^1]: Definition of the quote`
 
-const incompleteLink = `[Click here to visit`
-const completeLink = `[Click here](https://example.com)`
+const incompleteLink = `[Read the complete guide`
+const completeLink = `[Read the complete guide](https://example.com)`
 
 const incompleteImage = `![Placeholder](https://placehold.co/600x40`
 const completeImage = `![Placeholder](https://placehold.co/600x400)`

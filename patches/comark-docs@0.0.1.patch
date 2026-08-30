@@ -1,6 +1,8 @@
+diff --git a/server/utils/content.ts b/server/utils/content.ts
+index 9ac948d4b37ae5b9336a456b896f058befaae78e..53ae3ec831ecb950f6af375fdde0e41f9bff1d08 100644
 --- a/server/utils/content.ts
 +++ b/server/utils/content.ts
-@@ -1,15 +1,16 @@
+@@ -1,15 +1,14 @@
  import { defineContentPlugin, type ComarkContent, type CacheOptions, comarkContent  } from 'comark-content';
  import fs from 'comark-content/sources/fs'
  import github from 'comark-content/sources/github'
@@ -11,20 +13,40 @@
  import toc from 'comark/plugins/toc'
  import mermaid from 'comark/plugins/mermaid'
  import yaml from 'comark-content/plugins/yaml'
- import tracingOtel from 'comark-content/plugins/tracing/otel'
+-import tracingOtel from 'comark-content/plugins/tracing/otel'
+-import { contentTracer } from './tracer.ts'
+-import { geistTheme } from '../../utils/geist-theme.ts'
 +import githubDark from '@shikijs/themes/github-dark'
 +import githubLight from '@shikijs/themes/github-light'
- import { contentTracer } from './tracer.ts'
--import { geistTheme } from '../../utils/geist-theme.ts'
  
  // Rebuilt only when the head advances (see `getProdContent`). Holds the *promise*, not the instance: the
  // assignment lands after the await, so two requests on a cold instance would each build a CMS.
-@@ -18,7 +19,7 @@
+@@ -18,7 +17,7 @@ let content: Promise<ComarkContent> | undefined
  // Bump CONTENT_PARSER_VERSION in `cache.ts` when these plugins or their options change cached output.
  const comarkPlugins = [
-   mermaid({ theme: 'zinc-light', themeDark: 'zinc-dark' }),
+-  mermaid({ theme: 'zinc-light', themeDark: 'zinc-dark' }),
 -  rangi({ theme: geistTheme }),
++  mermaid({ theme: 'github-light', themeDark: 'github-dark' }),
 +  shiki({ registerDefaultThemes: false, themes: { light: githubLight, dark: githubDark } }),
    toc({ depth: 3 }),
    emoji(),
    security({
+@@ -43,10 +42,6 @@ export async function createSourceContent(
+   ref: string,
+   opts: { remote?: boolean; cache?: CacheOptions; basePath?: string; watch?: boolean } = {}
+ ) {
+-  // A no-op unless the consumer shadows it from their own `server/utils/`. Re-typed as the layer's own
+-  // options: a consumer's hook is declared against the wide `ContentOptions`, and letting that widen the
+-  // argument would erase the source and plugin types `comarkContent` infers from the literal.
+-  const tracer = contentTracer()
+   const instance = comarkContent({
+     markdown: {
+       plugins: comarkPlugins,
+@@ -57,7 +52,6 @@ export async function createSourceContent(
+     plugins: [
+       yaml(), // enable .navigation.yml to be detected
+       searchSectionsPlugin,
+-      tracer && tracingOtel({ tracer }),
+     ],
+     cache: opts.cache,
+     basePath: opts.basePath,

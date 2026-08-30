@@ -9,12 +9,12 @@ Use the `components` prop to replace a native tag or render a custom HTML-like t
 
 ```vue
 <script setup lang="ts">
-import customHeading from './custom-heading.vue'
-import githubCard from './github-card.vue'
+import CustomHeading from './custom-heading.vue'
+import GitHubCard from './github-card.vue'
 
 const components = {
-  github: githubCard,
-  h2: customHeading,
+  github: GitHubCard,
+  h2: CustomHeading,
 }
 </script>
 

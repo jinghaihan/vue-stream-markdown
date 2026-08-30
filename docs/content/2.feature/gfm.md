@@ -54,11 +54,11 @@ vue-stream-markdown enhances tables with:
 Tables support inline formatting:
 
 ```markdown
-| Name            | Description                    | Status     |
-| --------------- | ------------------------------ | ---------- |
-| **Streamdown**  | A `react-markdown` replacement | ✅ Active  |
-| _Feature X_     | Under development              | 🚧 WIP     |
-| ~~Old Package~~ | Deprecated                     | ❌ Removed |
+| Feature          | Description                         | Status     |
+| ---------------- | ----------------------------------- | ---------- |
+| **Code blocks**  | Optional `Shiki` highlighting       | ✅ Ready   |
+| _Custom tags_    | Map tags to Vue components          | ✅ Ready   |
+| ~~Legacy parser~~ | Replaced by incremental parsing     | ❌ Removed |
 ```
 
 ::stream-markdown{example="feature-gfm.complexTable"}
@@ -146,9 +146,11 @@ Result:
 URLs and email addresses are automatically converted to links:
 
 ```markdown
-Visit https://streamdown.ai for more info.
+Visit https://vue-stream-markdown.netlify.app for the documentation.
 
-Contact us at hello@streamdown.ai
+Browse https://github.com/jinghaihan/vue-stream-markdown for source and examples.
+
+Contact jhh19980114@gmail.com
 ```
 
 ::stream-markdown{example="feature-gfm.autoLink"}

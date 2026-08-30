@@ -24,6 +24,7 @@
     "comark": "catalog:parser",
     "vitest": "catalog:test",
     "@types/node": "catalog:types",
+    "@stream-markdown/code": "workspace:*",
     "vue-stream-markdown": "workspace:*"
   }
 }

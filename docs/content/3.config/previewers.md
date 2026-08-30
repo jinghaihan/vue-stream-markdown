@@ -150,11 +150,11 @@ const previewers: PreviewerConfig = {
 <script setup lang="ts">
 import type { PreviewerConfig } from 'vue-stream-markdown'
 import { Markdown } from 'vue-stream-markdown'
-import customHtmlPreviewer from './custom-html-previewer.vue'
+import CustomHtmlPreviewer from './custom-html-previewer.vue'
 
 const previewers: PreviewerConfig = {
   components: {
-    html: customHtmlPreviewer, // Custom component
+    html: CustomHtmlPreviewer, // Custom component
   },
 }
 </script>
@@ -214,11 +214,11 @@ const previewers: PreviewerConfig = {
 <script setup lang="ts">
 import type { PreviewerConfig } from 'vue-stream-markdown'
 import { Markdown } from 'vue-stream-markdown'
-import customMermaidPreviewer from './custom-mermaid-previewer.vue'
+import CustomMermaidPreviewer from './custom-mermaid-previewer.vue'
 
 const previewers: PreviewerConfig = {
   components: {
-    mermaid: customMermaidPreviewer, // Custom component
+    mermaid: CustomMermaidPreviewer, // Custom component
   },
 }
 </script>
@@ -255,11 +255,11 @@ const props = defineProps<CodeBlockProps>()
 <script setup lang="ts">
 import type { PreviewerConfig } from 'vue-stream-markdown'
 import { Markdown } from 'vue-stream-markdown'
-import javascriptPreviewer from './javascript-previewer.vue'
+import JavaScriptPreviewer from './javascript-previewer.vue'
 
 const previewers: PreviewerConfig = {
   components: {
-    javascript: javascriptPreviewer,
+    javascript: JavaScriptPreviewer,
   },
 }
 </script>
