@@ -117,7 +117,7 @@ export default defineNuxtConfig({
 
 ## Next steps
 
-- [Optional Extensions](/config/external-options)
+- [Extensions](/config/extensions)
 - [Parser](/config/parser)
 - [Display Options](/config/display-options)
 - [Controls](/config/controls)

@@ -1,13 +1,13 @@
 ---
-title: Optional Extensions
+title: Extensions
 navigation:
   icon: i-lucide-plug
-description: Add Shiki, KaTeX, Mermaid, and Beautiful Mermaid without coupling their dependencies or types to the main package.
+description: Add syntax highlighting, mathematics, and diagrams only when your application needs them.
 ---
 
 `vue-stream-markdown` works without any rich-renderer package. Code remains readable source, math stays ordinary Markdown text, and Mermaid fences remain code blocks until the corresponding extension is supplied.
 
-Extension factories receive provider-specific options and return stable runtime instances for the `extensions` prop.
+Extension factories receive their renderer options and return instances for the `extensions` prop.
 
 ## Complete example
 
@@ -44,11 +44,7 @@ const extensions = {
 </template>
 ```
 
-Create these runtimes once rather than recreating them during every Vue render.
-
-## Shared Extension Lifecycle
-
-Every extension implements both `preload()` and `dispose()`. Wrap a message list in `MarkdownProvider` to preload provider extensions once and dispose them when the provider unmounts:
+Create extension instances once. For a chat or message list, pass them through `MarkdownProvider` so every message can share the same configuration:
 
 ```vue
 <script setup lang="ts">
@@ -70,8 +66,6 @@ An instance can replace one provider extension or disable it with `false`:
 ```vue
 <Markdown :extensions="{ code: false }" />
 ```
-
-Provider-owned extensions are never disposed when an individual Markdown instance unmounts. An instance owns only the extensions it adds or replaces.
 
 ## Code
 
@@ -96,10 +90,6 @@ const options: CodeExtensionOptions = {
 
 const codeExtension = code(options)
 ```
-
-The package exports its Shiki-specific option types. The main package only sees normalized token data, so applications that do not install this extension can still typecheck.
-
-The shared Shiki highlighter is retained by a module-level reference across Markdown component remounts and cannot be garbage-collected until that reference is released. The code extension's lifecycle `dispose()` is intentionally a no-op because other providers or instances may still share that highlighter. Call `disposeShikiHighlighter()` from `@stream-markdown/code` manually only when syntax highlighting is no longer needed, such as during full-app or test cleanup.
 
 ## Math
 
@@ -131,7 +121,7 @@ For local package loading, import KaTeX CSS in your application:
 import 'katex/dist/katex.min.css'
 ```
 
-KaTeX is externalized from the extension bundle. Its parser plugin is also absent from the base parser until `math()` is supplied.
+The extension adds both math parsing and KaTeX rendering. Without it, math-like source remains ordinary text.
 
 ## Mermaid
 
@@ -155,8 +145,6 @@ const options: MermaidExtensionOptions = {
 
 const mermaidExtension = mermaid(options)
 ```
-
-The extension installs the Mermaid runtime as its own dependency while keeping it out of the main package.
 
 ## Beautiful Mermaid
 
@@ -224,7 +212,3 @@ const extensions = {
 ```
 
 You can also set `baseUrl` and provider switches such as `shiki`, `katex`, `mermaid`, or `beautifulMermaid`. Local dependencies remain the default when no CDN URL is configured.
-
-## Type isolation
-
-`vue-stream-markdown` declares only minimal structural extension contracts. Shiki, KaTeX, Mermaid, and Beautiful Mermaid types are exported from their corresponding extension packages. Installing only the main package therefore does not introduce unresolved optional-provider types during application typechecking.

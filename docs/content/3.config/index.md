@@ -23,7 +23,7 @@ description: Configure parsing, rendering, controls, security, and integrations.
 | `animationDuration` | `number \| string`                            | `500`             | Set animation duration                                                      |
 | `caret`             | `'block' \| 'circle'`                         | `undefined`       | Show a streaming caret                                                      |
 
-The existing code, Mermaid, math, image, table, controls, previewer, security, theme, locale, and CDN options remain available.
+Code, math, and diagram renderers are configured through `extensions`. Display, control, preview, security, theme, and locale options remain on `Markdown` or `MarkdownProvider`.
 
 ## Detailed configuration
 
@@ -33,6 +33,6 @@ The existing code, Mermaid, math, image, table, controls, previewer, security, t
 - [Controls](/config/controls)
 - [Previewers](/config/previewers)
 - [Security](/config/security)
-- [External Options](/config/external-options)
+- [Extensions](/config/extensions)
 - [Internationalization](/config/i18n)
 - [Custom UI Components](/feature/custom-ui-components)

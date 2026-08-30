@@ -14,11 +14,11 @@ const alignmentTable = `
 `
 
 const complexTable = `
-| Name | Description | Status |
-|------|-------------|--------|
-| **Streamdown** | A \`react-markdown\` replacement | ✅ Active |
-| *Feature X* | Under development | 🚧 WIP |
-| ~~Old Package~~ | Deprecated | ❌ Removed |
+| Feature | Description | Status |
+|---------|-------------|--------|
+| **Code blocks** | Optional \`Shiki\` highlighting | ✅ Ready |
+| *Custom tags* | Map tags to Vue components | ✅ Ready |
+| ~~Legacy parser~~ | Replaced by incremental parsing | ❌ Removed |
 `
 
 const taskList = `
@@ -55,13 +55,15 @@ const strikethrough = `
 `
 
 const autoLink = `
-Visit https://streamdown.ai for more info.
+Visit https://vue-stream-markdown.netlify.app for the documentation.
 
-Contact us at hello@streamdown.ai
+Browse https://github.com/jinghaihan/vue-stream-markdown for source and examples.
+
+Contact jhh19980114@gmail.com
 `
 
 const autoLink2 = `
-Check out github.com/vercel/streamdown
+Check out github.com/jinghaihan/vue-stream-markdown
 `
 
 export { alignmentTable, autoLink, autoLink2, complexTable, complexTaskList, nestedTaskList, strikethrough, table, taskList }

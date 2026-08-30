@@ -152,7 +152,7 @@ const options: MermaidExtensionOptions = {
 const mermaidExtension = mermaid(options)
 ```
 
-See [Optional Extensions](/config/external-options) for CDN loading, error components, and all factory options.
+See [Extensions](/config/extensions) for CDN loading, error components, and all factory options.
 
 ## Interactive controls
 

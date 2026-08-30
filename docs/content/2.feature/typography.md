@@ -186,6 +186,8 @@ Features:
 - Loading states
 - Alt text for accessibility
 
+See [Images](/feature/images) for preview, carousel, download, caption, and fallback options.
+
 ## Tables
 
 Tables are fully styled with borders and hover states:
