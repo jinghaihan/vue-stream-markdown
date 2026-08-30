@@ -2,50 +2,60 @@
 title: Introduction
 navigation:
   icon: i-lucide-book-open
-description: Learn about vue-stream-markdown, a Vue 3 component library designed for streaming Markdown rendering, especially optimized for AI model outputs.
+description: Render complete and streaming Markdown in Vue applications.
 ---
 
-**vue-stream-markdown** is a Vue 3 component library designed for streaming Markdown rendering, especially optimized for AI model outputs. This project is inspired by [streamdown](https://streamdown.ai/) and extends its capabilities with more aggressive optimizations for streaming scenarios.
+`vue-stream-markdown` is a Vue 3 renderer for Markdown that changes while it is being generated. It keeps incomplete responses readable, preserves stable content between updates, and adds interactive controls for rich output.
 
-## The Problem with Streaming Markdown
+## Why streaming needs a dedicated renderer
 
-When you stream Markdown content from AI models, new challenges emerge that traditional Markdown renderers weren't designed to handle:
+A normal Markdown renderer expects a finished document. Model output can stop after an opening marker, halfway through a link, or inside a code fence:
 
-- **Incomplete syntax** - Bold text that hasn't been closed yet: `**This is bol`
-- **Partial code blocks** - Code blocks missing their closing backticks
-- **Unterminated links** - Links without closing brackets: `[Click here`
-- **Progressive rendering** - Content that updates token-by-token
+```markdown
+The result is **still being generated
+```
 
-## How the rendering pipeline works
+Rendering that source literally exposes distracting syntax. Rebuilding the whole document for every token can also reset component state and make completed content flash.
 
-Vue Stream Markdown combines three focused layers:
+In streaming mode, the renderer completes supported unfinished syntax before parsing it. In static mode, it renders the original source exactly as supplied.
 
-- **Markmend completion** - Completes supported unterminated syntax only while content is streaming
-- **Comark parsing** - Reuses the stable source prefix and emits a compact `MarkdownDocument`
-- **Vue rendering** - Renders Comark tuples directly to stable VNodes and updates only changed output
+## What is included
 
-## Enhanced Streaming Optimizations
+- Markdown, GFM, footnotes, CJK-friendly emphasis, and safe native HTML
+- Stable Vue rendering for incrementally growing responses
+- Streaming caret and text-entry animations
+- Link safety, image previews, table controls, and custom UI components
+- Custom HTML-like tags mapped directly to Vue components
+- Optional Shiki, KaTeX, Mermaid, and Beautiful Mermaid extensions
 
-While this project is inspired by streamdown, it's not just a Vue version. It implements more **aggressive** optimizations for streaming scenarios:
+## Start rendering
 
-- **Links**
-  - **Streamdown**: Extract the text content and display it as plain text
-  - **This library**: Complete link syntax while disabling click interactions. Only show the clickable underline when the link is fully completed, preventing broken navigation
+Install the main package:
 
-- **Images**
-  - **Streamdown**: For images with incomplete URLs, remove them entirely
-  - **This library**: Complete the image syntax and add a loading state, providing better visual feedback during streaming
+```sh
+pnpm add vue-stream-markdown
+```
 
-- **Tables**
-  - **This library**: Proactively complete table syntax and provide a loading state, ensuring smooth rendering even when table structure is incomplete
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { Markdown } from 'vue-stream-markdown'
+import 'vue-stream-markdown/index.css'
+import 'vue-stream-markdown/theme.css'
 
-- **Inline Math**
-  - **Streamdown**: Doesn't handle inline KaTeX with single `$` as they're likely currency symbols
-  - **This library**: Attempts to complete inline math syntax, providing better support for mathematical expressions in streaming content
+const content = ref('# Hello\n\nThis response is **streaming**.')
+</script>
 
-- **Syntax Trimming**
-  - **This library**: For syntax characters like `` ` ``, `*`, `_` that often indicate the start of a syntax block, the library attempts to trim them when they appear at the end of content, reducing visual artifacts during streaming
+<template>
+  <Markdown :content="content" mode="streaming" />
+</template>
+```
 
-## Acknowledgments
+Switch to `mode="static"` when generation finishes if the final source should be rendered without completion.
 
-This project uses [Comark](https://github.com/comarkdown/comark) for incremental Markdown parsing and is inspired by [streamdown](https://streamdown.ai/) and [remend](https://github.com/vercel/streamdown/tree/main/packages/remend) for foundational streaming Markdown ideas.
+## Next steps
+
+- Follow [Usage](/guide/usage) to add optional rich renderers.
+- Read [Rendering Pipeline](/guide/rendering-pipeline) to understand streaming updates.
+- Explore [Features](/feature) for interactive output.
+- Use the [Playground](https://play-vue-stream-markdown.netlify.app/) to test real content.
