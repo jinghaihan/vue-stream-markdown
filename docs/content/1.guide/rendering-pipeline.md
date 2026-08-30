@@ -7,16 +7,14 @@ description: How completion, incremental parsing, and stable Vue rendering coope
 
 The rendering pipeline is designed around one rule: callers always provide the complete Markdown source they currently have.
 
-```text
-complete source
-    ↓
-streaming completion
-    ↓
-incremental Comark parsing
-    ↓
-stable Vue nodes
-    ↓
-optional rich renderers
+```mermaid
+flowchart LR
+    Source[Complete source] --> Mode{Rendering mode}
+    Mode -->|streaming| Completion[Markmend completion]
+    Mode -->|static| Parser[Incremental Comark parsing]
+    Completion --> Parser
+    Parser --> Vue[Stable Vue nodes]
+    Vue --> Rich[Rich renderers when configured]
 ```
 
 ## 1. Complete unfinished syntax
@@ -54,10 +52,10 @@ Native HTML and custom HTML-like tags use the same document representation as Ma
 
 ```vue
 <script setup lang="ts">
-import userCard from './user-card.vue'
+import UserCard from './user-card.vue'
 
 const components = {
-  'user-card': userCard,
+  'user-card': UserCard,
 }
 </script>
 

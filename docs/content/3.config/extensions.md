@@ -182,11 +182,11 @@ The renderer tries Beautiful Mermaid only for diagram types it supports, then fa
 Provider error components belong to their extension factory:
 
 ```ts
-import diagramError from './diagram-error.vue'
+import DiagramError from './diagram-error.vue'
 
 const extensions = {
-  mermaid: mermaid({ errorComponent: diagramError }),
-  math: math({ errorComponent: diagramError }),
+  mermaid: mermaid({ errorComponent: DiagramError }),
+  math: math({ errorComponent: DiagramError }),
 }
 ```
 

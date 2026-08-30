@@ -120,12 +120,12 @@ In 1.x, `nodeRenderers` received mdast-oriented nodes. In 2.0, map the emitted t
 
 ```vue
 <script setup lang="ts">
-import customHeading from './custom-heading.vue'
-import githubCard from './github-card.vue'
+import CustomHeading from './custom-heading.vue'
+import GitHubCard from './github-card.vue'
 
 const components = {
-  h2: customHeading,
-  github: githubCard,
+  h2: CustomHeading,
+  github: GitHubCard,
 }
 </script>
 
@@ -139,7 +139,7 @@ The same mapping handles native Markdown elements and custom HTML-like tags.
 If you previously passed built-in UI replacements through `components`, rename that prop:
 
 ```vue
-<Markdown :ui-components="{ Button: customButton }" />
+<Markdown :ui-components="{ Button: CustomButton }" />
 ```
 
 ## Share configuration across messages

@@ -9,7 +9,7 @@ HTML support is built into `vue-stream-markdown`; there is no HTML package or pl
 
 ```vue
 <script setup lang="ts">
-import githubCard from './github-card.vue'
+import GitHubCard from './github-card.vue'
 
 const content = `
 <section class="profile">
@@ -18,7 +18,7 @@ const content = `
 `
 
 const components = {
-  github: githubCard,
+  github: GitHubCard,
 }
 </script>
 

@@ -88,9 +88,9 @@ Comark parses native HTML and custom HTML-like tags into the same compact docume
 
 ```vue
 <script setup lang="ts">
-import githubCard from './github-card.vue'
+import GitHubCard from './github-card.vue'
 
-const components = { github: githubCard }
+const components = { github: GitHubCard }
 const content = '<github name="vuejs/core" />'
 </script>
 
