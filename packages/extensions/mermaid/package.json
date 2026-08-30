@@ -29,20 +29,15 @@
     "build": "tsdown",
     "prepublishOnly": "pnpm build"
   },
-  "peerDependencies": {
-    "mermaid": "^11.13.0"
-  },
-  "peerDependenciesMeta": {
-    "mermaid": {
-      "optional": true
-    }
-  },
   "dependencies": {
-    "@antfu/utils": "catalog:inlined",
-    "@stream-markdown/core": "workspace:*"
+    "@stream-markdown/core": "workspace:*",
+    "mermaid": "^11.13.0"
   },
   "devDependencies": {
     "tsdown": "catalog:build",
-    "mermaid": "^11.13.0"
+    "@antfu/utils": "catalog:inlined"
+  },
+  "inlinedDependencies": {
+    "@antfu/utils": "9.3.0"
   }
 }

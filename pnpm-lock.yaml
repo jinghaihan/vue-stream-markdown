@@ -434,16 +434,16 @@ importers:
 
   packages/extensions/mermaid:
     dependencies:
-      '@antfu/utils':
-        specifier: catalog:inlined
-        version: 9.3.0
       '@stream-markdown/core':
         specifier: workspace:*
         version: link:../../core
-    devDependencies:
       mermaid:
         specifier: ^11.13.0
         version: 11.16.0
+    devDependencies:
+      '@antfu/utils':
+        specifier: catalog:inlined
+        version: 9.3.0
       tsdown:
         specifier: catalog:build
         version: 0.22.14(@tsdown/css@0.22.14)(@typescript/native-preview@7.0.0-dev.20260707.2)(@volar/typescript@2.4.28(typescript@6.0.3))(tsx@4.23.12)(typescript@6.0.3)(vue-tsc@3.3.11(typescript@6.0.3))

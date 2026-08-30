@@ -7,6 +7,7 @@ export default defineConfig({
     tsgo: true,
   },
   deps: {
+    alwaysBundle: ['@antfu/utils'],
     onlyBundle: false,
     neverBundle: [
       'mermaid',

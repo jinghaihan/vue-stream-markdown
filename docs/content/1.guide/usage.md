@@ -22,8 +22,8 @@ pnpm add @stream-markdown/code
 # KaTeX parsing and rendering
 pnpm add @stream-markdown/math
 
-# Standard Mermaid (Mermaid remains an explicit peer dependency)
-pnpm add @stream-markdown/mermaid mermaid
+# Standard Mermaid
+pnpm add @stream-markdown/mermaid
 
 # Beautiful Mermaid
 pnpm add @stream-markdown/beautiful-mermaid

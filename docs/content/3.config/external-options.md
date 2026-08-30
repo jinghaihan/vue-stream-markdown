@@ -109,7 +109,7 @@ KaTeX is externalized from the extension bundle. Its parser plugin is also absen
 The standard Mermaid renderer supports every diagram type supported by your Mermaid version:
 
 ```sh
-pnpm add @stream-markdown/mermaid mermaid
+pnpm add @stream-markdown/mermaid
 ```
 
 ```ts
@@ -127,7 +127,7 @@ const options: MermaidExtensionOptions = {
 const mermaidExtension = mermaid(options)
 ```
 
-`mermaid` remains an explicit peer dependency of `@stream-markdown/mermaid` and is not bundled into the extension output.
+The extension installs the Mermaid runtime as its own dependency while keeping it out of the main package.
 
 ## Beautiful Mermaid
 

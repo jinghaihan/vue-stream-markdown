@@ -1,7 +1,7 @@
 import { stripVersionRangePrefix } from '@stream-markdown/core'
-import { devDependencies } from '../package.json'
+import { dependencies } from '../package.json'
 
-export const MERMAID_VERSION = stripVersionRangePrefix(devDependencies.mermaid)
+export const MERMAID_VERSION = stripVersionRangePrefix(dependencies.mermaid)
 
 export const DEFAULT_MERMAID_THEME = [
   'neutral',

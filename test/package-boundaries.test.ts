@@ -3,6 +3,16 @@ import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 
 const vuePackageDir = fileURLToPath(new URL('../packages/vue/', import.meta.url))
+const publishedPackageDirs = [
+  '../packages/core/',
+  '../packages/extensions/beautiful-mermaid/',
+  '../packages/extensions/code/',
+  '../packages/extensions/math/',
+  '../packages/extensions/mermaid/',
+  '../packages/markmend/core/',
+  '../packages/markmend/parser/',
+  '../packages/vue/',
+].map(path => fileURLToPath(new URL(path, import.meta.url)))
 const optionalDependencies = [
   '@stream-markdown/beautiful-mermaid',
   '@stream-markdown/code',
@@ -34,5 +44,17 @@ describe('main package boundaries', () => {
 
     for (const dependency of optionalDependencies)
       expect(declarations).not.toContain(`'${dependency}'`)
+  })
+})
+
+describe('published package boundaries', () => {
+  it('does not expose inlined utilities as runtime dependencies', async () => {
+    for (const packageDir of publishedPackageDirs) {
+      const manifest = JSON.parse(
+        await readFile(`${packageDir}package.json`, 'utf8'),
+      ) as { dependencies?: Record<string, string> }
+
+      expect(manifest.dependencies ?? {}).not.toHaveProperty('@antfu/utils')
+    }
   })
 })

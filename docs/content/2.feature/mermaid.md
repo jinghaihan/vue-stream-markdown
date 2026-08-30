@@ -12,7 +12,7 @@ Mermaid fences remain ordinary code blocks until a diagram extension is supplied
 Standard Mermaid supports all diagram types provided by the installed Mermaid version:
 
 ```sh
-pnpm add @stream-markdown/mermaid mermaid
+pnpm add @stream-markdown/mermaid
 ```
 
 ```vue
@@ -166,7 +166,7 @@ During streaming, incomplete Mermaid fences remain readable and preview renderin
 
 - Confirm the fence language is `mermaid`.
 - Verify the corresponding extension instance is included in `extensions`.
-- Install the `mermaid` peer dependency when using `@stream-markdown/mermaid`.
+- Installing `@stream-markdown/mermaid` also installs its Mermaid runtime.
 - Test syntax in the [Mermaid Live Editor](https://mermaid.live/).
 - Use both diagram extensions when you want Beautiful Mermaid styling plus full syntax coverage.
 
