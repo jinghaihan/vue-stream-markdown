@@ -38,7 +38,7 @@ Tables, task lists, autolinks, and strikethrough work without additional configu
 | Autolinks | Ready | Link safety checks |
 | Strikethrough | Ready | CJK-friendly |
 
-Visit https://github.com/jinghaihan/vue-stream-markdown or contact hello@example.com.
+Visit [Vue Stream Markdown](https://github.com/jinghaihan/vue-stream-markdown) or contact jhh19980114@gmail.com.
 
 ---
 
