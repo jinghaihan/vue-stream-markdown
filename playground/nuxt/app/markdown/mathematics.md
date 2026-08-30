@@ -1,10 +1,10 @@
 # Mathematics
 
-> Render beautiful LaTeX equations with KaTeX support in Streamdown.
+> Render LaTeX equations with the optional KaTeX extension.
 
 ## Syntax
 
-Streamdown uses double dollar signs (`$$`) to delimit mathematical expressions. Unlike traditional LaTeX, single dollar signs (`$`) are **not** used to avoid conflicts with currency symbols in regular text.
+Double dollar signs (`$$`) delimit mathematical expressions. Single dollar signs (`$`) remain regular text to avoid conflicts with currency values.
 
 ### Inline Math
 

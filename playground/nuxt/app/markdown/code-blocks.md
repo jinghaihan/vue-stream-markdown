@@ -92,7 +92,7 @@ Code blocks work seamlessly with streaming content:
 
 ### Incomplete Code Blocks
 
-When a code block is streaming in, Streamdown handles the incomplete state gracefully:
+When a code block is streaming in, the renderer keeps the incomplete state readable:
 
 ```javascript
 function example() {
