@@ -24,8 +24,9 @@ index 9ac948d4b37ae5b9336a456b896f058befaae78e..53ae3ec831ecb950f6af375fdde0e41f
 @@ -18,7 +17,7 @@ let content: Promise<ComarkContent> | undefined
  // Bump CONTENT_PARSER_VERSION in `cache.ts` when these plugins or their options change cached output.
  const comarkPlugins = [
-   mermaid({ theme: 'zinc-light', themeDark: 'zinc-dark' }),
+-  mermaid({ theme: 'zinc-light', themeDark: 'zinc-dark' }),
 -  rangi({ theme: geistTheme }),
++  mermaid({ theme: 'github-light', themeDark: 'github-dark' }),
 +  shiki({ registerDefaultThemes: false, themes: { light: githubLight, dark: githubDark } }),
    toc({ depth: 3 }),
    emoji(),
