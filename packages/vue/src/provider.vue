@@ -1,18 +1,25 @@
 <script setup lang="ts">
 import type { ExtensionRuntime } from '@stream-markdown/core'
-import type { MarkdownProviderProps } from './types'
-import { computed, onBeforeUnmount, onMounted, toRefs } from 'vue'
+import type { PropType } from 'vue'
+import type { Extensions, MarkdownProviderProps } from './types'
+import { computed, onBeforeUnmount, onMounted, toRef } from 'vue'
 import {
   useDarkDetector,
   useTailwindV3Theme,
 } from './composables'
 import { provideMarkdownProvider } from './composables/use-provider'
 
-const props = withDefaults(defineProps<MarkdownProviderProps>(), {
-  isDark: undefined,
+const props = defineProps({
+  extensions: Object as PropType<Extensions>,
+  isDark: {
+    type: Boolean,
+    default: undefined,
+  },
+  themeElement: Function as PropType<MarkdownProviderProps['themeElement']>,
 })
 
-const { extensions, isDark: darkProp } = toRefs(props)
+const extensions = toRef(props, 'extensions')
+const darkProp = toRef(props, 'isDark')
 const { cssVariables, stop: stopTailwindV3ThemeObserver } = useTailwindV3Theme({
   element: props.themeElement,
 })
