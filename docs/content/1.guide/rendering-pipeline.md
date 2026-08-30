@@ -8,7 +8,7 @@ description: How completion, incremental parsing, and stable Vue rendering coope
 The rendering pipeline is designed around one rule: callers always provide the complete Markdown source they currently have.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Source[Complete source] --> Mode{Rendering mode}
     Mode -->|streaming| Completion[Markmend completion]
     Mode -->|static| Parser[Incremental Comark parsing]

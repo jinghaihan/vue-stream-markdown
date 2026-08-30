@@ -46,14 +46,14 @@ The repository benchmarks the equivalent Vue Stream Markdown and Streamdown pipe
 
 `pnpm bench:parser` measures streaming completion plus Markdown parsing. Vue Stream Markdown uses Markmend with its long-lived Comark parser. The Streamdown path uses Remend, Streamdown block splitting, and Remark with GFM.
 
-| Scenario                              | Vue Stream Markdown |  Streamdown | Relative throughput |
-| ------------------------------------- | ------------------: | ----------: | ------------------: |
-| Cold parse, short document            |         2,271 ops/s | 1,195 ops/s |               1.90× |
-| Cold parse, medium document           |         1,075 ops/s |   113 ops/s |               9.49× |
-| Cold parse, large document            |           357 ops/s |  28.6 ops/s |              12.49× |
-| Growing paragraph, 19 updates         |           432 ops/s |   115 ops/s |               3.76× |
-| Large stable prefix, 16 updates       |           108 ops/s |  17.3 ops/s |               6.27× |
-| Appending complete blocks, 16 updates |           955 ops/s |   190 ops/s |               5.04× |
+| Scenario                              | Vue Stream Markdown |  Streamdown | Faster |
+| ------------------------------------- | ------------------: | ----------: | -----: |
+| Cold parse, short document            |         2,271 ops/s | 1,195 ops/s |  1.90× |
+| Cold parse, medium document           |         1,075 ops/s |   113 ops/s |  9.49× |
+| Cold parse, large document            |           357 ops/s |  28.6 ops/s | 12.49× |
+| Growing paragraph, 19 updates         |           432 ops/s |   115 ops/s |  3.76× |
+| Large stable prefix, 16 updates       |           108 ops/s |  17.3 ops/s |  6.27× |
+| Appending complete blocks, 16 updates |           955 ops/s |   190 ops/s |  5.04× |
 
 The largest parsing gain appears when a document has substantial stable content. Comark can reuse that prefix while the response continues growing at the end.
 
@@ -61,12 +61,12 @@ The largest parsing gain appears when a document has substantial stable content.
 
 `pnpm bench:render` measures an initial render and a session containing 20 streaming appends. Controls and animations are disabled for both renderers, and both receive their Shiki code extension when the input contains a code block.
 
-| Scenario                                | Vue Stream Markdown | Streamdown | Relative throughput |
-| --------------------------------------- | ------------------: | ---------: | ------------------: |
-| Prose, initial render                   |           488 ops/s |  271 ops/s |               1.80× |
-| Prose, 20 streaming appends             |          34.6 ops/s | 25.1 ops/s |               1.38× |
-| Stable code block, initial render       |           247 ops/s |  237 ops/s |               1.04× |
-| Stable code block, 20 streaming appends |          32.1 ops/s | 20.6 ops/s |               1.56× |
+| Scenario                                | Vue Stream Markdown | Streamdown | Faster |
+| --------------------------------------- | ------------------: | ---------: | -----: |
+| Prose, initial render                   |           488 ops/s |  271 ops/s |  1.80× |
+| Prose, 20 streaming appends             |          34.6 ops/s | 25.1 ops/s |  1.38× |
+| Stable code block, initial render       |           247 ops/s |  237 ops/s |  1.04× |
+| Stable code block, 20 streaming appends |          32.1 ops/s | 20.6 ops/s |  1.56× |
 
 The code-block cold render is effectively the same order of magnitude. The more meaningful advantage appears during repeated streaming updates, where completed blocks and highlighted tokens remain stable.
 
