@@ -16,6 +16,21 @@ function createTokens(htmlStyle?: Record<string, string>) {
 }
 
 describe('code content', () => {
+  it('starts line numbers at the requested line', () => {
+    const wrapper = mount(CodeContent, {
+      props: {
+        code: 'first\nsecond',
+        lang: 'typescript',
+        languageClass: 'language-typescript',
+        startLine: 10,
+      },
+    })
+
+    const pre = wrapper.get('pre')
+    expect(pre.attributes('data-start-line')).toBe('10')
+    expect(pre.attributes('style')).toContain('counter-reset: line 9')
+  })
+
   it('keeps the code DOM when highlighted tokens arrive', async () => {
     const wrapper = mount(CodeContent, {
       props: {

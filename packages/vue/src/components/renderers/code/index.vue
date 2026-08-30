@@ -18,11 +18,13 @@ const model = computed(() => createCodeRendererModel(props.node))
 const code = computed(() => model.value.code)
 const lang = computed(() => model.value.lang)
 const languageClass = computed(() => model.value.languageClass)
+const startLine = computed(() => model.value.startLine)
 
-const { showLineNumbers } = useCodeOptions({
+const { showLineNumbers: showConfiguredLineNumbers } = useCodeOptions({
   codeOptions,
   language: lang,
 })
+const showLineNumbers = computed(() => showConfiguredLineNumbers.value && !model.value.noLineNumbers)
 
 const highlighted = shallowRef<CodeHighlightResult>()
 let highlightRequest = 0
@@ -66,6 +68,7 @@ watch(
       :language-class="languageClass"
       :tokens="tokens"
       :show-line-numbers="showLineNumbers"
+      :start-line="startLine"
     />
   </component>
 
@@ -76,5 +79,6 @@ watch(
     :language-class="languageClass"
     :tokens="tokens"
     :show-line-numbers="showLineNumbers"
+    :start-line="startLine"
   />
 </template>

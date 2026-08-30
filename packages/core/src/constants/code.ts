@@ -1,5 +1,7 @@
 export const DEFAULT_SHIKI_LIGHT_THEME = 'github-light'
 export const DEFAULT_SHIKI_DARK_THEME = 'github-dark'
+export const CODE_META_START_LINE_PATTERN = /startLine=(\d+)/
+export const CODE_META_NO_LINE_NUMBERS_PATTERN = /\bnoLineNumbers\b/
 export const LANGUAGE_ALIAS: Record<string, string> = {}
 export const LANGUAGE_EXTENSIONS: Record<string, string> = {
   '1c-query': '1cq',

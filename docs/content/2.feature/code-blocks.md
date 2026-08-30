@@ -97,6 +97,22 @@ const codeOptions: CodeOptions = {
 
 All options default to `true` (visible). Set any option to `false` to hide the corresponding element.
 
+### Fence Metadata
+
+Override line numbering for an individual code fence by adding metadata after its language:
+
+````markdown
+```typescript startLine=10
+const page = 10
+```
+
+```typescript noLineNumbers
+const compact = true
+```
+````
+
+`startLine=N` changes the first displayed line number. `noLineNumbers` hides line numbers for that code block, even when `codeOptions.lineNumbers` is enabled.
+
 ### Language-Specific Options
 
 You can configure different display options for specific programming languages using the `language` field:

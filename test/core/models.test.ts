@@ -75,7 +75,21 @@ describe('core models', () => {
       lang: 'ts',
       languageClass: 'language-ts',
       lines: ['const a = 1'],
+      noLineNumbers: false,
+      startLine: 1,
     })
+    expect(createCodeRendererModel({
+      lang: 'ts',
+      meta: 'startLine=10 noLineNumbers',
+      value: 'const a = 1',
+    })).toMatchObject({
+      noLineNumbers: true,
+      startLine: 10,
+    })
+    expect(createCodeRendererModel({
+      meta: 'startLine=0',
+      value: 'const a = 1',
+    }).startLine).toBe(1)
     expect(createCodeBlockControlDescriptors({
       collapsed: true,
       fullscreen: false,

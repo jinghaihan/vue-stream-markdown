@@ -8,6 +8,7 @@ export interface MarkdownControlContext<TNode = MarkdownElement> {
 export interface CodeBlockNode {
   value: string
   lang?: string | null
+  meta?: string
   loading?: boolean
 }
 

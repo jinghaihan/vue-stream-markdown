@@ -9,6 +9,8 @@ import type {
   SelectOption,
 } from '../types'
 import {
+  CODE_META_NO_LINE_NUMBERS_PATTERN,
+  CODE_META_START_LINE_PATTERN,
   LANGUAGE_ALIAS,
   LANGUAGE_EXTENSIONS,
 } from '../constants'
@@ -22,6 +24,7 @@ import {
 export interface CodeBlockNode {
   value: string
   lang?: string | null
+  meta?: string
   loading?: boolean
 }
 
@@ -310,12 +313,17 @@ export function getCodeFileExtension(language: string): string | undefined {
 export function createCodeRendererModel(node: CodeBlockNode) {
   const code = node.value.trim()
   const lang = node.lang || ''
+  const startLineMatch = node.meta?.match(CODE_META_START_LINE_PATTERN)
+  const parsedStartLine = Number.parseInt(startLineMatch?.[1] ?? '', 10)
+  const startLine = parsedStartLine >= 1 ? parsedStartLine : 1
 
   return {
     code,
     lang,
     languageClass: `language-${node.lang}`,
     lines: code.split('\n'),
+    noLineNumbers: CODE_META_NO_LINE_NUMBERS_PATTERN.test(node.meta ?? ''),
+    startLine,
   }
 }
 

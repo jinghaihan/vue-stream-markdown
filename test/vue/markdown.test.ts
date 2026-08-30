@@ -62,6 +62,24 @@ describe('stream markdown', () => {
     wrapper.unmount()
   })
 
+  it('applies code fence line number metadata', async () => {
+    const wrapper = mount(Markdown, {
+      props: {
+        content: '```ts startLine=10 noLineNumbers\nconst value = 1\n```',
+        mode: 'static',
+      },
+    })
+
+    await vi.dynamicImportSettled()
+    await flushPromises()
+
+    const code = wrapper.get('[data-stream-markdown="code"]')
+    expect(code.attributes('data-start-line')).toBe('10')
+    expect(code.attributes('data-show-line-numbers')).toBe('false')
+    expect(code.attributes('style')).toContain('counter-reset: line 9')
+    wrapper.unmount()
+  })
+
   it('provides every document image to the image renderer', async () => {
     let sources: string[] | undefined
     const Image = markRaw(defineComponent({

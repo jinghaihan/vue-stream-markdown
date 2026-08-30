@@ -26,6 +26,10 @@ export default defineComponent({
       type: Boolean,
       default: true,
     },
+    startLine: {
+      type: Number,
+      default: 1,
+    },
   },
   setup(props) {
     const lines = computed<CodeToken[][]>(() => props.tokens?.tokens ?? props.code
@@ -44,6 +48,7 @@ export default defineComponent({
         {
           'data-stream-markdown': 'code',
           'data-show-line-numbers': props.showLineNumbers,
+          'data-start-line': props.startLine,
           'data-language': props.tokens?.grammarState?.lang ?? props.lang,
           'data-bg': props.tokens?.bg,
           'data-fg': props.tokens?.fg,
@@ -52,7 +57,7 @@ export default defineComponent({
             props.languageClass,
             'p-4 font-mono text-sm',
           ],
-          'style': `counter-reset: line; color: ${props.tokens?.fg ?? 'inherit'};`,
+          'style': `counter-reset: line ${props.startLine - 1}; color: ${props.tokens?.fg ?? 'inherit'};`,
         },
         h(
           'code',
