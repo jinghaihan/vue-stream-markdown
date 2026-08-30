@@ -199,4 +199,24 @@ describe('stream markdown', () => {
     expect(link.classes()).toContain('underline')
     wrapper.unmount()
   })
+
+  it('renders footnote back references as icon buttons', async () => {
+    const wrapper = mount(Markdown, {
+      props: {
+        content: 'Reference[^note]\n\n[^note]: Definition',
+        enableAnimate: false,
+        mode: 'static',
+      },
+    })
+
+    await vi.dynamicImportSettled()
+    await flushPromises()
+
+    const control = wrapper.get('[data-stream-markdown="footnote-definition-button"]')
+    const button = control.get('button')
+    expect(button.attributes('aria-label')).toBe('Back')
+    expect(button.find('svg').exists()).toBe(true)
+    expect(wrapper.find('a.footnote-backref').exists()).toBe(false)
+    wrapper.unmount()
+  })
 })
