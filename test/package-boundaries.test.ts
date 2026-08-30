@@ -41,9 +41,12 @@ describe('main package boundaries', () => {
 
   it('does not leak optional provider types from its declarations', async () => {
     const declarations = await readFile(`${vuePackageDir}dist/index.d.ts`, 'utf8')
+    const moduleSpecifiers = [
+      ...declarations.matchAll(/(?:from\s+|import\s*\()(['"])([^'"]+)\1/g),
+    ].map(match => match[2])
 
     for (const dependency of optionalDependencies)
-      expect(declarations).not.toContain(`'${dependency}'`)
+      expect(moduleSpecifiers).not.toContain(dependency)
   })
 })
 

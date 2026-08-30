@@ -4,7 +4,9 @@
   "version": "1.1.0",
   "private": true,
   "scripts": {
+    "predev": "pnpm -w build",
     "dev": "nuxt dev",
+    "prebuild": "pnpm -w build",
     "build": "nuxt build",
     "preview": "nuxt preview"
   },
