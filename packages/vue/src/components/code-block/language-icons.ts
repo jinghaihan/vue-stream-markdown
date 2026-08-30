@@ -1,9 +1,8 @@
-import type { BuiltinLanguage, SpecialLanguage } from 'shiki'
 import type { Component } from 'vue'
 import { defineAsyncComponent } from 'vue'
 
 /// keep-sorted
-export const LANGUAGE_ICONS: Partial<Record<BuiltinLanguage | SpecialLanguage, Component>> = {
+export const LANGUAGE_ICONS: Partial<Record<string, Component>> = {
   css: defineAsyncComponent(() => import('~icons/simple-icons/css')),
   html: defineAsyncComponent(() => import('~icons/simple-icons/html5')),
   javascript: defineAsyncComponent(() => import('~icons/simple-icons/javascript')),

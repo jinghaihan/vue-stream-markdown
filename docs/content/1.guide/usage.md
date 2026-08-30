@@ -2,22 +2,32 @@
 title: Usage
 navigation:
   icon: i-lucide-rocket
-description: Install and use vue-stream-markdown in streaming and static modes.
+description: Install vue-stream-markdown and opt into only the rich renderers your application needs.
 ---
 
 ## Installation
+
+The main package includes Markdown parsing, streaming completion, Vue rendering, HTML/custom tags, GFM, CJK support, and plain code blocks:
 
 ```sh
 pnpm add vue-stream-markdown
 ```
 
-Install the optional peer dependencies for the features you use:
+Rich renderers are optional. Install only the packages you use:
 
 ```sh
-pnpm add shiki mermaid katex
-```
+# Shiki syntax highlighting
+pnpm add @stream-markdown/code
 
-When CDN loading is enabled, those libraries do not need to be installed locally.
+# KaTeX parsing and rendering
+pnpm add @stream-markdown/math
+
+# Standard Mermaid
+pnpm add @stream-markdown/mermaid
+
+# Beautiful Mermaid
+pnpm add @stream-markdown/beautiful-mermaid
+```
 
 ## Basic usage
 
@@ -25,7 +35,6 @@ When CDN loading is enabled, those libraries do not need to be installed locally
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Markdown } from 'vue-stream-markdown'
-import 'katex/dist/katex.min.css'
 import 'vue-stream-markdown/index.css'
 import 'vue-stream-markdown/theme.css'
 
@@ -37,7 +46,41 @@ const content = ref('# Hello World\n\nThis is **streaming** Markdown.')
 </template>
 ```
 
-Use `mode="static"` after streaming finishes if you want settled-source semantics. Static mode skips Markmend completion.
+Use `mode="static"` after streaming finishes when the source should be rendered exactly as supplied. Static mode skips Markmend completion.
+
+## Enable rich renderers
+
+Each extension factory owns its provider-specific configuration. Create extension instances once and pass them through the `extensions` prop:
+
+```vue
+<script setup lang="ts">
+import { beautifulMermaid } from '@stream-markdown/beautiful-mermaid'
+import { code } from '@stream-markdown/code'
+import { math } from '@stream-markdown/math'
+import { mermaid } from '@stream-markdown/mermaid'
+import { Markdown, MarkdownProvider } from 'vue-stream-markdown'
+import 'katex/dist/katex.min.css'
+import 'vue-stream-markdown/index.css'
+import 'vue-stream-markdown/theme.css'
+
+const extensions = {
+  code: code({ theme: ['github-light', 'github-dark'] }),
+  math: math(),
+  beautifulMermaid: beautifulMermaid(),
+  mermaid: mermaid(),
+}
+</script>
+
+<template>
+  <MarkdownProvider :extensions="extensions">
+    <Markdown :content="content" />
+  </MarkdownProvider>
+</template>
+```
+
+When both diagram extensions are present, supported diagrams use Beautiful Mermaid and unsupported diagram types fall back to Mermaid. Without a matching diagram extension, the original code block remains visible.
+
+Use `MarkdownProvider` around a message list to share extension lifecycles and theme observation. A standalone `Markdown` remains supported, and instance props override provider defaults.
 
 ## Custom tags
 
@@ -45,9 +88,9 @@ Comark parses native HTML and custom HTML-like tags into the same compact docume
 
 ```vue
 <script setup lang="ts">
-import GitHubCard from './GitHubCard.vue'
+import githubCard from './github-card.vue'
 
-const components = { github: GitHubCard }
+const components = { github: githubCard }
 const content = '<github name="vuejs/core" />'
 </script>
 
@@ -60,23 +103,22 @@ See [Components](/config/components) and [HTML Rendering](/feature/html-renderin
 
 ## Nuxt and SSR
 
-Add the styles to `nuxt.config.ts`:
+Add the styles you use to `nuxt.config.ts`:
 
 ```ts
 export default defineNuxtConfig({
   css: [
-    'katex/dist/katex.min.css',
     'vue-stream-markdown/index.css',
     'vue-stream-markdown/theme.css',
+    'katex/dist/katex.min.css', // only when using @stream-markdown/math
   ],
 })
 ```
 
 ## Next steps
 
+- [Optional Extensions](/config/external-options)
 - [Parser](/config/parser)
-- [Configuration](/config/)
 - [Display Options](/config/display-options)
 - [Controls](/config/controls)
 - [Security](/config/security)
-- [External Options](/config/external-options)

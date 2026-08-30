@@ -5,7 +5,31 @@ navigation:
 description: Built-in support for rendering mathematical expressions using LaTeX syntax powered by KaTeX.
 ---
 
-vue-stream-markdown provides built-in support for rendering mathematical expressions using LaTeX syntax, powered by [KaTeX](https://katex.org/). Write complex equations and formulas that render beautifully alongside your content.
+Install the optional math extension to add Comark math parsing and [KaTeX](https://katex.org/) rendering:
+
+```sh
+pnpm add @stream-markdown/math
+```
+
+```vue
+<script setup lang="ts">
+import { math } from '@stream-markdown/math'
+import { Markdown } from 'vue-stream-markdown'
+import 'katex/dist/katex.min.css'
+
+const extensions = {
+  math: math({
+    config: { throwOnError: false },
+  }),
+}
+</script>
+
+<template>
+  <Markdown :content="content" :extensions="extensions" />
+</template>
+```
+
+Without `math()`, the base parser does not register Comark's math plugin and no KaTeX dependency or type is required.
 
 ## Syntax
 

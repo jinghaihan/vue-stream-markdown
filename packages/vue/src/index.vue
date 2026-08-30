@@ -20,12 +20,14 @@ import MarkdownNodes from './components/renderers/markdown'
 import {
   useContext,
   useDarkDetector,
-  useKatex,
   useLocaleDetector,
-  useMermaid,
-  useShiki,
   useTailwindV3Theme,
 } from './composables'
+import {
+  resolveExtensions,
+  resolveOwnedExtensions,
+  useMarkdownProvider,
+} from './composables/use-provider'
 import { loadLocaleMessages } from './locales'
 import { preloadAsyncComponents } from './utils'
 import './style.css'
@@ -60,35 +62,45 @@ const {
   tableOptions,
   imageOptions,
   linkOptions,
-  katexOptions,
   hardenOptions,
-  shikiOptions,
-  mermaidOptions,
+  extensions: extensionOverrides,
   uiOptions,
-  cdnOptions,
   animation,
   animationSplit,
   caret,
 } = toRefs(props)
 
 const { provideContext } = useContext()
+const provider = useMarkdownProvider()
 
-const { cssVariables, stop: stopTailwindV3ThemeObserver } = useTailwindV3Theme({ element: props.themeElement })
-const { isDark, stop: stopDarkModeObserver } = useDarkDetector(darkProp, cssVariables)
+const observesLocalTheme = computed(() => !provider || props.themeElement !== undefined)
+const {
+  cssVariables: localCssVariables,
+  stop: stopTailwindV3ThemeObserver,
+} = useTailwindV3Theme({
+  element: props.themeElement,
+  enabled: observesLocalTheme,
+})
+const cssVariables = computed(() => {
+  return observesLocalTheme.value
+    ? localCssVariables.value
+    : provider?.cssVariables.value ?? {}
+})
+const resolvedDarkProp = computed(() => {
+  return typeof darkProp.value === 'boolean'
+    ? darkProp.value
+    : provider?.isDark.value
+})
+const { isDark, stop: stopDarkModeObserver } = useDarkDetector(
+  resolvedDarkProp,
+  cssVariables,
+  { manageOverlay: () => !provider },
+)
 const { locale } = useLocaleDetector(localeProp)
-
-const { preload: preloadShiki, dispose: disposeShiki } = useShiki({
-  shikiOptions,
-  cdnOptions: props.cdnOptions,
-})
-const { preload: preloadMermaid, dispose: disposeMermaid } = useMermaid({
-  mermaidOptions,
-  cdnOptions: props.cdnOptions,
-})
-const { preload: preloadKatex, dispose: disposeKatex } = useKatex({
-  markdown: content,
-  cdnOptions: props.cdnOptions,
-})
+const extensions = computed(() => resolveExtensions(
+  provider?.extensions.value,
+  extensionOverrides.value,
+))
 
 const containerRef = shallowRef<HTMLDivElement>()
 const document = shallowRef<MarkdownDocument>({
@@ -99,7 +111,13 @@ const document = shallowRef<MarkdownDocument>({
 
 const parser = createMarkmendParser({
   completion: props.completion,
-  parserOptions: props.parserOptions,
+  parserOptions: {
+    ...props.parserOptions,
+    plugins: [
+      ...(props.parserOptions?.plugins ?? []),
+      ...(extensions.value?.math ? [extensions.value.math.parserPlugin] : []),
+    ],
+  },
   syntax: {
     security: {
       allowedImagePrefixes: props.hardenOptions?.allowedImagePrefixes,
@@ -126,6 +144,10 @@ const uiComponents = computed((): UIComponents => ({
 }))
 
 let active = true
+const ownedExtensions = resolveOwnedExtensions(
+  provider?.extensions.value,
+  extensionOverrides.value,
+)
 
 watch(
   [content, mode],
@@ -146,9 +168,7 @@ function getContainer(): HTMLElement | undefined {
 
 async function bootstrap() {
   const tasks = [
-    preloadShiki(),
-    preloadMermaid(),
-    preloadKatex(),
+    ...ownedExtensions.map(extension => extension.preload()),
     preloadAsyncComponents(icons.value),
     preloadAsyncComponents(uiComponents.value),
   ]
@@ -164,21 +184,19 @@ onMounted(bootstrap)
 provideContext({
   controls,
   previewers,
-  shikiOptions,
-  mermaidOptions,
-  katexOptions,
+  extensions,
   hardenOptions,
   codeOptions,
   tableOptions,
   imageOptions,
   linkOptions,
-  cdnOptions,
   mode,
   dir,
   icons,
   uiComponents,
   uiOptions,
   isDark,
+  rootStyle,
   enableAnimate,
   animation,
   animationSplit,
@@ -194,9 +212,8 @@ provideContext({
 
 onBeforeUnmount(() => {
   active = false
-  disposeShiki()
-  disposeMermaid()
-  disposeKatex()
+  for (const extension of ownedExtensions)
+    void extension.dispose()
 
   stopTailwindV3ThemeObserver()
   stopDarkModeObserver()

@@ -51,7 +51,6 @@
     "get-east-asian-width": "1.6.0",
     "htmlparser2": "12.0.0",
     "js-yaml": "5.4.1",
-    "katex": "0.16.47",
     "linkify-it": "5.0.2",
     "markdown-exit": "1.1.0-beta.2",
     "markdown-it-cjk-friendly": "3.0.0",

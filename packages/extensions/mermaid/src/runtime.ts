@@ -1,18 +1,18 @@
+import type { Mermaid } from 'mermaid'
 import type {
   MermaidParseResult,
-  MermaidRendererType,
   MermaidRenderResult,
   MermaidRuntime,
   MermaidRuntimeOptions,
 } from './types'
-import { resolveGetter, save, serializeSvgForDownload, svgToPngBlob } from '@stream-markdown/core'
-import { createBeautifulMermaidCdnLoader } from './beautiful-cdn'
-import { BeautifulMermaidRenderer } from './runtime/beautiful'
-import { VanillaMermaidRenderer } from './runtime/vanilla'
+import { randomStr } from '@antfu/utils'
+import { isClient, resolveGetter } from '@stream-markdown/core'
+import { DEFAULT_MERMAID_THEME } from './constants'
+import { createMermaidCdnLoader } from './mermaid-cdn'
 
-async function hasBundledBeautifulMermaidModule() {
+async function hasBundledMermaidModule() {
   try {
-    await import('beautiful-mermaid')
+    await import('mermaid')
     return true
   }
   catch {
@@ -20,117 +20,106 @@ async function hasBundledBeautifulMermaidModule() {
   }
 }
 
-interface MermaidRendererInstance {
-  loaded: boolean
-  load: () => Promise<void>
-  isLoaded: () => boolean
-  isSupported: (diagramType: string) => boolean
-  render: (code: string) => Promise<MermaidRenderResult>
-  parse: (code: string) => Promise<MermaidParseResult>
-  isEnabled: () => Promise<boolean>
-}
-
-export async function resolveMermaidRendererType(
-  options: Pick<MermaidRuntimeOptions, 'renderer' | 'cdnOptions'> = {},
-  hasBeautifulModule: () => Promise<boolean> = hasBundledBeautifulMermaidModule,
-): Promise<MermaidRendererType> {
-  const cdnLoader = createBeautifulMermaidCdnLoader({
-    cdnOptions: options.cdnOptions,
-  })
-
-  const renderer = resolveGetter(options.renderer)
-  if (renderer === 'beautiful')
-    return 'beautiful'
-  if (renderer === 'vanilla')
-    return 'vanilla'
-  if (cdnLoader.getCdnUrl())
-    return 'beautiful'
-
-  return await hasBeautifulModule() ? 'beautiful' : 'vanilla'
+function toError(error: unknown): string {
+  return error instanceof Error ? error.message : String(error)
 }
 
 export function createMermaidRuntime(options: MermaidRuntimeOptions = {}): MermaidRuntime {
-  let beautifulRenderer: BeautifulMermaidRenderer | null = null
-  let vanillaRenderer: VanillaMermaidRenderer | null = null
-  let activeRenderer: MermaidRendererInstance | null = null
-  let activeRendererType: MermaidRendererType | null = null
+  let loaded = false
+  let mermaid: Mermaid | null = null
 
-  const createRenderer = (rendererType: MermaidRendererType): MermaidRendererInstance => {
-    if (rendererType === 'beautiful') {
-      if (!beautifulRenderer)
-        beautifulRenderer = new BeautifulMermaidRenderer(options)
-      return beautifulRenderer
+  function wrapThemeCode(code: string): string {
+    if (code.startsWith('%%{'))
+      return code
+
+    const [light, dark] = resolveGetter(options.theme) ?? DEFAULT_MERMAID_THEME
+    const theme = resolveGetter(options.isDark) ? dark : light
+    return `%%{init: {"theme": "${theme}"}}%%\n${code}`
+  }
+
+  function createCdnLoader() {
+    return createMermaidCdnLoader({ cdnOptions: options.cdnOptions })
+  }
+
+  async function isEnabled(): Promise<boolean> {
+    try {
+      if (await hasBundledMermaidModule())
+        return true
+
+      return !!createCdnLoader().getCdnUrl()
     }
-
-    if (!vanillaRenderer)
-      vanillaRenderer = new VanillaMermaidRenderer(options)
-    return vanillaRenderer
+    catch {
+      return false
+    }
   }
 
-  const getRenderer = async (): Promise<MermaidRendererInstance> => {
-    const rendererType = await resolveMermaidRendererType(options)
-    if (activeRenderer && activeRendererType === rendererType)
-      return activeRenderer
-
-    const renderer = createRenderer(rendererType)
-    activeRenderer = renderer
-    activeRendererType = rendererType
-    return renderer
-  }
-
-  async function load() {
-    const renderer = await getRenderer()
-    await renderer.load()
-  }
-
-  async function parse(code: string) {
-    const renderer = await getRenderer()
-    return await renderer.parse(code)
-  }
-
-  async function render(code: string) {
-    const renderer = await getRenderer()
-    return await renderer.render(code)
-  }
-
-  async function saveDiagram(format: 'svg' | 'png', code: string, filename = 'diagram') {
-    const { svg } = await render(code)
-    if (!svg)
-      throw new Error('SVG not found. Please wait for the diagram to render.')
-
-    const serializedSvg = serializeSvgForDownload(svg)
-
-    if (format === 'svg') {
-      save(`${filename}.svg`, serializedSvg, 'image/svg+xml')
+  async function load(): Promise<void> {
+    if (mermaid)
       return
+
+    const cdnLoader = createCdnLoader()
+    const hasRuntime = cdnLoader.getCdnUrl() ? true : await hasBundledMermaidModule()
+    if (!hasRuntime)
+      throw new Error('Mermaid module is not available')
+
+    const mermaidImport = await cdnLoader.loadCdn() ?? await import('mermaid')
+    mermaid = mermaidImport.default
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: 'loose',
+      ...(resolveGetter(options.config) ?? {}),
+    })
+    loaded = true
+  }
+
+  async function ensureLoaded(): Promise<void> {
+    if (!loaded)
+      await load()
+  }
+
+  async function parse(code: string): Promise<MermaidParseResult> {
+    try {
+      await ensureLoaded()
+      await mermaid!.parse(wrapThemeCode(code))
+      return { valid: true }
     }
+    catch (error) {
+      return { valid: false, error: toError(error) }
+    }
+  }
 
-    const blob = await svgToPngBlob(serializedSvg)
-    if (!blob)
-      throw new Error('Failed to export PNG image')
+  async function render(code: string): Promise<MermaidRenderResult> {
+    const parseResult = await parse(code)
+    if (!parseResult.valid || !isClient())
+      return { error: parseResult.error, valid: false }
 
-    save(`${filename}.png`, blob, 'image/png')
+    const id = `mermaid-${randomStr()}`
+
+    try {
+      const result = await mermaid!.render(id, wrapThemeCode(code))
+      return { svg: result.svg, valid: true }
+    }
+    catch (error) {
+      document.getElementById(`d${id}`)?.remove()
+      return { valid: false, error: toError(error) }
+    }
   }
 
   async function preload() {
-    const renderer = await getRenderer()
-    if (!await renderer.isEnabled())
+    if (!await isEnabled() || loaded)
       return
 
-    if (!renderer.isLoaded())
-      await renderer.load()
+    await load()
   }
 
   return {
-    installed: getRenderer().then(renderer => renderer.isEnabled()),
+    installed: isEnabled(),
     preload,
     load,
     dispose() {
-      activeRenderer = null
-      activeRendererType = null
+      // Mermaid owns a process-wide module singleton and has no disposal API.
     },
     parse,
     render,
-    save: saveDiagram,
   }
 }

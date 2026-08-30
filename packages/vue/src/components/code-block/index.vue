@@ -26,15 +26,13 @@ const props = withDefaults(defineProps<CodeBlockProps>(), {})
 
 const {
   beforeDownload,
-  cdnOptions,
   codeOptions,
   controls,
+  extensions,
   icons: commonIcons,
   isDark,
-  mermaidOptions,
   onCopied,
   previewers,
-  shikiOptions,
   uiComponents: UI,
 } = useContext()
 
@@ -52,12 +50,12 @@ const { copy, copied } = useClipboard({
   legacy: true,
 })
 
-const { installed: hasMermaid, saveMermaid } = useMermaid({
-  mermaidOptions,
-  cdnOptions,
-  shikiOptions,
+const { canRender: canRenderMermaid, saveMermaid } = useMermaid({
+  extensions,
   isDark,
 })
+
+const hasMermaid = computed(() => canRenderMermaid(props.node.value))
 
 const collapsed = ref<boolean>(false)
 const fullscreen = ref<boolean>(false)

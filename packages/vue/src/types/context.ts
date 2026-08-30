@@ -9,14 +9,13 @@ import type { Completion, StreamMarkdownParserOptions } from './parser'
 import type {
   CodeOptions,
   ControlsConfig,
+  ExtensionOverrides,
+  Extensions,
   HardenOptions,
   Icons,
   ImageOptions,
-  KatexOptions,
   LinkOptions,
-  MermaidOptions,
   PreviewerConfig,
-  ShikiOptions,
   TableOptions,
   UIComponents,
   UIOptions,
@@ -27,14 +26,12 @@ export type { StreamMarkdownHooks } from '@stream-markdown/core'
 export type StreamMarkdownContext = CoreStreamMarkdownContext<
   ControlsConfig,
   PreviewerConfig,
-  ShikiOptions,
-  MermaidOptions,
-  KatexOptions,
   HardenOptions,
   CodeOptions,
   ImageOptions,
   LinkOptions,
-  UIOptions
+  UIOptions,
+  Extensions
 >
 
 type BaseStreamMarkdownProps = CoreStreamMarkdownProps<
@@ -44,14 +41,12 @@ type BaseStreamMarkdownProps = CoreStreamMarkdownProps<
   CaretType,
   ControlsConfig,
   PreviewerConfig,
-  ShikiOptions,
-  MermaidOptions,
-  KatexOptions,
   HardenOptions,
   CodeOptions,
   ImageOptions,
   LinkOptions,
-  UIOptions
+  UIOptions,
+  ExtensionOverrides
 >
 
 export type StreamMarkdownProps = BaseStreamMarkdownProps & {
@@ -59,21 +54,25 @@ export type StreamMarkdownProps = BaseStreamMarkdownProps & {
   parserOptions?: StreamMarkdownParserOptions
 }
 
+export interface MarkdownProviderProps {
+  extensions?: Extensions
+  isDark?: boolean
+  themeElement?: () => HTMLElement | undefined
+}
+
 export interface StreamMarkdownProvideContext {
   controls?: MaybeRefOrGetter<StreamMarkdownContext['controls']>
   previewers?: MaybeRefOrGetter<StreamMarkdownContext['previewers']>
-  shikiOptions?: MaybeRefOrGetter<StreamMarkdownContext['shikiOptions']>
-  mermaidOptions?: MaybeRefOrGetter<StreamMarkdownContext['mermaidOptions']>
-  katexOptions?: MaybeRefOrGetter<StreamMarkdownContext['katexOptions']>
+  extensions?: MaybeRefOrGetter<Extensions | undefined>
   hardenOptions?: MaybeRefOrGetter<StreamMarkdownContext['hardenOptions']>
   codeOptions?: MaybeRefOrGetter<StreamMarkdownContext['codeOptions']>
   tableOptions?: MaybeRefOrGetter<TableOptions | undefined>
   imageOptions?: MaybeRefOrGetter<StreamMarkdownContext['imageOptions']>
   linkOptions?: MaybeRefOrGetter<StreamMarkdownContext['linkOptions']>
-  cdnOptions?: MaybeRefOrGetter<StreamMarkdownContext['cdnOptions']>
   mode?: MaybeRefOrGetter<'static' | 'streaming'>
   dir?: MaybeRefOrGetter<StreamMarkdownProps['dir']>
   isDark?: MaybeRefOrGetter<boolean>
+  rootStyle?: MaybeRefOrGetter<Record<string, string>>
   uiOptions?: MaybeRefOrGetter<UIOptions | undefined>
   icons?: MaybeRefOrGetter<Icons>
   uiComponents?: MaybeRefOrGetter<UIComponents>
@@ -96,19 +95,17 @@ export interface StreamMarkdownResolvedContext {
   dir: ComputedRef<StreamMarkdownProps['dir']>
   controls: ComputedRef<StreamMarkdownContext['controls']>
   previewers: ComputedRef<StreamMarkdownContext['previewers']>
-  shikiOptions: ComputedRef<StreamMarkdownContext['shikiOptions']>
-  mermaidOptions: ComputedRef<StreamMarkdownContext['mermaidOptions']>
-  katexOptions: ComputedRef<StreamMarkdownContext['katexOptions']>
+  extensions: ComputedRef<Extensions | undefined>
   hardenOptions: ComputedRef<StreamMarkdownContext['hardenOptions']>
   codeOptions: ComputedRef<StreamMarkdownContext['codeOptions']>
   tableOptions: ComputedRef<TableOptions | undefined>
   imageOptions: ComputedRef<StreamMarkdownContext['imageOptions']>
   linkOptions: ComputedRef<StreamMarkdownContext['linkOptions']>
-  cdnOptions: ComputedRef<StreamMarkdownContext['cdnOptions']>
   hideTooltip: ComputedRef<boolean>
   icons: ComputedRef<Partial<Icons>>
   uiComponents: ComputedRef<UIComponents>
   isDark: ComputedRef<boolean>
+  rootStyle: ComputedRef<Record<string, string>>
   enableAnimate: ComputedRef<boolean>
   animation: ComputedRef<NonNullable<StreamMarkdownProps['animation']>>
   animationSplit: ComputedRef<NonNullable<StreamMarkdownProps['animationSplit']>>

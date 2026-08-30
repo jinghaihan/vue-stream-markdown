@@ -19,6 +19,32 @@ interface MarkdownTestWrapper {
 }
 
 describe('stream markdown', () => {
+  it('runs extension lifecycle hooks', async () => {
+    const preload = vi.fn(async () => {})
+    const dispose = vi.fn(() => {})
+    const wrapper = mount(Markdown, {
+      props: {
+        content: 'Paragraph',
+        extensions: {
+          mermaid: {
+            preload,
+            dispose,
+            supports: () => true,
+            render: async () => ({ valid: true }),
+          },
+        },
+        mode: 'static',
+      },
+    })
+
+    await flushPromises()
+    expect(preload).toHaveBeenCalledOnce()
+    expect(dispose).not.toHaveBeenCalled()
+
+    wrapper.unmount()
+    expect(dispose).toHaveBeenCalledOnce()
+  })
+
   it('renders a Comark document asynchronously', async () => {
     const wrapper = mount(Markdown, {
       props: {

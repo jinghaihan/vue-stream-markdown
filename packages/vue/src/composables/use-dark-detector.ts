@@ -9,9 +9,14 @@ import {
 import { useMutationObserver } from '@vueuse/core'
 import { computed, onMounted, ref, toValue, watch } from 'vue'
 
+interface UseDarkDetectorOptions {
+  manageOverlay?: MaybeRefOrGetter<boolean>
+}
+
 export function useDarkDetector(
   darkProp: MaybeRefOrGetter<boolean | undefined>,
   cssVariables: MaybeRefOrGetter<Record<string, string>>,
+  options: UseDarkDetectorOptions = {},
 ) {
   const target = ref<HTMLElement | null>()
   const resolvedCssVariables = computed(() => toValue(cssVariables))
@@ -25,6 +30,9 @@ export function useDarkDetector(
   }
 
   function updateOverlayContainerTheme() {
+    if (toValue(options.manageOverlay) === false)
+      return
+
     syncOverlayContainerTheme(getOverlayContainer(), {
       isDark: isDark.value,
       cssVariables: resolvedCssVariables.value,
@@ -49,10 +57,12 @@ export function useDarkDetector(
   })
 
   onMounted(() => {
-    ensureOverlayContainer({
-      isDark: isDark.value,
-      cssVariables: resolvedCssVariables.value,
-    })
+    if (toValue(options.manageOverlay) !== false) {
+      ensureOverlayContainer({
+        isDark: isDark.value,
+        cssVariables: resolvedCssVariables.value,
+      })
+    }
 
     if (!isDarkProvided.value) {
       detect()

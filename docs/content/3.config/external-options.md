@@ -1,471 +1,119 @@
 ---
-title: External Options
+title: Optional Extensions
 navigation:
   icon: i-lucide-plug
-description: Configure external libraries including Shiki for syntax highlighting, Mermaid for diagrams, and KaTeX for math rendering.
+description: Add Shiki, KaTeX, Mermaid, and Beautiful Mermaid without coupling their dependencies or types to the main package.
 ---
 
-vue-stream-markdown integrates with several external libraries for enhanced functionality. This document covers the configuration options for Shiki (syntax highlighting), Mermaid (diagrams), and KaTeX (mathematics rendering).
+`vue-stream-markdown` works without any rich-renderer package. Code remains readable source, math stays ordinary Markdown text, and Mermaid fences remain code blocks until the corresponding extension is supplied.
 
-## shikiOptions
+Extension factories receive provider-specific options and return stable runtime instances for the `extensions` prop.
 
-Configure Shiki syntax highlighting for code blocks. Shiki powers the syntax highlighting engine used by vue-stream-markdown.
-
-### Interface
-
-```typescript
-interface ShikiOptions {
-  theme?: [BuiltinTheme, BuiltinTheme]
-  langs?: BundledLanguage[]
-  langAlias?: Record<string, string>
-  engine?: RegexEngine | Promise<RegexEngine>
-  codeToTokenOptions?: CodeToTokensOptions<BundledLanguage, BundledTheme>
-}
-```
-
-### theme
-
-- **Type:** `[BuiltinTheme, BuiltinTheme]`
-- **Default:** `['github-light', 'github-dark']`
-
-Specifies the theme pair for light and dark modes. The first element is the light theme, and the second is the dark theme. vue-stream-markdown automatically switches between themes based on the `isDark` prop.
-
-**Example:**
+## Complete example
 
 ```vue
 <script setup lang="ts">
-import type { ShikiOptions } from 'vue-stream-markdown'
-import { Markdown } from 'vue-stream-markdown'
+import { beautifulMermaid } from '@stream-markdown/beautiful-mermaid'
+import { code } from '@stream-markdown/code'
+import { math } from '@stream-markdown/math'
+import { mermaid } from '@stream-markdown/mermaid'
+import { Markdown, MarkdownProvider } from 'vue-stream-markdown'
+import 'katex/dist/katex.min.css'
 
-const shikiOptions: ShikiOptions = {
+const extensions = {
+  code: code({
+    theme: ['github-light', 'github-dark'],
+    langs: ['typescript', 'vue'],
+  }),
+  math: math({
+    config: { throwOnError: false },
+  }),
+  beautifulMermaid: beautifulMermaid({
+    theme: ['github-light', 'github-dark'],
+  }),
+  mermaid: mermaid({
+    theme: ['neutral', 'dark'],
+  }),
+}
+</script>
+
+<template>
+  <MarkdownProvider :extensions="extensions">
+    <Markdown :content="content" />
+  </MarkdownProvider>
+</template>
+```
+
+Create these runtimes once rather than recreating them during every Vue render.
+
+## Shared Extension Lifecycle
+
+Every extension implements both `preload()` and `dispose()`. Wrap a message list in `MarkdownProvider` to preload provider extensions once and dispose them when the provider unmounts:
+
+```vue
+<script setup lang="ts">
+import { code } from '@stream-markdown/code'
+import { Markdown, MarkdownProvider } from 'vue-stream-markdown'
+
+const extensions = { code: code() }
+</script>
+
+<template>
+  <MarkdownProvider :extensions="extensions">
+    <Markdown v-for="message in messages" :key="message.id" :content="message.content" />
+  </MarkdownProvider>
+</template>
+```
+
+An instance can replace one provider extension or disable it with `false`:
+
+```vue
+<Markdown :extensions="{ code: false }" />
+```
+
+Provider-owned extensions are never disposed when an individual Markdown instance unmounts. An instance owns only the extensions it adds or replaces.
+
+## Code
+
+Install `@stream-markdown/code` to enable Shiki highlighting:
+
+```sh
+pnpm add @stream-markdown/code
+```
+
+```ts
+import type { CodeExtensionOptions } from '@stream-markdown/code'
+import { code } from '@stream-markdown/code'
+
+const options: CodeExtensionOptions = {
   theme: ['vitesse-light', 'vitesse-dark'],
-}
-</script>
-
-<template>
-  <Markdown :content="content" :shiki-options="shikiOptions" />
-</template>
-```
-
-Refer to the [Shiki Themes](https://shiki.matsu.io/themes) page for a complete list of available themes.
-
-### langs
-
-- **Type:** `BundledLanguage[]`
-- **Default:** `[]`
-
-Specifies the list of languages to preload when creating the Shiki highlighter. Languages specified here will be loaded upfront during highlighter initialization, which can improve performance by avoiding lazy loading delays when these languages are first encountered in code blocks.
-
-**Note:** By default, vue-stream-markdown loads languages on-demand as they appear in code blocks. Use this option to preload frequently used languages for better performance, especially if you know in advance which languages will be used in your markdown content.
-
-**Example:**
-
-```vue
-<script setup lang="ts">
-import type { ShikiOptions } from 'vue-stream-markdown'
-import { Markdown } from 'vue-stream-markdown'
-
-const shikiOptions: ShikiOptions = {
   langs: ['typescript', 'vue'],
-}
-</script>
-
-<template>
-  <Markdown :content="content" :shiki-options="shikiOptions" />
-</template>
-```
-
-Refer to the [Shiki Languages](https://shiki.matsu.io/languages) page for a complete list of available languages.
-
-### langAlias
-
-- **Type:** `Record<string, string>`
-- **Default:** `{}`
-
-Maps language aliases to their canonical language identifiers. This allows you to use alternative names for languages in code blocks.
-
-**Note:** In most cases, you don't need to configure this option. Shiki already handles the majority of common language aliases (e.g., `ts` → `typescript`, `js` → `javascript`, `py` → `python`). Only configure this if you need to add custom aliases or override existing ones.
-
-**Example:**
-
-```vue
-<script setup lang="ts">
-import type { ShikiOptions } from 'vue-stream-markdown'
-import { Markdown } from 'vue-stream-markdown'
-
-const shikiOptions: ShikiOptions = {
-  langAlias: {
-    'custom-lang': 'typescript',
-  },
-}
-</script>
-
-<template>
-  <Markdown :content="content" :shiki-options="shikiOptions" />
-</template>
-```
-
-### engine
-
-- **Type:** `RegexEngine | Promise<RegexEngine>`
-- **Default:** `createJavaScriptRegexEngine({ forgiving: true })`
-
-Custom Shiki regex engine. The default JavaScript engine avoids WebAssembly CSP restrictions.
-
-### codeToTokenOptions
-
-- **Type:** `CodeToTokensOptions<BundledLanguage, BundledTheme>`
-- **Default:** `{}`
-
-Additional options passed to Shiki's `codeToTokens` method. This allows fine-grained control over tokenization and rendering.
-
-**Example:**
-
-```vue
-<script setup lang="ts">
-import type { ShikiOptions } from 'vue-stream-markdown'
-import { Markdown } from 'vue-stream-markdown'
-
-const shikiOptions: ShikiOptions = {
+  langAlias: { 'custom-lang': 'typescript' },
   codeToTokenOptions: {
     includeExplanation: false,
-    transformers: [],
-  },
-}
-</script>
-
-<template>
-  <Markdown :content="content" :shiki-options="shikiOptions" />
-</template>
-```
-
-See the [Shiki API documentation](https://shiki.matsu.io/api) for available options in `CodeToTokensOptions`.
-
-## mermaidOptions
-
-Configure Mermaid diagram rendering. Mermaid is used to render flowcharts, sequence diagrams, state diagrams, and more.
-
-### Interface
-
-```typescript
-interface MermaidOptions {
-  renderer?: 'vanilla' | 'beautiful'
-  theme?: [string, string]
-  config?: MermaidConfig
-  beautifulTheme?: [string, string]
-  beautifulConfig?: BeautifulMermaidConfig
-  errorComponent?: Component
-}
-```
-
-### renderer
-
-- **Type:** `'vanilla' | 'beautiful'`
-- **Default:** `auto` (when `renderer` is not set, uses `beautiful` if available, otherwise `vanilla`)
-
-Select the Mermaid rendering engine.
-
-- `vanilla` - Standard Mermaid.js renderer. Supports all diagram types.
-- `beautiful` - Beautiful-mermaid renderer with enhanced styling and Shiki theme integration. Supported diagram types depend on your installed beautiful-mermaid version. Automatically falls back to vanilla renderer for unsupported diagram types. See [beautiful-mermaid documentation](https://github.com/lukilabs/beautiful-mermaid) for the complete list of supported diagrams.
-
-**Example:**
-
-```vue
-<script setup lang="ts">
-import type { MermaidOptions } from 'vue-stream-markdown'
-import { Markdown } from 'vue-stream-markdown'
-
-const mermaidOptions: MermaidOptions = {
-  renderer: 'beautiful',
-}
-</script>
-
-<template>
-  <Markdown :content="content" :mermaid-options="mermaidOptions" />
-</template>
-```
-
-### theme
-
-- **Type:** `[string, string]`
-- **Default:** `['neutral', 'dark']`
-
-Specifies the theme pair for light and dark modes. The first element is the light theme, and the second is the dark theme. vue-stream-markdown automatically switches between themes based on the `isDark` prop.
-
-**Example:**
-
-```vue
-<script setup lang="ts">
-import type { MermaidOptions } from 'vue-stream-markdown'
-import { Markdown } from 'vue-stream-markdown'
-
-const mermaidOptions: MermaidOptions = {
-  theme: ['default', 'dark'],
-}
-</script>
-
-<template>
-  <Markdown :content="content" :mermaid-options="mermaidOptions" />
-</template>
-```
-
-**Available Themes:**
-
-- `default` - Classic Mermaid theme
-- `dark` - Dark mode optimized
-- `forest` - Green tones
-- `neutral` - Minimal styling (default light)
-- `base` - Clean, modern style
-
-### config
-
-- **Type:** `MermaidConfig`
-- **Default:** `{}`
-
-Mermaid configuration object that allows you to customize diagram rendering, styling, and behavior. This is passed directly to Mermaid's `initialize` method.
-
-**Example:**
-
-```vue
-<script setup lang="ts">
-import type { MermaidOptions } from 'vue-stream-markdown'
-import { Markdown } from 'vue-stream-markdown'
-
-const mermaidOptions: MermaidOptions = {
-  theme: ['base', 'dark'],
-  config: {
-    themeVariables: {
-      fontSize: '16px',
-      fontFamily: 'Inter, sans-serif',
-      primaryColor: '#ff6b6b',
-      primaryTextColor: '#fff',
-      primaryBorderColor: '#ff6b6b',
-      lineColor: '#f5f5f5',
-      secondaryColor: '#4ecdc4',
-      tertiaryColor: '#45b7d1',
-    },
-    flowchart: {
-      nodeSpacing: 50,
-      rankSpacing: 50,
-      curve: 'basis',
-    },
-    sequence: {
-      actorMargin: 50,
-      boxMargin: 10,
-      boxTextMargin: 5,
-    },
-  },
-}
-</script>
-
-<template>
-  <Markdown :content="content" :mermaid-options="mermaidOptions" />
-</template>
-```
-
-**Common Configuration Options:**
-
-- `themeVariables` - Customize theme colors and styling
-- `flowchart` - Configure flowchart-specific settings
-- `sequence` - Configure sequence diagram settings
-- `gantt` - Configure Gantt chart settings
-- `pie` - Configure pie chart settings
-- And more...
-
-See the [Mermaid configuration documentation](https://mermaid.js.org/config/theming.html) for a complete list of configuration options.
-
-### beautifulTheme
-
-- **Type:** `[string, string]`
-- **Default:** `['github-light', 'github-dark']`
-
-Specifies the theme pair for the beautiful renderer in light and dark modes. The first element is the light theme, and the second is the dark theme. This option only applies when `renderer` is set to `'beautiful'`.
-
-If theme not found in `beautiful-mermaid`'s built-ins, falls back to `shiki` themes.
-
-**Example:**
-
-```vue
-<script setup lang="ts">
-import type { MermaidOptions } from 'vue-stream-markdown'
-import { Markdown } from 'vue-stream-markdown'
-
-const mermaidOptions: MermaidOptions = {
-  renderer: 'beautiful',
-  beautifulTheme: ['vitesse-light', 'vitesse-dark'],
-}
-</script>
-
-<template>
-  <Markdown :content="content" :mermaid-options="mermaidOptions" />
-</template>
-```
-
-**Note:** When `beautifulTheme` is not specified, the beautiful renderer will automatically use colors from your Shiki theme if available, ensuring consistent theming across code blocks and diagrams.
-
-### beautifulConfig
-
-- **Type:** `BeautifulMermaidConfig`
-- **Default:** `{ padding: 8 }`
-
-Configuration object for the beautiful renderer that allows you to customize diagram rendering and styling. This option only applies when `renderer` is set to `'beautiful'`.
-
-**Example:**
-
-```vue
-<script setup lang="ts">
-import type { MermaidOptions } from 'vue-stream-markdown'
-import { Markdown } from 'vue-stream-markdown'
-
-const mermaidOptions: MermaidOptions = {
-  renderer: 'beautiful',
-  beautifulConfig: {
-    padding: 12,
-  },
-}
-</script>
-
-<template>
-  <Markdown :content="content" :mermaid-options="mermaidOptions" />
-</template>
-```
-
-See the [beautiful-mermaid documentation](https://github.com/notable-next/beautiful-mermaid) for available configuration options.
-
-### errorComponent
-
-- **Type:** `Component`
-- **Default:** Built-in error component
-
-Custom Vue component to display when Mermaid diagram rendering fails. The component receives error information as props.
-
-**Example:**
-
-```vue
-<script setup lang="ts">
-import type { MermaidOptions } from 'vue-stream-markdown'
-import { Markdown } from 'vue-stream-markdown'
-import CustomMermaidError from './CustomMermaidError.vue'
-
-const mermaidOptions: MermaidOptions = {
-  errorComponent: CustomMermaidError,
-}
-</script>
-
-<template>
-  <Markdown :content="content" :mermaid-options="mermaidOptions" />
-</template>
-```
-
-## katexOptions
-
-Configure KaTeX for mathematical expression rendering. KaTeX is used to render LaTeX math syntax in markdown.
-
-### Interface
-
-```typescript
-interface KatexOptions {
-  config?: KatexConfig
-  errorComponent?: Component
-}
-```
-
-### config
-
-- **Type:** `KatexConfig`
-- **Default:** `{}`
-
-KaTeX configuration object that allows you to customize math rendering behavior. This is passed directly to KaTeX's `renderToString` method.
-
-**Example:**
-
-```vue
-<script setup lang="ts">
-import type { KatexOptions } from 'vue-stream-markdown'
-import { Markdown } from 'vue-stream-markdown'
-
-const katexOptions: KatexOptions = {
-  config: {
-    throwOnError: false,
-    errorColor: '#cc0000',
-    strict: 'warn',
-    trust: false,
-    macros: {
-      '\\RR': '\\mathbb{R}',
-      '\\NN': '\\mathbb{N}',
-    },
-  },
-}
-</script>
-
-<template>
-  <Markdown :content="content" :katex-options="katexOptions" />
-</template>
-```
-
-**Common Configuration Options:**
-
-- `throwOnError` - Whether to throw on parse errors (default: `true`)
-- `errorColor` - Color for error messages (default: `#cc0000`)
-- `strict` - Error handling mode: `'warn'`, `'ignore'`, or `'error'` (default: `'warn'`)
-- `trust` - Whether to allow HTML tags and URLs (default: `false`)
-- `macros` - Custom macro definitions
-- `displayMode` - Whether to render in display mode (automatically set by vue-stream-markdown)
-- `leqno` - Render equation numbers on the left (default: `false`)
-- `fleqn` - Render equations flush left (default: `false`)
-- And more...
-
-See the [KaTeX options documentation](https://katex.org/docs/options.html) for a complete list of configuration options.
-
-### errorComponent
-
-- **Type:** `Component`
-- **Default:** Built-in error component
-
-Custom Vue component to display when KaTeX rendering fails. The component receives error information as props.
-
-**Example:**
-
-```vue
-<script setup lang="ts">
-import type { KatexOptions } from 'vue-stream-markdown'
-import { Markdown } from 'vue-stream-markdown'
-import CustomMathError from './CustomMathError.vue'
-
-const katexOptions: KatexOptions = {
-  errorComponent: CustomMathError,
-}
-</script>
-
-<template>
-  <Markdown :content="content" :katex-options="katexOptions" />
-</template>
-```
-
-## Complete Example
-
-Here's a complete example showing all three options configured together:
-
-```vue
-<script setup lang="ts">
-import type { KatexOptions, MermaidOptions, ShikiOptions } from 'vue-stream-markdown'
-import { Markdown } from 'vue-stream-markdown'
-
-const shikiOptions: ShikiOptions = {
-  theme: ['vitesse-light', 'vitesse-dark'],
-  langs: ['typescript', 'javascript', 'vue'],
-}
-
-const mermaidOptions: MermaidOptions = {
-  theme: ['base', 'dark'],
-  config: {
-    themeVariables: {
-      primaryColor: '#3b82f6',
-    },
   },
 }
 
-const katexOptions: KatexOptions = {
+const codeExtension = code(options)
+```
+
+The package exports its Shiki-specific option types. The main package only sees normalized token data, so applications that do not install this extension can still typecheck.
+
+The shared Shiki highlighter is retained by a module-level reference across Markdown component remounts and cannot be garbage-collected until that reference is released. The code extension's lifecycle `dispose()` is intentionally a no-op because other providers or instances may still share that highlighter. Call `disposeShikiHighlighter()` from `@stream-markdown/code` manually only when syntax highlighting is no longer needed, such as during full-app or test cleanup.
+
+## Math
+
+Install `@stream-markdown/math` to add both Comark math parsing and KaTeX rendering:
+
+```sh
+pnpm add @stream-markdown/math
+```
+
+```ts
+import type { MathExtensionOptions } from '@stream-markdown/math'
+import { math } from '@stream-markdown/math'
+
+const options: MathExtensionOptions = {
   config: {
     throwOnError: false,
     macros: {
@@ -473,159 +121,110 @@ const katexOptions: KatexOptions = {
     },
   },
 }
-</script>
 
-<template>
-  <Markdown
-    :content="content"
-    :shiki-options="shikiOptions"
-    :mermaid-options="mermaidOptions"
-    :katex-options="katexOptions"
-  />
-</template>
+const mathExtension = math(options)
 ```
 
-## Resources
+For local package loading, import KaTeX CSS in your application:
 
-### Shiki
-
-- [Shiki Documentation](https://shiki.matsu.io/) - Official Shiki documentation
-- [Shiki Themes](https://shiki.matsu.io/themes) - Complete list of available themes
-- [Shiki API Reference](https://shiki.matsu.io/api) - API documentation
-- [Shiki GitHub](https://github.com/shikijs/shiki) - Source code and issues
-
-### Mermaid
-
-- [Mermaid Documentation](https://mermaid.js.org/intro/) - Official Mermaid documentation
-- [Mermaid Configuration](https://mermaid.js.org/config/theming.html) - Configuration options
-- [Mermaid Live Editor](https://mermaid.live/) - Test diagrams online
-- [Mermaid Syntax Reference](https://mermaid.js.org/intro/syntax-reference.html) - Complete syntax guide
-- [Mermaid GitHub](https://github.com/mermaid-js/mermaid) - Source code and issues
-
-### KaTeX
-
-- [KaTeX Documentation](https://katex.org/docs/) - Official KaTeX documentation
-- [KaTeX Options](https://katex.org/docs/options.html) - Configuration options
-- [KaTeX Supported Functions](https://katex.org/docs/supported.html) - Complete list of supported functions
-- [KaTeX Support Table](https://katex.org/docs/support_table.html) - Feature compatibility
-- [KaTeX GitHub](https://github.com/KaTeX/KaTeX) - Source code and issues
-
-## CDN Configuration
-
-Configure CDN loading for external libraries to reduce bundle size and improve loading performance. When CDN is enabled, libraries are loaded from CDN instead of local node_modules.
-
-### Interface
-
-```typescript
-interface CdnOptions {
-  baseUrl?: string
-  getUrl?: (module: 'shiki' | 'mermaid' | 'katex' | 'katex-css' | 'beautiful-mermaid', version: string) => string
-  shiki?: boolean
-  mermaid?: 'esm' | 'umd' | false
-  beautifulMermaid?: 'esm' | 'umd' | false
-  katex?: 'esm' | 'umd' | false
-}
+```ts
+import 'katex/dist/katex.min.css'
 ```
 
-### baseUrl
+KaTeX is externalized from the extension bundle. Its parser plugin is also absent from the base parser until `math()` is supplied.
 
-- **Type:** `string | undefined`
-- **Default:** `undefined`
+## Mermaid
 
-Base URL for the CDN. When provided, libraries will be loaded using jsdelivr format: `${baseUrl}/module@version/+esm` for ESM modules or `${baseUrl}/module@version/dist/module.min.js` for UMD bundles.
+The standard Mermaid renderer supports every diagram type supported by your Mermaid version:
 
-**Example:**
-
-```vue
-<script setup lang="ts">
-import type { CdnOptions } from 'vue-stream-markdown'
-import { Markdown } from 'vue-stream-markdown'
-
-const cdnOptions: CdnOptions = {
-  baseUrl: 'https://cdn.jsdelivr.net/npm/',
-  mermaid: 'umd',
-}
-</script>
-
-<template>
-  <Markdown :content="content" :cdn-options="cdnOptions" />
-</template>
+```sh
+pnpm add @stream-markdown/mermaid
 ```
 
-### getUrl
+```ts
+import type { MermaidExtensionOptions } from '@stream-markdown/mermaid'
+import { mermaid } from '@stream-markdown/mermaid'
 
-- **Type:** `(module: 'shiki' | 'mermaid' | 'katex' | 'katex-css', version: string) => string | undefined`
-- **Default:** `undefined`
-
-Custom function to generate CDN URLs for each module. This allows you to use custom CDN providers or URL patterns.
-
-**Example:**
-
-```vue
-<script setup lang="ts">
-import type { CdnOptions } from 'vue-stream-markdown'
-import { Markdown } from 'vue-stream-markdown'
-
-const cdnOptions: CdnOptions = {
-  getUrl: (module, version) => {
-    return `https://cdn.example.com/${module}@${version}/index.esm.mjs`
+const options: MermaidExtensionOptions = {
+  theme: ['neutral', 'dark'],
+  config: {
+    securityLevel: 'strict',
+    flowchart: { curve: 'basis' },
   },
 }
-</script>
 
-<template>
-  <Markdown :content="content" :cdn-options="cdnOptions" />
-</template>
+const mermaidExtension = mermaid(options)
 ```
 
-### shiki
+The extension installs the Mermaid runtime as its own dependency while keeping it out of the main package.
 
-- **Type:** `boolean | undefined`
-- **Default:** `true`
+## Beautiful Mermaid
 
-Whether to load Shiki from CDN. When set to `false`, Shiki will be loaded from local node_modules. Requires ESM support in the browser.
+Install the lightweight Beautiful Mermaid renderer independently:
 
-### mermaid
+```sh
+pnpm add @stream-markdown/beautiful-mermaid
+```
 
-- **Type:** `'esm' | 'umd' | false | undefined`
-- **Default:** `true` (same as `'esm'`)
+```ts
+import type { BeautifulMermaidExtensionOptions } from '@stream-markdown/beautiful-mermaid'
+import { beautifulMermaid } from '@stream-markdown/beautiful-mermaid'
 
-Choose CDN format for Mermaid. `'esm'` (default) or `undefined`/`true` uses ESM with UMD fallback, `'umd'` forces UMD, `false` disables CDN.
-
-### beautifulMermaid
-
-- **Type:** `'esm' | 'umd' | false | undefined`
-- **Default:** `true` (same as `'esm'`)
-
-Choose CDN format for beautiful-mermaid when using the beautiful renderer. `'esm'` (default) or `undefined`/`true` uses ESM with UMD fallback, `'umd'` forces UMD, `false` disables CDN.
-
-**Example:**
-
-```vue
-<script setup lang="ts">
-import type { CdnOptions } from 'vue-stream-markdown'
-import { Markdown } from 'vue-stream-markdown'
-
-const cdnOptions: CdnOptions = {
-  baseUrl: 'https://cdn.jsdelivr.net/npm/',
-  beautifulMermaid: 'esm',
+const options: BeautifulMermaidExtensionOptions = {
+  theme: ['github-light', 'github-dark'],
+  config: { padding: 12 },
 }
-</script>
 
-<template>
-  <Markdown :content="content" :cdn-options="cdnOptions" />
-</template>
+const beautifulMermaidExtension = beautifulMermaid(options)
 ```
 
-### katex
+You can configure both diagram extensions at once:
 
-- **Type:** `'esm' | 'umd' | false | undefined`
-- **Default:** `true` (same as `'esm'`)
+```ts
+const extensions = {
+  beautifulMermaid: beautifulMermaid(),
+  mermaid: mermaid(),
+}
+```
 
-Choose CDN format for KaTeX. `'esm'` (default) or `undefined`/`true` uses ESM with UMD fallback, `'umd'` forces UMD, `false` disables CDN.
+The renderer tries Beautiful Mermaid only for diagram types it supports, then falls back to Mermaid. If Mermaid is omitted, unsupported diagrams stay as code blocks.
 
-## Notes
+## Custom error components
 
-- CDN configuration is optional. By default, libraries are loaded from local node_modules.
-- When CDN is enabled, you don't need to install them as peer dependencies.
-- Require ESM support to load from CDN. The library automatically detects ESM support and falls back to local imports if needed.
+Provider error components belong to their extension factory:
+
+```ts
+import diagramError from './diagram-error.vue'
+
+const extensions = {
+  mermaid: mermaid({ errorComponent: diagramError }),
+  math: math({ errorComponent: diagramError }),
+}
+```
+
+## CDN loading
+
+CDN configuration also belongs to each extension rather than `<Markdown>`:
+
+```ts
+const cdnOptions = {
+  getUrl(module: string, version: string) {
+    if (module === 'katex-css')
+      return `https://esm.sh/katex@${version}/dist/katex.min.css`
+    return `https://esm.sh/${module}@${version}`
+  },
+}
+
+const extensions = {
+  code: code({ cdnOptions }),
+  math: math({ cdnOptions }),
+  beautifulMermaid: beautifulMermaid({ cdnOptions }),
+  mermaid: mermaid({ cdnOptions }),
+}
+```
+
+You can also set `baseUrl` and provider switches such as `shiki`, `katex`, `mermaid`, or `beautifulMermaid`. Local dependencies remain the default when no CDN URL is configured.
+
+## Type isolation
+
+`vue-stream-markdown` declares only minimal structural extension contracts. Shiki, KaTeX, Mermaid, and Beautiful Mermaid types are exported from their corresponding extension packages. Installing only the main package therefore does not introduce unresolved optional-provider types during application typechecking.

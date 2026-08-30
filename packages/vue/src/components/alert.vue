@@ -20,7 +20,7 @@ const emits = defineEmits<{
   (e: 'cancel'): void
 }>()
 
-const { uiComponents: UI } = useContext()
+const { isDark, rootStyle, uiComponents: UI } = useContext()
 
 const { t } = useI18n()
 
@@ -131,8 +131,9 @@ onMounted(() => {
     <div
       v-if="open"
       data-stream-markdown="alert-backdrop"
-      class="bg-[rgb(0_0_0_/_0.5)] flex items-center inset-0 justify-center fixed backdrop-blur"
-      :style="{ zIndex: zIndex - 1 }"
+      class="stream-markdown bg-[rgb(0_0_0_/_0.5)] flex items-center inset-0 justify-center fixed backdrop-blur"
+      :class="[isDark ? 'dark' : 'light']"
+      :style="[rootStyle, { zIndex: zIndex - 1 }]"
       @click="handleCancel"
     >
       <Transition name="stream-markdown-modal" appear>

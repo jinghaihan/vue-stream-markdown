@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { getTokenStyleObject, ThemedToken, TokensResult } from 'shiki'
+import type { CodeHighlightResult, CodeToken } from '@stream-markdown/core'
 import type { PropType } from 'vue'
-import { computed, defineComponent, h, renderList, shallowRef, watch } from 'vue'
+import { computed, defineComponent, h, renderList } from 'vue'
 
 export default defineComponent({
   name: 'CodeContent',
@@ -19,12 +19,8 @@ export default defineComponent({
       required: true,
     },
     tokens: {
-      type: Object as PropType<TokensResult>,
+      type: Object as PropType<CodeHighlightResult>,
       required: false,
-    },
-    getShiki: {
-      type: Function as PropType<() => Promise<typeof import('shiki')>>,
-      required: true,
     },
     showLineNumbers: {
       type: Boolean,
@@ -32,34 +28,9 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const getTokenStyleObjectRef = shallowRef<typeof getTokenStyleObject | null>(null)
-    let loadingTokenStyleObject = false
-    watch(
-      () => props.tokens,
-      (tokens) => {
-        const needsTokenStyleObject = tokens?.tokens.some(
-          line => line.some(token => !token.htmlStyle),
-        )
-        if (!needsTokenStyleObject || loadingTokenStyleObject || getTokenStyleObjectRef.value)
-          return
-
-        loadingTokenStyleObject = true
-        void (async () => {
-          try {
-            const { getTokenStyleObject } = await props.getShiki()
-            getTokenStyleObjectRef.value = getTokenStyleObject
-          }
-          finally {
-            loadingTokenStyleObject = false
-          }
-        })()
-      },
-      { immediate: true },
-    )
-
-    const lines = computed<ThemedToken[][]>(() => props.tokens?.tokens ?? props.code
+    const lines = computed<CodeToken[][]>(() => props.tokens?.tokens ?? props.code
       .split('\n')
-      .map(content => [{ content, offset: 0, htmlStyle: {} }]))
+      .map(content => [{ content, htmlStyle: {} }]))
 
     return () => h(
       'div',
@@ -104,7 +75,7 @@ export default defineComponent({
                 'span',
                 {
                   key: tokenIndex,
-                  style: token.htmlStyle || (getTokenStyleObjectRef.value?.(token) ?? {}),
+                  style: token.htmlStyle,
                 },
                 token.content,
               )),

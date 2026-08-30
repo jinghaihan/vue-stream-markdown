@@ -153,7 +153,7 @@ Features:
 
 ## Code Blocks
 
-Code blocks receive syntax highlighting via Shiki:
+Code blocks receive syntax highlighting when `@stream-markdown/code` is configured:
 
 ````markdown
 ```javascript

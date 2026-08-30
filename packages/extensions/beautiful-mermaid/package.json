@@ -1,0 +1,40 @@
+{
+  "name": "@stream-markdown/beautiful-mermaid",
+  "type": "module",
+  "version": "1.1.0",
+  "homepage": "https://github.com/jinghaihan/vue-stream-markdown#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jinghaihan/vue-stream-markdown.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jinghaihan/vue-stream-markdown/issues"
+  },
+  "keywords": [
+    "stream-markdown",
+    "beautiful-mermaid",
+    "mermaid"
+  ],
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "prepublishOnly": "pnpm build"
+  },
+  "dependencies": {
+    "@stream-markdown/core": "workspace:*",
+    "beautiful-mermaid": "^1.1.3"
+  },
+  "devDependencies": {
+    "tsdown": "catalog:build"
+  }
+}

@@ -1,13 +1,15 @@
+import type { MaybeRefOrGetter } from 'vue'
 import {
   getDocumentElement,
   readThemeVariables,
   resolveThemeElement,
 } from '@stream-markdown/core'
 import { useMutationObserver } from '@vueuse/core'
-import { computed, ref, watchEffect } from 'vue'
+import { computed, ref, toValue, watchEffect } from 'vue'
 
 interface UseTailwindV3ThemeOptions {
   element?: () => HTMLElement | undefined
+  enabled?: MaybeRefOrGetter<boolean>
 }
 
 interface ThemeVariablesCacheEntry {
@@ -41,6 +43,8 @@ function resolveCachedThemeVariables(element: HTMLElement): Record<string, strin
 export function useTailwindV3Theme(options: UseTailwindV3ThemeOptions) {
   const cssVariables = ref<Record<string, string>>({})
   const element = computed((): HTMLElement | undefined => {
+    if (toValue(options.enabled) === false)
+      return undefined
     return resolveThemeElement(options.element)
   })
 

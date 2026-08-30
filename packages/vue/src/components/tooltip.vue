@@ -16,7 +16,7 @@ const props = withDefaults(defineProps<UITooltipProps>(), {
 
 const { placement, delay, trigger } = toRefs(props)
 
-const { hideTooltip } = useContext()
+const { hideTooltip, isDark, rootStyle } = useContext()
 
 const {
   referenceEl: _referenceEl,
@@ -57,9 +57,10 @@ defineExpose({ show, hide })
     <div
       v-if="open"
       ref="_floatingEl"
-      :style="floatingStyle"
+      :style="[rootStyle, floatingStyle]"
       data-stream-markdown="tooltip"
-      class="text-popover-foreground border border-border rounded-lg bg-popover z-[10000]"
+      class="stream-markdown text-popover-foreground border border-border rounded-lg bg-popover z-[10000]"
+      :class="[isDark ? 'dark' : 'light']"
       @mouseenter="onFloatingEnter"
       @mouseleave="onFloatingLeave"
     >

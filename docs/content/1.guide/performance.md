@@ -18,7 +18,7 @@ In streaming scenarios, content arrives incrementally. The key to performance is
 
 ## Code Block Token-Level Updates
 
-Code blocks receive special optimization through Shiki's `codeToTokens` API, enabling **token-level incremental updates** instead of full DOM recreation:
+When `@stream-markdown/code` is configured, code blocks use Shiki's `codeToTokens` API for **token-level incremental updates** instead of full DOM recreation:
 
 ::stream-markdown{example="guide-performance.codeBlockExample"}
 ::

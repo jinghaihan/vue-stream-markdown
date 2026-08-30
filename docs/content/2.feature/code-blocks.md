@@ -5,7 +5,11 @@ navigation:
 description: Beautiful, interactive code blocks with syntax highlighting powered by Shiki, supporting 200+ programming languages.
 ---
 
-vue-stream-markdown provides beautiful, interactive code blocks with syntax highlighting powered by [Shiki](https://shiki.style/). Every code block includes a copy button and supports a wide range of programming languages.
+vue-stream-markdown provides interactive code blocks with readable source rendering by default. Install `@stream-markdown/code` to add syntax highlighting powered by [Shiki](https://shiki.style/).
+
+```sh
+pnpm add @stream-markdown/code
+```
 
 ## Basic Usage
 
@@ -19,7 +23,7 @@ function greet(name) {
 ```
 ````
 
-vue-stream-markdown will automatically apply syntax highlighting based on the specified language.
+With the code extension configured, vue-stream-markdown applies syntax highlighting based on the specified language.
 
 ## Supported Languages
 
@@ -51,20 +55,20 @@ Shiki supports 200+ programming languages out of the box, including:
 
 ## Theme Configuration
 
-vue-stream-markdown uses dual themes for light and dark modes. You can customize the themes using the `shikiOptions` prop:
+The code extension uses dual themes for light and dark modes:
 
 ```vue
 <script setup lang="ts">
-import type { ShikiOptions } from 'vue-stream-markdown'
+import { code } from '@stream-markdown/code'
 import { Markdown } from 'vue-stream-markdown'
 
-const shikiOptions: ShikiOptions = {
-  theme: ['github-light', 'github-dark']
+const extensions = {
+  code: code({ theme: ['github-light', 'github-dark'] }),
 }
 </script>
 
 <template>
-  <Markdown :shiki-options="shikiOptions" />
+  <Markdown :extensions="extensions" />
 </template>
 ```
 
@@ -72,12 +76,12 @@ Refer to the [Shiki Themes](https://shiki.style/themes) page for a full list of 
 
 ## Highlighter Lifecycle
 
-Shiki's `createHighlighter()` is relatively expensive, so vue-stream-markdown keeps a shared highlighter singleton across code blocks, component remounts, and route changes. The singleton is not disposed automatically when a `<Markdown>` component unmounts.
+Shiki's `createHighlighter()` is relatively expensive, so vue-stream-markdown keeps a shared highlighter singleton across code blocks, component remounts, and route changes. The singleton is held by a module-level reference and is not disposed automatically when a `<Markdown>` component unmounts, so it cannot be garbage-collected while that reference remains.
 
-If you need to free Shiki memory manually, call `disposeShikiHighlighter()` only when no active markdown rendering is still using the shared highlighter:
+Call `disposeShikiHighlighter()` manually only when you are certain the application no longer needs syntax highlighting:
 
 ```ts
-import { disposeShikiHighlighter } from 'vue-stream-markdown'
+import { disposeShikiHighlighter } from '@stream-markdown/code'
 
 disposeShikiHighlighter()
 ```

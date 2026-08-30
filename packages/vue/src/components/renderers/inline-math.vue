@@ -10,20 +10,18 @@ const props = withDefaults(defineProps<MathRenderProps & {
 })
 
 const {
-  cdnOptions,
-  katexOptions,
+  extensions,
   uiComponents: UI,
 } = useContext()
 
 const { node, throttle } = toRefs(props)
 const { html, error, errorMessage } = useMathRenderer({
   node,
-  katexOptions,
+  extension: computed(() => extensions.value?.math),
   throttle,
-  cdnOptions: cdnOptions.value,
 })
 
-const Error = computed(() => katexOptions.value?.errorComponent ?? UI.value.ErrorComponent)
+const Error = computed(() => extensions.value?.math?.errorComponent ?? UI.value.ErrorComponent)
 </script>
 
 <template>

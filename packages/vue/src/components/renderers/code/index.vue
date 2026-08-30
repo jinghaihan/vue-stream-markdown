@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { TokensResult } from 'shiki'
+import type { CodeHighlightResult } from '@stream-markdown/core'
 import type { CodeBlockProps } from '../../../types'
 import { createCodeRendererModel } from '@stream-markdown/core'
 import { computed, shallowRef, watch } from 'vue'
-import { useCodeOptions, useContext, useShiki } from '../../../composables'
+import { useCodeOptions, useContext } from '../../../composables'
 import CodeContent from './content.vue'
 
 const props = withDefaults(defineProps<CodeBlockProps & {
@@ -12,7 +12,7 @@ const props = withDefaults(defineProps<CodeBlockProps & {
   showHeader: true,
 })
 
-const { cdnOptions, codeOptions, isDark, shikiOptions, uiComponents: UI } = useContext()
+const { codeOptions, extensions, isDark, uiComponents: UI } = useContext()
 
 const model = computed(() => createCodeRendererModel(props.node))
 const code = computed(() => model.value.code)
@@ -24,14 +24,7 @@ const { showLineNumbers } = useCodeOptions({
   language: lang,
 })
 
-const { installed: hasShiki, getShiki, codeToTokens } = useShiki({
-  cdnOptions,
-  lang,
-  shikiOptions,
-  isDark,
-})
-
-const highlighted = shallowRef<TokensResult>()
+const highlighted = shallowRef<CodeHighlightResult>()
 let highlightRequest = 0
 
 const tokens = computed(() => highlighted.value)
@@ -39,18 +32,21 @@ const tokens = computed(() => highlighted.value)
 watch(
   () => [
     code.value,
-    hasShiki.value,
-    shikiOptions.value,
+    extensions.value?.code,
     isDark.value,
   ] as const,
-  async ([currentCode, installed]) => {
+  async ([currentCode, extension, currentIsDark]) => {
     const request = ++highlightRequest
-    if (!installed) {
+    if (!extension) {
       highlighted.value = undefined
       return
     }
 
-    const result = await codeToTokens(currentCode)
+    const result = await extension.highlight({
+      code: currentCode,
+      isDark: currentIsDark,
+      language: lang.value,
+    })
     if (request === highlightRequest)
       highlighted.value = result
   },
@@ -69,7 +65,6 @@ watch(
       :lang="lang"
       :language-class="languageClass"
       :tokens="tokens"
-      :get-shiki="getShiki"
       :show-line-numbers="showLineNumbers"
     />
   </component>
@@ -80,7 +75,6 @@ watch(
     :lang="lang"
     :language-class="languageClass"
     :tokens="tokens"
-    :get-shiki="getShiki"
     :show-line-numbers="showLineNumbers"
   />
 </template>

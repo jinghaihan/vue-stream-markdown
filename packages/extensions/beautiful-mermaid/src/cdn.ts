@@ -1,5 +1,4 @@
-import type { SharedCdnOptions } from '@stream-markdown/core'
-import type { MaybeGetter } from './types'
+import type { MaybeGetter, SharedCdnOptions } from '@stream-markdown/core'
 import {
   dynamicImport,
   getModuleFromImport,
@@ -27,9 +26,7 @@ export function createBeautifulMermaidCdnLoader(options?: BeautifulMermaidCdnLoa
       : ''
     const customGetter = !!cdnOptions?.getUrl
 
-    if (!enabled)
-      return undefined
-    if (!baseUrl && !customGetter)
+    if (!enabled || (!baseUrl && !customGetter))
       return undefined
 
     if (customGetter) {
@@ -60,8 +57,5 @@ export function createBeautifulMermaidCdnLoader(options?: BeautifulMermaidCdnLoa
     return beautifulMermaidModule ?? module
   }
 
-  return {
-    getCdnUrl,
-    loadCdn,
-  }
+  return { getCdnUrl, loadCdn }
 }

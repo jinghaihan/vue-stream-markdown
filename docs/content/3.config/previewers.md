@@ -150,11 +150,11 @@ const previewers: PreviewerConfig = {
 <script setup lang="ts">
 import type { PreviewerConfig } from 'vue-stream-markdown'
 import { Markdown } from 'vue-stream-markdown'
-import CustomHtmlPreviewer from './CustomHtmlPreviewer.vue'
+import customHtmlPreviewer from './custom-html-previewer.vue'
 
 const previewers: PreviewerConfig = {
   components: {
-    html: CustomHtmlPreviewer, // Custom component
+    html: customHtmlPreviewer, // Custom component
   },
 }
 </script>
@@ -214,11 +214,11 @@ const previewers: PreviewerConfig = {
 <script setup lang="ts">
 import type { PreviewerConfig } from 'vue-stream-markdown'
 import { Markdown } from 'vue-stream-markdown'
-import CustomMermaidPreviewer from './CustomMermaidPreviewer.vue'
+import customMermaidPreviewer from './custom-mermaid-previewer.vue'
 
 const previewers: PreviewerConfig = {
   components: {
-    mermaid: CustomMermaidPreviewer, // Custom component
+    mermaid: customMermaidPreviewer, // Custom component
   },
 }
 </script>
@@ -237,7 +237,7 @@ For languages other than `html` and `mermaid`, you must provide a custom `Compon
 The previewer component receives `CodeBlockProps`, which includes code block data (`props.node.value` for code content and `props.node.loading` for loading state). If progressive rendering is enabled, handle `props.node.loading` to show appropriate loading states.
 
 ```vue
-<!-- JavaScriptPreviewer.vue -->
+<!-- javascript-previewer.vue -->
 <script setup lang="ts">
 import type { CodeBlockProps } from 'vue-stream-markdown'
 
@@ -255,11 +255,11 @@ const props = defineProps<CodeBlockProps>()
 <script setup lang="ts">
 import type { PreviewerConfig } from 'vue-stream-markdown'
 import { Markdown } from 'vue-stream-markdown'
-import JavaScriptPreviewer from './JavaScriptPreviewer.vue'
+import javascriptPreviewer from './javascript-previewer.vue'
 
 const previewers: PreviewerConfig = {
   components: {
-    javascript: JavaScriptPreviewer,
+    javascript: javascriptPreviewer,
   },
 }
 </script>

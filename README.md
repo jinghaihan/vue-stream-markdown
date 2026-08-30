@@ -19,61 +19,16 @@ A markdown renderer specially optimized for streaming scenarios, inspired by [st
 ## Features
 
 - **Streaming-optimized rendering** - Incomplete node completion with loading states for images, tables, and code blocks to prevent visual jitter
-- **Incremental rendering** - Leverages [Shiki](https://shiki.style/)'s `codeToTokens` API for token-level updates, reducing DOM recreation overhead
-- **Progressive Mermaid rendering** - Throttled, streaming-friendly diagram rendering with loading states, supporting both vanilla Mermaid.js and beautiful-mermaid renderers with automatic fallback for unsupported diagram types
-- **Streaming LaTeX rendering** - Progressive math equation rendering with KaTeX support
+- **Syntax highlighting** - Highlight code with Shiki through the independently installable `@stream-markdown/code` extension
+- **Diagram rendering** - Combine Mermaid and Beautiful Mermaid renderers with deterministic fallback
+- **Mathematical typesetting** - Parse mathematical notation with comark and render it with KaTeX
 - **Native HTML and custom tags** - Render safe HTML and map custom tags directly to Vue components
 - **Interactive controls** - Copy and download buttons for images, tables, and code blocks
-- **Fully customizable** - Replace any Comark/native tag or UI component with your own Vue components
+- **Fully customizable** - Replace any comark/native tag or UI component with your own Vue components
 - **Theme-aware scoped styles** - Scoped styles under `.stream-markdown` with semantic `data-stream-markdown` attributes, following [shadcn/ui](https://ui.shadcn.com/) design system
 - **Beautiful built-in typography** - No atomic CSS required (Tailwind/UnoCSS), self-contained styles
 - **Content hardening & security** - Built-in protection against malicious Markdown with URL validation and protocol blocking
 - **SSR support** - Full server-side rendering compatibility with environment detection utilities
-
-## Usage
-
-```sh
-pnpm add vue-stream-markdown
-```
-
-> [!TIP]
-> `@markmend/core` provides standalone Markdown completion, while
-> `@markmend/parser` combines it with Comark, CJK support, and ordered stateful
-> parsing for non-Vue consumers.
-
-For detailed usage and API documentation, please refer to the [Documentation](https://docs-vue-stream-markdown.netlify.app/).
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { Markdown } from 'vue-stream-markdown'
-// If CDN is enabled, you don't need to manually import katex.min.css
-import 'katex/dist/katex.min.css'
-import 'vue-stream-markdown/index.css'
-// If you don't have shadcn CSS variables globally, import the theme
-import 'vue-stream-markdown/theme.css'
-
-const content = ref('# Hello World\n\nThis is a markdown content.')
-</script>
-
-<template>
-  <Markdown :content="content" />
-</template>
-```
-
-Custom HTML-like tags map directly to Vue components:
-
-```vue
-<script setup lang="ts">
-import GitHubCard from './GitHubCard.vue'
-
-const components = { github: GitHubCard }
-</script>
-
-<template>
-  <Markdown :content="'<github name=\"vuejs/core\" />'" :components="components" />
-</template>
-```
 
 ## Showcase
 
@@ -86,7 +41,7 @@ Thank you for your trust and support.
 
 ## Credit
 
-This project is inspired by [streamdown](https://streamdown.ai/) and uses [Comark](https://github.com/comarkdown/comark) as its incremental Markdown parser.
+This project is inspired by [streamdown](https://streamdown.ai/) and uses [comark](https://github.com/comarkdown/comark) as its incremental Markdown parser.
 
 This project also uses and benefits from:
 
@@ -100,7 +55,7 @@ This project also uses and benefits from:
 ### Code Sources
 
 - [markstream-vue](https://github.com/Simon-He95/markstream-vue) - The original inspiration for custom Markdown rendering, and the source of the animation implementation used in this project
-- [ast-explorer](https://github.com/sxzz/ast-explorer) - Playground layout and Comark document inspection inspiration
+- [ast-explorer](https://github.com/sxzz/ast-explorer) - Playground layout and comark document inspection inspiration
 - [medium-zoom](https://github.com/francoischalifour/medium-zoom) - Inspired the custom image zoom implementation
 - [markdown-sanitizers](https://github.com/vercel-labs/markdown-sanitizers) - URL validation and security hardening logic in `src/utils/harden.ts` is ported from `rehype-harden`
 - [dify](https://github.com/langgenius/dify) - LaTeX normalization logic in `src/completion/vendored/markdown-utils.ts` is ported from Dify
@@ -116,10 +71,10 @@ The playground supports generating shareable links and provides streaming contro
 If you encounter any problems, please:
 
 1. Use the **Generate Share Links** button in the playground to create a shareable link with your current content
-2. Enable the **Document Result** toggle to view the parsed Comark document
-3. Copy the Markdown content and Comark document at the time of the issue
+2. Enable the **Document Result** toggle to view the parsed comark document
+3. Copy the Markdown content and comark document at the time of the issue
 
-Please provide the shareable link, Markdown content, and Comark document when creating an issue. This will help me reproduce and diagnose the problem more effectively.
+Please provide the shareable link, Markdown content, and comark document when creating an issue. This will help me reproduce and diagnose the problem more effectively.
 
 ## Contributors
 

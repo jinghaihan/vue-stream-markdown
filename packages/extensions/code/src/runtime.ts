@@ -53,7 +53,8 @@ async function hasBundledShikiModule() {
   }
 }
 
-export function disposeSharedShikiHighlighter() {
+/** Dispose the shared highlighter only after all syntax highlighting has stopped. */
+export function disposeShikiHighlighter() {
   highlighter?.dispose()
   highlighter = null
   createHighlighterPromise = null

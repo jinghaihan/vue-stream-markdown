@@ -28,10 +28,8 @@ const props = withDefaults(defineProps<CodeBlockProps & {
 })
 
 const {
-  cdnOptions,
   controls,
-  mermaidOptions,
-  shikiOptions,
+  extensions,
   isDark,
   uiComponents: UI,
 } = useContext()
@@ -44,8 +42,6 @@ const previewState = ref(createMermaidPreviewControllerState())
 const containerRef = ref<HTMLDivElement>()
 
 const nodeLoading = computed(() => !!props.node.loading)
-
-const Error = computed(() => mermaidOptions.value?.errorComponent ?? UI.value.ErrorComponent)
 
 const model = computed(() => createMermaidPreviewModel({
   code: props.node.value,
@@ -71,12 +67,12 @@ const { shouldRender } = useDeferredRender({
   immediate: props.immediateRender,
 })
 
-const { renderMermaid } = useMermaid({
-  mermaidOptions,
-  cdnOptions,
-  shikiOptions,
+const { renderMermaid, resolveExtension } = useMermaid({
+  extensions,
   isDark,
 })
+
+const Error = computed(() => resolveExtension(code.value)?.errorComponent ?? UI.value.ErrorComponent)
 
 function updateHeight() {
   if (props.containerHeight)
@@ -118,7 +114,9 @@ const mermaidControls = computed(
 watch(
   () => [
     code.value,
-    mermaidOptions.value,
+    extensions.value?.beautifulMermaid,
+    extensions.value?.mermaid,
+    extensions.value?.code,
     isDark.value,
     nodeLoading.value,
   ],
