@@ -134,6 +134,52 @@ describe('stream markdown', () => {
     wrapper.unmount()
   })
 
+  it.each([
+    '| Name | Age |\n| --- | --- |',
+    '| Name | Age |\n| --- | --- |\n| Alice | 30 |',
+  ])('hides the streaming caret inside tables without clearing table loading', async (content) => {
+    const wrapper = mount(Markdown, {
+      props: {
+        caret: 'block',
+        content,
+        enableAnimate: false,
+        mode: 'streaming',
+      },
+    })
+
+    await vi.dynamicImportSettled()
+    await flushPromises()
+
+    expect(wrapper.get('[data-stream-markdown="table"]')).toBeTruthy()
+    expect(wrapper.find('[data-stream-markdown="caret"]').exists()).toBe(false)
+    expect(wrapper.find('[data-stream-markdown="spin"]').exists()).toBe(true)
+    wrapper.unmount()
+  })
+
+  it('shows the streaming caret in text following a table', async () => {
+    const wrapper = mount(Markdown, {
+      props: {
+        caret: 'circle',
+        content: [
+          '| Name | Age |',
+          '| --- | --- |',
+          '| Alice | 30 |',
+          '',
+          'Following text',
+        ].join('\n'),
+        enableAnimate: false,
+        mode: 'streaming',
+      },
+    })
+
+    await vi.dynamicImportSettled()
+    await flushPromises()
+
+    expect(wrapper.get('p [data-stream-markdown="caret"]').text()).toBe('●')
+    expect(wrapper.find('table [data-stream-markdown="caret"]').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
   it('parses emphasis next to CJK text consistently', async () => {
     const wrapper = mount(Markdown, {
       props: {
