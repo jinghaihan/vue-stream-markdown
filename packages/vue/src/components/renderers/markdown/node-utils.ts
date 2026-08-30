@@ -16,6 +16,14 @@ const DIRECTIONAL_TAGS = new Set([
   'th',
 ])
 
+const DIRECTION_IGNORED_TAGS = new Set([
+  'code',
+  'kbd',
+  'pre',
+  'samp',
+  'var',
+])
+
 export function findLastRenderableIndex(nodes: Node[]): number {
   for (let index = nodes.length - 1; index >= 0; index--) {
     const node = nodes[index]!
@@ -84,6 +92,10 @@ export function resolveDataAttribute(tag: string): string {
 function getNodeText(node: Node): string {
   if (typeof node === 'string')
     return node
+
+  const [tag] = node
+  if (tag === null || DIRECTION_IGNORED_TAGS.has(tag))
+    return ''
 
   let text = ''
   for (let index = 2; index < node.length; index++) {

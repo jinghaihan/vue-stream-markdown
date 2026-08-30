@@ -153,6 +153,28 @@ describe('stream markdown', () => {
     wrapper.unmount()
   })
 
+  it('ignores code content when detecting text direction', async () => {
+    const wrapper = mount(Markdown, {
+      props: {
+        content: [
+          'مرحبا `const englishIdentifierContainsManyLetters = true`',
+          'Hello `مرحبا بالعالم هذا نص عربي طويل`',
+        ].join('\n\n'),
+        dir: 'auto',
+        enableAnimate: false,
+        mode: 'static',
+      },
+    })
+
+    await flushPromises()
+
+    const paragraphs = wrapper.findAll('p')
+    expect(paragraphs[0]?.attributes('dir')).toBe('rtl')
+    expect(paragraphs[1]?.attributes('dir')).toBe('ltr')
+    expect(wrapper.findAll('code').every(code => code.attributes('dir') === 'ltr')).toBe(true)
+    wrapper.unmount()
+  })
+
   it('does not expose transient math errors while streaming', async () => {
     const wrapper = mount(Markdown, {
       props: {
