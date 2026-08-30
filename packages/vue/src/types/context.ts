@@ -51,6 +51,7 @@ type BaseStreamMarkdownProps = CoreStreamMarkdownProps<
 
 export type StreamMarkdownProps = BaseStreamMarkdownProps & {
   completion?: Completion
+  literalTagContent?: string[]
   parserOptions?: StreamMarkdownParserOptions
 }
 

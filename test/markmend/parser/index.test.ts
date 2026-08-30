@@ -99,6 +99,45 @@ describe('markmend parser', () => {
     ])
   })
 
+  it('preserves configured literal tag content as text', async () => {
+    const engine = createMarkmendParser({
+      literalTagContent: ['mention'],
+    })
+    const document = await engine.parse(
+      '<mention user_id="123">@_some_username_</mention> and <other>_italic_</other>',
+      'static',
+    )
+
+    expect(document.nodes).toEqual([
+      ['p', {}, ['mention', { $: { html: 1, block: 0 }, user_id: '123' }, '@_some_username_'], ' and ', ['other', { $: { html: 1, block: 0 } }, ['em', {}, 'italic']]],
+    ])
+  })
+
+  it('flattens nested markup and preserves paragraph breaks in literal tags', async () => {
+    const engine = createMarkmendParser({
+      literalTagContent: ['artifact'],
+    })
+    const document = await engine.parse(
+      '<artifact>First **line**\n\nSecond <strong>line</strong></artifact>',
+      'static',
+    )
+
+    expect(document.nodes).toEqual([
+      ['p', {}, ['artifact', { $: { html: 1, block: 0 } }, 'First **line**\n\nSecond line']],
+    ])
+  })
+
+  it('protects closed literal tag content while streaming', async () => {
+    const engine = createMarkmendParser({
+      literalTagContent: ['mention'],
+    })
+    const document = await engine.parse('<mention>@_some_username_</mention>', 'streaming')
+
+    expect(document.nodes).toEqual([
+      ['p', { $: { line: 1 } }, ['mention', { $: { html: 1, block: 0 } }, '@_some_username_']],
+    ])
+  })
+
   it('enables math only when the extension contributes its parser plugin', async () => {
     const input = 'Inline $x^2$'
     const plainDocument = await createMarkmendParser().parse(input, 'static')

@@ -111,6 +111,7 @@ const document = shallowRef<MarkdownDocument>({
 
 const parser = createMarkmendParser({
   completion: props.completion,
+  literalTagContent: props.literalTagContent,
   parserOptions: {
     ...props.parserOptions,
     plugins: [

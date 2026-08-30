@@ -10,11 +10,13 @@ import { createMarkdownParser } from 'comark'
 import footnotes from 'comark/plugins/footnotes'
 import security from 'comark/plugins/security'
 import cjkFriendly from 'markdown-it-cjk-friendly'
+import { createLiteralTagContentProcessor } from './literal-tag-content'
 
 export type MarkdownMode = 'static' | 'streaming'
 
 export interface CreateMarkmendParserOptions {
   completion?: Completion
+  literalTagContent?: string[]
   parserOptions?: ParserOptions
   syntax?: MarkmendSyntaxOptions
 }
@@ -34,6 +36,7 @@ export function createMarkmendParser(
   options: CreateMarkmendParserOptions = {},
 ): MarkmendParser {
   const complete = resolveCompletion(options.completion)
+  const literalTagContent = createLiteralTagContentProcessor(options.literalTagContent)
   let activeMode: MarkdownMode = 'streaming'
   let document = EMPTY_DOCUMENT
   let pending: Promise<void> = Promise.resolve()
@@ -41,6 +44,7 @@ export function createMarkmendParser(
   const parseMarkdown = createMarkdownParser({
     ...options.parserOptions,
     plugins: [
+      ...(literalTagContent ? [literalTagContent.plugin] : []),
       ...(options.parserOptions?.plugins ?? []),
       ...(options.syntax?.cjk === false
         ? []
@@ -67,6 +71,7 @@ export function createMarkmendParser(
         const nextDocument = await parseMarkdown(markdown, {
           streaming: mode === 'streaming',
         })
+        literalTagContent?.flatten(nextDocument.nodes)
         document = nextDocument
       }
       catch {}

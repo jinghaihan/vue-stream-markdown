@@ -217,6 +217,28 @@ describe('stream markdown', () => {
     wrapper.unmount()
   })
 
+  it('renders configured literal tag content without Markdown formatting', async () => {
+    const Mention = markRaw(defineComponent({
+      setup(_props, { slots }) {
+        return () => h('span', { 'data-mention': '' }, slots.default?.())
+      },
+    }))
+    const wrapper = mount(Markdown, {
+      props: {
+        components: { mention: Mention },
+        content: '<mention>@_some_username_</mention>',
+        literalTagContent: ['mention'],
+        mode: 'static',
+      },
+    })
+
+    await flushPromises()
+
+    expect(wrapper.get('[data-mention]').text()).toBe('@_some_username_')
+    expect(wrapper.find('em').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
   it('keeps custom components mounted when switching to static mode', async () => {
     let mountCount = 0
     let unmountCount = 0
