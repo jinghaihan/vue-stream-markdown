@@ -70,7 +70,7 @@ const codeExtension = code(options)
 
 The package exports its Shiki-specific option types. The main package only sees normalized token data, so applications that do not install this extension can still typecheck.
 
-The shared Shiki highlighter is retained across Markdown component remounts. Use `disposeSharedShikiHighlighter()` from `@stream-markdown/code` only for explicit full-app or test cleanup.
+The shared Shiki highlighter is retained by a module-level reference across Markdown component remounts and cannot be garbage-collected until that reference is released. Call `disposeShikiHighlighter()` from `@stream-markdown/code` manually only when syntax highlighting is no longer needed, such as during full-app or test cleanup.
 
 ## Math
 

@@ -76,14 +76,14 @@ Refer to the [Shiki Themes](https://shiki.style/themes) page for a full list of 
 
 ## Highlighter Lifecycle
 
-Shiki's `createHighlighter()` is relatively expensive, so vue-stream-markdown keeps a shared highlighter singleton across code blocks, component remounts, and route changes. The singleton is not disposed automatically when a `<Markdown>` component unmounts.
+Shiki's `createHighlighter()` is relatively expensive, so vue-stream-markdown keeps a shared highlighter singleton across code blocks, component remounts, and route changes. The singleton is held by a module-level reference and is not disposed automatically when a `<Markdown>` component unmounts, so it cannot be garbage-collected while that reference remains.
 
-If you need to free Shiki memory manually, call `disposeSharedShikiHighlighter()` only when no active markdown rendering is still using the shared highlighter:
+Call `disposeShikiHighlighter()` manually only when you are certain the application no longer needs syntax highlighting:
 
 ```ts
-import { disposeSharedShikiHighlighter } from '@stream-markdown/code'
+import { disposeShikiHighlighter } from '@stream-markdown/code'
 
-disposeSharedShikiHighlighter()
+disposeShikiHighlighter()
 ```
 
 Typical use cases are test teardown, HMR cleanup, or explicit full-app cleanup. Avoid calling it from each markdown component's `onBeforeUnmount()`, because other mounted or in-flight renders may still be using the shared highlighter.
