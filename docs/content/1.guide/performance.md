@@ -40,6 +40,8 @@ Simple Comark tuples are converted directly to VNodes. Only feature-heavy code a
 
 ## Comparison with Streamdown
 
+Streamdown was an important inspiration for this project. This comparison documents implementation trade-offs under reproducible workloads rather than presenting a universal ranking.
+
 The repository benchmarks the equivalent Vue Stream Markdown and Streamdown pipelines under the same inputs. These numbers are a local snapshot from an Apple M1 running Node.js 22.22.2; absolute throughput varies by machine, so the relative result is more useful than the exact operations per second.
 
 ### Completion and parsing
