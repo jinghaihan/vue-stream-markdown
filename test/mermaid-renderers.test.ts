@@ -8,6 +8,8 @@ function createExtension(
   svg: string,
 ): MermaidExtension<Component> {
   return {
+    preload: async () => {},
+    dispose: () => {},
     supports,
     render: vi.fn(async () => ({ svg, valid: true })),
   }

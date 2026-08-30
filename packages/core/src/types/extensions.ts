@@ -1,8 +1,8 @@
 import type { MaybePromise } from './common'
 
 export interface ExtensionRuntime {
-  preload?: () => MaybePromise<void>
-  dispose?: () => MaybePromise<void>
+  preload: () => MaybePromise<void>
+  dispose: () => MaybePromise<void>
 }
 
 export interface CodeToken {

@@ -133,7 +133,7 @@ function getContainer(): HTMLElement | undefined {
 
 async function bootstrap() {
   const tasks = [
-    ...Object.values(props.extensions ?? {}).map(extension => extension.preload?.()),
+    ...Object.values(props.extensions ?? {}).map(extension => extension.preload()),
     preloadAsyncComponents(icons.value),
     preloadAsyncComponents(uiComponents.value),
   ]
@@ -177,7 +177,7 @@ provideContext({
 onBeforeUnmount(() => {
   active = false
   for (const extension of Object.values(props.extensions ?? {}))
-    void extension.dispose?.()
+    void extension.dispose()
 
   stopTailwindV3ThemeObserver()
   stopDarkModeObserver()
