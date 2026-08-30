@@ -7,6 +7,7 @@ import type {
 import {
   resolveAnimation,
   resolveAnimationSplit,
+  resolveAnimationStagger,
   resolveCaret,
   resolveEnableAnimate,
 } from '@stream-markdown/core'
@@ -52,6 +53,7 @@ function resolveContext(context: StreamMarkdownProvideContext): StreamMarkdownRe
   const enableAnimate = computed(() => resolveEnableAnimate(mode.value, toValue(context.enableAnimate)))
   const animation = computed(() => resolveAnimation(toValue(context.animation)))
   const animationSplit = computed(() => resolveAnimationSplit(toValue(context.animationSplit)))
+  const animationStagger = computed(() => resolveAnimationStagger(toValue(context.animationStagger)))
 
   const enableCaret = computed(() => toValue(context.enableCaret))
   const caret = computed(() => resolveCaret(toValue(context.caret)))
@@ -86,6 +88,7 @@ function resolveContext(context: StreamMarkdownProvideContext): StreamMarkdownRe
     enableAnimate,
     animation,
     animationSplit,
+    animationStagger,
     enableCaret,
     caret,
     documentNodes,

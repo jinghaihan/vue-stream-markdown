@@ -9,6 +9,7 @@ import {
   normalizeAnimationDuration,
   normalizeCssSize,
   normalizeThemeVariableValue,
+  resolveAnimationStagger,
   resolveScrollableMaxHeight,
   resolveTableAlign,
   resolveTextAnimationSplit,
@@ -61,6 +62,9 @@ describe('core utilities', () => {
 
   it('resolves animation names', () => {
     expect(getTransitionName('fade-in')).toBe('stream-markdown-fade-in')
+    expect(resolveAnimationStagger()).toBe(40)
+    expect(resolveAnimationStagger(-10)).toBe(0)
+    expect(resolveAnimationStagger(25)).toBe(25)
   })
 
   it('normalizes CSS values used by renderers', () => {

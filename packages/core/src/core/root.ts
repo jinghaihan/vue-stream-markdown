@@ -3,6 +3,7 @@ import {
   CARETS,
   DEFAULT_ANIMATION,
   DEFAULT_ANIMATION_SPLIT,
+  DEFAULT_ANIMATION_STAGGER,
   STREAM_MARKDOWN_CSS_VARIABLES,
 } from '../constants'
 import { normalizeAnimationDuration } from '../utils'
@@ -25,6 +26,12 @@ export function resolveAnimation(animation?: AnimationType): AnimationType {
 
 export function resolveAnimationSplit(animationSplit?: AnimationSplit): AnimationSplit {
   return animationSplit ?? DEFAULT_ANIMATION_SPLIT
+}
+
+export function resolveAnimationStagger(animationStagger?: number): number {
+  if (!Number.isFinite(animationStagger))
+    return DEFAULT_ANIMATION_STAGGER
+  return Math.max(0, animationStagger ?? DEFAULT_ANIMATION_STAGGER)
 }
 
 export function resolveCaret(caret?: string): string | undefined {

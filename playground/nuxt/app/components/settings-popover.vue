@@ -29,12 +29,21 @@ const caret = defineModel<StreamMarkdownProps['caret']>('caret', { required: fal
 const animation = defineModel<NonNullable<StreamMarkdownProps['animation']>>('animation', { required: false, default: 'fade-in' })
 const animationSplit = defineModel<NonNullable<StreamMarkdownProps['animationSplit']>>('animationSplit', { required: false, default: 'auto' })
 const animationDuration = defineModel<number>('animationDuration', { required: false, default: 500 })
+const animationStagger = defineModel<number>('animationStagger', { required: false, default: 40 })
 
 const animationDurationInput = computed({
   get: () => animationDuration.value,
   set: (value: number | string) => {
     const nextValue = Number(value)
     animationDuration.value = Number.isFinite(nextValue) ? nextValue : 500
+  },
+})
+
+const animationStaggerInput = computed({
+  get: () => animationStagger.value,
+  set: (value: number | string) => {
+    const nextValue = Number(value)
+    animationStagger.value = Number.isFinite(nextValue) ? Math.max(0, nextValue) : 40
   },
 })
 
@@ -297,6 +306,18 @@ watch(() => staticMode.value, () => {
             min="0"
             step="50"
             placeholder="Duration (ms)"
+          />
+        </div>
+
+        <div :class="BLOCK_CLASSES">
+          <Label :class="LABEL_CLASSES">Stagger</Label>
+          <Input
+            v-model:value="animationStaggerInput"
+            :class="CONTROL_CLASSES"
+            type="number"
+            min="0"
+            step="10"
+            placeholder="Stagger (ms)"
           />
         </div>
       </div>

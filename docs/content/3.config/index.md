@@ -22,9 +22,24 @@ description: Configure parsing, rendering, controls, security, and integrations.
 | `animation`         | `string`                                      | `'fade-in'`       | Select the enter animation                                                  |
 | `animationSplit`    | `'auto' \| 'word' \| 'char'`                  | `'auto'`          | Select text animation granularity                                           |
 | `animationDuration` | `number \| string`                            | `500`             | Set animation duration                                                      |
+| `animationStagger`  | `number`                                      | `40`              | Delay adjacent streaming animation units                                    |
 | `caret`             | `'block' \| 'circle'`                         | `undefined`       | Show a streaming caret                                                      |
 
 Code, math, and diagram renderers are configured through `extensions`. Display, control, preview, security, theme, and locale options remain on `Markdown` or `MarkdownProvider`.
+
+## Streaming animation timing
+
+`animationDuration` controls how long each entry animation lasts. `animationStagger` controls how many milliseconds apart adjacent words or characters begin:
+
+```vue
+<Markdown
+  :animation-duration="500"
+  :animation-stagger="40"
+  animation-split="auto"
+/>
+```
+
+The default `auto` split animates Latin text by word and CJK text by character. When a stream delivers content faster than the configured stagger, the renderer compresses pending delays to keep visible content within roughly 320ms of the source. Set `animationStagger` to `0` to make every new unit in a batch start together.
 
 ## Detailed configuration
 

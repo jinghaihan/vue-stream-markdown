@@ -1,3 +1,4 @@
+import type { TextAnimationScheduler } from '@stream-markdown/core'
 import type { VNodeChild } from 'vue'
 import type { StreamMarkdownResolvedContext } from '../../../types'
 import {
@@ -13,6 +14,7 @@ export interface TextNodeRendererOptions {
   animatedTextKeys: Set<string>
   context: StreamMarkdownResolvedContext
   markTextRendered: (key: string) => void
+  textAnimationScheduler: TextAnimationScheduler
 }
 
 export function renderTextNode(
@@ -21,7 +23,7 @@ export function renderTextNode(
   path: string,
   options: TextNodeRendererOptions,
 ): VNodeChild {
-  const { animatedTextKeys, context, markTextRendered } = options
+  const { animatedTextKeys, context, markTextRendered, textAnimationScheduler } = options
   const textKey = `${path}-text`
   markTextRendered(textKey)
   if (context.enableAnimate.value && text.trim())
@@ -44,16 +46,27 @@ export function renderTextNode(
 
   const useCssAnimation = CSS_TEXT_ANIMATIONS.has(context.animation.value)
   const parts = createTextParts(text, textKey, context.animationSplit.value)
+  const delays = textAnimationScheduler.schedule(parts)
   const children = () => [
-    ...parts.map(part => h('span', {
-      'key': part.key,
-      'data-stream-markdown': part.whitespace ? 'text-space' : `text-${part.animationSplit}`,
-      'class': [
-        '[text-decoration:inherit]',
-        !part.whitespace && 'inline-block max-w-full whitespace-pre-wrap break-words',
-        useCssAnimation && `stream-markdown-text-${context.animation.value}`,
-      ],
-    }, part.value)),
+    ...parts.map((part) => {
+      const delay = delays.get(part.key)
+      const delayStyle = delay
+        ? {
+            animationDelay: `${delay}ms`,
+            transitionDelay: `${delay}ms`,
+          }
+        : undefined
+      return h('span', {
+        'key': part.key,
+        'data-stream-markdown': part.whitespace ? 'text-space' : `text-${part.animationSplit}`,
+        'class': [
+          '[text-decoration:inherit]',
+          !part.whitespace && 'inline-block max-w-full whitespace-pre-wrap break-words',
+          useCssAnimation && `stream-markdown-text-${context.animation.value}`,
+        ],
+        'style': delayStyle,
+      }, part.value)
+    }),
     caret,
   ]
 
