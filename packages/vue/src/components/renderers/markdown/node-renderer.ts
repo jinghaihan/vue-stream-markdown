@@ -21,6 +21,7 @@ export interface NodeRendererOptions {
   animatedTextKeys: Set<string>
   context: StreamMarkdownResolvedContext
   getComponents: () => MarkdownComponents
+  getImageSources: () => string[]
   markTextRendered: (key: string) => void
 }
 
@@ -99,6 +100,7 @@ export function createNodeRenderer(options: NodeRendererOptions) {
         loading,
         node,
         nodeKey: key,
+        sources: options.getImageSources(),
       })
     }
 

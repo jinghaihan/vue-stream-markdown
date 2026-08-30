@@ -8,6 +8,7 @@ const props = defineProps<{
   loading?: boolean
   node: ElementNode
   nodeKey: string
+  sources?: string[]
 }>()
 
 const {
@@ -137,6 +138,7 @@ function setMaskOpacity(opacity: number) {
         :title="title"
         :preview="!fallbackAttempted && enablePreview"
         :referrer-policy="imageOptions?.referrerPolicy"
+        :sources="sources"
         :controls="controls"
         :transform-harden-url="transformHardenUrl"
         :node-props="controlContext"

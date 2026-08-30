@@ -62,6 +62,41 @@ describe('stream markdown', () => {
     wrapper.unmount()
   })
 
+  it('provides every document image to the image renderer', async () => {
+    let sources: string[] | undefined
+    const Image = markRaw(defineComponent({
+      inheritAttrs: false,
+      props: {
+        sources: Array<string>,
+        src: String,
+      },
+      setup(props) {
+        sources = props.sources
+        return () => h('img', { src: props.src })
+      },
+    }))
+    const wrapper = mount(Markdown, {
+      props: {
+        content: [
+          '![First](https://example.com/first.png)',
+          '![Second](https://example.com/second.png)',
+        ].join('\n\n'),
+        mode: 'static',
+        uiComponents: { Image },
+      },
+    })
+
+    await flushPromises()
+    await vi.dynamicImportSettled()
+    await flushPromises()
+
+    expect(sources).toEqual([
+      'https://example.com/first.png',
+      'https://example.com/second.png',
+    ])
+    wrapper.unmount()
+  })
+
   it('preserves stable block elements while the tail grows', async () => {
     const wrapper = mount(Markdown, {
       props: {

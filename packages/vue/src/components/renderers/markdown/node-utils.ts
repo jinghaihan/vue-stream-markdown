@@ -25,6 +25,26 @@ export function findLastRenderableIndex(nodes: Node[]): number {
   return -1
 }
 
+export function collectImageSources(nodes: Node[]): string[] {
+  const sources: string[] = []
+
+  function visit(children: Node[]) {
+    for (const child of children) {
+      if (typeof child === 'string')
+        continue
+
+      const [tag, attrs, ...nestedChildren] = child
+      if (tag === 'img' && typeof attrs.src === 'string' && attrs.src)
+        sources.push(attrs.src)
+
+      visit(nestedChildren)
+    }
+  }
+
+  visit(nodes)
+  return sources
+}
+
 export function resolveNodeDirection(
   tag: string,
   node: Node,

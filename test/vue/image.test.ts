@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { flushPromises, mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { defineComponent, h } from 'vue'
 import Image from '../../packages/vue/src/components/image.vue'
 import { useContext } from '../../packages/vue/src/composables'
@@ -13,7 +13,23 @@ const PassthroughModal = defineComponent({
 
 const PassthroughZoomContainer = defineComponent({
   setup(_, { slots }) {
-    return () => h('div', { 'data-test': 'zoom-container' }, slots.default?.())
+    return () => h('div', { 'data-test': 'zoom-container' }, [
+      slots.controls?.({}),
+      slots.default?.(),
+    ])
+  },
+})
+
+const PassthroughButton = defineComponent({
+  props: {
+    name: String,
+  },
+  emits: ['click'],
+  setup(props, { emit }) {
+    return () => h('button', {
+      'aria-label': props.name,
+      'onClick': (event: MouseEvent) => emit('click', event),
+    })
   },
 })
 
@@ -54,6 +70,58 @@ describe('image component', () => {
     expect(images.map(image => image.attributes('referrerpolicy'))).toEqual([
       'no-referrer',
       'no-referrer',
+    ])
+  })
+
+  it('switches between provided image sources', async () => {
+    const WrappedImage = defineComponent({
+      setup() {
+        const { provideContext } = useContext()
+
+        provideContext({
+          uiComponents: {
+            Button: PassthroughButton,
+            Modal: PassthroughModal,
+            ZoomContainer: PassthroughZoomContainer,
+          } as never,
+        })
+
+        return () => h(Image, {
+          src: 'https://example.com/first.png',
+          sources: [
+            'https://example.com/first.png',
+            'https://example.com/second.png',
+          ],
+          alt: 'Example',
+          controls: {
+            image: {
+              carousel: true,
+              download: false,
+              flip: false,
+              rotate: false,
+            },
+          },
+          nodeProps: {},
+        })
+      },
+    })
+
+    const wrapper = mount(WrappedImage)
+    await wrapper.get('img').trigger('load')
+    await wrapper.get('img').trigger('click')
+    await vi.dynamicImportSettled()
+    await flushPromises()
+
+    expect(wrapper.findAll('img').map(image => image.attributes('src'))).toEqual([
+      'https://example.com/first.png',
+      'https://example.com/first.png',
+    ])
+
+    await wrapper.get('button[aria-label="Next"]').trigger('click')
+
+    expect(wrapper.findAll('img').map(image => image.attributes('src'))).toEqual([
+      'https://example.com/first.png',
+      'https://example.com/second.png',
     ])
   })
 })
