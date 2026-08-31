@@ -1,4 +1,4 @@
-import type { Node } from '@markmend/parser'
+import type { CompletionInfo, Node } from '@markmend/parser'
 import type { PropType } from 'vue'
 import type { MarkdownComponents } from '../../../types'
 import { createTextAnimationScheduler } from '@stream-markdown/core'
@@ -10,6 +10,10 @@ import { collectImageSources } from './node-utils'
 export default defineComponent({
   name: 'MarkdownNodes',
   props: {
+    completionInfo: {
+      type: Object as PropType<CompletionInfo>,
+      default: undefined,
+    },
     components: {
       type: Object as PropType<MarkdownComponents>,
       default: () => ({}),
@@ -29,6 +33,7 @@ export default defineComponent({
     const renderNodes = createNodeRenderer({
       animatedTextKeys,
       context,
+      getCompletionInfo: () => props.completionInfo,
       getComponents: () => props.components,
       getImageSources: () => imageSources.value,
       markTextRendered: key => renderedTextKeys.add(key),

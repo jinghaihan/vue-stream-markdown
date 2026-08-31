@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { CompletionInfo } from '@markmend/parser'
 import type {
   Icons,
   MarkdownDocument,
@@ -111,6 +112,7 @@ const document = shallowRef<MarkdownDocument>({
   meta: {},
   nodes: [],
 })
+const completionInfo = shallowRef<CompletionInfo>()
 
 const parser = createMarkmendParser({
   completion: props.completion,
@@ -156,9 +158,12 @@ const ownedExtensions = resolveOwnedExtensions(
 watch(
   [content, mode],
   ([markdown, currentMode]) => {
-    void parser.parse(markdown, currentMode).then(({ document: nextDocument }) => {
-      if (active)
+    void parser.parse(markdown, currentMode).then((result) => {
+      if (active) {
+        completionInfo.value = result.completion
+        const nextDocument = result.document
         document.value = nextDocument
+      }
     })
   },
   { immediate: true },
@@ -238,6 +243,7 @@ defineExpose({
     :style="rootStyle"
   >
     <MarkdownNodes
+      :completion-info="completionInfo"
       :components="components"
       :loading="mode === 'streaming'"
       :nodes="document.nodes"

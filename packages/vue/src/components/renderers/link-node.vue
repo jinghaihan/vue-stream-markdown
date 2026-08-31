@@ -12,6 +12,7 @@ const props = defineProps<{
   loading?: boolean
   node: ElementNode
   nodeKey: string
+  waitingForDestination?: boolean
 }>()
 
 const { uiComponents: UI, linkOptions, hardenOptions, getContainer } = useContext()
@@ -94,6 +95,17 @@ function handleFootnoteBackref() {
     <component :is="Error" v-else variant="harden-link">
       <slot />
     </component>
+
+    <component
+      :is="UI.Spin"
+      v-if="waitingForDestination"
+      :style="{
+        width: '0.75em',
+        height: '0.75em',
+        margin: '0 0 0 0.25em',
+        verticalAlign: '-0.0625em',
+      }"
+    />
 
     <component
       :is="UI.Alert"

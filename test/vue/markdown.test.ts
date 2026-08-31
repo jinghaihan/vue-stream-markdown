@@ -343,6 +343,50 @@ describe('stream markdown', () => {
     wrapper.unmount()
   })
 
+  it('replaces the link caret with a spinner while waiting for its destination', async () => {
+    const wrapper = mount(Markdown, {
+      props: {
+        caret: 'block',
+        content: '[Link](',
+        mode: 'streaming',
+      },
+    })
+    const testWrapper = wrapper as unknown as MarkdownTestWrapper
+    await vi.dynamicImportSettled()
+    await flushPromises()
+
+    expect(wrapper.find('[data-stream-markdown="caret"]').exists()).toBe(false)
+    expect(wrapper.find('[data-stream-markdown="spin"]').exists()).toBe(true)
+
+    await testWrapper.setProps({ content: '[Link](https://example.com' })
+    await flushPromises()
+
+    expect(wrapper.find('[data-stream-markdown="caret"]').exists()).toBe(false)
+    expect(wrapper.find('[data-stream-markdown="spin"]').exists()).toBe(true)
+
+    await testWrapper.setProps({ content: '[Link](https://example.com)' })
+    await flushPromises()
+
+    expect(wrapper.find('[data-stream-markdown="spin"]').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('keeps the caret while the link label is incomplete', async () => {
+    const wrapper = mount(Markdown, {
+      props: {
+        caret: 'block',
+        content: '[Link',
+        mode: 'streaming',
+      },
+    })
+    await vi.dynamicImportSettled()
+    await flushPromises()
+
+    expect(wrapper.find('[data-stream-markdown="caret"]').exists()).toBe(true)
+    expect(wrapper.find('[data-stream-markdown="spin"]').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
   it('renders footnote back references as icon buttons', async () => {
     const wrapper = mount(Markdown, {
       props: {

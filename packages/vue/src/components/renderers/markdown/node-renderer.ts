@@ -1,4 +1,4 @@
-import type { Node } from '@markmend/parser'
+import type { CompletionInfo, Node } from '@markmend/parser'
 import type { TextAnimationScheduler } from '@stream-markdown/core'
 import type { VNodeChild } from 'vue'
 import type { MarkdownComponents, StreamMarkdownResolvedContext } from '../../../types'
@@ -21,6 +21,7 @@ const TableNode = defineAsyncComponent(() => import('../table-node.vue'))
 export interface NodeRendererOptions {
   animatedTextKeys: Set<string>
   context: StreamMarkdownResolvedContext
+  getCompletionInfo: () => CompletionInfo | undefined
   getComponents: () => MarkdownComponents
   getImageSources: () => string[]
   markTextRendered: (key: string) => void
@@ -91,14 +92,24 @@ export function createNodeRenderer(options: NodeRendererOptions) {
     ]
 
     if (tag === 'a') {
+      const completion = options.getCompletionInfo()
+      const waitingForDestination = loading
+        && completion?.type === 'link'
+        && completion.phase === 'destination'
       return h(LinkNode, {
         key,
         attributes: resolvedAttrs,
         loading,
         node,
         nodeKey: key,
+        waitingForDestination,
       }, {
-        default: () => renderNodes(children, loading, key, hideCaret),
+        default: () => renderNodes(
+          children,
+          loading,
+          key,
+          hideCaret || waitingForDestination,
+        ),
       })
     }
 
