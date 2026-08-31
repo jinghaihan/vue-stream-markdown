@@ -1,11 +1,11 @@
+import type { CompletionInfo, CompletionResult } from '@markmend/core'
 import type { MarkdownDocument } from 'comark'
 import type {
   Completion,
-  CompletionFunction,
   MarkmendSyntaxOptions,
   MarkmendParserOptions as ParserOptions,
 } from './types'
-import { completeMarkdown } from '@markmend/core'
+import { completeMarkdownWithInfo } from '@markmend/core'
 import { createMarkdownParser } from 'comark'
 import footnotes from 'comark/plugins/footnotes'
 import security from 'comark/plugins/security'
@@ -23,7 +23,12 @@ export interface CreateMarkmendParserOptions {
 
 export interface MarkmendParser {
   getDocument: () => MarkdownDocument
-  parse: (markdown: string, mode?: MarkdownMode) => Promise<MarkdownDocument>
+  parse: (markdown: string, mode?: MarkdownMode) => Promise<MarkmendParseResult>
+}
+
+export interface MarkmendParseResult {
+  completion?: CompletionInfo
+  document: MarkdownDocument
 }
 
 const EMPTY_DOCUMENT: MarkdownDocument = {
@@ -38,7 +43,9 @@ export function createMarkmendParser(
   const complete = resolveCompletion(options.completion)
   const literalTagContent = createLiteralTagContentProcessor(options.literalTagContent)
   let activeMode: MarkdownMode = 'streaming'
+  let activeCompletion: CompletionInfo | undefined
   let document = EMPTY_DOCUMENT
+  let parseResult: MarkmendParseResult = { document }
   let pending: Promise<void> = Promise.resolve()
 
   const parseMarkdown = createMarkdownParser({
@@ -57,26 +64,38 @@ export function createMarkmendParser(
         : [footnotes(options.syntax?.footnotes)]),
     ],
     autoClose(markdown) {
-      return activeMode === 'streaming' ? complete(markdown) : markdown
+      if (activeMode !== 'streaming') {
+        activeCompletion = undefined
+        return markdown
+      }
+
+      const result = complete(markdown)
+      activeCompletion = result.completion
+      return result.markdown
     },
   })
 
   function parse(
     markdown: string,
     mode: MarkdownMode = 'streaming',
-  ): Promise<MarkdownDocument> {
+  ): Promise<MarkmendParseResult> {
     const result = pending.then(async () => {
       try {
         activeMode = mode
+        activeCompletion = undefined
         const nextDocument = await parseMarkdown(markdown, {
           streaming: mode === 'streaming',
         })
         literalTagContent?.flatten(nextDocument.nodes)
         document = nextDocument
+        parseResult = {
+          document,
+          completion: activeCompletion,
+        }
       }
       catch {}
 
-      return document
+      return parseResult
     })
 
     pending = result.then(() => undefined, () => undefined)
@@ -89,8 +108,12 @@ export function createMarkmendParser(
   }
 }
 
-function resolveCompletion(completion?: Completion): CompletionFunction {
-  if (typeof completion === 'function')
-    return completion
-  return markdown => completeMarkdown(markdown, completion)
+function resolveCompletion(completion?: Completion): (markdown: string) => CompletionResult {
+  if (typeof completion === 'function') {
+    return (markdown) => {
+      const result = completion(markdown)
+      return typeof result === 'string' ? { markdown: result } : result
+    }
+  }
+  return markdown => completeMarkdownWithInfo(markdown, completion)
 }

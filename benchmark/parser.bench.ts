@@ -42,13 +42,13 @@ const implementations: Implementation[] = [
     name: 'markmend',
     async coldParse(content) {
       const parser = createMarkmendParser()
-      return (await parser.parse(content, 'streaming')).nodes.length
+      return (await parser.parse(content, 'streaming')).document.nodes.length
     },
     async stream(inputs) {
       const parser = createMarkmendParser()
       let checksum = 0
       for (const input of inputs)
-        checksum += (await parser.parse(input, 'streaming')).nodes.length
+        checksum += (await parser.parse(input, 'streaming')).document.nodes.length
       return checksum
     },
   },

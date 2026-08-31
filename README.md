@@ -57,8 +57,8 @@ This project also uses and benefits from:
 - [markstream-vue](https://github.com/Simon-He95/markstream-vue) - The original inspiration for custom Markdown rendering, and the source of the animation implementation used in this project
 - [ast-explorer](https://github.com/sxzz/ast-explorer) - Playground layout and comark document inspection inspiration
 - [medium-zoom](https://github.com/francoischalifour/medium-zoom) - Inspired the custom image zoom implementation
-- [markdown-sanitizers](https://github.com/vercel-labs/markdown-sanitizers) - URL validation and security hardening logic in `src/utils/harden.ts` is ported from `rehype-harden`
-- [dify](https://github.com/langgenius/dify) - LaTeX normalization logic in `src/completion/vendored/markdown-utils.ts` is ported from Dify
+- [markdown-sanitizers](https://github.com/vercel-labs/markdown-sanitizers) - URL validation and security hardening logic in `packages/core/src/utils/harden.ts` is ported from `rehype-harden`
+- [dify](https://github.com/langgenius/dify) - LaTeX normalization logic in `packages/markmend/core/src/completion/vendored/markdown-utils.ts` is ported from Dify
 
 ## Acknowledgments
 

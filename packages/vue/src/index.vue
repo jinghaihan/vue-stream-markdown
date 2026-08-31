@@ -156,7 +156,7 @@ const ownedExtensions = resolveOwnedExtensions(
 watch(
   [content, mode],
   ([markdown, currentMode]) => {
-    void parser.parse(markdown, currentMode).then((nextDocument) => {
+    void parser.parse(markdown, currentMode).then(({ document: nextDocument }) => {
       if (active)
         document.value = nextDocument
     })

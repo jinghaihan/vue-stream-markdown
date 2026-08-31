@@ -1,4 +1,9 @@
-import type { CompletionContext, CompletionOptions } from '../types'
+import type {
+  CompletionContext,
+  CompletionInfo,
+  CompletionOptions,
+  CompletionResult,
+} from '../types'
 import { flow } from '../utils'
 import { fixCode } from './code'
 import { fixComparisonOperators } from './comparison-operators'
@@ -27,6 +32,8 @@ export function normalize(content: string): string {
   ])(content)
 }
 
+type CompletionStep = (content: string, options?: CompletionContext) => string
+
 type CompletionStepName
   = | 'code'
     | 'comparisonOperators'
@@ -40,8 +47,6 @@ type CompletionStepName
     | 'table'
     | 'inlineMath'
     | 'math'
-
-type CompletionStep = (content: string, options?: CompletionContext) => string
 
 const COMPLETION_STEP_NAMES: CompletionStepName[] = [
   'code',
@@ -73,13 +78,44 @@ const COMPLETION_STEPS = {
   math: fixMath,
 } satisfies Record<CompletionStepName, CompletionStep>
 
+function resolveCompletionInfo(
+  type: CompletionStepName,
+  before: string,
+  after: string,
+): CompletionInfo {
+  if (
+    type === 'link'
+    && after.length === before.length + 1
+    && after.startsWith(before)
+    && after.endsWith(')')
+  ) {
+    return { type, phase: 'destination' }
+  }
+
+  return { type }
+}
+
+export function completeMarkdownWithInfo(
+  content: string,
+  options?: CompletionOptions,
+): CompletionResult {
+  const context = createCompletionContext(options)
+  let markdown = normalize(content)
+  let completion: CompletionInfo | undefined
+
+  for (const type of COMPLETION_STEP_NAMES) {
+    const before = markdown
+    markdown = COMPLETION_STEPS[type](before, context)
+    if (markdown !== before)
+      completion = resolveCompletionInfo(type, before, markdown)
+  }
+
+  return { markdown, completion }
+}
+
 export function completeMarkdown(
   content: string,
   options?: CompletionOptions,
 ): string {
-  const context = createCompletionContext(options)
-  return COMPLETION_STEP_NAMES.reduce(
-    (result, name) => COMPLETION_STEPS[name](result, context),
-    normalize(content),
-  )
+  return completeMarkdownWithInfo(content, options).markdown
 }

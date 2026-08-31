@@ -9,21 +9,21 @@ description: Configure parsing, rendering, controls, security, and integrations.
 
 ## Core options
 
-| Prop                | Type                                          | Default           | Purpose                                                                     |
-| ------------------- | --------------------------------------------- | ----------------- | --------------------------------------------------------------------------- |
-| `content`           | `string`                                      | `''`              | Markdown source to render                                                   |
-| `mode`              | `'streaming' \| 'static'`                     | `'streaming'`     | Enable completion and streaming UI state, or parse settled source unchanged |
-| `completion`        | `CompletionOptions \| ((markdown) => string)` | Markmend defaults | Configure or replace streaming completion                                   |
-| `parserOptions`     | `StreamMarkdownParserOptions`                 | `{}`              | Add Comark plugins or parser options                                        |
-| `literalTagContent` | `string[]`                                    | `undefined`       | Treat configured custom-tag children as plain text                          |
-| `components`        | `MarkdownComponents`                          | `{}`              | Map native or custom tags to Vue components                                 |
-| `dir`               | `'auto' \| 'ltr' \| 'rtl'`                    | `undefined`       | Configure text direction                                                    |
-| `enableAnimate`     | `boolean`                                     | follows `mode`    | Enable enter animations                                                     |
-| `animation`         | `string`                                      | `'fade-in'`       | Select the enter animation                                                  |
-| `animationSplit`    | `'auto' \| 'word' \| 'char'`                  | `'auto'`          | Select text animation granularity                                           |
-| `animationDuration` | `number \| string`                            | `500`             | Set animation duration                                                      |
-| `animationStagger`  | `number`                                      | `40`              | Delay adjacent streaming animation units                                    |
-| `caret`             | `'block' \| 'circle'`                         | `undefined`       | Show a streaming caret                                                      |
+| Prop                | Type                                      | Default           | Purpose                                                                     |
+| ------------------- | ----------------------------------------- | ----------------- | --------------------------------------------------------------------------- |
+| `content`           | `string`                                  | `''`              | Markdown source to render                                                   |
+| `mode`              | `'streaming' \| 'static'`                 | `'streaming'`     | Enable completion and streaming UI state, or parse settled source unchanged |
+| `completion`        | `CompletionOptions \| CompletionFunction` | Markmend defaults | Configure or replace streaming completion                                   |
+| `parserOptions`     | `StreamMarkdownParserOptions`             | `{}`              | Add Comark plugins or parser options                                        |
+| `literalTagContent` | `string[]`                                | `undefined`       | Treat configured custom-tag children as plain text                          |
+| `components`        | `MarkdownComponents`                      | `{}`              | Map native or custom tags to Vue components                                 |
+| `dir`               | `'auto' \| 'ltr' \| 'rtl'`                | `undefined`       | Configure text direction                                                    |
+| `enableAnimate`     | `boolean`                                 | follows `mode`    | Enable enter animations                                                     |
+| `animation`         | `string`                                  | `'fade-in'`       | Select the enter animation                                                  |
+| `animationSplit`    | `'auto' \| 'word' \| 'char'`              | `'auto'`          | Select text animation granularity                                           |
+| `animationDuration` | `number \| string`                        | `500`             | Set animation duration                                                      |
+| `animationStagger`  | `number`                                  | `40`              | Delay adjacent streaming animation units                                    |
+| `caret`             | `'block' \| 'circle'`                     | `undefined`       | Show a streaming caret                                                      |
 
 Code, math, and diagram renderers are configured through `extensions`. Display, control, preview, security, theme, and locale options remain on `Markdown` or `MarkdownProvider`.
 

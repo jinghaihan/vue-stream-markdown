@@ -6,4 +6,16 @@ export interface CompletionOptions {
   singleDollarTextMath?: boolean
 }
 
+export type CompletionType = string
+
+export interface CompletionInfo {
+  phase?: string
+  type: CompletionType
+}
+
+export interface CompletionResult {
+  completion?: CompletionInfo
+  markdown: string
+}
+
 export type CompletionContext = CompletionOptions

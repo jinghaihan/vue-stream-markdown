@@ -11,6 +11,21 @@ The same parser layer is available independently from Vue through
 `createMarkmendParser()` in `@markmend/parser`. `@markmend/core` remains the
 smaller parser-independent package for completion alone.
 
+`parse()` returns the parsed document together with information about the
+syntax completed during that streaming update:
+
+```ts
+const parser = createMarkmendParser()
+const result = await parser.parse('[Documentation](', 'streaming')
+
+result.document
+result.completion
+// { type: 'link', phase: 'destination' }
+```
+
+`completion` is omitted when the input did not require completion. `phase` is
+only present when a completion type has a meaningful sub-stage.
+
 ## completion
 
 `completion` controls how incomplete Markdown is completed in streaming mode. It accepts Markmend options or a custom function:
@@ -29,7 +44,19 @@ function completeTail(markdown: string) {
 </template>
 ```
 
-The custom function receives Comark's unstable source tail, not a replacement parser result. In `static` mode completion is skipped and the original source is parsed.
+The custom function receives Comark's unstable source tail, not a replacement parser result. It can return a string or `{ markdown, completion }` when it also knows the active completion type. In `static` mode completion is skipped and the original source is parsed.
+
+```ts
+function completeLinkDestination(markdown: string) {
+  return {
+    markdown: `${markdown})`,
+    completion: {
+      type: 'link',
+      phase: 'destination',
+    },
+  }
+}
+```
 
 ## parserOptions
 

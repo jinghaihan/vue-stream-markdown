@@ -1,4 +1,4 @@
-import type { CompletionOptions } from '@markmend/core'
+import type { CompletionOptions, CompletionResult } from '@markmend/core'
 import type {
   ComarkPlugin,
   MarkdownDocument,
@@ -8,7 +8,7 @@ import type {
 import type { FootnotesConfig } from 'comark/plugins/footnotes'
 import type security from 'comark/plugins/security'
 
-export type CompletionFunction = (markdown: string) => string
+export type CompletionFunction = (markdown: string) => CompletionResult | string
 
 export type Completion = CompletionOptions | CompletionFunction
 

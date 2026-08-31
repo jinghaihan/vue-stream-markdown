@@ -11,8 +11,8 @@ describe('markmend parser', () => {
     const staticDocument = await engine.parse('static', 'static')
 
     expect(completion).toHaveBeenCalledOnce()
-    expect(streaming.nodes[0]?.[2]).toBe('streaming completed')
-    expect(staticDocument.nodes[0]?.[2]).toBe('static')
+    expect(streaming.document.nodes[0]?.[2]).toBe('streaming completed')
+    expect(staticDocument.document.nodes[0]?.[2]).toBe('static')
   })
 
   it('completes the unstable tail before parser pre plugins', async () => {
@@ -59,12 +59,12 @@ describe('markmend parser', () => {
 
     const first = engine.parse('first', 'static')
     const second = engine.parse('second', 'static')
-    const [firstDocument, secondDocument] = await Promise.all([first, second])
+    const [firstResult, secondResult] = await Promise.all([first, second])
 
     expect(observed).toEqual(['first', 'second'])
-    expect(firstDocument.nodes).toEqual([['p', {}, 'first']])
-    expect(secondDocument.nodes).toEqual([['p', {}, 'second']])
-    expect(engine.getDocument()).toBe(secondDocument)
+    expect(firstResult.document.nodes).toEqual([['p', {}, 'first']])
+    expect(secondResult.document.nodes).toEqual([['p', {}, 'second']])
+    expect(engine.getDocument()).toBe(secondResult.document)
   })
 
   it('keeps the last successful document when parsing fails', async () => {
@@ -80,19 +80,21 @@ describe('markmend parser', () => {
       },
     })
 
-    const validDocument = await engine.parse('valid', 'static')
-    const failedDocument = await engine.parse('invalid', 'static')
+    const validResult = await engine.parse('valid', 'static')
+    const failedResult = await engine.parse('invalid', 'static')
 
-    expect(failedDocument).toBe(validDocument)
-    expect(engine.getDocument()).toBe(validDocument)
+    expect(failedResult).toBe(validResult)
+    expect(engine.getDocument()).toBe(validResult.document)
     await expect(engine.parse('recovered', 'static')).resolves.toMatchObject({
-      nodes: [['p', {}, 'recovered']],
+      document: {
+        nodes: [['p', {}, 'recovered']],
+      },
     })
   })
 
   it('enables CJK-friendly emphasis by default', async () => {
     const engine = createMarkmendParser()
-    const document = await engine.parse('**中文加粗。**后文', 'static')
+    const { document } = await engine.parse('**中文加粗。**后文', 'static')
 
     expect(document.nodes).toEqual([
       ['p', {}, ['strong', {}, '中文加粗。'], '后文'],
@@ -103,7 +105,7 @@ describe('markmend parser', () => {
     const engine = createMarkmendParser({
       literalTagContent: ['mention'],
     })
-    const document = await engine.parse(
+    const { document } = await engine.parse(
       '<mention user_id="123">@_some_username_</mention> and <other>_italic_</other>',
       'static',
     )
@@ -117,7 +119,7 @@ describe('markmend parser', () => {
     const engine = createMarkmendParser({
       literalTagContent: ['artifact'],
     })
-    const document = await engine.parse(
+    const { document } = await engine.parse(
       '<artifact>First **line**\n\nSecond <strong>line</strong></artifact>',
       'static',
     )
@@ -131,7 +133,7 @@ describe('markmend parser', () => {
     const engine = createMarkmendParser({
       literalTagContent: ['mention'],
     })
-    const document = await engine.parse('<mention>@_some_username_</mention>', 'streaming')
+    const { document } = await engine.parse('<mention>@_some_username_</mention>', 'streaming')
 
     expect(document.nodes).toEqual([
       ['p', { $: { line: 1 } }, ['mention', { $: { html: 1, block: 0 } }, '@_some_username_']],
@@ -140,9 +142,9 @@ describe('markmend parser', () => {
 
   it('enables math only when the extension contributes its parser plugin', async () => {
     const input = 'Inline $x^2$'
-    const plainDocument = await createMarkmendParser().parse(input, 'static')
+    const { document: plainDocument } = await createMarkmendParser().parse(input, 'static')
     const mathExtension = math()
-    const mathDocument = await createMarkmendParser({
+    const { document: mathDocument } = await createMarkmendParser({
       parserOptions: {
         plugins: [mathExtension.parserPlugin],
       },
@@ -154,5 +156,41 @@ describe('markmend parser', () => {
     expect(mathDocument.nodes).toEqual([
       ['p', {}, 'Inline ', ['math', { class: 'math inline', content: 'x^2' }, 'x^2']],
     ])
+  })
+
+  it('returns completion information with the parsed document', async () => {
+    const engine = createMarkmendParser()
+
+    await expect(engine.parse('[label](', 'streaming')).resolves.toMatchObject({
+      completion: {
+        type: 'link',
+        phase: 'destination',
+      },
+    })
+    await expect(engine.parse('[label](https://example.com)', 'streaming')).resolves.toMatchObject({
+      completion: undefined,
+    })
+  })
+
+  it('accepts completion information from a custom completion function', async () => {
+    const engine = createMarkmendParser({
+      completion(markdown) {
+        return {
+          markdown: `${markdown} completed`,
+          completion: {
+            type: 'custom',
+          },
+        }
+      },
+    })
+
+    await expect(engine.parse('streaming', 'streaming')).resolves.toMatchObject({
+      completion: {
+        type: 'custom',
+      },
+      document: {
+        nodes: [['p', { $: { line: 1 } }, 'streaming completed']],
+      },
+    })
   })
 })

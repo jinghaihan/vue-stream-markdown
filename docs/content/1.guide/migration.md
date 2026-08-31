@@ -7,6 +7,24 @@ description: Move a 1.x integration to the Comark parser and optional extension 
 
 Version 2.0 replaces the mdast pipeline with Comark, renders its compact document directly, and moves large rendering runtimes behind optional extensions. The `Markdown` component and its core display options remain familiar, but parser customization and rich-renderer configuration have changed.
 
+## Parser return value
+
+When using `@markmend/parser` directly, `parse()` returns the document and
+streaming completion information as one result. Replace direct document access
+on the parse result:
+
+```ts
+// Before
+const document = await parser.parse(markdown)
+
+// 2.0
+const { document, completion } = await parser.parse(markdown)
+```
+
+`getDocument()` continues to return the latest successfully parsed document.
+Custom completion functions may continue returning a string, or return
+`{ markdown, completion }` to describe the syntax they completed.
+
 ## Package changes
 
 The main package remains:
