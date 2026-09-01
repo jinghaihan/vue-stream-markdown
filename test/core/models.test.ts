@@ -32,11 +32,12 @@ import {
   resolveHtmlPreviewMaxHeightValue,
   resolveHtmlPreviewMeasurementMode,
   resolveHtmlPreviewSandbox,
+  resolveLinkFaviconUrl,
   rotateImagePreviewRight,
   setMermaidMeasuredHeight,
   syncCodeBlockMode,
 } from '@stream-markdown/core'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 describe('core models', () => {
   it('resolves root state and style', () => {
@@ -139,6 +140,19 @@ describe('core models', () => {
     expect(preview.sources).toEqual(['a.png', 'b.png'])
     expect(preview.canOpen).toBe(true)
     expect(preview.imageStyle.transform).toBe('scaleX(-1) scaleY(1) rotate(90deg)')
+  })
+
+  it('resolves link favicon URLs', async () => {
+    expect(resolveLinkFaviconUrl('https://example.com/docs')).toBe('https://example.com/favicon.ico')
+    expect(resolveLinkFaviconUrl('/docs')).toBeUndefined()
+    expect(resolveLinkFaviconUrl('mailto:hello@example.com')).toBeUndefined()
+    expect(resolveLinkFaviconUrl('https://example.com', false)).toBeUndefined()
+
+    const resolver = vi.fn(async (url: string) => `https://icons.example.com/?url=${encodeURIComponent(url)}`)
+    await expect(resolveLinkFaviconUrl('https://example.com/docs', resolver))
+      .resolves
+      .toBe('https://icons.example.com/?url=https%3A%2F%2Fexample.com%2Fdocs')
+    expect(resolver).toHaveBeenCalledWith('https://example.com/docs')
   })
 
   it('creates math, table, HTML, error, and zoom models', () => {

@@ -343,6 +343,89 @@ describe('stream markdown', () => {
     wrapper.unmount()
   })
 
+  it('shows favicons by default without shifting while they load', async () => {
+    const wrapper = mount(Markdown, {
+      props: {
+        content: '[Link](https://example.com/docs)',
+        mode: 'static',
+      },
+    })
+
+    await vi.dynamicImportSettled()
+    await flushPromises()
+
+    const slot = wrapper.get('[data-stream-markdown="link-favicon"]')
+    const placeholder = slot.get('[data-stream-markdown="link-favicon-placeholder"]')
+    const image = slot.get('[data-stream-markdown="link-favicon-image"]')
+    expect(image.attributes('src')).toBe('https://example.com/favicon.ico')
+    expect(image.classes()).toContain('opacity-0')
+    expect(placeholder.element).toBeTruthy()
+
+    await image.trigger('load')
+    expect(slot.find('[data-stream-markdown="link-favicon-placeholder"]').exists()).toBe(false)
+    expect(image.classes()).toContain('opacity-100')
+    wrapper.unmount()
+  })
+
+  it('supports disabling and customizing link favicons', async () => {
+    const disabled = mount(Markdown, {
+      props: {
+        content: '[Link](https://example.com)',
+        linkOptions: { favicon: false },
+        mode: 'static',
+      },
+    })
+    await vi.dynamicImportSettled()
+    await flushPromises()
+    expect(disabled.find('[data-stream-markdown="link-favicon"]').exists()).toBe(false)
+    disabled.unmount()
+
+    const resolver = vi.fn((url: string) => `https://icons.example.com/?url=${encodeURIComponent(url)}`)
+    const customized = mount(Markdown, {
+      props: {
+        content: '[Link](https://example.com/docs)',
+        linkOptions: { favicon: resolver },
+        mode: 'static',
+      },
+    })
+    await vi.dynamicImportSettled()
+    await flushPromises()
+    expect(customized.get('[data-stream-markdown="link-favicon-image"]').attributes('src'))
+      .toBe('https://icons.example.com/?url=https%3A%2F%2Fexample.com%2Fdocs')
+    expect(resolver).toHaveBeenCalledWith('https://example.com/docs')
+    customized.unmount()
+  })
+
+  it('keeps the favicon placeholder while a destination is incomplete and falls back to a globe', async () => {
+    const wrapper = mount(Markdown, {
+      props: {
+        content: '[Link](https://example.com',
+        mode: 'streaming',
+      },
+    })
+    const testWrapper = wrapper as unknown as MarkdownTestWrapper
+    await vi.dynamicImportSettled()
+    await flushPromises()
+
+    const slot = wrapper.get('[data-stream-markdown="link-favicon"]')
+    expect(slot.find('[data-stream-markdown="link-favicon-placeholder"]').exists()).toBe(true)
+    expect(slot.find('[data-stream-markdown="link-favicon-image"]').exists()).toBe(false)
+
+    await testWrapper.setProps({
+      content: '[Link](https://example.com)',
+      mode: 'static',
+    })
+    await flushPromises()
+    const image = slot.get('[data-stream-markdown="link-favicon-image"]')
+    await image.trigger('error')
+    await vi.dynamicImportSettled()
+    await flushPromises()
+
+    expect(slot.find('[data-stream-markdown="link-favicon-placeholder"]').exists()).toBe(false)
+    expect(slot.find('[data-stream-markdown="link-favicon-fallback"]').exists()).toBe(true)
+    wrapper.unmount()
+  })
+
   it('replaces the link caret with a spinner while waiting for its destination', async () => {
     const wrapper = mount(Markdown, {
       props: {

@@ -12,6 +12,7 @@ export const ICONS = {
   error: defineAsyncComponent(() => import('~icons/lucide/circle-alert')),
   externalLink: defineAsyncComponent(() => import('~icons/lucide/external-link')),
   flipHorizontal: defineAsyncComponent(() => import('~icons/lucide/flip-horizontal')),
+  globe: defineAsyncComponent(() => import('~icons/lucide/globe')),
   image: defineAsyncComponent(() => import('~icons/lucide/image')),
   link: defineAsyncComponent(() => import('~icons/lucide/link')),
   maximize: defineAsyncComponent(() => import('~icons/lucide/maximize')),

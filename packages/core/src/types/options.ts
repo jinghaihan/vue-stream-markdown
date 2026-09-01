@@ -1,3 +1,5 @@
+import type { MaybePromise } from './common'
+
 export type PreviewSegmentedPlacement = 'left' | 'center' | 'right' | 'auto'
 
 export interface HtmlPreviewerOptions {
@@ -26,7 +28,10 @@ export interface ImageOptions<TComponent = unknown> {
   errorComponent?: TComponent
 }
 
+export type LinkFaviconResolver = (url: string) => MaybePromise<string | undefined>
+
 export interface LinkOptions {
+  favicon?: boolean | LinkFaviconResolver
   safetyCheck?: boolean
   isTrusted?: (url: string) => Promise<boolean> | boolean
 }

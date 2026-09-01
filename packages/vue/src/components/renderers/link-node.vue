@@ -4,6 +4,7 @@ import { getDocumentBody, openExternalUrl, scrollToElement } from '@stream-markd
 import { useClipboard } from '@vueuse/core'
 import { computed, ref } from 'vue'
 import { useContext, useI18n, useSanitizers } from '../../composables'
+import { useLinkFavicon } from '../../composables/use-link-favicon'
 
 defineOptions({ inheritAttrs: false })
 
@@ -30,6 +31,27 @@ const { transformedUrl, isHardenUrl } = useSanitizers({
   loading: () => props.loading,
 })
 const Error = computed(() => hardenOptions.value?.errorComponent ?? UI.value.ErrorComponent)
+const showFavicon = computed(() => !internal.value && !footnoteBackref.value && !isHardenUrl.value)
+const {
+  failed: faviconFailed,
+  handleError: handleFaviconError,
+  handleLoad: handleFaviconLoad,
+  loaded: faviconLoaded,
+  show: faviconEnabled,
+  source: faviconSource,
+} = useLinkFavicon({
+  enabled: showFavicon,
+  favicon: () => linkOptions.value?.favicon,
+  loading: () => props.loading,
+  url: transformedUrl,
+  waitingForDestination: () => props.waitingForDestination,
+})
+const { transformedUrl: transformedFaviconUrl, isHardenUrl: isHardenFaviconUrl } = useSanitizers({
+  url: faviconSource,
+  hardenOptions,
+  isImage: true,
+})
+const faviconUrl = computed(() => isHardenFaviconUrl.value ? undefined : transformedFaviconUrl.value)
 
 async function isTrusted(): Promise<boolean> {
   if (linkOptions.value?.safetyCheck === false)
@@ -89,6 +111,38 @@ function handleFootnoteBackref() {
       class="text-primary underline cursor-pointer [overflow-wrap:anywhere] data-[stream-markdown-loading=true]:no-underline data-[stream-markdown-loading=true]:cursor-default data-[stream-markdown-loading=true]:pointer-events-none"
       @click="handleClick"
     >
+      <span
+        v-if="faviconEnabled"
+        data-stream-markdown="link-favicon"
+        class="mr-1 align-[-0.125em] rounded-sm inline-flex size-[1em] items-center justify-center relative overflow-hidden"
+      >
+        <img
+          v-if="faviconUrl && !faviconFailed"
+          :src="faviconUrl"
+          alt=""
+          aria-hidden="true"
+          data-stream-markdown="link-favicon-image"
+          referrerpolicy="no-referrer"
+          class="rounded-sm size-full transition-opacity duration-[var(--default-transition-duration)] inset-0 absolute"
+          :class="faviconLoaded ? 'opacity-100' : 'opacity-0'"
+          @load="handleFaviconLoad"
+          @error="handleFaviconError"
+        >
+        <span
+          v-if="!faviconLoaded && !faviconFailed"
+          aria-hidden="true"
+          data-stream-markdown="link-favicon-placeholder"
+          class="rounded-sm bg-muted size-full animate-pulse"
+        />
+        <component
+          :is="UI.Icon"
+          v-if="faviconFailed"
+          data-stream-markdown="link-favicon-fallback"
+          icon="globe"
+          :width="14"
+          :height="14"
+        />
+      </span>
       <slot />
     </a>
 

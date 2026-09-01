@@ -2,7 +2,7 @@
 title: Display Options
 navigation:
   icon: i-lucide-monitor-cog
-description: Configure display settings for code blocks, tables, images, and themes including height limits, language indicators, line numbers, and captions.
+description: Configure display settings for code blocks, tables, images, links, and themes including height limits, language indicators, favicons, line numbers, and captions.
 ---
 
 The display options configuration allows you to customize the visual presentation of various markdown elements, including code blocks, images, and theme settings.
@@ -340,6 +340,34 @@ const imageOptions: ImageOptions = {
 
 <template>
   <Markdown :content="content" :image-options="imageOptions" />
+</template>
+```
+
+## linkOptions
+
+- **Type:** `LinkOptions | undefined`
+- **Default:** `undefined` (favicons and link safety enabled by default)
+
+External links display their favicon by default. A fixed loading slot prevents the link text from moving, and failed favicon requests fall back to the built-in Globe icon.
+
+```typescript
+interface LinkOptions {
+  favicon?: boolean | ((url: string) => string | Promise<string | undefined> | undefined)
+  safetyCheck?: boolean
+  isTrusted?: (url: string) => Promise<boolean> | boolean
+}
+```
+
+```vue
+<template>
+  <!-- Disable favicons -->
+  <Markdown :content="content" :link-options="{ favicon: false }" />
+
+  <!-- Use a custom favicon service -->
+  <Markdown
+    :content="content"
+    :link-options="{ favicon: url => `/api/favicon?url=${encodeURIComponent(url)}` }"
+  />
 </template>
 ```
 
