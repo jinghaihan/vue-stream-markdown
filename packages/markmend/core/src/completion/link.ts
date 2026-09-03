@@ -30,6 +30,26 @@ function hasTrailingIncompleteLinkUrl(content: string): boolean {
   return false
 }
 
+function removeTrailingStandaloneBracket(
+  lines: string[],
+  lineIndex: number,
+): string[] | undefined {
+  const lastLine = lines[lineIndex] ?? ''
+  const match = lastLine.match(standaloneBracketPattern)
+  const bracket = match?.[1]
+  if (!bracket)
+    return undefined
+
+  const bracketPos = lastLine.lastIndexOf(bracket)
+  const newLines = [...lines]
+  newLines[lineIndex] = lastLine.substring(0, bracketPos).trimEnd()
+
+  if (newLines[lineIndex + 1]?.trim() === '')
+    newLines.splice(lineIndex + 1, 1)
+
+  return newLines
+}
+
 /**
  * Fix unclosed link/image syntax in streaming markdown
  *
@@ -101,40 +121,9 @@ export function fixLink(content: string, context?: CompletionContext): string {
   // Process if we found a non-empty line (regardless of paragraph boundaries)
   // This ensures we remove trailing standalone brackets even when content ends with newline
   if (lastNonEmptyLineIndex >= 0) {
-    const lastLine = lines[lastNonEmptyLineIndex] ?? ''
-
-    // First, remove trailing standalone [ or ![ (without any content after)
-    // This prevents showing incomplete brackets that would create empty links
-    // Check for both [ and ![ patterns
-    const standaloneBracketMatch = lastLine.match(standaloneBracketPattern)
-    if (standaloneBracketMatch && standaloneBracketMatch[1]) {
-      const bracket = standaloneBracketMatch[1]
-      const bracketPos = lastLine.lastIndexOf(bracket)
-
-      // Remove the bracket and all trailing whitespace after it in this line
-      // But keep any whitespace before the bracket
-      const beforeBracket = lastLine.substring(0, bracketPos).trimEnd()
-      const newLine = beforeBracket
-
-      // Reconstruct content with the modified line
-      const newLines = [...lines]
-      newLines[lastNonEmptyLineIndex] = newLine
-
-      // If the next line after the modified line is empty, remove it too
-      // This handles cases like "Text [\n" where we want to remove both [ and the newline
-      // But only if the bracket was at the end of the line (no content after it on the same line)
-      if (lastNonEmptyLineIndex + 1 < newLines.length) {
-        const nextLine = newLines[lastNonEmptyLineIndex + 1] as string
-        if (nextLine.trim() === '') {
-          newLines.splice(lastNonEmptyLineIndex + 1, 1)
-        }
-      }
-
-      const result = newLines.join('\n')
-
-      // Return immediately after removing standalone bracket
-      return result
-    }
+    const newLines = removeTrailingStandaloneBracket(lines, lastNonEmptyLineIndex)
+    if (newLines)
+      return newLines.join('\n')
   }
 
   // Check for unclosed link/image syntax at the end
