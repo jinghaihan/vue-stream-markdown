@@ -9,26 +9,6 @@ import { isRangeOverlappingRanges } from './utils'
 
 const zeroWidthSpace = '\u200B'
 
-function isListItem(line: string): boolean {
-  const trimmed = line.trimStart()
-  const firstCharacter = trimmed[0]
-  if ((firstCharacter === '-' || firstCharacter === '+' || firstCharacter === '*')
-    && (trimmed[1] === ' ' || trimmed[1] === '\t')) {
-    return true
-  }
-
-  return orderedListItemPattern.test(trimmed)
-}
-
-function isPartialSetextUnderline(line: string): boolean {
-  const trimmed = line.trim()
-  if (trimmed.length === 0 || trimmed.length > 2)
-    return false
-
-  return [...trimmed].every(character => character === trimmed[0]
-    && (character === '-' || character === '='))
-}
-
 /**
  * Fix incomplete task list syntax in streaming markdown
  *
@@ -123,4 +103,24 @@ export function fixTaskList(content: string, context?: CompletionContext): strin
   }
 
   return content
+}
+
+function isListItem(line: string): boolean {
+  const trimmed = line.trimStart()
+  const firstCharacter = trimmed[0]
+  if ((firstCharacter === '-' || firstCharacter === '+' || firstCharacter === '*')
+    && (trimmed[1] === ' ' || trimmed[1] === '\t')) {
+    return true
+  }
+
+  return orderedListItemPattern.test(trimmed)
+}
+
+function isPartialSetextUnderline(line: string): boolean {
+  const trimmed = line.trim()
+  if (trimmed.length === 0 || trimmed.length > 2)
+    return false
+
+  return [...trimmed].every(character => character === trimmed[0]
+    && (character === '-' || character === '='))
 }

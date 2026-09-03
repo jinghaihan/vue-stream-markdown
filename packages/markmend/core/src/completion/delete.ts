@@ -16,6 +16,12 @@ import {
   removeUrlsFromText,
 } from './utils'
 
+interface TildeMarkerAnalysis {
+  countingContent: string
+  maskedEscapedContent: string
+  pairCount: number
+}
+
 /**
  * Fix unclosed strikethrough (~~) syntax in streaming markdown
  *
@@ -68,16 +74,10 @@ export function fixDelete(
   if (paragraph.isFullyCodeBlock)
     return content
 
-  // Remove code blocks and protect inline code / escaped tildes.
-  const lastParagraphWithoutInlineCodeMarkers = maskInlineCodeMarkdownMarkers(lastParagraph, inlineCodeRanges)
-  const lastParagraphWithoutEscapedTildes = maskEscapedMarkdownMarkers(lastParagraphWithoutInlineCodeMarkers, '~')
-  const lastParagraphWithoutCodeBlocks = lastParagraphWithoutEscapedTildes.replace(codeBlockPattern, '')
-  // Remove URLs to avoid counting markdown syntax inside URLs (URLs may contain _, *, ~)
-  const lastParagraphWithoutCodeBlocksAndUrls = removeUrlsFromText(lastParagraphWithoutCodeBlocks)
+  const markerAnalysis = analyzeTildeMarkers(lastParagraph, inlineCodeRanges)
 
   // Count ~~ in the last paragraph only (excluding code blocks and URLs)
-  const matches = lastParagraphWithoutCodeBlocksAndUrls.match(doubleTildePattern)
-  const count = matches ? matches.length : 0
+  const count = markerAnalysis.pairCount
 
   // If ends with single ~, we need to check if it should be completed to ~~
   const trailingSingleTildeResult = completeTrailingSingleTilde(content, paragraphStartIndex)
@@ -92,7 +92,7 @@ export function fixDelete(
     const actualLastTildePos = findLastTildePosition(
       lastParagraph,
       inlineCodeRanges,
-      lastParagraphWithoutEscapedTildes,
+      markerAnalysis.maskedEscapedContent,
     )
     if (actualLastTildePos === -1) {
       return content
@@ -105,7 +105,7 @@ export function fixDelete(
       return content
     }
 
-    return completeDeleteContent(content, lastParagraphWithoutCodeBlocksAndUrls)
+    return completeDeleteContent(content, markerAnalysis.countingContent)
   }
 
   return content
@@ -119,11 +119,9 @@ function completeTrailingSingleTilde(content: string, paragraphStartIndex: numbe
   const lastParagraph = contentWithoutLastTilde.split('\n').slice(paragraphStartIndex).join('\n')
   const ranges = findClosedCodeBlockRanges(lastParagraph)
   const inlineRanges = findInlineCodeRanges(lastParagraph, ranges)
-  const withoutInlineCode = maskInlineCodeMarkdownMarkers(lastParagraph, inlineRanges)
-  const withoutEscapes = maskEscapedMarkdownMarkers(withoutInlineCode, '~')
-  const withoutCodeBlocks = withoutEscapes.replace(codeBlockPattern, '')
-  const withoutUrls = removeUrlsFromText(withoutCodeBlocks)
-  const count = withoutUrls.match(doubleTildePattern)?.length ?? 0
+  const markerAnalysis = analyzeTildeMarkers(lastParagraph, inlineRanges)
+  const { countingContent: withoutUrls } = markerAnalysis
+  const count = markerAnalysis.pairCount
 
   const lastTildePos = withoutUrls.lastIndexOf('~~')
   if (count % 2 === 1
@@ -133,6 +131,22 @@ function completeTrailingSingleTilde(content: string, paragraphStartIndex: numbe
   }
 
   return content
+}
+
+function analyzeTildeMarkers(
+  content: string,
+  inlineCodeRanges: TextRange[],
+): TildeMarkerAnalysis {
+  const withoutInlineCode = maskInlineCodeMarkdownMarkers(content, inlineCodeRanges)
+  const maskedEscapedContent = maskEscapedMarkdownMarkers(withoutInlineCode, '~')
+  const withoutCodeBlocks = maskedEscapedContent.replace(codeBlockPattern, '')
+  const countingContent = removeUrlsFromText(withoutCodeBlocks)
+
+  return {
+    countingContent,
+    maskedEscapedContent,
+    pairCount: countingContent.match(doubleTildePattern)?.length ?? 0,
+  }
 }
 
 function findLastTildePosition(

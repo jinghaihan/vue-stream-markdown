@@ -34,6 +34,11 @@ interface AsteriskRunAnalysis {
   participates: boolean
 }
 
+export interface CodeFenceScan {
+  ranges: TextRange[]
+  markers: number[]
+}
+
 /**
  * Find the start index of the last paragraph in content
  * A paragraph is defined as content after the last blank line
@@ -198,16 +203,13 @@ export function calculateParagraphOffset(paragraphStartIndex: number, lines: str
  * @returns True if the position is within a code block
  */
 export function isWithinCodeBlock(text: string, position: number): boolean {
+  const { markers } = analyzeCodeFences(text)
   let inCodeBlock = false
-
-  for (let i = 0; i < position; i += 1) {
-    // Check for triple backticks
-    if (text[i] === '`' && text[i + 1] === '`' && text[i + 2] === '`') {
-      inCodeBlock = !inCodeBlock
-      i += 2 // Skip the next two backticks
-    }
+  for (const marker of markers) {
+    if (marker >= position)
+      break
+    inCodeBlock = !inCodeBlock
   }
-
   return inCodeBlock
 }
 
@@ -227,25 +229,30 @@ export function isInsideUnclosedCodeBlock(content: string): boolean {
  * Ranges are [start, end) where end is exclusive.
  */
 export function findClosedCodeBlockRanges(content: string): TextRange[] {
+  return analyzeCodeFences(content).ranges
+}
+
+export function analyzeCodeFences(content: string): CodeFenceScan {
+  const markers: number[] = []
   const ranges: TextRange[] = []
   let searchStart = 0
 
   while (true) {
-    const codeBlockStart = content.indexOf('```', searchStart)
-    if (codeBlockStart === -1) {
+    const marker = content.indexOf('```', searchStart)
+    if (marker === -1)
       break
-    }
 
-    const codeBlockEnd = content.indexOf('```', codeBlockStart + 3)
-    if (codeBlockEnd === -1) {
+    markers.push(marker)
+    const closing = content.indexOf('```', marker + 3)
+    if (closing === -1)
       break
-    }
 
-    ranges.push({ start: codeBlockStart, end: codeBlockEnd + 3 })
-    searchStart = codeBlockEnd + 3
+    ranges.push({ start: marker, end: closing + 3 })
+    markers.push(closing)
+    searchStart = closing + 3
   }
 
-  return ranges
+  return { markers, ranges }
 }
 
 /**
@@ -266,7 +273,7 @@ export function isPositionInRanges(position: number, ranges: TextRange[]): boole
   return ranges.some(range => position >= range.start && position < range.end)
 }
 
-function isBacktickPartOfTriple(text: string, index: number): boolean {
+export function isBacktickPartOfTriple(text: string, index: number): boolean {
   const before = text[index - 1] || ''
   const before2 = text[index - 2] || ''
   const after = text[index + 1] || ''

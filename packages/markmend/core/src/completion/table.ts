@@ -25,47 +25,6 @@ interface TableHeaderState {
   columns: number
 }
 
-function countTablePipes(row: string): number {
-  let count = 0
-  for (let index = 0; index < row.length; index += 1) {
-    if (row[index] === '|' && !isEscapedCharacter(row, index))
-      count += 1
-  }
-  return count
-}
-
-function parseIncompleteSeparatorAlignments(row: string): TableAlignment[] | undefined {
-  const trimmedRow = row.trim()
-  if (!trimmedRow.startsWith('|'))
-    return undefined
-
-  const markerCharacters = [...trimmedRow].filter(character => character !== '|' && !whitespaceCharacterPattern.test(character))
-  if (markerCharacters.length === 0
-    || markerCharacters.some(character => character !== '-' && character !== ':')) {
-    return undefined
-  }
-
-  const cells = trimmedRow.split('|')
-  if (cells[0] === '')
-    cells.shift()
-  if (cells.at(-1)?.trim() === '')
-    cells.pop()
-
-  return cells.map((cell) => {
-    const marker = cell.replace(whitespaceGlobalPattern, '')
-    const startsWithColon = marker.startsWith(':')
-    const endsWithColon = marker.length > 1 && marker.endsWith(':')
-
-    if (startsWithColon && endsWithColon)
-      return 'center'
-    if (startsWithColon)
-      return 'left'
-    if (endsWithColon)
-      return 'right'
-    return undefined
-  })
-}
-
 /**
  * Fix incomplete table syntax in streaming markdown
  *
@@ -169,6 +128,41 @@ export function fixTable(content: string, context?: CompletionContext): string {
   // Insert separator before the next line (which might be data row)
   const remainingContent = afterLines.slice(1).join('\n')
   return `${beforeHeaderRow}${newHeader}\n${separator}\n${remainingContent}`
+}
+
+function countTablePipes(row: string): number {
+  let count = 0
+  for (let index = 0; index < row.length; index += 1) {
+    if (row[index] === '|' && !isEscapedCharacter(row, index))
+      count += 1
+  }
+  return count
+}
+
+function parseIncompleteSeparatorAlignments(row: string): TableAlignment[] | undefined {
+  const trimmedRow = row.trim()
+  if (!trimmedRow.startsWith('|'))
+    return undefined
+  const markerCharacters = [...trimmedRow].filter(character => character !== '|' && !whitespaceCharacterPattern.test(character))
+  if (markerCharacters.length === 0 || markerCharacters.some(character => character !== '-' && character !== ':'))
+    return undefined
+  const cells = trimmedRow.split('|')
+  if (cells[0] === '')
+    cells.shift()
+  if (cells.at(-1)?.trim() === '')
+    cells.pop()
+  return cells.map((cell) => {
+    const marker = cell.replace(whitespaceGlobalPattern, '')
+    const startsWithColon = marker.startsWith(':')
+    const endsWithColon = marker.length > 1 && marker.endsWith(':')
+    if (startsWithColon && endsWithColon)
+      return 'center'
+    if (startsWithColon)
+      return 'left'
+    if (endsWithColon)
+      return 'right'
+    return undefined
+  })
 }
 
 function findTableHeader(lines: string[]): TableHeader | undefined {

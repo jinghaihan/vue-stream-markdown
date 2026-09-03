@@ -1,11 +1,11 @@
 import type { CompletionContext } from '../types'
-import type { TextRange } from './utils'
+import type { CodeFenceScan, TextRange } from './utils'
 import { codeBlockPattern } from './pattern'
 import {
+  analyzeCodeFences,
   findClosedCodeBlockRanges,
   findInlineCodeRanges,
   findLastParagraphStart,
-  isInsideUnclosedCodeBlock,
   maskInlineCodeMarkdownMarkers,
   maskInvalidAsteriskMarkers,
   maskInvalidUnderscoreMarkers,
@@ -141,6 +141,7 @@ class CachedParagraphAnalysis extends CachedCodeBlockAnalysis implements Complet
 }
 
 class CachedCompletionAnalysis extends CachedCodeBlockAnalysis implements CompletionAnalysis {
+  private cachedCodeFences?: CodeFenceScan
   private cachedCodeBlockRanges?: TextRange[]
   private cachedHasUnclosedCodeBlock?: boolean
   private cachedInlineCodeRanges?: TextRange[]
@@ -153,12 +154,14 @@ class CachedCompletionAnalysis extends CachedCodeBlockAnalysis implements Comple
   }
 
   get codeBlockRanges(): TextRange[] {
-    this.cachedCodeBlockRanges ??= findClosedCodeBlockRanges(this.content)
+    this.cachedCodeFences ??= analyzeCodeFences(this.content)
+    this.cachedCodeBlockRanges ??= this.cachedCodeFences.ranges
     return this.cachedCodeBlockRanges
   }
 
   get hasUnclosedCodeBlock(): boolean {
-    this.cachedHasUnclosedCodeBlock ??= isInsideUnclosedCodeBlock(this.content)
+    this.cachedCodeFences ??= analyzeCodeFences(this.content)
+    this.cachedHasUnclosedCodeBlock = this.cachedCodeFences.markers.length % 2 === 1
     return this.cachedHasUnclosedCodeBlock
   }
 

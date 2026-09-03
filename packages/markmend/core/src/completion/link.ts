@@ -3,53 +3,6 @@ import { getCompletionAnalysis } from './context'
 import { codeBlockPattern, incompleteBracketPattern, incompleteLinkTextPattern, standaloneBracketPattern } from './pattern'
 import { findLastNonEmptyLineIndex, isEscapedCharacter } from './utils'
 
-function hasTrailingIncompleteLinkUrl(content: string): boolean {
-  const urlStart = content.lastIndexOf('](')
-  if (urlStart === -1 || content.slice(urlStart + 2).includes(')'))
-    return false
-
-  let bracketDepth = 0
-  for (let index = urlStart; index >= 0; index--) {
-    const character = content[index]
-    if (isEscapedCharacter(content, index))
-      continue
-
-    if (character === ']') {
-      bracketDepth += 1
-      continue
-    }
-
-    if (character !== '[')
-      continue
-
-    bracketDepth -= 1
-    if (bracketDepth === 0)
-      return true
-  }
-
-  return false
-}
-
-function removeTrailingStandaloneBracket(
-  lines: string[],
-  lineIndex: number,
-): string[] | undefined {
-  const lastLine = lines[lineIndex] ?? ''
-  const match = lastLine.match(standaloneBracketPattern)
-  const bracket = match?.[1]
-  if (!bracket)
-    return undefined
-
-  const bracketPos = lastLine.lastIndexOf(bracket)
-  const newLines = [...lines]
-  newLines[lineIndex] = lastLine.substring(0, bracketPos).trimEnd()
-
-  if (newLines[lineIndex + 1]?.trim() === '')
-    newLines.splice(lineIndex + 1, 1)
-
-  return newLines
-}
-
 /**
  * Fix unclosed link/image syntax in streaming markdown
  *
@@ -147,4 +100,41 @@ export function fixLink(content: string, context?: CompletionContext): string {
   }
 
   return content
+}
+
+function hasTrailingIncompleteLinkUrl(content: string): boolean {
+  const urlStart = content.lastIndexOf('](')
+  if (urlStart === -1 || content.slice(urlStart + 2).includes(')'))
+    return false
+
+  let bracketDepth = 0
+  for (let index = urlStart; index >= 0; index--) {
+    const character = content[index]
+    if (isEscapedCharacter(content, index))
+      continue
+    if (character === ']') {
+      bracketDepth += 1
+      continue
+    }
+    if (character !== '[')
+      continue
+    bracketDepth -= 1
+    if (bracketDepth === 0)
+      return true
+  }
+  return false
+}
+
+function removeTrailingStandaloneBracket(lines: string[], lineIndex: number): string[] | undefined {
+  const lastLine = lines[lineIndex] ?? ''
+  const match = lastLine.match(standaloneBracketPattern)
+  const bracket = match?.[1]
+  if (!bracket)
+    return undefined
+  const bracketPos = lastLine.lastIndexOf(bracket)
+  const newLines = [...lines]
+  newLines[lineIndex] = lastLine.substring(0, bracketPos).trimEnd()
+  if (newLines[lineIndex + 1]?.trim() === '')
+    newLines.splice(lineIndex + 1, 1)
+  return newLines
 }

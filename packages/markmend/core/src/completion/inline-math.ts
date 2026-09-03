@@ -2,6 +2,7 @@ import type { CompletionContext } from '../types'
 import type { CompletionParagraphAnalysis } from './context'
 import { getCompletionAnalysis } from './context'
 import { codeBlockPattern, doubleDollarPattern, inlineCodePattern } from './pattern'
+import { isBacktickPartOfTriple } from './utils'
 
 interface DollarScanState {
   lastPos: number
@@ -153,19 +154,8 @@ function consumeInlineCodeDelimiter(text: string, index: number, state: DollarSc
   if (state.inCodeBlock || text[index] !== '`')
     return false
 
-  if (!isPartOfTripleBacktick(text, index))
+  if (!isBacktickPartOfTriple(text, index))
     state.inInlineCode = !state.inInlineCode
 
   return true
-}
-
-function isPartOfTripleBacktick(text: string, index: number): boolean {
-  const before = index > 0 ? text[index - 1] : ''
-  const before2 = index > 1 ? text[index - 2] : ''
-  const after = index < text.length - 1 ? text[index + 1] : ''
-  const after2 = index < text.length - 2 ? text[index + 2] : ''
-
-  return (before === '`' && before2 === '`')
-    || (before === '`' && after === '`')
-    || (after === '`' && after2 === '`')
 }

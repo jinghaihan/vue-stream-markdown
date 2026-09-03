@@ -6,6 +6,7 @@ import {
 import {
   calculateParagraphOffset,
   getLastParagraphWithIndex,
+  isBacktickPartOfTriple,
   isEscapedCharacter,
   isInsideUnclosedCodeBlock,
   isWithinCodeBlock,
@@ -238,7 +239,7 @@ function findLastUnclosedBacktick(text: string): number {
 
     if (text[index] !== '`'
       || isEscapedCharacter(text, index)
-      || isPartOfTripleBacktick(text, index)) {
+      || isBacktickPartOfTriple(text, index)) {
       continue
     }
 
@@ -254,15 +255,4 @@ function findClosedCodeBlockEnd(text: string, start: number): number | undefined
 
   const closeIndex = text.indexOf('```', start + 3)
   return closeIndex === -1 ? undefined : closeIndex + 2
-}
-
-function isPartOfTripleBacktick(text: string, index: number): boolean {
-  const before = text[index - 1] || ''
-  const before2 = text[index - 2] || ''
-  const after = text[index + 1] || ''
-  const after2 = text[index + 2] || ''
-
-  return (before === '`' && before2 === '`')
-    || (before === '`' && after === '`')
-    || (after === '`' && after2 === '`')
 }

@@ -13,20 +13,6 @@ import {
   isPositionInRanges,
 } from './utils'
 
-function isUnclosedHtmlFragment(fragment: string): boolean {
-  if (!fragment.startsWith('<') || fragment.includes('>'))
-    return false
-
-  if (fragment.length <= 1)
-    return false
-
-  return htmlCommentStartPattern.test(fragment)
-    || htmlDoctypePattern.test(fragment)
-    || htmlProcessingInstructionPattern.test(fragment)
-    || htmlClosingTagPattern.test(fragment)
-    || htmlOpeningTagPattern.test(fragment)
-}
-
 /**
  * Remove trailing unclosed HTML-like fragments in stream mode.
  *
@@ -66,4 +52,18 @@ export function fixHtml(content: string, context?: CompletionContext): string {
 
   const beforeFragment = content.slice(0, fragmentStart).replace(trailingLineWhitespacePattern, '')
   return `${beforeFragment}${trailingWhitespace}`
+}
+
+function isUnclosedHtmlFragment(fragment: string): boolean {
+  if (!fragment.startsWith('<') || fragment.includes('>'))
+    return false
+
+  if (fragment.length <= 1)
+    return false
+
+  return htmlCommentStartPattern.test(fragment)
+    || htmlDoctypePattern.test(fragment)
+    || htmlProcessingInstructionPattern.test(fragment)
+    || htmlClosingTagPattern.test(fragment)
+    || htmlOpeningTagPattern.test(fragment)
 }

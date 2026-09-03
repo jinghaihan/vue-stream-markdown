@@ -27,21 +27,6 @@ interface MarkerSearchOptions {
   shouldIgnore?: (text: string, index: number) => boolean
 }
 
-function hasOddMarkerRun(content: string, marker: '*' | '_'): boolean {
-  for (let index = content.indexOf(marker); index !== -1;) {
-    const runStart = index
-    while (content[index] === marker)
-      index += 1
-
-    if ((index - runStart) % 2 === 1)
-      return true
-
-    index = content.indexOf(marker, index)
-  }
-
-  return false
-}
-
 /**
  * Fix unclosed emphasis (* or _) syntax in streaming markdown
  *
@@ -86,6 +71,21 @@ export function fixEmphasis(
     return content
 
   return completeEmphasisContent(content, paragraph)
+}
+
+function hasOddMarkerRun(content: string, marker: '*' | '_'): boolean {
+  for (let index = content.indexOf(marker); index !== -1;) {
+    const runStart = index
+    while (content[index] === marker)
+      index += 1
+
+    if ((index - runStart) % 2 === 1)
+      return true
+
+    index = content.indexOf(marker, index)
+  }
+
+  return false
 }
 
 function completeEmphasisContent(content: string, paragraph: CompletionParagraphAnalysis): string {
