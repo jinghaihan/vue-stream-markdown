@@ -6,8 +6,11 @@ import {
 } from './utils'
 
 /**
- * Escape numeric comparison operators at the start of list items so Markdown
- * parsers do not interpret them as nested blockquotes.
+ * Escape numeric comparison operators in list items.
+ *
+ * @param content - Markdown content, potentially incomplete during streaming.
+ * @param options - Optional completion context.
+ * @returns The content with the applicable completion applied.
  */
 export function fixComparisonOperators(
   content: string,

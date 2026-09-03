@@ -2,26 +2,11 @@ import type { CompletionContext } from '../types'
 import { getCompletionAnalysis } from './context'
 
 /**
- * Fix unclosed block math ($$) syntax in streaming markdown
+ * Complete incomplete block math syntax.
  *
- * Block math is defined as $$ delimiters on separate lines:
- * $$
- * E = mc^2
- * $$
- *
- * This function processes the entire content (not just last paragraph)
- * because block math can span multiple paragraphs.
- *
- * @param content - Markdown content (potentially incomplete in stream mode)
- * @returns Content with auto-completed block math if needed
- *
- * @example
- * fixMath('$$\nE = mc^2')
- * // Returns: '$$\nE = mc^2\n$$'
- *
- * @example
- * fixMath('$$\nE = mc^2\n$$')
- * // Returns: '$$\nE = mc^2\n$$' (no change)
+ * @param content - Markdown content, potentially incomplete during streaming.
+ * @param context - Optional completion context.
+ * @returns The content with the applicable completion applied.
  */
 export function fixMath(content: string, context?: CompletionContext): string {
   if (!content.includes('$'))

@@ -11,32 +11,11 @@ interface DollarScanState {
 }
 
 /**
- * Fix unclosed inline math ($$) syntax in streaming markdown
+ * Complete incomplete inline math syntax.
  *
- * Only processes the last paragraph (content after the last blank line).
- * This respects Markdown's rule that inline math cannot span across paragraphs.
- *
- * Note: This function only handles inline math ($$...$$). Block math ($$ on separate lines)
- * is handled by subsequent completion steps and should not be completed here.
- *
- * @param content - Markdown content (potentially incomplete in stream mode)
- * @returns Content with auto-completed $$ if needed
- *
- * @example
- * fixInlineMath('The formula is $$x = 1')
- * // Returns: 'The formula is $$x = 1$$'
- *
- * @example
- * fixInlineMath('Para1 $$x$$\n\nPara2 $$y')
- * // Returns: 'Para1 $$x$$\n\nPara2 $$y$$'
- *
- * @example
- * fixInlineMath('$$\nE = mc^2')
- * // Returns: '$$\nE = mc^2' (no completion, this is block math)
- *
- * @example
- * fixInlineMath('$$\n')
- * // Returns: '$$\n' (no completion, this is block math)
+ * @param content - Markdown content, potentially incomplete during streaming.
+ * @param context - Optional completion context.
+ * @returns The content with the applicable completion applied.
  */
 export function fixInlineMath(content: string, context?: CompletionContext): string {
   // Handle bare single $ first

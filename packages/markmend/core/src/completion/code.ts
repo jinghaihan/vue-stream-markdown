@@ -13,33 +13,10 @@ import {
 } from './utils'
 
 /**
- * Fix unclosed code syntax in streaming markdown
+ * Complete incomplete inline and fenced code syntax.
  *
- * Handles two types of code syntax:
- * 1. Inline code: `code` (single backticks)
- * 2. Code blocks: ```language\ncode\n``` (triple backticks)
- *
- * Only processes the last paragraph (content after the last blank line) for inline code.
- * Code blocks can span multiple paragraphs, so they are processed globally.
- *
- * @param content - Markdown content (potentially incomplete in stream mode)
- * @returns Content with auto-completed code syntax if needed
- *
- * @example
- * fixCode('Hello `world')
- * // Returns: 'Hello `world`'
- *
- * @example
- * fixCode('```javascript\nconst x = 1')
- * // Returns: '```javascript\nconst x = 1\n```'
- *
- * @example
- * fixCode('`')
- * // Returns: '' (no completion, ` has no content)
- *
- * @example
- * fixCode('```')
- * // Returns: '```' (no completion, code block has no content)
+ * @param content - Markdown content, potentially incomplete during streaming.
+ * @returns The content with the applicable completion applied.
  */
 export function fixCode(content: string): string {
   if (!content.includes('`'))

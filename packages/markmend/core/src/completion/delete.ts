@@ -23,25 +23,11 @@ interface TildeMarkerAnalysis {
 }
 
 /**
- * Fix unclosed strikethrough (~~) syntax in streaming markdown
+ * Complete incomplete strikethrough syntax.
  *
- * Only processes the last paragraph (content after the last blank line).
- * This respects Markdown's rule that ~~ cannot span across paragraphs.
- *
- * @param content - Markdown content (potentially incomplete in stream mode)
- * @returns Content with auto-completed ~~ if needed
- *
- * @example
- * fixDelete('Hello ~~world')
- * // Returns: 'Hello ~~world~~'
- *
- * @example
- * fixDelete('Para1 ~~deleted~~\n\nPara2 ~~text')
- * // Returns: 'Para1 ~~deleted~~\n\nPara2 ~~text~~'
- *
- * @example
- * fixDelete('List item\n\n~~')
- * // Returns: 'List item' (bare formatting markers are hidden by default)
+ * @param content - Markdown content, potentially incomplete during streaming.
+ * @param options - Optional completion context.
+ * @returns The content with the applicable completion applied.
  */
 export function fixDelete(
   content: string,

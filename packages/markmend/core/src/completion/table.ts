@@ -26,30 +26,11 @@ interface TableHeaderState {
 }
 
 /**
- * Fix incomplete table syntax in streaming markdown
+ * Complete incomplete table syntax.
  *
- * Handles markdown tables by detecting the header row and ensuring
- * a separator row exists. Only processes the last paragraph for streaming.
- *
- * Table format:
- * | Header 1 | Header 2 |
- * | -------- | -------- |
- * | Cell 1   | Cell 2   |
- *
- * @param content - Markdown content (potentially incomplete in stream mode)
- * @returns Content with auto-completed table separator if needed
- *
- * @example
- * fixTable('| a | b |\n')
- * // Returns: '| a | b |\n| --- | --- |'
- *
- * @example
- * fixTable('| a | b |\n| ---')
- * // Returns: '| a | b |\n| --- | --- |'
- *
- * @example
- * fixTable('| a | b |\n| --- | --- |')
- * // Returns: '| a | b |\n| --- | --- |' (no change, already complete)
+ * @param content - Markdown content, potentially incomplete during streaming.
+ * @param context - Optional completion context.
+ * @returns The content with the applicable completion applied.
  */
 export function fixTable(content: string, context?: CompletionContext): string {
   if (!content.includes('|'))

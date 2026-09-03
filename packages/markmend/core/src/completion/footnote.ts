@@ -33,30 +33,11 @@ interface FootnoteScanContext {
 }
 
 /**
- * Remove incomplete footnote references ([^...]) in streaming markdown
+ * Remove incomplete footnote references.
  *
- * Processes the entire content to remove footnote references that don't have
- * corresponding definitions. This is necessary because footnote references can
- * appear anywhere in the document, while definitions typically appear at the end.
- *
- * A footnote reference is considered incomplete if there's no corresponding
- * footnote definition ([^...]:) in the entire content.
- *
- * @param content - Markdown content (potentially incomplete in stream mode)
- * @returns Content with incomplete footnote references removed
- *
- * @example
- * fixFootnote('Text [^1] and [^2]')
- * // Returns: 'Text [^1] and [^2]' (if [^1]: and [^2]: exist)
- * // Returns: 'Text  and ' (if definitions don't exist)
- *
- * @example
- * fixFootnote('Para1 [^1]\n\nPara2 [^2]')
- * // Removes [^1] and [^2] if their definitions don't exist
- *
- * @example
- * fixFootnote('```\n[^1]\n```\n\nText [^1]')
- * // Code block content is ignored, only processes Text [^1]
+ * @param content - Markdown content, potentially incomplete during streaming.
+ * @param completionContext - Optional completion context.
+ * @returns The content with the applicable completion applied.
  */
 export function fixFootnote(content: string, completionContext?: CompletionContext): string {
   if (!content.includes('[^'))

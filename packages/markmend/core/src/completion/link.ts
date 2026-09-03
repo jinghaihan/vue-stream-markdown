@@ -4,46 +4,11 @@ import { codeBlockPattern, incompleteBracketPattern, incompleteLinkTextPattern, 
 import { findLastNonEmptyLineIndex, isEscapedCharacter } from './utils'
 
 /**
- * Fix unclosed link/image syntax in streaming markdown
+ * Complete incomplete link and image syntax.
  *
- * Link syntax: [text](url "title")
- * Image syntax: ![alt](url "title")
- *
- * Only processes the last paragraph (content after the last blank line).
- * This respects Markdown's rule that links cannot span across paragraphs.
- *
- * @param content - Markdown content (potentially incomplete in stream mode)
- * @returns Content with auto-completed link/image syntax if needed
- *
- * @example
- * fixLink('[Google](https://www.goo')
- * // Returns: '[Google](https://www.goo)'
- *
- * @example
- * fixLink('[text](')
- * // Returns: '[text]()'
- *
- * @example
- * fixLink('[text]')
- * // Returns: '[text]()'
- *
- * @example
- * fixLink('[text')
- * // Returns: '[text]()'
- *
- * @example
- * fixLink('![alt](https://image.png')
- * // Returns: '![alt](https://image.png)'
- *
- * @example
- * fixLink('Text [')
- * // Returns: 'Text '
- * // Removes trailing standalone [ without content
- *
- * @example
- * fixLink('Text [\n')
- * // Returns: 'Text '
- * // Removes trailing standalone bracket and trailing newline
+ * @param content - Markdown content, potentially incomplete during streaming.
+ * @param context - Optional completion context.
+ * @returns The content with the applicable completion applied.
  */
 export function fixLink(content: string, context?: CompletionContext): string {
   if (!content.includes('['))

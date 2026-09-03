@@ -10,34 +10,11 @@ import { isRangeOverlappingRanges } from './utils'
 const zeroWidthSpace = '\u200B'
 
 /**
- * Fix incomplete task list syntax in streaming markdown
+ * Stabilize incomplete task list syntax.
  *
- * Removes incomplete task list items like `- [` that are being typed incrementally.
- * Standalone list markers are preserved. A short `-` or `=` underline after
- * prose receives a zero-width suffix so it cannot temporarily turn that prose
- * into a Setext heading while streaming.
- * This prevents rendering jitter when task list items are being typed incrementally.
- * Also handles quote blocks (lines starting with `>`) to prevent leaving `> ` which could
- * cause the previous line to be misparsed as a heading.
- *
- * @param content - Markdown content (potentially incomplete in stream mode)
- * @returns Content with incomplete task markers hidden and partial Setext syntax stabilized
- *
- * @example
- * fixTaskList('Paragraph\n-')
- * // Returns: 'Paragraph\n-\u200B'
- *
- * @example
- * fixTaskList('- [ ] Task 1\n-')
- * // Returns: '- [ ] Task 1\n-'
- *
- * @example
- * fixTaskList('- [ ] Task 1\n  - [')
- * // Returns: '- [ ] Task 1\n'
- *
- * @example
- * fixTaskList('> **Note**: Here\'s a quote with tasks:\n\n> -')
- * // Returns: '> **Note**: Here\'s a quote with tasks:\n\n> -'
+ * @param content - Markdown content, potentially incomplete during streaming.
+ * @param context - Optional completion context.
+ * @returns The content with the applicable completion applied.
  */
 export function fixTaskList(content: string, context?: CompletionContext): string {
   if (!content.includes('[') && !content.includes('\n'))

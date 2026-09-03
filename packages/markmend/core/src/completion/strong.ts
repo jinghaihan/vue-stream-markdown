@@ -62,29 +62,11 @@ interface StrongMarkerState {
 }
 
 /**
- * Fix unclosed strong (** or __) syntax in streaming markdown
+ * Complete incomplete strong emphasis syntax.
  *
- * Only processes the last paragraph (content after the last blank line).
- * This respects Markdown's rule that strong formatting cannot span across paragraphs.
- *
- * @param content - Markdown content (potentially incomplete in stream mode)
- * @returns Content with auto-completed ** or __ if needed
- *
- * @example
- * fixStrong('Hello **world')
- * // Returns: 'Hello **world**'
- *
- * @example
- * fixStrong('Hello __world')
- * // Returns: 'Hello __world__'
- *
- * @example
- * fixStrong('Para1 **bold**\n\nPara2 **text')
- * // Returns: 'Para1 **bold**\n\nPara2 **text**'
- *
- * @example
- * fixStrong('List item\n\n**')
- * // Returns: 'List item' (bare formatting markers are hidden by default)
+ * @param content - Markdown content, potentially incomplete during streaming.
+ * @param options - Optional completion context.
+ * @returns The content with the applicable completion applied.
  */
 export function fixStrong(
   content: string,

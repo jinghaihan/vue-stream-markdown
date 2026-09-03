@@ -14,10 +14,11 @@ import {
 } from './utils'
 
 /**
- * Remove trailing unclosed HTML-like fragments in stream mode.
+ * Remove incomplete HTML fragments.
  *
- * This prevents incomplete HTML from being emitted as plain text before the
- * parser can recognize it as an HTML node.
+ * @param content - Markdown content, potentially incomplete during streaming.
+ * @param context - Optional completion context.
+ * @returns The content with the applicable completion applied.
  */
 export function fixHtml(content: string, context?: CompletionContext): string {
   if (!content.includes('<'))

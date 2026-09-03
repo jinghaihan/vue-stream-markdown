@@ -28,10 +28,11 @@ interface MarkerSearchOptions {
 }
 
 /**
- * Fix unclosed emphasis (* or _) syntax in streaming markdown
+ * Complete incomplete emphasis syntax.
  *
- * Only processes the last paragraph (content after the last blank line).
- * This respects Markdown's rule that emphasis cannot span across paragraphs.
+ * @param content - Markdown content, potentially incomplete during streaming.
+ * @param options - Optional completion context.
+ * @returns The content with the applicable completion applied.
  */
 export function fixEmphasis(
   content: string,
