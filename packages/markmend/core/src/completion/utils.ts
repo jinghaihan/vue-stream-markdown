@@ -24,6 +24,11 @@ export interface TextRange {
   end: number
 }
 
+interface MathDelimiter {
+  length: 1 | 2
+  closingPos: number
+}
+
 /**
  * Find the start index of the last paragraph in content
  * A paragraph is defined as content after the last blank line
@@ -712,56 +717,61 @@ export function removeMathBlocksFromText(
   let i = 0
 
   while (i < result.length) {
-    // Skip escaped dollar signs
-    if (result[i] === '\\' && result[i + 1] === '$') {
+    if (isEscapedDollarAt(result, i)) {
       i += 2
       continue
     }
 
-    // Check for block math ($$)
-    if (result[i] === '$' && result[i + 1] === '$') {
-      // Find the closing $$ and remove everything in between (including the delimiters)
-      const closingPos = result.indexOf('$$', i + 2)
-      if (closingPos !== -1) {
-        // Remove the entire block math including delimiters
-        result = result.slice(0, i) + result.slice(closingPos + 2)
-        // Don't increment i since we removed content, check the same position again
-        continue
-      }
-      else {
-        // Unclosed block math - remove from here to end
-        result = result.slice(0, i)
-        break
-      }
+    const delimiter = getMathDelimiterAt(result, i, singleDollarEnabled)
+    if (delimiter === undefined) {
+      i += 1
+      continue
     }
 
-    // Check for inline math ($) when enabled
-    if (singleDollarEnabled && result[i] === '$') {
-      // Find the closing $ (not escaped) and remove everything in between (including the delimiters)
-      let closingPos = -1
-      for (let j = i + 1; j < result.length; j++) {
-        if (result[j] === '$' && result[j - 1] !== '\\') {
-          closingPos = j
-          break
-        }
-      }
-      if (closingPos !== -1) {
-        // Remove the entire inline math including delimiters
-        result = result.slice(0, i) + result.slice(closingPos + 1)
-        // Don't increment i since we removed content, check the same position again
-        continue
-      }
-      else {
-        // Unclosed inline math - remove from here to end
-        result = result.slice(0, i)
-        break
-      }
-    }
+    if (delimiter.closingPos === -1)
+      return result.slice(0, i)
 
-    i += 1
+    result = result.slice(0, i) + result.slice(delimiter.closingPos + delimiter.length)
   }
 
   return result
+}
+
+function isEscapedDollarAt(text: string, index: number): boolean {
+  return text[index] === '\\' && text[index + 1] === '$'
+}
+
+function getMathDelimiterAt(
+  text: string,
+  index: number,
+  singleDollarEnabled: boolean,
+): MathDelimiter | undefined {
+  if (text[index] !== '$')
+    return undefined
+
+  if (text[index + 1] === '$') {
+    return {
+      length: 2,
+      closingPos: text.indexOf('$$', index + 2),
+    }
+  }
+
+  if (!singleDollarEnabled)
+    return undefined
+
+  return {
+    length: 1,
+    closingPos: findUnescapedDollar(text, index + 1),
+  }
+}
+
+function findUnescapedDollar(text: string, start: number): number {
+  for (let index = start; index < text.length; index += 1) {
+    if (text[index] === '$' && text[index - 1] !== '\\')
+      return index
+  }
+
+  return -1
 }
 
 /**

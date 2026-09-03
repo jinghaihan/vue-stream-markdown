@@ -3,6 +3,12 @@ import type { CompletionParagraphAnalysis } from './context'
 import { getCompletionAnalysis } from './context'
 import { codeBlockPattern, doubleDollarPattern, inlineCodePattern } from './pattern'
 
+interface DollarScanState {
+  lastPos: number
+  inCodeBlock: boolean
+  inInlineCode: boolean
+}
+
 /**
  * Fix unclosed inline math ($$) syntax in streaming markdown
  *
@@ -132,12 +138,6 @@ function findLastDollarPairNotInCodeBlock(text: string): number {
   }
 
   return state.lastPos
-}
-
-interface DollarScanState {
-  lastPos: number
-  inCodeBlock: boolean
-  inInlineCode: boolean
 }
 
 function consumeCodeFence(text: string, index: number, state: DollarScanState): boolean {
