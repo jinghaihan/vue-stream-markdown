@@ -20,8 +20,6 @@ import { UI } from './components'
 import { ICONS } from './components/icons'
 import MarkdownNodes from './components/renderers/markdown'
 import {
-  resolveExtensions,
-  resolveOwnedExtensions,
   useContext,
   useDarkDetector,
   useLocaleDetector,
@@ -29,7 +27,11 @@ import {
   useTailwindV3Theme,
 } from './composables'
 import { loadLocaleMessages } from './locales'
-import { preloadAsyncComponents } from './utils'
+import {
+  preloadAsyncComponents,
+  resolveExtensions,
+  resolveOwnedExtensions,
+} from './utils'
 import './style.css'
 
 const props = withDefaults(defineProps<StreamMarkdownProps>(), {

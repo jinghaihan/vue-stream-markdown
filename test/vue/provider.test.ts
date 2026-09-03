@@ -6,7 +6,8 @@ import { defineComponent, h } from 'vue'
 import Markdown from '../../packages/vue/src/index.vue'
 import MarkdownProvider from '../../packages/vue/src/provider.vue'
 
-vi.mock('../../packages/vue/src/utils', () => ({
+vi.mock('../../packages/vue/src/utils', async () => ({
+  ...await vi.importActual<typeof import('../../packages/vue/src/utils')>('../../packages/vue/src/utils'),
   preloadAsyncComponents: async () => {},
 }))
 

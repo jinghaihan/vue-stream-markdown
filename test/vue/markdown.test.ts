@@ -6,7 +6,8 @@ import { defineComponent, h, markRaw, onMounted, onUnmounted } from 'vue'
 import Markdown from '../../packages/vue/src/index.vue'
 
 // These tests exercise Markdown processing, not background UI component loading.
-vi.mock('../../packages/vue/src/utils', () => ({
+vi.mock('../../packages/vue/src/utils', async () => ({
+  ...await vi.importActual<typeof import('../../packages/vue/src/utils')>('../../packages/vue/src/utils'),
   preloadAsyncComponents: async () => {},
 }))
 

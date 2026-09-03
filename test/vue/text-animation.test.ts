@@ -3,7 +3,8 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import Markdown from '../../packages/vue/src/index.vue'
 
-vi.mock('../../packages/vue/src/utils', () => ({
+vi.mock('../../packages/vue/src/utils', async () => ({
+  ...await vi.importActual<typeof import('../../packages/vue/src/utils')>('../../packages/vue/src/utils'),
   preloadAsyncComponents: async () => {},
 }))
 
