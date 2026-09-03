@@ -146,28 +146,14 @@ function removeTrailingIncompleteBackticks(content: string): string {
     return beforeBackticks.replace(trailingWhitespacePattern, '') + afterBackticks
   }
 
-  // For double backticks ``
-  if (backtickSequence.length === 2) {
-    // Always remove ``, it's incomplete (not a valid markdown syntax)
-    // Also remove trailing spaces before the ``
-    return beforeBackticks.replace(trailingWhitespacePattern, '') + afterBackticks
+  // Keep a triple-backtick sequence when it closes an open code block.
+  if (backtickSequence.length === 3
+    && isWithinCodeBlock(beforeBackticks, beforeBackticks.length)) {
+    return content
   }
 
-  // For triple backticks ```
-  if (backtickSequence.length === 3) {
-    // Check if we're inside a code block before this position
-    const isInCodeBlock = isWithinCodeBlock(beforeBackticks, beforeBackticks.length)
-
-    // If we're in a code block, keep it (it's closing a code block)
-    // If not, remove it (it's starting a new code block without content)
-    if (isInCodeBlock)
-      return content // Keep it, it's closing a code block
-
-    // Remove the trailing ``` and any trailing spaces before it
-    return beforeBackticks.replace(trailingWhitespacePattern, '') + afterBackticks
-  }
-
-  // For more than 3 backticks, remove them
+  // Double, triple, and longer runs are incomplete unless the triple run
+  // above is closing a code block.
   return beforeBackticks.replace(trailingWhitespacePattern, '') + afterBackticks
 }
 
