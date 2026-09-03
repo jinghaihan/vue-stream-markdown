@@ -1,4 +1,5 @@
 import type { CompletionContext } from '../types'
+import type { CompletionParagraphAnalysis } from './context'
 import { getCompletionAnalysis } from './context'
 import {
   doubleAsteriskPattern,
@@ -17,6 +18,48 @@ import {
   maskInvalidUnderscoreMarkers,
   shouldIgnoreUnderscoreMarker,
 } from './utils'
+
+interface StrongMarkerResult {
+  needsCompletion: boolean
+  needsRemoval: boolean
+  lastRunLength: number
+}
+
+type CompletionAnalysis = ReturnType<typeof getCompletionAnalysis>
+
+interface TrailingMarkerRecomputeResult {
+  analysis: CompletionAnalysis
+  content: string
+  needsCompletion: boolean
+  needsRemoval: boolean
+}
+
+interface StrongFixPlan {
+  analysis: CompletionAnalysis
+  content: string
+  markerText: string
+  needsAsteriskCompletion: boolean
+  needsAsteriskRemoval: boolean
+  needsUnderscoreCompletion: boolean
+  needsUnderscoreRemoval: boolean
+  removedTrailingSingle: boolean
+}
+
+interface TrailingStrongMarkerResult {
+  analysis: CompletionAnalysis
+  content: string
+  needsCompletion: boolean
+  needsRemoval: boolean
+  removed: boolean
+}
+
+interface StrongMarkerState {
+  asterisk: StrongMarkerResult
+  endsWithSingleAsterisk: boolean
+  endsWithSingleUnderscore: boolean
+  markerText: string
+  underscore: StrongMarkerResult
+}
 
 /**
  * Fix unclosed strong (** or __) syntax in streaming markdown
@@ -50,11 +93,10 @@ export function fixStrong(
   if (!content.includes('**') && !content.includes('__'))
     return content
 
-  let analysis = getCompletionAnalysis(content, options)
+  const analysis = getCompletionAnalysis(content, options)
   // Don't process if we're inside a code block (unclosed)
-  if (analysis.hasUnclosedCodeBlock) {
+  if (analysis.hasUnclosedCodeBlock)
     return content
-  }
 
   const hiddenBareMarker = hideBareFormattingMarker(
     content,
@@ -64,290 +106,292 @@ export function fixStrong(
   if (hiddenBareMarker !== undefined)
     return options?.hideBareFormattingMarkers === false ? content : hiddenBareMarker
 
+  const plan = createStrongFixPlan(content, options, analysis)
+  if (plan === undefined || typeof plan === 'string')
+    return plan ?? content
+
+  return applyStrongFixPlan(plan, options)
+}
+
+function createStrongFixPlan(
+  content: string,
+  options: CompletionContext | undefined,
+  initialAnalysis: CompletionAnalysis,
+): StrongFixPlan | string | undefined {
   // Find the last paragraph (after the last blank line)
   // Use skipTrailingEmpty=true so that a trailing whitespace-only line
   // (common with templated / indented content) doesn't appear as an
   // empty "last paragraph" and prevent us from fixing the real last
   // paragraph that contains the unclosed strong markers.
-  let paragraph = analysis.getLastParagraph(true)
-  const {
-    content: lastParagraph,
-    inlineCodeRanges,
-    startOffset: paragraphOffset,
-  } = paragraph
-  if (paragraph.isFullyCodeBlock)
-    return content
+  let analysis = initialAnalysis
+  const paragraph = analysis.getLastParagraph(true)
+  const lastParagraph = paragraph.content
+  if (paragraph.isFullyCodeBlock || (!lastParagraph.includes('**') && !lastParagraph.includes('__')))
+    return undefined
 
-  if (!lastParagraph.includes('**') && !lastParagraph.includes('__'))
-    return content
+  const markerState = analyzeStrongMarkers(content, paragraph, options)
+  if (markerState === undefined)
+    return undefined
 
-  // Remove code blocks and mask Markdown markers inside inline code to avoid
-  // treating code content as incomplete strong emphasis.
-  const formattingMarkers = paragraph.formattingMarkers
-  const lastParagraphWithoutInvalidMarkers = formattingMarkers.maskedContent
-  // Remove code blocks, URLs, and math to avoid counting their Markdown-like markers.
-  const lastParagraphWithoutCodeBlocksAndUrlsAndMath = formattingMarkers.withoutMath(
-    options?.singleDollarTextMath,
-  )
-  const lastParagraphForMarkerCounting = lastParagraphWithoutCodeBlocksAndUrlsAndMath
-
-  // Check if content ends with a single * or _ (not ** or __)
-  const endsWithSingleAsterisk = content.endsWith('*') && !content.endsWith('**')
-  const endsWithSingleUnderscore = content.endsWith('_') && !content.endsWith('__')
-
-  // Count ** in the last paragraph only (excluding code blocks, URLs, and math blocks)
-  const asteriskMatches = lastParagraphForMarkerCounting.match(doubleAsteriskPattern)
-  const asteriskCount = asteriskMatches ? asteriskMatches.length : 0
-
-  // Count __ in the last paragraph only (excluding code blocks, URLs, and math blocks)
-  const underscoreMatches = lastParagraphForMarkerCounting.match(doubleUnderscorePattern)
-  const underscoreCount = underscoreMatches ? underscoreMatches.length : 0
-
-  // Track what needs to be done
-  let needsAsteriskCompletion = false
-  let needsUnderscoreCompletion = false
-  let needsAsteriskRemoval = false
-  let needsUnderscoreRemoval = false
-  let lastAsteriskRunLength = 0
-
-  // Check asterisk
-  if (asteriskCount % 2 === 1) {
-    // Find the last ** in original lastParagraph, skipping code blocks
-    let actualLastStarPos = -1
-    let inCodeBlock = false
-    for (let i = 0; i < lastParagraph.length - 1; i++) {
-      // Check for code block fences
-      if (lastParagraph.substring(i, i + 3) === '```') {
-        inCodeBlock = !inCodeBlock
-        i += 2 // Skip the next two backticks
-        continue
-      }
-      if (isPositionInRanges(i, inlineCodeRanges))
-        continue
-      // Skip if inside code block
-      if (inCodeBlock) {
-        continue
-      }
-      // Check for **
-      if (lastParagraph.substring(i, i + 2) === '**') {
-        if (lastParagraphWithoutInvalidMarkers.substring(i, i + 2) !== '**') {
-          i += 1
-          continue
-        }
-        actualLastStarPos = i
-        i += 1 // Skip the second *
-      }
-    }
-    const absoluteLastStarPos = paragraphOffset + actualLastStarPos
-    if (actualLastStarPos >= 0) {
-      let runEnd = actualLastStarPos
-      while (lastParagraph[runEnd] === '*')
-        runEnd += 1
-      lastAsteriskRunLength = runEnd - actualLastStarPos
-    }
-
-    // Check if the asterisk is in math block, link/image URL, or HTML tag
-    if (isWithinMathBlock(content, absoluteLastStarPos, options) || isWithinLinkOrImageUrl(content, absoluteLastStarPos) || isWithinHtmlTag(content, absoluteLastStarPos)) {
-      // Don't process if inside math block, link/image URL, or HTML tag
-      return content
-    }
-
-    const lastMarkerPosition = lastParagraphForMarkerCounting.lastIndexOf('**')
-    const afterLast = lastParagraphForMarkerCounting.substring(lastMarkerPosition + 2).trim()
-
-    if (afterLast.length > 0) {
-      needsAsteriskCompletion = true
-    }
-    else if (lastParagraphForMarkerCounting.slice(0, lastMarkerPosition).trim().length === 0) {
-      needsAsteriskRemoval = true
-    }
-  }
-
-  // Check underscore
-  if (underscoreCount % 2 === 1) {
-    // Find the last __ in original lastParagraph, skipping code blocks
-    let actualLastUnderscorePos = -1
-    let inCodeBlock = false
-    for (let i = 0; i < lastParagraph.length - 1; i++) {
-      // Check for code block fences
-      if (lastParagraph.substring(i, i + 3) === '```') {
-        inCodeBlock = !inCodeBlock
-        i += 2 // Skip the next two backticks
-        continue
-      }
-      if (isPositionInRanges(i, inlineCodeRanges))
-        continue
-      // Skip if inside code block
-      if (inCodeBlock) {
-        continue
-      }
-      // Check for __
-      if (lastParagraph.substring(i, i + 2) === '__') {
-        if (lastParagraphWithoutInvalidMarkers.substring(i, i + 2) !== '__') {
-          i += 1
-          continue
-        }
-        if (shouldIgnoreUnderscoreMarker(lastParagraph, i, 2)) {
-          i += 1
-          continue
-        }
-        actualLastUnderscorePos = i
-        i += 1 // Skip the second _
-      }
-    }
-    const absoluteLastUnderscorePos = paragraphOffset + actualLastUnderscorePos
-
-    // Check if the underscore is in math block, link/image URL, or HTML tag
-    if (isWithinMathBlock(content, absoluteLastUnderscorePos, options) || isWithinLinkOrImageUrl(content, absoluteLastUnderscorePos) || isWithinHtmlTag(content, absoluteLastUnderscorePos)) {
-      // Don't process if inside math block, link/image URL, or HTML tag
-      return content
-    }
-
-    const lastMarkerPosition = lastParagraphForMarkerCounting.lastIndexOf('__')
-    const afterLast = lastParagraphForMarkerCounting.substring(lastMarkerPosition + 2).trim()
-
-    if (afterLast.length > 0) {
-      needsUnderscoreCompletion = true
-    }
-    else if (lastParagraphForMarkerCounting.slice(0, lastMarkerPosition).trim().length === 0) {
-      needsUnderscoreRemoval = true
-    }
-  }
+  let currentContent = content
+  let needsAsteriskCompletion = markerState.asterisk.needsCompletion
+  let needsAsteriskRemoval = markerState.asterisk.needsRemoval
+  let needsUnderscoreCompletion = markerState.underscore.needsCompletion
+  let needsUnderscoreRemoval = markerState.underscore.needsRemoval
+  let removedTrailingSingle = false
 
   // Handle trailing single * or _ when there's an unclosed ** or __
-  let removedTrailingSingle = false
-  if (endsWithSingleAsterisk && (needsAsteriskCompletion || needsAsteriskRemoval)) {
-    if (needsAsteriskCompletion && lastAsteriskRunLength >= 3)
-      return appendBeforeTrailingWhitespace(content, '**')
-
-    // Remove the trailing single * first
-    content = content.slice(0, -1)
-    removedTrailingSingle = true
-    analysis = getCompletionAnalysis(content, options)
-    // Recalculate after removal. Again, skip any trailing empty line so we
-    // still operate on the actual last non-empty paragraph.
-    const newParagraph = analysis.getLastParagraph(true)
-    const newLastParagraphWithoutCodeBlocksAndUrlsAndMath = newParagraph.formattingMarkers.withoutMath(
-      options?.singleDollarTextMath,
+  if (markerState.endsWithSingleAsterisk && (needsAsteriskCompletion || needsAsteriskRemoval)) {
+    const result = prepareTrailingStrongMarker(
+      currentContent,
+      options,
+      analysis,
+      '*',
+      needsAsteriskCompletion,
+      needsAsteriskRemoval,
+      markerState.asterisk.lastRunLength,
     )
-    const newAsteriskMatches = newLastParagraphWithoutCodeBlocksAndUrlsAndMath.match(doubleAsteriskPattern)
-    const newAsteriskCount = newAsteriskMatches ? newAsteriskMatches.length : 0
-    if (newAsteriskCount % 2 === 1) {
-      const lastStarPos = newLastParagraphWithoutCodeBlocksAndUrlsAndMath.lastIndexOf('**')
-      const afterLast = newLastParagraphWithoutCodeBlocksAndUrlsAndMath.substring(lastStarPos + 2).trim()
-      if (afterLast.length > 0) {
-        needsAsteriskCompletion = true
-        needsAsteriskRemoval = false
-      }
-      else {
-        needsAsteriskRemoval = true
-        needsAsteriskCompletion = false
-      }
+    if (typeof result === 'string')
+      return result
+    if (result !== undefined) {
+      currentContent = result.content
+      analysis = result.analysis
+      removedTrailingSingle = result.removed
+      needsAsteriskCompletion = result.needsCompletion
+      needsAsteriskRemoval = result.needsRemoval
     }
   }
 
-  if (endsWithSingleUnderscore && (needsUnderscoreCompletion || needsUnderscoreRemoval)) {
-    // Remove the trailing single _ first
-    content = content.slice(0, -1)
-    removedTrailingSingle = true
-    analysis = getCompletionAnalysis(content, options)
-    // Recalculate after removal. Again, skip any trailing empty line so we
-    // still operate on the actual last non-empty paragraph.
-    const newParagraph = analysis.getLastParagraph(true)
-    const newLastParagraphForMarkerCounting = newParagraph.formattingMarkers.withoutMath(
-      options?.singleDollarTextMath,
+  if (markerState.endsWithSingleUnderscore && (needsUnderscoreCompletion || needsUnderscoreRemoval)) {
+    const result = prepareTrailingStrongMarker(
+      currentContent,
+      options,
+      analysis,
+      '_',
+      needsUnderscoreCompletion,
+      needsUnderscoreRemoval,
     )
-    const newUnderscoreMatches = newLastParagraphForMarkerCounting.match(doubleUnderscorePattern)
-    const newUnderscoreCount = newUnderscoreMatches ? newUnderscoreMatches.length : 0
-    if (newUnderscoreCount % 2 === 1) {
-      const lastUnderscorePos = newLastParagraphForMarkerCounting.lastIndexOf('__')
-      const afterLast = newLastParagraphForMarkerCounting.substring(lastUnderscorePos + 2).trim()
-      if (afterLast.length > 0) {
-        needsUnderscoreCompletion = true
-        needsUnderscoreRemoval = false
-      }
-      else {
-        needsUnderscoreRemoval = true
-        needsUnderscoreCompletion = false
-      }
+    if (typeof result === 'string')
+      return result
+    if (result !== undefined) {
+      currentContent = result.content
+      analysis = result.analysis
+      removedTrailingSingle = result.removed
+      needsUnderscoreCompletion = result.needsCompletion
+      needsUnderscoreRemoval = result.needsRemoval
     }
   }
 
-  // Handle removals first
-  if (needsAsteriskRemoval) {
-    let result = content.slice(0, -2).trimEnd()
-    if (trailingStandaloneDashWithNewlinesPattern.test(result)) {
-      result = result.replace(trailingStandaloneDashWithNewlinesPattern, '$1')
-    }
-    return result
+  return {
+    analysis,
+    content: currentContent,
+    markerText: markerState.markerText,
+    needsAsteriskCompletion,
+    needsAsteriskRemoval,
+    needsUnderscoreCompletion,
+    needsUnderscoreRemoval,
+    removedTrailingSingle,
   }
+}
 
-  if (needsUnderscoreRemoval) {
-    paragraph = analysis.getLastParagraph()
-    const newLastParagraph = paragraph.content
-    const lastUnderscorePos = newLastParagraph.lastIndexOf('__')
-    const absoluteLastUnderscorePos = paragraph.startOffset + lastUnderscorePos
-    let result = content.substring(0, absoluteLastUnderscorePos).trimEnd()
-    if (trailingStandaloneDashWithNewlinesPattern.test(result)) {
-      result = result.replace(trailingStandaloneDashWithNewlinesPattern, '$1')
-    }
-    return result
+function analyzeStrongMarkers(
+  content: string,
+  paragraph: CompletionParagraphAnalysis,
+  options: CompletionContext | undefined,
+): StrongMarkerState | undefined {
+  const formattingMarkers = paragraph.formattingMarkers
+  const markerText = formattingMarkers.withoutMath(options?.singleDollarTextMath)
+  const sourceMarkers = formattingMarkers.maskedContent
+  const asteriskCount = markerText.match(doubleAsteriskPattern)?.length ?? 0
+  const underscoreCount = markerText.match(doubleUnderscorePattern)?.length ?? 0
+  const asterisk = analyzeStrongMarker(content, paragraph, markerText, '*', sourceMarkers, asteriskCount)
+  if (asterisk === undefined)
+    return undefined
+  const underscore = analyzeStrongMarker(
+    content,
+    paragraph,
+    markerText,
+    '_',
+    sourceMarkers,
+    underscoreCount,
+    shouldIgnoreUnderscoreMarker,
+  )
+  if (underscore === undefined)
+    return undefined
+  return {
+    asterisk,
+    endsWithSingleAsterisk: content.endsWith('*') && !content.endsWith('**'),
+    endsWithSingleUnderscore: content.endsWith('_') && !content.endsWith('__'),
+    markerText,
+    underscore,
   }
+}
 
-  // Handle completions - check for both ** and __, and also check for single * or _
-  if (needsAsteriskCompletion && needsUnderscoreCompletion) {
-    // Both need completion - complete the one that appears first
-    const firstAsteriskPos = lastParagraphWithoutCodeBlocksAndUrlsAndMath.indexOf('**')
-    const firstUnderscorePos = lastParagraphForMarkerCounting.indexOf('__')
-    if (firstAsteriskPos < firstUnderscorePos) {
-      // Asterisk appears first, complete underscore first, then asterisk
-      return appendBeforeTrailingWhitespace(content, '__**')
-    }
-    else {
-      // Underscore appears first, complete asterisk first, then underscore
-      return appendBeforeTrailingWhitespace(content, '**__')
-    }
-  }
-
-  if (needsAsteriskCompletion) {
-    // Check if there's also an unclosed single * that needs completion
-    // But only if we didn't just remove a trailing single *
-    if (!removedTrailingSingle) {
-      const currentParagraph = analysis.getLastParagraph(true)
-      const currentLastParagraphWithoutCodeBlocksAndUrlsAndMath = currentParagraph.formattingMarkers.withoutMath(
-        options?.singleDollarTextMath,
-      )
-      const withoutDoubleAsterisk = currentLastParagraphWithoutCodeBlocksAndUrlsAndMath.replace(doubleAsteriskPattern, '')
-      const singleAsteriskMatches = withoutDoubleAsterisk.match(singleAsteriskPattern)
-      const singleAsteriskCount = singleAsteriskMatches ? singleAsteriskMatches.length : 0
-      if (singleAsteriskCount % 2 === 1) {
-        // Complete both ** and *, inserting before trailing whitespace
-        return appendBeforeTrailingWhitespace(content, '***')
-      }
-    }
-    // Only complete **, inserting before trailing whitespace
+function prepareTrailingStrongMarker(
+  content: string,
+  options: CompletionContext | undefined,
+  analysis: CompletionAnalysis,
+  marker: '*' | '_',
+  needsCompletion: boolean,
+  needsRemoval: boolean,
+  runLength = 0,
+): TrailingStrongMarkerResult | string | undefined {
+  if (!needsCompletion && !needsRemoval)
+    return undefined
+  if (marker === '*' && needsCompletion && runLength >= 3)
     return appendBeforeTrailingWhitespace(content, '**')
+
+  const result = recomputeAfterTrailingStrongMarker(content.slice(0, -1), options, marker)
+  return {
+    analysis: result.analysis,
+    content: result.content,
+    needsCompletion: result.needsCompletion,
+    needsRemoval: result.needsRemoval,
+    removed: true,
+  }
+}
+
+function applyStrongFixPlan(plan: StrongFixPlan, options: CompletionContext | undefined): string {
+  if (plan.needsAsteriskRemoval)
+    return removeTrailingAsterisk(plan.content)
+  if (plan.needsUnderscoreRemoval)
+    return removeTrailingUnderscore(plan.content, plan.analysis)
+  if (plan.needsAsteriskCompletion && plan.needsUnderscoreCompletion)
+    return appendBothStrongMarkers(plan.content, plan.markerText)
+  if (plan.needsAsteriskCompletion)
+    return completeAsterisk(plan, options)
+  if (plan.needsUnderscoreCompletion)
+    return completeUnderscore(plan, options)
+  return plan.content
+}
+
+function removeTrailingAsterisk(content: string): string {
+  let result = content.slice(0, -2).trimEnd()
+  if (trailingStandaloneDashWithNewlinesPattern.test(result))
+    result = result.replace(trailingStandaloneDashWithNewlinesPattern, '$1')
+  return result
+}
+
+function removeTrailingUnderscore(content: string, analysis: CompletionAnalysis): string {
+  const paragraph = analysis.getLastParagraph()
+  const markerPosition = paragraph.content.lastIndexOf('__')
+  const absolutePosition = paragraph.startOffset + markerPosition
+  let result = content.substring(0, absolutePosition).trimEnd()
+  if (trailingStandaloneDashWithNewlinesPattern.test(result))
+    result = result.replace(trailingStandaloneDashWithNewlinesPattern, '$1')
+  return result
+}
+
+function appendBothStrongMarkers(content: string, markerText: string): string {
+  const asteriskPosition = markerText.indexOf('**')
+  const underscorePosition = markerText.indexOf('__')
+  return appendBeforeTrailingWhitespace(content, asteriskPosition < underscorePosition ? '__**' : '**__')
+}
+
+function completeAsterisk(plan: StrongFixPlan, options: CompletionContext | undefined): string {
+  if (!plan.removedTrailingSingle) {
+    const paragraph = plan.analysis.getLastParagraph(true)
+    const markerText = paragraph.formattingMarkers.withoutMath(options?.singleDollarTextMath)
+    const withoutDouble = markerText.replace(doubleAsteriskPattern, '')
+    if ((withoutDouble.match(singleAsteriskPattern)?.length ?? 0) % 2 === 1)
+      return appendBeforeTrailingWhitespace(plan.content, '***')
+  }
+  return appendBeforeTrailingWhitespace(plan.content, '**')
+}
+
+function completeUnderscore(plan: StrongFixPlan, options: CompletionContext | undefined): string {
+  if (!plan.removedTrailingSingle) {
+    const paragraph = plan.analysis.getLastParagraph()
+    const markerText = paragraph.formattingMarkers.withoutMath(options?.singleDollarTextMath)
+    const withoutDouble = maskInvalidUnderscoreMarkers(markerText).replace(doubleUnderscorePattern, '')
+    if ((withoutDouble.match(singleUnderscorePattern)?.length ?? 0) % 2 === 1)
+      return appendBeforeTrailingWhitespace(plan.content, '___')
+  }
+  return appendBeforeTrailingWhitespace(plan.content, '__')
+}
+
+function analyzeStrongMarker(
+  content: string,
+  paragraph: CompletionParagraphAnalysis,
+  markerText: string,
+  marker: '*' | '_',
+  sourceMarkers: string,
+  count: number,
+  shouldIgnore?: (text: string, start: number, length?: number) => boolean,
+): StrongMarkerResult | undefined {
+  if (count % 2 === 0)
+    return { needsCompletion: false, needsRemoval: false, lastRunLength: 0 }
+
+  const markerPosition = findLastStrongMarkerPosition(paragraph, marker, sourceMarkers, shouldIgnore)
+  if (markerPosition === -1)
+    return undefined
+
+  const absolutePosition = paragraph.startOffset + markerPosition
+  if (isWithinMathBlock(content, absolutePosition)
+    || isWithinLinkOrImageUrl(content, absolutePosition)
+    || isWithinHtmlTag(content, absolutePosition)) {
+    return undefined
   }
 
-  if (needsUnderscoreCompletion) {
-    // Check if there's also an unclosed single _ that needs completion
-    // But only if we didn't just remove a trailing single _
-    if (!removedTrailingSingle) {
-      const currentParagraph = analysis.getLastParagraph()
-      const currentLastParagraphWithoutCodeBlocksAndUrlsAndMath = currentParagraph.formattingMarkers.withoutMath(
-        options?.singleDollarTextMath,
-      )
-      const withoutDoubleUnderscore = maskInvalidUnderscoreMarkers(currentLastParagraphWithoutCodeBlocksAndUrlsAndMath).replace(doubleUnderscorePattern, '')
-      const singleUnderscoreMatches = withoutDoubleUnderscore.match(singleUnderscorePattern)
-      const singleUnderscoreCount = singleUnderscoreMatches ? singleUnderscoreMatches.length : 0
-      if (singleUnderscoreCount % 2 === 1) {
-        // Complete both __ and _, inserting before trailing whitespace
-        return appendBeforeTrailingWhitespace(content, '___')
-      }
-    }
-    // Only complete __, inserting before trailing whitespace
-    return appendBeforeTrailingWhitespace(content, '__')
+  const markerEnd = markerText.lastIndexOf(marker + marker) + 2
+  const afterLast = markerText.substring(markerEnd).trim()
+  const beforeLast = markerText.slice(0, markerEnd - 2).trim()
+  return {
+    needsCompletion: afterLast.length > 0,
+    needsRemoval: afterLast.length === 0 && beforeLast.length === 0,
+    lastRunLength: marker === '*' ? getAsteriskRunLength(paragraph.content, markerPosition) : 0,
+  }
+}
+
+function findLastStrongMarkerPosition(
+  paragraph: CompletionParagraphAnalysis,
+  marker: '*' | '_',
+  sourceMarkers: string,
+  shouldIgnore?: (text: string, start: number, length?: number) => boolean,
+): number {
+  let lastMarkerPosition = -1
+  for (let index = 0; index < paragraph.content.length - 1; index += 1) {
+    if (isPositionInRanges(index, paragraph.codeBlockRanges) || isPositionInRanges(index, paragraph.inlineCodeRanges))
+      continue
+    if (paragraph.content.substring(index, index + 2) !== marker + marker)
+      continue
+    if (sourceMarkers.substring(index, index + 2) !== marker + marker)
+      continue
+    if (shouldIgnore?.(paragraph.content, index, 2))
+      continue
+
+    lastMarkerPosition = index
+  }
+  return lastMarkerPosition
+}
+
+function recomputeAfterTrailingStrongMarker(
+  content: string,
+  options: CompletionContext | undefined,
+  marker: '*' | '_',
+): TrailingMarkerRecomputeResult {
+  const analysis = getCompletionAnalysis(content, options)
+  const paragraph = analysis.getLastParagraph(true)
+  const markerText = paragraph.formattingMarkers.withoutMath(options?.singleDollarTextMath)
+  const pattern = marker === '*' ? doubleAsteriskPattern : doubleUnderscorePattern
+  const count = markerText.match(pattern)?.length ?? 0
+  if (count % 2 === 0) {
+    return { analysis, content, needsCompletion: false, needsRemoval: false }
   }
 
-  return content
+  const lastMarkerPosition = markerText.lastIndexOf(marker + marker)
+  const afterLast = markerText.substring(lastMarkerPosition + 2).trim()
+  return {
+    analysis,
+    content,
+    needsCompletion: afterLast.length > 0,
+    needsRemoval: afterLast.length === 0,
+  }
+}
+
+function getAsteriskRunLength(content: string, position: number): number {
+  let end = position
+  while (content[end] === '*')
+    end += 1
+  return end - position
 }
