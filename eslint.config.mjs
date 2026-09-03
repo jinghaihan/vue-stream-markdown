@@ -5,6 +5,7 @@ export default defineConfig({
   unocss: true,
   formatters: true,
   markdown: false,
+  antislop: false,
   ignores: [
     '**/__fixtures__/**',
     'playground/nuxt/app/markdown/**/landing-page.md',

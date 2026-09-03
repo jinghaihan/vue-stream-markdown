@@ -1,6 +1,6 @@
 import { defineAsyncComponent } from 'vue'
 
-/// keep-sorted
+/** / keep-sorted */
 export const ICONS = {
   arrowLeft: defineAsyncComponent(() => import('~icons/lucide/arrow-left')),
   check: defineAsyncComponent(() => import('~icons/lucide/check')),

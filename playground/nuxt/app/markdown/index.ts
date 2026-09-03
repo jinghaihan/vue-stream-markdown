@@ -7,7 +7,7 @@ export const markdownGlob = import.meta.glob('./*.md', {
 
 export const DEFAULT_MARKDOWN_PATH = './landing-page.md'
 
-/// keep-sorted
+/** / keep-sorted */
 export const MARKDOWN_NAME: Record<string, string> = {
   'CJK Language Support': './cjk-support.md',
   'Code Blocks': './code-blocks.md',

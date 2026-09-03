@@ -1,7 +1,7 @@
 import type { Component } from 'vue'
 import { defineAsyncComponent } from 'vue'
 
-/// keep-sorted
+/** / keep-sorted */
 export const LANGUAGE_ICONS: Partial<Record<string, Component>> = {
   css: defineAsyncComponent(() => import('~icons/simple-icons/css')),
   html: defineAsyncComponent(() => import('~icons/simple-icons/html5')),
