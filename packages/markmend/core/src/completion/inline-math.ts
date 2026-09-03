@@ -109,45 +109,63 @@ function completeInlineMathContent(
  * Find the last $$ pair that is not inside a code block or inline code
  */
 function findLastDollarPairNotInCodeBlock(text: string): number {
-  let lastPos = -1
-  let inCodeBlock = false
-  let inInlineCode = false
-
-  for (let i = 0; i < text.length; i++) {
-    // Check for code block fences (```)
-    if (text.substring(i, i + 3) === '```') {
-      inCodeBlock = !inCodeBlock
-      inInlineCode = false // Code blocks take precedence
-      i += 2 // Skip the next 2 backticks
-      continue
-    }
-
-    // Only check for inline code if not in code block
-    if (!inCodeBlock && text[i] === '`') {
-      // Check if it's part of ``` (triple backticks)
-      const before = i > 0 ? text[i - 1] : ''
-      const before2 = i > 1 ? text[i - 2] : ''
-      const after = i < text.length - 1 ? text[i + 1] : ''
-      const after2 = i < text.length - 2 ? text[i + 2] : ''
-
-      // Skip if this backtick is part of ```
-      const isPartOfTriple = (before === '`' && before2 === '`') // third of ```
-        || (before === '`' && after === '`') // middle of ```
-        || (after === '`' && after2 === '`') // first of ```
-
-      if (!isPartOfTriple) {
-        // Toggle inline code state
-        inInlineCode = !inInlineCode
-      }
-      continue
-    }
-
-    // Only look for $$ if not in code block or inline code
-    if (!inCodeBlock && !inInlineCode && text.substring(i, i + 2) === '$$') {
-      lastPos = i
-      i += 1 // Skip the second $
-    }
+  const state: DollarScanState = {
+    lastPos: -1,
+    inCodeBlock: false,
+    inInlineCode: false,
   }
 
-  return lastPos
+  for (let i = 0; i < text.length; i++) {
+    if (consumeCodeFence(text, i, state)) {
+      i += 2
+      continue
+    }
+
+    if (consumeInlineCodeDelimiter(text, i, state))
+      continue
+
+    if (state.inCodeBlock || state.inInlineCode || !text.startsWith('$$', i))
+      continue
+
+    state.lastPos = i
+    i += 1 // Skip the second $
+  }
+
+  return state.lastPos
+}
+
+interface DollarScanState {
+  lastPos: number
+  inCodeBlock: boolean
+  inInlineCode: boolean
+}
+
+function consumeCodeFence(text: string, index: number, state: DollarScanState): boolean {
+  if (!text.startsWith('```', index))
+    return false
+
+  state.inCodeBlock = !state.inCodeBlock
+  state.inInlineCode = false
+  return true
+}
+
+function consumeInlineCodeDelimiter(text: string, index: number, state: DollarScanState): boolean {
+  if (state.inCodeBlock || text[index] !== '`')
+    return false
+
+  if (!isPartOfTripleBacktick(text, index))
+    state.inInlineCode = !state.inInlineCode
+
+  return true
+}
+
+function isPartOfTripleBacktick(text: string, index: number): boolean {
+  const before = index > 0 ? text[index - 1] : ''
+  const before2 = index > 1 ? text[index - 2] : ''
+  const after = index < text.length - 1 ? text[index + 1] : ''
+  const after2 = index < text.length - 2 ? text[index + 2] : ''
+
+  return (before === '`' && before2 === '`')
+    || (before === '`' && after === '`')
+    || (after === '`' && after2 === '`')
 }
