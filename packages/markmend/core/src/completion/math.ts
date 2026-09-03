@@ -34,31 +34,7 @@ export function fixMath(content: string, context?: CompletionContext): string {
   }
 
   const { lines } = analysis
-  let inCodeBlock = false
-  const blockMathDelimiters: number[] = [] // Store indices of $$ delimiters on separate lines
-
-  // Find all block math delimiters ($$ on separate lines, excluding code blocks)
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i] ?? ''
-
-    // Check for code block fences (```)
-    if (line.trim().startsWith('```')) {
-      inCodeBlock = !inCodeBlock
-      continue
-    }
-
-    // Skip if we're inside a code block
-    if (inCodeBlock) {
-      continue
-    }
-
-    // Check if this line is a block math delimiter ($$ on a separate line)
-    // Block math delimiter is a line that contains only $$ (possibly with whitespace)
-    const trimmedLine = line.trim()
-    if (trimmedLine === '$$') {
-      blockMathDelimiters.push(i)
-    }
-  }
+  const blockMathDelimiters = findBlockMathDelimiters(lines)
 
   // If we have an odd number of block math delimiters, we have an unclosed block math
   if (blockMathDelimiters.length % 2 === 1) {
@@ -86,4 +62,22 @@ export function fixMath(content: string, context?: CompletionContext): string {
   }
 
   return content
+}
+
+function findBlockMathDelimiters(lines: string[]): number[] {
+  let inCodeBlock = false
+  const delimiters: number[] = []
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index] ?? ''
+    if (line.trim().startsWith('```')) {
+      inCodeBlock = !inCodeBlock
+      continue
+    }
+
+    if (!inCodeBlock && line.trim() === '$$')
+      delimiters.push(index)
+  }
+
+  return delimiters
 }
