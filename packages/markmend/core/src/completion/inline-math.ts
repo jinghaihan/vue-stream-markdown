@@ -1,4 +1,5 @@
 import type { CompletionContext } from '../types'
+import type { CompletionParagraphAnalysis } from './context'
 import { getCompletionAnalysis } from './context'
 import { codeBlockPattern, doubleDollarPattern, inlineCodePattern } from './pattern'
 
@@ -63,53 +64,45 @@ export function fixInlineMath(content: string, context?: CompletionContext): str
     if (lastDollarPos === -1)
       return content
 
-    let afterLast = lastParagraph.substring(lastDollarPos + 2)
-
-    // Inline math cannot contain newlines - if $$ is followed immediately by \n, don't process
-    // Also, if $$ is followed by content that contains \n, it's not inline math
-    if (afterLast.startsWith('\n') || afterLast.includes('\n')) {
-      return content
-    }
-
-    // Check if afterLast is just a single $ with no content
-    const afterLastTrimmed = afterLast.trim()
-    if (afterLastTrimmed === '$') {
-      return content
-    }
-
-    // If afterLast ends with a single $ (not $$), remove it first
-    // This handles cases like "$$\int u \, dv = uv - \int v \, du$"
-    let shouldRemoveTrailingDollar = false
-    if (afterLast.endsWith('$') && !afterLast.endsWith('$$')) {
-      shouldRemoveTrailingDollar = true
-      afterLast = afterLast.slice(0, -1)
-    }
-
-    // Check if there's content after $$ (on the same line, since inline math can't span lines)
-    const hasContentAfter = afterLast.trim().length > 0
-
-    if (hasContentAfter) {
-      // For math expressions, we should be more conservative about detecting unclosed markdown
-      // LaTeX uses underscores and other symbols that could be mistaken for markdown
-      // Only block completion if there are clear markdown patterns that would conflict
-
-      // Complete inline math - LaTeX content should not be treated as markdown
-      if (shouldRemoveTrailingDollar) {
-        const actualLastDollarPos = paragraph.startOffset + lastDollarPos
-        const contentBeforeMath = content.substring(0, actualLastDollarPos + 2)
-        const contentAfterMath = lastParagraph.substring(lastDollarPos + 2, lastParagraph.length - 1)
-        return `${contentBeforeMath}${contentAfterMath}$$`
-      }
-      return `${content}$$`
-    }
-    else {
-      // Remove the trailing $$ and any trailing whitespace
-      const actualLastDollarPos = paragraph.startOffset + lastDollarPos
-      return content.slice(0, actualLastDollarPos).trimEnd()
-    }
+    return completeInlineMathContent(content, paragraph, lastParagraph, lastDollarPos)
   }
 
   return content
+}
+
+function completeInlineMathContent(
+  content: string,
+  paragraph: CompletionParagraphAnalysis,
+  lastParagraph: string,
+  lastDollarPos: number,
+): string {
+  let afterLast = lastParagraph.substring(lastDollarPos + 2)
+
+  // Inline math cannot contain newlines.
+  if (afterLast.includes('\n'))
+    return content
+
+  // A single trailing dollar is not content for an inline math expression.
+  if (afterLast.trim() === '$')
+    return content
+
+  // Remove a single trailing dollar before adding the closing delimiter.
+  const shouldRemoveTrailingDollar = afterLast.endsWith('$') && !afterLast.endsWith('$$')
+  if (shouldRemoveTrailingDollar)
+    afterLast = afterLast.slice(0, -1)
+
+  if (afterLast.trim().length === 0) {
+    const actualLastDollarPos = paragraph.startOffset + lastDollarPos
+    return content.slice(0, actualLastDollarPos).trimEnd()
+  }
+
+  if (!shouldRemoveTrailingDollar)
+    return `${content}$$`
+
+  const actualLastDollarPos = paragraph.startOffset + lastDollarPos
+  const contentBeforeMath = content.substring(0, actualLastDollarPos + 2)
+  const contentAfterMath = lastParagraph.substring(lastDollarPos + 2, lastParagraph.length - 1)
+  return `${contentBeforeMath}${contentAfterMath}$$`
 }
 
 /**
