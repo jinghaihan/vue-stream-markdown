@@ -59,6 +59,64 @@ const blockedProtocols = new Set([
 
 const HTTP_PROTOCOL_PATTERN = /^https?:$/
 
+function transformDataUrl(url: string, isImage: boolean, allowDataImages: boolean): string | null {
+  return isImage && allowDataImages && url.startsWith('data:image/') ? url : null
+}
+
+function transformBlobUrl(url: string): string | null {
+  try {
+    const blobUrl = new URL(url)
+    if (blobUrl.protocol !== 'blob:' || url.length <= 5)
+      return null
+
+    const afterProtocol = url.substring(5)
+    return afterProtocol && afterProtocol !== 'invalid' ? url : null
+  }
+  catch {
+    return null
+  }
+}
+
+function isAllowedProtocol(protocol: string, allowedProtocols: string[]): boolean {
+  return safeProtocols.has(protocol)
+    || allowedProtocols.includes(protocol)
+    || allowedProtocols.includes('*')
+}
+
+function isAllowedHttpPrefix(
+  url: URL,
+  prefix: string,
+  defaultOrigin: string,
+): boolean {
+  const parsedPrefix = parseUrl(prefix, defaultOrigin)
+  return parsedPrefix !== null
+    && parsedPrefix.origin === url.origin
+    && url.href.startsWith(parsedPrefix.href)
+}
+
+function normalizeHttpUrl(url: URL, inputWasRelative: boolean): string {
+  return inputWasRelative ? url.pathname + url.search + url.hash : url.href
+}
+
+function transformHttpUrl(
+  url: URL,
+  input: unknown,
+  allowedPrefixes: string[],
+  defaultOrigin: string,
+): string | null {
+  const inputWasRelative = isPathRelativeUrl(input)
+  const hasAllowedPrefix = allowedPrefixes.some(prefix => isAllowedHttpPrefix(url, prefix, defaultOrigin))
+  const hasWildcard = allowedPrefixes.includes('*')
+
+  if (!hasAllowedPrefix && !hasWildcard)
+    return null
+
+  if (hasWildcard && url.protocol !== 'https:' && url.protocol !== 'http:')
+    return null
+
+  return normalizeHttpUrl(url, inputWasRelative)
+}
+
 export function transformUrl(
   url: unknown,
   allowedPrefixes: string[],
@@ -70,39 +128,15 @@ export function transformUrl(
   if (!url)
     return null
 
-  if (typeof url === 'string' && url.startsWith('#') && !isImage) {
-    try {
-      const testUrl = new URL(url, 'http://example.com')
-      if (testUrl.hash === url)
-        return url
-    }
-    catch {
-      // noop
-    }
-  }
+  if (typeof url === 'string' && url.startsWith('#') && !isImage && isValidHashUrl(url))
+    return url
 
   if (typeof url === 'string' && url.startsWith('data:')) {
-    if (isImage && allowDataImages && url.startsWith('data:image/'))
-      return url
-
-    return null
+    return transformDataUrl(url, isImage, allowDataImages)
   }
 
-  if (typeof url === 'string' && url.startsWith('blob:')) {
-    try {
-      const blobUrl = new URL(url)
-      if (blobUrl.protocol === 'blob:' && url.length > 5) {
-        const afterProtocol = url.substring(5)
-        if (afterProtocol && afterProtocol.length > 0 && afterProtocol !== 'invalid')
-          return url
-      }
-    }
-    catch {
-      return null
-    }
-
-    return null
-  }
+  if (typeof url === 'string' && url.startsWith('blob:'))
+    return transformBlobUrl(url)
 
   const parsedUrl = parseUrl(url, defaultOrigin)
   if (!parsedUrl)
@@ -111,48 +145,22 @@ export function transformUrl(
   if (blockedProtocols.has(parsedUrl.protocol))
     return null
 
-  const isProtocolAllowed
-    = safeProtocols.has(parsedUrl.protocol)
-      || allowedProtocols.includes(parsedUrl.protocol)
-      || allowedProtocols.includes('*')
-
-  if (!isProtocolAllowed)
+  if (!isAllowedProtocol(parsedUrl.protocol, allowedProtocols))
     return null
 
   if (parsedUrl.protocol === 'mailto:' || !HTTP_PROTOCOL_PATTERN.test(parsedUrl.protocol))
     return parsedUrl.href
 
-  const inputWasRelative = isPathRelativeUrl(url)
+  return transformHttpUrl(parsedUrl, url, allowedPrefixes, defaultOrigin)
+}
 
-  if (
-    allowedPrefixes.some((prefix) => {
-      const parsedPrefix = parseUrl(prefix, defaultOrigin)
-      if (!parsedPrefix)
-        return false
-
-      if (parsedPrefix.origin !== parsedUrl.origin)
-        return false
-
-      return parsedUrl.href.startsWith(parsedPrefix.href)
-    })
-  ) {
-    if (inputWasRelative)
-      return parsedUrl.pathname + parsedUrl.search + parsedUrl.hash
-
-    return parsedUrl.href
+function isValidHashUrl(url: string): boolean {
+  try {
+    return new URL(url, 'http://example.com').hash === url
   }
-
-  if (allowedPrefixes.includes('*')) {
-    if (parsedUrl.protocol !== 'https:' && parsedUrl.protocol !== 'http:')
-      return null
-
-    if (inputWasRelative)
-      return parsedUrl.pathname + parsedUrl.search + parsedUrl.hash
-
-    return parsedUrl.href
+  catch {
+    return false
   }
-
-  return null
 }
 
 export function transformHardenedUrl<TComponent = unknown>(
