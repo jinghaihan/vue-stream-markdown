@@ -1,7 +1,9 @@
 import { isClient } from './env'
 
+export type IdleCallbackId = number | ReturnType<typeof globalThis.setTimeout>
+
 export function createIdleCallback() {
-  const request = (cb: IdleRequestCallback, timeout = 500): number => {
+  const request = (cb: IdleRequestCallback, timeout = 500): IdleCallbackId => {
     if (isClient() && 'requestIdleCallback' in window)
       return window.requestIdleCallback(cb, { timeout })
 
@@ -11,11 +13,11 @@ export function createIdleCallback() {
         didTimeout: false,
         timeRemaining: () => Math.max(0, 50 - (Date.now() - start)),
       })
-    }, 1) as unknown as number
+    }, 1)
   }
 
-  const cancel = (id: number) => {
-    if (isClient() && 'cancelIdleCallback' in window)
+  const cancel = (id: IdleCallbackId) => {
+    if (isClient() && 'cancelIdleCallback' in window && typeof id === 'number')
       window.cancelIdleCallback(id)
     else
       globalThis.clearTimeout(id)

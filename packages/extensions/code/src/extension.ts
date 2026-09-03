@@ -3,6 +3,7 @@ import type {
   CodeHighlightResult,
   CodeToken,
 } from '@stream-markdown/core'
+import type { ThemeRegistrationResolved } from 'shiki'
 import type { CodeRuntimeOptions } from './types'
 import { resolveGetter } from '@stream-markdown/core'
 import { DEFAULT_SHIKI_DARK_THEME, DEFAULT_SHIKI_LIGHT_THEME } from './constants'
@@ -48,7 +49,8 @@ export function code(options: CodeExtensionOptions = {}): CodeExtension {
       const highlighter = await runtime.getHighlighter()
       const themes = resolveGetter(options.theme)
         ?? [DEFAULT_SHIKI_LIGHT_THEME, DEFAULT_SHIKI_DARK_THEME]
-      return highlighter.getTheme(themes[isDark ? 1 : 0]) as unknown as Record<string, unknown>
+      const theme: ThemeRegistrationResolved = highlighter.getTheme(themes[isDark ? 1 : 0])
+      return Object.fromEntries(Object.entries(theme))
     },
   }
 }

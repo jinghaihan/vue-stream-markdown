@@ -1,3 +1,4 @@
+import type { IdleCallbackId } from '@stream-markdown/core'
 import type { MaybeRefOrGetter } from 'vue'
 import { createIdleCallback } from '@stream-markdown/core'
 import { useIntersectionObserver } from '@vueuse/core'
@@ -22,7 +23,7 @@ export function useDeferredRender(options: UseDeferredRenderOptions) {
   const shouldRender = ref(immediate)
 
   const debounceTimer = ref<number | null>(null)
-  const idleCallbackId = ref<number | null>(null)
+  const idleCallbackId = ref<IdleCallbackId | null>(null)
   const target = computed(() => toValue(options.targetRef))
 
   const { request, cancel } = createIdleCallback()
