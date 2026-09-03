@@ -6,7 +6,21 @@ export interface CompletionOptions {
   singleDollarTextMath?: boolean
 }
 
-export type CompletionType = string
+export type BuiltinCompletionType
+  = | 'code'
+    | 'comparisonOperators'
+    | 'html'
+    | 'footnote'
+    | 'strong'
+    | 'emphasis'
+    | 'delete'
+    | 'taskList'
+    | 'link'
+    | 'table'
+    | 'inlineMath'
+    | 'math'
+
+export type CompletionType = BuiltinCompletionType | (string & {})
 
 export interface CompletionInfo {
   phase?: string

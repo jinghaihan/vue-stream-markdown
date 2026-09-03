@@ -1,4 +1,5 @@
 import type {
+  BuiltinCompletionType,
   CompletionContext,
   CompletionInfo,
   CompletionOptions,
@@ -34,21 +35,7 @@ export function normalize(content: string): string {
 
 type CompletionStep = (content: string, options?: CompletionContext) => string
 
-type CompletionStepName
-  = | 'code'
-    | 'comparisonOperators'
-    | 'html'
-    | 'footnote'
-    | 'strong'
-    | 'emphasis'
-    | 'delete'
-    | 'taskList'
-    | 'link'
-    | 'table'
-    | 'inlineMath'
-    | 'math'
-
-const COMPLETION_STEP_NAMES: CompletionStepName[] = [
+const COMPLETION_STEP_NAMES: BuiltinCompletionType[] = [
   'code',
   'comparisonOperators',
   'html',
@@ -76,10 +63,10 @@ const COMPLETION_STEPS = {
   table: fixTable,
   inlineMath: fixInlineMath,
   math: fixMath,
-} satisfies Record<CompletionStepName, CompletionStep>
+} satisfies Record<BuiltinCompletionType, CompletionStep>
 
 function resolveCompletionInfo(
-  type: CompletionStepName,
+  type: BuiltinCompletionType,
   before: string,
   after: string,
 ): CompletionInfo {
