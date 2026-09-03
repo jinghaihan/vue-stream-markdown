@@ -10,6 +10,7 @@ import {
   isWithinHtmlTag,
   isWithinLinkOrImageUrl,
   isWithinMathBlock,
+  maskInvalidAsteriskMarkers,
   removeMathBlocksFromText,
 } from '../../../packages/markmend/core/src/completion/utils'
 
@@ -114,6 +115,24 @@ describe('removeMathBlocksFromText', () => {
 
   it('handles mixed closed and unclosed block math', () => {
     expect(removeMathBlocksFromText('a $$b$$ c $$d')).toBe('a  c ')
+  })
+})
+
+describe('maskInvalidAsteriskMarkers', () => {
+  it('keeps content without asterisks unchanged', () => {
+    expect(maskInvalidAsteriskMarkers('plain text')).toBe('plain text')
+  })
+
+  it('masks escaped and whitespace-only asterisk runs', () => {
+    expect(maskInvalidAsteriskMarkers('cost \\*100 and * text')).toBe('cost \\ 100 and   text')
+  })
+
+  it('keeps strong and valid emphasis markers', () => {
+    expect(maskInvalidAsteriskMarkers('**bold** and *italic*')).toBe('**bold** and *italic*')
+  })
+
+  it('masks asterisk delimiters that start inside a word', () => {
+    expect(maskInvalidAsteriskMarkers('foo*bar')).toBe('foo bar')
   })
 })
 

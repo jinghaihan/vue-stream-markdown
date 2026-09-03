@@ -29,6 +29,11 @@ interface MathDelimiter {
   closingPos: number
 }
 
+interface AsteriskRunAnalysis {
+  isInsideWord: boolean
+  participates: boolean
+}
+
 /**
  * Find the start index of the last paragraph in content
  * A paragraph is defined as content after the last blank line
@@ -410,17 +415,10 @@ export function maskInvalidAsteriskMarkers(content: string): string {
     }
 
     const runStart = index
-    while (index < content.length && content[index] === '*')
-      index += 1
+    index = findAsteriskRunEnd(content, index)
 
-    const cannotDelimit = isEscapedCharacter(content, runStart)
-      || (isWhitespaceOrBoundary(content, runStart - 1)
-        && isWhitespaceOrBoundary(content, index))
-
-    if (cannotDelimit) {
-      characters ??= content.split('')
-      for (let markerIndex = runStart; markerIndex < index; markerIndex += 1)
-        characters[markerIndex] = ' '
+    if (shouldMaskAsteriskRun(content, runStart, index)) {
+      characters = maskCharacterRange(content, characters, runStart, index)
       continue
     }
 
@@ -430,27 +428,65 @@ export function maskInvalidAsteriskMarkers(content: string): string {
       continue
 
     const singleMarkerIndex = index - 1
-    const isInsideWord = isUnicodeWordCharacterAt(content, runStart - 1)
-      && isUnicodeWordCharacterAt(content, index)
-    const canOpen = !isWhitespaceOrBoundary(content, index)
-    const canClose = !isWhitespaceOrBoundary(content, runStart - 1)
-    const startsColdInsideWord = isInsideWord
-      && singleAsteriskCount % 2 === 0
-      && !inWordAsteriskChain
-    const participates = !startsColdInsideWord
-      && ((canClose && singleAsteriskCount % 2 === 1) || canOpen)
+    const analysis = analyzeAsteriskRun(content, runStart, index, singleAsteriskCount, inWordAsteriskChain)
 
-    if (participates) {
+    if (analysis.participates) {
       singleAsteriskCount += 1
-      inWordAsteriskChain = isInsideWord
+      inWordAsteriskChain = analysis.isInsideWord
     }
     else {
-      characters ??= content.split('')
-      characters[singleMarkerIndex] = ' '
+      characters = maskCharacterRange(content, characters, singleMarkerIndex, index)
     }
   }
 
   return characters?.join('') ?? content
+}
+
+function findAsteriskRunEnd(content: string, start: number): number {
+  let end = start
+  while (end < content.length && content[end] === '*')
+    end += 1
+  return end
+}
+
+function shouldMaskAsteriskRun(content: string, start: number, end: number): boolean {
+  return isEscapedCharacter(content, start)
+    || (isWhitespaceOrBoundary(content, start - 1)
+      && isWhitespaceOrBoundary(content, end))
+}
+
+function analyzeAsteriskRun(
+  content: string,
+  start: number,
+  end: number,
+  singleAsteriskCount: number,
+  inWordAsteriskChain: boolean,
+): AsteriskRunAnalysis {
+  const isInsideWord = isUnicodeWordCharacterAt(content, start - 1)
+    && isUnicodeWordCharacterAt(content, end)
+  const canOpen = !isWhitespaceOrBoundary(content, end)
+  const canClose = !isWhitespaceOrBoundary(content, start - 1)
+  const startsColdInsideWord = isInsideWord
+    && singleAsteriskCount % 2 === 0
+    && !inWordAsteriskChain
+
+  return {
+    isInsideWord,
+    participates: !startsColdInsideWord
+      && ((canClose && singleAsteriskCount % 2 === 1) || canOpen),
+  }
+}
+
+function maskCharacterRange(
+  content: string,
+  characters: string[] | undefined,
+  start: number,
+  end: number,
+): string[] {
+  const maskedCharacters = characters ?? content.split('')
+  for (let index = start; index < end; index += 1)
+    maskedCharacters[index] = ' '
+  return maskedCharacters
 }
 
 /** Mask escaped Markdown markers while preserving string offsets. */
