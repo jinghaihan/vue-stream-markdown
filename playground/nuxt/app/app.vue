@@ -8,12 +8,11 @@ import type {
   StreamMarkdownProps,
   UIOptions,
 } from 'vue-stream-markdown'
-import { throttle } from '@antfu/utils'
 import { beautifulMermaid } from '@stream-markdown/beautiful-mermaid'
 import { code } from '@stream-markdown/code'
 import { math } from '@stream-markdown/math'
 import { mermaid } from '@stream-markdown/mermaid'
-import { useCycleList, useResizeObserver } from '@vueuse/core'
+import { useCycleList } from '@vueuse/core'
 import * as LZString from 'lz-string'
 import { hydrateOnVisible } from 'vue'
 import { Markdown, SUPPORT_LANGUAGES, useTailwindV3Theme } from 'vue-stream-markdown'
@@ -50,9 +49,6 @@ const typedStepMin = computed(() => userConfig.value.typedStepMin)
 const typedStepMax = computed(() => userConfig.value.typedStepMax)
 const typedDelay = computed(() => userConfig.value.typedDelay)
 
-const pauseAutoScroll = ref<boolean>(false)
-const lastScrollTop = ref<number>(0)
-
 const {
   typedContent,
   typingIndex,
@@ -79,6 +75,18 @@ const renderMode = computed(() => {
   return completed ? 'static' : 'streaming'
 })
 const markdownContent = computed(() => renderMode.value === 'static' ? content.value : typedContent.value)
+
+const autoScroll = computed({
+  get: () => userConfig.value.autoScroll,
+  set: value => userConfig.value.autoScroll = value,
+})
+
+const { onScroll } = useAutoScroll({
+  container: containerRef,
+  content: () => markdownRef.value?.$el,
+  enabled: autoScroll,
+  active: isTyping,
+})
 
 const copyContent = computed(() => {
   return markdownContent.value
@@ -227,53 +235,11 @@ function getContainer() {
   return containerRef.value
 }
 
-function onScroll() {
-  const element = containerRef.value
-  if (!element)
-    return
-
-  const isScrollUp = element.scrollTop < lastScrollTop.value
-  lastScrollTop.value = element.scrollTop
-
-  const distanceFromBottom = element.scrollHeight - element.scrollTop - element.clientHeight
-  if (isScrollUp && distanceFromBottom > 65)
-    pauseAutoScroll.value = true
-  else if (distanceFromBottom <= 20)
-    pauseAutoScroll.value = false
-}
-
-const scrollToBottom = throttle(800, () => {
-  if (!userConfig.value.autoScroll || pauseAutoScroll.value)
-    return
-
-  const container = containerRef.value
-  if (!container)
-    return
-
-  container.scrollTo({
-    top: container.scrollHeight,
-    behavior: 'smooth',
-  })
-})
-
-function resetScrollState() {
-  userConfig.value.autoScroll = false
-  pauseAutoScroll.value = false
-  lastScrollTop.value = 0
-}
-
 watch(() => isTyping.value, (value) => {
   typedEnable.value = value
-
-  if (!value)
-    resetScrollState()
 })
 watch(() => mode.value, terminateTypeWriting)
 watch(() => locale.value, () => userConfig.value.locale = locale.value)
-
-useResizeObserver(() => markdownRef.value?.$el, () => {
-  scrollToBottom()
-})
 
 onMounted(() => {
   initContent()

@@ -1,3 +1,4 @@
+export * from './use-auto-scroll'
 export * from './use-dark'
 export * from './use-mobile'
 export * from './use-typed-effect'
