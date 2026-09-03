@@ -162,32 +162,28 @@ export function isCodePreviewable<TComponent = unknown>(
   if (!progressiveRender && options.nodeLoading)
     return false
 
-  const html = options.language === 'html' && !options.nodeLoading
-  const mermaid = options.language === 'mermaid' && !!options.hasMermaid
+  const builtinPreviewable = (
+    options.language === 'html' && !options.nodeLoading
+  ) || (
+    options.language === 'mermaid' && !!options.hasMermaid
+  )
 
-  if (previewers === true || previewers === undefined) {
-    if (options.language === 'html' && html)
-      return true
-    if (options.language === 'mermaid' && mermaid)
-      return true
+  if (previewers === true || previewers === undefined)
+    return builtinPreviewable
+
+  if (typeof previewers !== 'object')
     return false
-  }
 
-  if (typeof previewers === 'object') {
-    if (previewers.components?.[options.language] === false)
-      return false
+  if (previewers.components?.[options.language] === false)
+    return false
 
-    if (options.language === 'html' && html)
-      return true
-    if (options.language === 'mermaid' && mermaid)
-      return true
+  if (builtinPreviewable)
+    return true
 
-    const component = previewers.components?.[options.language]
-    if (isCustomPreviewComponent(component, options.isPreviewComponent) && (progressiveRender || !options.nodeLoading))
-      return true
-  }
-
-  return false
+  return isCustomPreviewComponent(
+    previewers.components?.[options.language],
+    options.isPreviewComponent,
+  )
 }
 
 export function resolveCodePreviewComponent<TComponent = unknown>(
