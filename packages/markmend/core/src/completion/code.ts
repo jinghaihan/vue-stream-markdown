@@ -199,64 +199,70 @@ function fixInlineCode(content: string): string {
   // We need to remove complete code blocks from counting
   const withoutCodeBlocks = lastParagraph.replace(codeBlockPattern, '')
 
-  // Count single backticks (excluding triple backticks)
-  // We need to be careful not to count backticks that are part of ```
-  let count = 0
-  for (let index = 0; index < withoutCodeBlocks.length; index += 1) {
-    if (withoutCodeBlocks[index] === '`' && !isEscapedCharacter(withoutCodeBlocks, index))
-      count += 1
-  }
+  const count = countUnescapedBackticks(withoutCodeBlocks)
 
-  // Only complete if odd number and has content after
-  if (count % 2 === 1) {
-    // Find the last unclosed backtick in the original content
-    let lastBacktickPos = -1
+  if (count % 2 === 0)
+    return content
 
-    for (let i = 0; i < lastParagraph.length; i++) {
-      // Skip over code blocks
-      if (lastParagraph.substring(i).startsWith('```')) {
-        const closeIndex = lastParagraph.indexOf('```', i + 3)
-        if (closeIndex !== -1) {
-          i = closeIndex + 2 // Skip to after closing ```
-          continue
-        }
-      }
+  const lastBacktickPos = findLastUnclosedBacktick(lastParagraph)
+  if (lastBacktickPos === -1)
+    return content
 
-      if (lastParagraph[i] === '`') {
-        if (isEscapedCharacter(lastParagraph, i))
-          continue
-
-        // Check if it's part of ``` (triple backticks)
-        const before = lastParagraph[i - 1] || ''
-        const before2 = lastParagraph[i - 2] || ''
-        const after = lastParagraph[i + 1] || ''
-        const after2 = lastParagraph[i + 2] || ''
-
-        // Skip if this backtick is part of ```
-        // Cases: ```, ``, or ``
-        const isPartOfTriple = (before === '`' && before2 === '`') // third of ```
-          || (before === '`' && after === '`') // middle of ```
-          || (after === '`' && after2 === '`') // first of ```
-
-        if (isPartOfTriple)
-          continue
-
-        lastBacktickPos = i
-      }
-    }
-
-    if (lastBacktickPos !== -1) {
-      // Calculate actual position in the full content
-      const offset = calculateParagraphOffset(paragraphStartIndex, lines)
-      const actualPos = offset + lastBacktickPos
-
-      const afterLast = content.substring(actualPos + 1).trim()
-
-      // If there's content after `, complete it
-      if (afterLast.length > 0)
-        return `${content}\``
-    }
-  }
+  const offset = calculateParagraphOffset(paragraphStartIndex, lines)
+  const actualPos = offset + lastBacktickPos
+  const afterLast = content.substring(actualPos + 1).trim()
+  if (afterLast.length > 0)
+    return `${content}\``
 
   return content
+}
+
+function countUnescapedBackticks(text: string): number {
+  let count = 0
+  for (let index = 0; index < text.length; index += 1) {
+    if (text[index] === '`' && !isEscapedCharacter(text, index))
+      count += 1
+  }
+  return count
+}
+
+function findLastUnclosedBacktick(text: string): number {
+  let lastBacktickPos = -1
+
+  for (let index = 0; index < text.length; index += 1) {
+    const codeBlockEnd = findClosedCodeBlockEnd(text, index)
+    if (codeBlockEnd !== undefined) {
+      index = codeBlockEnd
+      continue
+    }
+
+    if (text[index] !== '`'
+      || isEscapedCharacter(text, index)
+      || isPartOfTripleBacktick(text, index)) {
+      continue
+    }
+
+    lastBacktickPos = index
+  }
+
+  return lastBacktickPos
+}
+
+function findClosedCodeBlockEnd(text: string, start: number): number | undefined {
+  if (!text.startsWith('```', start))
+    return undefined
+
+  const closeIndex = text.indexOf('```', start + 3)
+  return closeIndex === -1 ? undefined : closeIndex + 2
+}
+
+function isPartOfTripleBacktick(text: string, index: number): boolean {
+  const before = text[index - 1] || ''
+  const before2 = text[index - 2] || ''
+  const after = text[index + 1] || ''
+  const after2 = text[index + 2] || ''
+
+  return (before === '`' && before2 === '`')
+    || (before === '`' && after === '`')
+    || (after === '`' && after2 === '`')
 }
