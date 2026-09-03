@@ -13,7 +13,8 @@ const autoScroll = defineModel<boolean>('autoScroll', { required: false, default
 const staticMode = defineModel<boolean>('staticMode', { required: false, default: false })
 
 const typingIndex = defineModel<number>('typingIndex', { required: false, default: 0 })
-const typedStep = defineModel<number>('typedStep', { required: false, default: 1 })
+const typedStepMin = defineModel<number>('typedStepMin', { required: false, default: 1 })
+const typedStepMax = defineModel<number>('typedStepMax', { required: false, default: 8 })
 const typedDelay = defineModel<number>('typedDelay', { required: false, default: 16 })
 
 const shikiLightTheme = defineModel<string>('shikiLightTheme', { required: false, default: 'github-light' })
@@ -45,6 +46,16 @@ const animationStaggerInput = computed({
     const nextValue = Number(value)
     animationStagger.value = Number.isFinite(nextValue) ? Math.max(0, nextValue) : 40
   },
+})
+
+watch(() => typedStepMin.value, (value) => {
+  if (typedStepMax.value < value)
+    typedStepMax.value = value
+})
+
+watch(() => typedStepMax.value, (value) => {
+  if (typedStepMin.value > value)
+    typedStepMin.value = value
 })
 
 const BLOCK_CLASSES = [
@@ -173,12 +184,26 @@ watch(() => staticMode.value, () => {
         </div>
 
         <div :class="BLOCK_CLASSES">
-          <Label :class="LABEL_CLASSES">Typed Step</Label>
+          <Label :class="LABEL_CLASSES">Step Min</Label>
           <Input
-            v-model:value="typedStep"
+            v-model:value="typedStepMin"
             :class="CONTROL_CLASSES"
             type="number"
-            placeholder="Typed step"
+            min="1"
+            step="1"
+            placeholder="Minimum step"
+          />
+        </div>
+
+        <div :class="BLOCK_CLASSES">
+          <Label :class="LABEL_CLASSES">Step Max</Label>
+          <Input
+            v-model:value="typedStepMax"
+            :class="CONTROL_CLASSES"
+            type="number"
+            min="1"
+            step="1"
+            placeholder="Maximum step"
           />
         </div>
 

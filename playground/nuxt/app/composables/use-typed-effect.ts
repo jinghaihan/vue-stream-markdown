@@ -5,7 +5,8 @@ import { isString } from '../utils'
 interface UseTypedEffectOptions {
   enabled?: MaybeRefOrGetter<boolean>
   content: MaybeRefOrGetter<string>
-  step?: MaybeRefOrGetter<number>
+  minStep?: MaybeRefOrGetter<number>
+  maxStep?: MaybeRefOrGetter<number>
   delay?: MaybeRefOrGetter<number>
 }
 
@@ -18,7 +19,8 @@ export function useTypedEffect(options: UseTypedEffectOptions) {
   const enabled = computed(() => toValue(options.enabled) ?? true)
 
   const content = computed(() => toValue(options.content) ?? '')
-  const step = computed(() => toValue(options.step) ?? 1)
+  const minStep = computed(() => normalizeStep(toValue(options.minStep), 1))
+  const maxStep = computed(() => normalizeStep(toValue(options.maxStep), minStep.value))
   const delay = computed(() => toValue(options.delay) ?? 16)
 
   const isTyping = ref<boolean>(false)
@@ -28,7 +30,7 @@ export function useTypedEffect(options: UseTypedEffectOptions) {
   const intervalId = ref<NodeJS.Timeout | null>(null)
 
   watch(
-    [typingIndex, isTyping],
+    [typingIndex, isTyping, minStep, maxStep],
     () => {
       if (!enabled.value || !isString(content.value))
         return
@@ -40,11 +42,12 @@ export function useTypedEffect(options: UseTypedEffectOptions) {
 
       isTyping.value = true
       prevContent.value = content.value.slice(0, typingIndex.value)
-      const plan = createForwardTypingPlan(content.value, typingIndex.value, step.value)
+      const step = resolveRandomStep(minStep.value, maxStep.value)
+      const plan = createForwardTypingPlan(content.value, typingIndex.value, step)
 
       intervalId.value = setTimeout(() => {
         typingIndex.value = plan.index
-      }, resolveTypingDelay(delay.value, plan, step.value))
+      }, resolveTypingDelay(delay.value, plan, step))
 
       onWatcherCleanup(() => intervalId.value && clearTimeout(intervalId.value))
     },
@@ -81,13 +84,15 @@ export function useTypedEffect(options: UseTypedEffectOptions) {
   )
 
   function prevStep(count: number = 1) {
-    const plan = createBackwardTypingPlan(content.value, typingIndex.value, count * step.value)
+    const step = count * resolveRandomStep(minStep.value, maxStep.value)
+    const plan = createBackwardTypingPlan(content.value, typingIndex.value, step)
     typingIndex.value = plan.index
     prevContent.value = content.value.slice(0, typingIndex.value)
   }
 
   function nextStep(count: number = 1) {
-    const plan = createForwardTypingPlan(content.value, typingIndex.value, count * step.value)
+    const step = count * resolveRandomStep(minStep.value, maxStep.value)
+    const plan = createForwardTypingPlan(content.value, typingIndex.value, step)
     typingIndex.value = plan.index
     prevContent.value = content.value.slice(0, typingIndex.value)
   }
@@ -119,6 +124,15 @@ export function useTypedEffect(options: UseTypedEffectOptions) {
     stop,
     terminate,
   }
+}
+
+function normalizeStep(value: number | undefined, fallback: number): number {
+  return Number.isFinite(value) ? Math.max(1, Math.floor(value!)) : fallback
+}
+
+function resolveRandomStep(min: number, max: number): number {
+  const upperBound = Math.max(min, max)
+  return min + Math.floor(Math.random() * (upperBound - min + 1))
 }
 
 const CJK_RE = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u

@@ -45,7 +45,8 @@ const autoScroll = defineModel<boolean>('autoScroll', { required: false, default
 
 const typedEnable = defineModel<boolean>('typedEnable', { required: false, default: false })
 const typingIndex = defineModel<number>('typingIndex', { required: false, default: 0 })
-const typedStep = defineModel<number>('typedStep', { required: false, default: 1 })
+const typedStepMin = defineModel<number>('typedStepMin', { required: false, default: 1 })
+const typedStepMax = defineModel<number>('typedStepMax', { required: false, default: 8 })
 const typedDelay = defineModel<number>('typedDelay', { required: false, default: 16 })
 
 const showInputEditor = defineModel<boolean>('showInputEditor', { required: false, default: false })
@@ -183,7 +184,8 @@ const actions = computed((): Action[] => {
       v-model:animation-duration="animationDuration"
       v-model:animation-stagger="animationStagger"
       v-model:typing-index="typingIndex"
-      v-model:typed-step="typedStep"
+      v-model:typed-step-min="typedStepMin"
+      v-model:typed-step-max="typedStepMax"
       v-model:typed-delay="typedDelay"
       v-model:shiki-light-theme="shikiLightTheme"
       v-model:shiki-dark-theme="shikiDarkTheme"

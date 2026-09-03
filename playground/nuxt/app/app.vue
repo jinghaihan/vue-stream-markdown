@@ -46,7 +46,8 @@ const { state: locale, next: toggleLanguage } = useCycleList(SUPPORT_LANGUAGES, 
 
 const typedEnable = ref<boolean>(false)
 
-const typedStep = computed(() => userConfig.value.typedStep)
+const typedStepMin = computed(() => userConfig.value.typedStepMin)
+const typedStepMax = computed(() => userConfig.value.typedStepMax)
 const typedDelay = computed(() => userConfig.value.typedDelay)
 
 const pauseAutoScroll = ref<boolean>(false)
@@ -64,7 +65,8 @@ const {
 } = useTypedEffect({
   enabled: typedEnable,
   content,
-  step: typedStep,
+  minStep: typedStepMin,
+  maxStep: typedStepMax,
   delay: typedDelay,
 })
 
@@ -298,7 +300,8 @@ onMounted(() => {
         v-model:static-mode="userConfig.staticMode"
         v-model:auto-scroll="userConfig.autoScroll"
         v-model:typed-enable="typedEnable"
-        v-model:typed-step="userConfig.typedStep"
+        v-model:typed-step-min="userConfig.typedStepMin"
+        v-model:typed-step-max="userConfig.typedStepMax"
         v-model:typed-delay="userConfig.typedDelay"
         v-model:show-input-editor="userConfig.showInputEditor"
         v-model:show-document-result="userConfig.showDocumentResult"
