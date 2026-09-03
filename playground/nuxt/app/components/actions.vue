@@ -173,7 +173,7 @@ const actions = computed((): Action[] => {
 </script>
 
 <template>
-  <div class="flex flex-wrap gap-1 max-sm:w-full max-sm:justify-center">
+  <div class="flex flex-wrap gap-x-1 gap-y-2 max-sm:w-full max-sm:justify-center">
     <SettingsPopover
       v-model:auto-scroll="autoScroll"
       v-model:static-mode="staticMode"
