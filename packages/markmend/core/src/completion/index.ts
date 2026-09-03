@@ -82,7 +82,7 @@ function resolveCompletionInfo(
   return { type }
 }
 
-export function completeMarkdownWithInfo(
+export function completeMarkdownResult(
   content: string,
   options?: CompletionOptions,
 ): CompletionResult {
@@ -104,5 +104,5 @@ export function completeMarkdown(
   content: string,
   options?: CompletionOptions,
 ): string {
-  return completeMarkdownWithInfo(content, options).markdown
+  return completeMarkdownResult(content, options).markdown
 }

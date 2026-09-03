@@ -1,4 +1,4 @@
-import { completeMarkdown, completeMarkdownWithInfo } from '@markmend/core'
+import { completeMarkdown, completeMarkdownResult } from '@markmend/core'
 import { describe, expect, it } from 'vitest'
 import { normalize } from '../../../packages/markmend/core/src/completion'
 import { getTestCases, getTestCasesByCategory } from './test-cases'
@@ -29,9 +29,9 @@ describe('completeMarkdown', () => {
   }
 })
 
-describe('completeMarkdownWithInfo', () => {
+describe('completeMarkdownResult', () => {
   it('reports the completion step that changed the markdown', () => {
-    expect(completeMarkdownWithInfo('**bold')).toEqual({
+    expect(completeMarkdownResult('**bold')).toEqual({
       markdown: '**bold**',
       completion: {
         type: 'strong',
@@ -40,7 +40,7 @@ describe('completeMarkdownWithInfo', () => {
   })
 
   it('identifies an incomplete link destination', () => {
-    expect(completeMarkdownWithInfo('[label](https://example.com')).toEqual({
+    expect(completeMarkdownResult('[label](https://example.com')).toEqual({
       markdown: '[label](https://example.com)',
       completion: {
         type: 'link',
@@ -50,7 +50,7 @@ describe('completeMarkdownWithInfo', () => {
   })
 
   it('omits a phase when the link destination has not started', () => {
-    expect(completeMarkdownWithInfo('[label')).toEqual({
+    expect(completeMarkdownResult('[label')).toEqual({
       markdown: '[label]()',
       completion: {
         type: 'link',
@@ -59,7 +59,7 @@ describe('completeMarkdownWithInfo', () => {
   })
 
   it('omits completion information for complete markdown', () => {
-    expect(completeMarkdownWithInfo('[label](https://example.com)')).toEqual({
+    expect(completeMarkdownResult('[label](https://example.com)')).toEqual({
       markdown: '[label](https://example.com)',
       completion: undefined,
     })

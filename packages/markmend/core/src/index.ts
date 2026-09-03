@@ -1,4 +1,4 @@
-export { completeMarkdown, completeMarkdownWithInfo } from './completion'
+export { completeMarkdown, completeMarkdownResult } from './completion'
 export type {
   BuiltinCompletionType,
   CompletionInfo,

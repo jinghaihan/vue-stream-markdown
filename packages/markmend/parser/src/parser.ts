@@ -5,7 +5,7 @@ import type {
   MarkmendSyntaxOptions,
   MarkmendParserOptions as ParserOptions,
 } from './types'
-import { completeMarkdownWithInfo } from '@markmend/core'
+import { completeMarkdownResult } from '@markmend/core'
 import { createMarkdownParser } from 'comark'
 import footnotes from 'comark/plugins/footnotes'
 import security from 'comark/plugins/security'
@@ -115,5 +115,5 @@ function resolveCompletion(completion?: Completion): (markdown: string) => Compl
       return typeof result === 'string' ? { markdown: result } : result
     }
   }
-  return markdown => completeMarkdownWithInfo(markdown, completion)
+  return markdown => completeMarkdownResult(markdown, completion)
 }
