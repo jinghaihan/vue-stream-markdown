@@ -99,7 +99,19 @@ class CachedFormattingMarkerAnalysis implements FormattingMarkerAnalysis {
   }
 }
 
-class CachedParagraphAnalysis implements CompletionParagraphAnalysis {
+abstract class CachedCodeBlockAnalysis {
+  abstract readonly content: string
+  abstract get codeBlockRanges(): TextRange[]
+
+  get isFullyCodeBlock(): boolean {
+    return this.codeBlockRanges.some(range => (
+      this.content.slice(0, range.start).trim() === ''
+      && this.content.slice(range.end).trim() === ''
+    ))
+  }
+}
+
+class CachedParagraphAnalysis extends CachedCodeBlockAnalysis implements CompletionParagraphAnalysis {
   private cachedCodeBlockRanges?: TextRange[]
   private cachedInlineCodeRanges?: TextRange[]
   readonly content: string
@@ -108,6 +120,7 @@ class CachedParagraphAnalysis implements CompletionParagraphAnalysis {
   readonly startOffset: number
 
   constructor(lines: string[], skipTrailingEmpty: boolean) {
+    super()
     this.startIndex = findLastParagraphStart(lines, skipTrailingEmpty)
     this.content = lines.slice(this.startIndex).join('\n')
     this.startOffset = this.startIndex === 0
@@ -125,16 +138,9 @@ class CachedParagraphAnalysis implements CompletionParagraphAnalysis {
     this.cachedInlineCodeRanges ??= findInlineCodeRanges(this.content, this.codeBlockRanges)
     return this.cachedInlineCodeRanges
   }
-
-  get isFullyCodeBlock(): boolean {
-    return this.codeBlockRanges.some(range => (
-      this.content.slice(0, range.start).trim() === ''
-      && this.content.slice(range.end).trim() === ''
-    ))
-  }
 }
 
-class CachedCompletionAnalysis implements CompletionAnalysis {
+class CachedCompletionAnalysis extends CachedCodeBlockAnalysis implements CompletionAnalysis {
   private cachedCodeBlockRanges?: TextRange[]
   private cachedHasUnclosedCodeBlock?: boolean
   private cachedInlineCodeRanges?: TextRange[]
@@ -142,7 +148,9 @@ class CachedCompletionAnalysis implements CompletionAnalysis {
   private defaultParagraph?: CompletionParagraphAnalysis
   private trailingParagraph?: CompletionParagraphAnalysis
 
-  constructor(readonly content: string) {}
+  constructor(readonly content: string) {
+    super()
+  }
 
   get codeBlockRanges(): TextRange[] {
     this.cachedCodeBlockRanges ??= findClosedCodeBlockRanges(this.content)
@@ -157,13 +165,6 @@ class CachedCompletionAnalysis implements CompletionAnalysis {
   get inlineCodeRanges(): TextRange[] {
     this.cachedInlineCodeRanges ??= findInlineCodeRanges(this.content, this.codeBlockRanges)
     return this.cachedInlineCodeRanges
-  }
-
-  get isFullyCodeBlock(): boolean {
-    return this.codeBlockRanges.some(range => (
-      this.content.slice(0, range.start).trim() === ''
-      && this.content.slice(range.end).trim() === ''
-    ))
   }
 
   get lines(): string[] {
