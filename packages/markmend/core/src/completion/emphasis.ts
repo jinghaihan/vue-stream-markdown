@@ -1,4 +1,5 @@
 import type { CompletionContext } from '../types'
+import type { CompletionParagraphAnalysis } from './context'
 import { getCompletionAnalysis } from './context'
 import {
   singleAsteriskPattern,
@@ -13,6 +14,18 @@ import {
   maskPairedMarkerRuns,
   shouldIgnoreUnderscoreMarker,
 } from './utils'
+
+interface MarkerSearchOptions {
+  content: string
+  lastParagraph: string
+  marker: '*' | '_'
+  sourceMarkers: string
+  codeBlockRanges: Parameters<typeof isPositionInRanges>[1]
+  inlineCodeRanges: Parameters<typeof isPositionInRanges>[1]
+  paragraphOffset: number
+  count: number
+  shouldIgnore?: (text: string, index: number) => boolean
+}
 
 function hasOddMarkerRun(content: string, marker: '*' | '_'): boolean {
   for (let index = content.indexOf(marker); index !== -1;) {
@@ -69,149 +82,123 @@ export function fixEmphasis(
 
   // Find the last paragraph
   const paragraph = analysis.getLastParagraph()
+  if (paragraph.isFullyCodeBlock)
+    return content
+
+  return completeEmphasisContent(content, paragraph)
+}
+
+function completeEmphasisContent(content: string, paragraph: CompletionParagraphAnalysis): string {
   const {
     codeBlockRanges,
     content: lastParagraph,
     inlineCodeRanges,
     startOffset: paragraphOffset,
+    formattingMarkers,
   } = paragraph
-  if (paragraph.isFullyCodeBlock)
-    return content
-
-  // Remove code blocks and mask Markdown markers inside inline code to avoid
-  // treating code content as incomplete emphasis.
-  const formattingMarkers = paragraph.formattingMarkers
   const sourceSingleAsteriskMarkers = formattingMarkers.singleAsteriskMarkers
   const sourceSingleUnderscoreMarkers = formattingMarkers.singleUnderscoreMarkers
   const lastParagraphForMarkerCounting = formattingMarkers.withoutCodeBlocksAndUrls
-
-  // Check asterisk emphasis first (original behavior)
-  // Mask complete pairs while preserving the source offsets of odd runs.
   const withoutDoubleAsterisk = lastParagraphForMarkerCounting === formattingMarkers.maskedContent
     ? sourceSingleAsteriskMarkers
     : maskPairedMarkerRuns(lastParagraphForMarkerCounting, '*')
-  const asteriskMatches = withoutDoubleAsterisk.match(singleAsteriskPattern)
-  const asteriskCount = asteriskMatches ? asteriskMatches.length : 0
-
-  // Check underscore emphasis
   const withoutDoubleUnderscore = lastParagraphForMarkerCounting === formattingMarkers.maskedContent
     ? sourceSingleUnderscoreMarkers
     : maskPairedMarkerRuns(lastParagraphForMarkerCounting, '_')
-  const underscoreMatches = withoutDoubleUnderscore.match(singleUnderscorePattern)
-  const underscoreCount = underscoreMatches ? underscoreMatches.length : 0
+  const asteriskCount = withoutDoubleAsterisk.match(singleAsteriskPattern)?.length ?? 0
+  const underscoreCount = withoutDoubleUnderscore.match(singleUnderscorePattern)?.length ?? 0
+  const needsAsteriskCompletion = getMarkerNeedsCompletion({
+    content,
+    lastParagraph,
+    marker: '*',
+    sourceMarkers: sourceSingleAsteriskMarkers,
+    codeBlockRanges,
+    inlineCodeRanges,
+    paragraphOffset,
+    count: asteriskCount,
+  })
+  if (needsAsteriskCompletion === undefined)
+    return content
 
-  // Track if we need to complete asterisk and/or underscore
-  let needsAsteriskCompletion = false
-  let needsUnderscoreCompletion = false
+  const needsUnderscoreCompletion = getMarkerNeedsCompletion({
+    content,
+    lastParagraph,
+    marker: '_',
+    sourceMarkers: sourceSingleUnderscoreMarkers,
+    codeBlockRanges,
+    inlineCodeRanges,
+    paragraphOffset,
+    count: underscoreCount,
+    shouldIgnore: shouldIgnoreUnderscoreMarker,
+  })
+  if (needsUnderscoreCompletion === undefined)
+    return content
 
-  // Check asterisk
-  if (asteriskCount % 2 === 1) {
-    // Find the last * in the original lastParagraph, but skip those in URLs
-    // We need to find the position in the original text, not in the URL-removed text
-    let lastStarPos = -1
+  return completeEmphasisMarkers(content, withoutDoubleAsterisk, withoutDoubleUnderscore, needsAsteriskCompletion, needsUnderscoreCompletion)
+}
 
-    // Search backwards in the original lastParagraph to find the last * that's not in a URL
-    for (let i = lastParagraph.length - 1; i >= 0; i--) {
-      if (isPositionInRanges(i, codeBlockRanges) || isPositionInRanges(i, inlineCodeRanges))
-        continue
+function findLastMarkerPosition(options: MarkerSearchOptions): number {
+  const {
+    content,
+    lastParagraph,
+    marker,
+    sourceMarkers,
+    codeBlockRanges,
+    inlineCodeRanges,
+    paragraphOffset,
+    shouldIgnore,
+  } = options
 
-      if (lastParagraph[i] === '*') {
-        if (sourceSingleAsteriskMarkers[i] !== '*')
-          continue
-        const absolutePos = paragraphOffset + i
-        // Skip if it's in a URL, math block, or HTML tag
-        if (!isWithinMathBlock(content, absolutePos) && !isWithinLinkOrImageUrl(content, absolutePos) && !isWithinHtmlTag(content, absolutePos)) {
-          lastStarPos = i
-          break
-        }
-      }
-    }
+  for (let index = lastParagraph.length - 1; index >= 0; index -= 1) {
+    if (isPositionInRanges(index, codeBlockRanges) || isPositionInRanges(index, inlineCodeRanges))
+      continue
+    if (lastParagraph[index] !== marker || sourceMarkers[index] !== marker)
+      continue
+    if (shouldIgnore?.(lastParagraph, index))
+      continue
 
-    if (lastStarPos === -1) {
-      return content
-    }
-
-    // Check if there's content after the last * in the original text (skipping URLs)
-    let hasContentAfter = false
-    for (let i = lastStarPos + 1; i < lastParagraph.length; i++) {
-      const char = lastParagraph[i]
-      if (char !== undefined && char.trim() !== '') {
-        hasContentAfter = true
-        break
-      }
-    }
-
-    if (hasContentAfter) {
-      needsAsteriskCompletion = true
-    }
-  }
-
-  // Check underscore
-  if (underscoreCount % 2 === 1) {
-    // Find the last _ in the original lastParagraph, but skip those in URLs
-    let lastUnderscorePos = -1
-
-    // Search backwards in the original lastParagraph to find the last _ that's not in a URL
-    for (let i = lastParagraph.length - 1; i >= 0; i--) {
-      if (isPositionInRanges(i, codeBlockRanges) || isPositionInRanges(i, inlineCodeRanges))
-        continue
-
-      if (lastParagraph[i] === '_') {
-        if (sourceSingleUnderscoreMarkers[i] !== '_')
-          continue
-        const absolutePos = paragraphOffset + i
-        if (shouldIgnoreUnderscoreMarker(lastParagraph, i))
-          continue
-        // Skip if it's in a URL, math block, or HTML tag
-        if (!isWithinMathBlock(content, absolutePos) && !isWithinLinkOrImageUrl(content, absolutePos) && !isWithinHtmlTag(content, absolutePos)) {
-          lastUnderscorePos = i
-          break
-        }
-      }
-    }
-
-    if (lastUnderscorePos === -1) {
-      return content
-    }
-
-    // Check if there's content after the last _ in the original text (skipping URLs)
-    let hasContentAfter = false
-    for (let i = lastUnderscorePos + 1; i < lastParagraph.length; i++) {
-      const char = lastParagraph[i]
-      if (char !== undefined && char.trim() !== '') {
-        hasContentAfter = true
-        break
-      }
-    }
-
-    if (hasContentAfter) {
-      needsUnderscoreCompletion = true
+    const absolutePos = paragraphOffset + index
+    if (!isWithinMathBlock(content, absolutePos)
+      && !isWithinLinkOrImageUrl(content, absolutePos)
+      && !isWithinHtmlTag(content, absolutePos)) {
+      return index
     }
   }
 
-  // Handle completions - if both need completion, complete based on which appears first in the string
-  if (needsAsteriskCompletion && needsUnderscoreCompletion) {
-    const firstStarPos = withoutDoubleAsterisk.indexOf('*')
-    const firstUnderscorePos = withoutDoubleUnderscore.indexOf('_')
+  return -1
+}
 
-    // Complete the one that appears first in the string first
-    if (firstStarPos < firstUnderscorePos) {
-      // Asterisk appears first, complete underscore first, then asterisk
-      return `${content}_*`
-    }
-    else {
-      // Underscore appears first, complete asterisk first, then underscore
-      return `${content}*_`
-    }
+function getMarkerNeedsCompletion(options: MarkerSearchOptions): boolean | undefined {
+  if (options.count % 2 === 0)
+    return false
+
+  const markerPosition = findLastMarkerPosition(options)
+  if (markerPosition === -1)
+    return undefined
+
+  return hasContentAfterMarker(options.lastParagraph, markerPosition)
+}
+
+function completeEmphasisMarkers(
+  content: string,
+  asteriskMarkers: string,
+  underscoreMarkers: string,
+  needsAsterisk: boolean,
+  needsUnderscore: boolean,
+): string {
+  if (needsAsterisk && needsUnderscore) {
+    const firstStarPos = asteriskMarkers.indexOf('*')
+    const firstUnderscorePos = underscoreMarkers.indexOf('_')
+    return firstStarPos < firstUnderscorePos ? `${content}_*` : `${content}*_`
   }
 
-  if (needsAsteriskCompletion) {
+  if (needsAsterisk)
     return `${content}*`
-  }
-
-  if (needsUnderscoreCompletion) {
+  if (needsUnderscore)
     return `${content}_`
-  }
-
   return content
+}
+
+function hasContentAfterMarker(content: string, markerPosition: number): boolean {
+  return content.slice(markerPosition + 1).trim().length > 0
 }
