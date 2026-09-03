@@ -1,4 +1,5 @@
 import type { CompletionContext } from '../types'
+import type { TextRange } from './utils'
 import { getCompletionAnalysis } from './context'
 import { codeBlockPattern, doubleTildePattern } from './pattern'
 import {
@@ -78,69 +79,21 @@ export function fixDelete(
   const matches = lastParagraphWithoutCodeBlocksAndUrls.match(doubleTildePattern)
   const count = matches ? matches.length : 0
 
-  // Check if the content ends with a single ~ (not ~~)
-  const endsWithSingleTilde = content.endsWith('~') && !content.endsWith('~~')
-
   // If ends with single ~, we need to check if it should be completed to ~~
-  if (endsWithSingleTilde && !isEscapedCharacter(content, content.length - 1)) {
-    // Remove the trailing single ~ and check if we have odd number of ~~
-    const contentWithoutLastTilde = content.slice(0, -1)
-    const lastParagraphWithoutTilde = contentWithoutLastTilde.split('\n').slice(paragraphStartIndex).join('\n')
-    const rangesWithoutTilde = findClosedCodeBlockRanges(lastParagraphWithoutTilde)
-    const inlineRangesWithoutTilde = findInlineCodeRanges(lastParagraphWithoutTilde, rangesWithoutTilde)
-    const lastParagraphWithoutTildeAndInlineCode = maskInlineCodeMarkdownMarkers(lastParagraphWithoutTilde, inlineRangesWithoutTilde)
-    const lastParagraphWithoutTildeAndEscapes = maskEscapedMarkdownMarkers(lastParagraphWithoutTildeAndInlineCode, '~')
-    const lastParagraphWithoutTildeAndCodeBlocks = lastParagraphWithoutTildeAndEscapes.replace(codeBlockPattern, '')
-    const lastParagraphWithoutTildeAndCodeBlocksAndUrls = removeUrlsFromText(lastParagraphWithoutTildeAndCodeBlocks)
-    const matchesWithoutTilde = lastParagraphWithoutTildeAndCodeBlocksAndUrls.match(doubleTildePattern)
-    const countWithoutTilde = matchesWithoutTilde ? matchesWithoutTilde.length : 0
-
-    if (countWithoutTilde % 2 === 1) {
-      // Odd number of ~~ means we have an unclosed strikethrough
-      // But we need to make sure there's actual content after the last ~~
-      const lastTildePos = lastParagraphWithoutTildeAndCodeBlocksAndUrls.lastIndexOf('~~')
-      if (lastTildePos >= 0) {
-        const afterLastTilde = lastParagraphWithoutTildeAndCodeBlocksAndUrls.substring(lastTildePos + 2)
-        // Only complete if there's actual content (including whitespace, but not empty)
-        if (afterLastTilde.length > 0) {
-          return `${content}~`
-        }
-      }
-    }
-    // A single tilde is literal text in our Markdown grammar. Preserve it when
-    // it is not completing an already-open double-tilde deletion marker.
-    return content
-  }
+  const trailingSingleTildeResult = completeTrailingSingleTilde(content, paragraphStartIndex)
+  if (trailingSingleTildeResult !== undefined)
+    return trailingSingleTildeResult
 
   // Only complete if:
   // 1. Odd number of ~~ (unclosed)
   // 2. There's actual content after the last ~~ (not just `~~` alone)
   if (count % 2 === 1) {
     // Find the last ~~ in original lastParagraph, skipping code blocks
-    let actualLastTildePos = -1
-    let inCodeBlock = false
-    for (let i = 0; i < lastParagraph.length - 1; i++) {
-      // Check for code block fences
-      if (lastParagraph.substring(i, i + 3) === '```') {
-        inCodeBlock = !inCodeBlock
-        i += 2 // Skip the next two backticks
-        continue
-      }
-      // Skip if inside code block
-      if (inCodeBlock) {
-        continue
-      }
-      // Check for ~~
-      if (lastParagraph.substring(i, i + 2) === '~~') {
-        if (isPositionInRanges(i, inlineCodeRanges)
-          || lastParagraphWithoutEscapedTildes.substring(i, i + 2) !== '~~') {
-          i += 1
-          continue
-        }
-        actualLastTildePos = i
-        i += 1 // Skip the second ~
-      }
-    }
+    const actualLastTildePos = findLastTildePosition(
+      lastParagraph,
+      inlineCodeRanges,
+      lastParagraphWithoutEscapedTildes,
+    )
     if (actualLastTildePos === -1) {
       return content
     }
@@ -152,18 +105,71 @@ export function fixDelete(
       return content
     }
 
-    const afterLast = lastParagraphWithoutCodeBlocksAndUrls.substring(lastParagraphWithoutCodeBlocksAndUrls.lastIndexOf('~~') + 2)
-    const afterLastTrimmed = afterLast.trim()
-
-    // If there's content after ~~, complete it
-    if (afterLastTrimmed.length > 0) {
-      return `${content}~~`
-    }
-    else {
-      const beforeTilde = content.substring(0, content.length - afterLast.length - 2)
-      return beforeTilde.trimEnd()
-    }
+    return completeDeleteContent(content, lastParagraphWithoutCodeBlocksAndUrls)
   }
 
   return content
+}
+
+function completeTrailingSingleTilde(content: string, paragraphStartIndex: number): string | undefined {
+  if (!content.endsWith('~') || content.endsWith('~~') || isEscapedCharacter(content, content.length - 1))
+    return undefined
+
+  const contentWithoutLastTilde = content.slice(0, -1)
+  const lastParagraph = contentWithoutLastTilde.split('\n').slice(paragraphStartIndex).join('\n')
+  const ranges = findClosedCodeBlockRanges(lastParagraph)
+  const inlineRanges = findInlineCodeRanges(lastParagraph, ranges)
+  const withoutInlineCode = maskInlineCodeMarkdownMarkers(lastParagraph, inlineRanges)
+  const withoutEscapes = maskEscapedMarkdownMarkers(withoutInlineCode, '~')
+  const withoutCodeBlocks = withoutEscapes.replace(codeBlockPattern, '')
+  const withoutUrls = removeUrlsFromText(withoutCodeBlocks)
+  const count = withoutUrls.match(doubleTildePattern)?.length ?? 0
+
+  const lastTildePos = withoutUrls.lastIndexOf('~~')
+  if (count % 2 === 1
+    && lastTildePos >= 0
+    && withoutUrls.substring(lastTildePos + 2).length > 0) {
+    return `${content}~`
+  }
+
+  return content
+}
+
+function findLastTildePosition(
+  paragraph: string,
+  inlineCodeRanges: TextRange[],
+  maskedEscapedTildes: string,
+): number {
+  let inCodeBlock = false
+  let lastTildePos = -1
+
+  for (let index = 0; index < paragraph.length - 1; index += 1) {
+    if (paragraph.startsWith('```', index)) {
+      inCodeBlock = !inCodeBlock
+      index += 2
+      continue
+    }
+
+    if (inCodeBlock || !paragraph.startsWith('~~', index))
+      continue
+
+    if (isPositionInRanges(index, inlineCodeRanges)
+      || maskedEscapedTildes.substring(index, index + 2) !== '~~') {
+      index += 1
+      continue
+    }
+
+    lastTildePos = index
+    index += 1
+  }
+
+  return lastTildePos
+}
+
+function completeDeleteContent(content: string, maskedContent: string): string {
+  const afterLast = maskedContent.substring(maskedContent.lastIndexOf('~~') + 2)
+  if (afterLast.trim().length > 0)
+    return `${content}~~`
+
+  return content.substring(0, content.length - afterLast.length - 2).trimEnd()
 }
