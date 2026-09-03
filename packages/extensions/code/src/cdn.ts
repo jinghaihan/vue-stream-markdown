@@ -22,9 +22,10 @@ export function createShikiCdnLoader(options?: ShikiCdnLoaderOptions) {
       return undefined
     if (!baseUrl && !customGetter)
       return undefined
-    if (!import.meta.env.SSR && typeof window !== 'undefined') {
-      if (!('supports' in HTMLScriptElement) || !(HTMLScriptElement.supports?.('importmap')))
-        return undefined
+    if (!import.meta.env.SSR
+      && typeof window !== 'undefined'
+      && (!('supports' in HTMLScriptElement) || !(HTMLScriptElement.supports?.('importmap')))) {
+      return undefined
     }
 
     if (customGetter) {

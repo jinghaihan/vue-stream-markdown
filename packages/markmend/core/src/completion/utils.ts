@@ -594,25 +594,6 @@ export function isWithinMathBlock(
 }
 
 /**
- * Helper to check if position is before closing paren on same line
- *
- * @param text - The text to check
- * @param position - The position to check
- * @returns True if there's a closing paren on the same line after the position
- */
-function isBeforeClosingParen(text: string, position: number): boolean {
-  for (let j = position; j < text.length; j += 1) {
-    if (text[j] === ')') {
-      return true
-    }
-    if (text[j] === '\n') {
-      return false
-    }
-  }
-  return false
-}
-
-/**
  * Check if a position is within a link or image URL
  * Links and images have the format [text](url) or ![alt](url)
  *
@@ -630,22 +611,8 @@ export function isWithinLinkOrImageUrl(
       return false
     }
     if (text[i] === '(') {
-      // Check if there's a ] immediately before the (
-      if (i > 0 && text[i - 1] === ']') {
-        // We're inside a link/image URL
-        // If there's a closing ) on the same line after position, we're before it
-        // If there's no closing ), we're still in the URL (unclosed)
-        const hasClosingParen = isBeforeClosingParen(text, position)
-        // If we found ]( and haven't found ), we're in an unclosed URL
-        // Check if there's a ) after position on the same line
-        if (!hasClosingParen) {
-          // A newline between `(` and position would have been caught by the
-          // backward scan above, so reaching this point means we're in URL text.
-          return true
-        }
-        return true
-      }
-      return false
+      // A newline between `(` and position is handled by the backward scan.
+      return i > 0 && text[i - 1] === ']'
     }
     if (text[i] === '\n') {
       return false
@@ -676,10 +643,8 @@ export function isWithinHtmlTag(text: string, position: number): boolean {
         inHtmlTag = true
       }
     }
-    else if (text[i] === '>') {
-      if (inHtmlTag && !isEscapedCharacter(text, i)) {
-        inHtmlTag = false
-      }
+    else if (text[i] === '>' && inHtmlTag && !isEscapedCharacter(text, i)) {
+      inHtmlTag = false
     }
   }
 

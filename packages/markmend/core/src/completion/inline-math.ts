@@ -153,7 +153,6 @@ function findLastDollarPairNotInCodeBlock(text: string): number {
     if (!inCodeBlock && !inInlineCode && text.substring(i, i + 2) === '$$') {
       lastPos = i
       i += 1 // Skip the second $
-      continue
     }
   }
 

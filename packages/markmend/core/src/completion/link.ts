@@ -151,10 +151,8 @@ export function fixLink(content: string, context?: CompletionContext): string {
     return `${content}()`
   }
 
-  // Pattern 3: [text]( or [text](url or ![text]( or ![text](url - incomplete URL (has ]( but no closing ))
-  // Match link/image that has ]( but no closing )
-  // Note: We don't check for markdown syntax in URLs because URLs commonly contain
-  // characters like _, *, ~ which should not be treated as markdown syntax
+  // Pattern 3: incomplete URL after ]( without a closing parenthesis.
+  // URL characters such as _, *, and ~ are intentionally left untouched.
   if (hasTrailingIncompleteLinkUrl(lastParagraphWithoutCodeBlocks)) {
     return `${content})`
   }

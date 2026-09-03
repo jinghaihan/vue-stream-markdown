@@ -60,12 +60,8 @@ export function fixCode(content: string): string {
   // Then handle code blocks (triple backticks) - these can span multiple paragraphs
   // If we were inside a code block and cleaned up trailing backticks,
   // we should still complete the code block
-  if (isInsideCodeBlock && wasCleanedUp) {
+  if ((isInsideCodeBlock && wasCleanedUp) || !wasCleanedUp)
     content = fixCodeBlock(content)
-  }
-  else if (!wasCleanedUp) {
-    content = fixCodeBlock(content)
-  }
 
   // Finally handle inline code (single backticks) - only in last paragraph
   // But don't process if we just cleaned up (user is still typing)
