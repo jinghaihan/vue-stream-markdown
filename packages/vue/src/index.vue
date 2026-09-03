@@ -20,16 +20,14 @@ import { UI } from './components'
 import { ICONS } from './components/icons'
 import MarkdownNodes from './components/renderers/markdown'
 import {
+  resolveExtensions,
+  resolveOwnedExtensions,
   useContext,
   useDarkDetector,
   useLocaleDetector,
+  useMarkdownProvider,
   useTailwindV3Theme,
 } from './composables'
-import {
-  resolveExtensions,
-  resolveOwnedExtensions,
-  useMarkdownProvider,
-} from './composables/use-provider'
 import { loadLocaleMessages } from './locales'
 import { preloadAsyncComponents } from './utils'
 import './style.css'

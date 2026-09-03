@@ -54,6 +54,7 @@ catalogs:
     '@typescript/native-preview': ^7.0.0-dev.20260707.2
     bumpp: ^12.3.0
     happy-dom: ^20.13.2
+    knip: ^6.34.0
     lightningcss: ^1.33.0
     nano-staged: ^1.0.2
     pncat: ^0.13.3
@@ -85,17 +86,15 @@ catalogs:
     markdown-it-cjk-friendly: ^3.0.0
   playground:
     '@monaco-editor/loader': ^1.7.0
-    '@nuxt/devtools': ^3.4.2
     '@nuxtjs/color-mode': ^4.0.1
     '@shikijs/monaco': ^4.4.3
     '@unocss/nuxt': ^66.9.2
-    '@unocss/reset': ^66.9.2
-    '@vueuse/nuxt': ^14.4.0
     clsx: ^2.1.1
     echarts: ^6.1.0
     lz-string: ^1.5.0
     nuxt: ^4.5.2
     tailwind-merge: ^3.6.0
+    ufo: ^1.6.4
     vue-json-pretty: ^2.6.0
   test:
     '@vitest/coverage-v8': ^4.1.11

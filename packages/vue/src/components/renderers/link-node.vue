@@ -3,8 +3,7 @@ import type { ElementNode } from '@markmend/parser'
 import { getDocumentBody, openExternalUrl, scrollToElement } from '@stream-markdown/core'
 import { useClipboard } from '@vueuse/core'
 import { computed, ref } from 'vue'
-import { useContext, useI18n, useSanitizers } from '../../composables'
-import { useLinkFavicon } from '../../composables/use-link-favicon'
+import { useContext, useI18n, useLinkFavicon, useSanitizers } from '../../composables'
 
 defineOptions({ inheritAttrs: false })
 

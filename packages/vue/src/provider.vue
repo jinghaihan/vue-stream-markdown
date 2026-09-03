@@ -4,10 +4,10 @@ import type { PropType } from 'vue'
 import type { Extensions, MarkdownProviderProps } from './types'
 import { computed, onBeforeUnmount, onMounted, toRef } from 'vue'
 import {
+  provideMarkdownProvider,
   useDarkDetector,
   useTailwindV3Theme,
 } from './composables'
-import { provideMarkdownProvider } from './composables/use-provider'
 
 const props = defineProps({
   extensions: Object as PropType<Extensions>,

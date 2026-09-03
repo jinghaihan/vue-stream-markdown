@@ -47,6 +47,7 @@
     "@typescript/native-preview": "catalog:dev",
     "bumpp": "catalog:dev",
     "happy-dom": "catalog:dev",
+    "knip": "catalog:dev",
     "lightningcss": "catalog:dev",
     "nano-staged": "catalog:dev",
     "pncat": "catalog:dev",

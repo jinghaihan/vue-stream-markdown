@@ -1,7 +1,7 @@
 import type { MermaidExtension } from '@stream-markdown/core'
 import type { Component } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
-import { useMermaid } from '../packages/vue/src/composables/use-mermaid'
+import { useMermaid } from '../packages/vue/src/composables'
 
 function createExtension(
   supports: (code: string) => boolean,
