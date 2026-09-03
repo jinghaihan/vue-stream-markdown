@@ -1,13 +1,13 @@
 import type { ComarkPlugin, Node } from 'comark'
 
-const LITERAL_MARKDOWN_CHARACTER_PATTERN = /([`*_~[\]|])/g
-const LITERAL_PARAGRAPH_BREAK_PATTERN = /\n\n/g
-const REGEXP_CHARACTER_PATTERN = /[.*+?^${}()|[\]\\]/g
-
 interface LiteralTagContentProcessor {
   flatten: (nodes: Node[]) => void
   plugin: ComarkPlugin
 }
+
+const LITERAL_MARKDOWN_CHARACTER_PATTERN = /([`*_~[\]|])/g
+const LITERAL_PARAGRAPH_BREAK_PATTERN = /\n\n/g
+const REGEXP_CHARACTER_PATTERN = /[.*+?^${}()|[\]\\]/g
 
 export function createLiteralTagContentProcessor(
   tags: string[] | undefined,

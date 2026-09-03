@@ -2,12 +2,12 @@ import type { PreviewerConfig } from '../types'
 import type { CodeBlockNode } from './code'
 import { normalizeCssSize } from '../utils'
 
+export type HtmlPreviewMeasurementMode = 'dom' | 'message' | 'fallback'
+
 export const DEFAULT_HTML_PREVIEW_SANDBOX = 'allow-scripts'
 export const DEFAULT_HTML_PREVIEW_HEIGHT = 360
 export const HTML_PREVIEW_HEIGHT_MESSAGE_TYPE = 'stream-markdown:html-preview-height'
 export const MAX_HTML_PREVIEW_AUTO_HEIGHT = 1000
-
-export type HtmlPreviewMeasurementMode = 'dom' | 'message' | 'fallback'
 
 export function createHtmlPreviewModel(node: CodeBlockNode) {
   return {

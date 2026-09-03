@@ -1,15 +1,15 @@
 import type { AnimationSplit, ResolvedAnimationSplit } from '../types'
 import { DEFAULT_ANIMATION_SPLIT, STREAM_MARKDOWN_PREFIX } from '../constants'
 
-const WHITESPACE_RE = /\s/
-const CJK_RE = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u
-
 export interface TextPart {
   key: string
   value: string
   whitespace: boolean
   animationSplit: ResolvedAnimationSplit
 }
+
+const WHITESPACE_RE = /\s/
+const CJK_RE = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u
 
 export function splitTextByWord(text: string): string[] {
   const parts: string[] = []

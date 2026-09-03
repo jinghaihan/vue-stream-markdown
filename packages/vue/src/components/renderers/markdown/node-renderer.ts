@@ -12,12 +12,6 @@ import {
 } from './node-utils'
 import { renderTextNode } from './text-node'
 
-const CodeBlock = defineAsyncComponent(() => import('../code-block.vue'))
-const ImageNode = defineAsyncComponent(() => import('../image-node.vue'))
-const LinkNode = defineAsyncComponent(() => import('../link-node.vue'))
-const MathNode = defineAsyncComponent(() => import('../math-node.vue'))
-const TableNode = defineAsyncComponent(() => import('../table-node.vue'))
-
 export interface NodeRendererOptions {
   animatedTextKeys: Set<string>
   context: StreamMarkdownResolvedContext
@@ -27,6 +21,12 @@ export interface NodeRendererOptions {
   markTextRendered: (key: string) => void
   textAnimationScheduler: TextAnimationScheduler
 }
+
+const CodeBlock = defineAsyncComponent(() => import('../code-block.vue'))
+const ImageNode = defineAsyncComponent(() => import('../image-node.vue'))
+const LinkNode = defineAsyncComponent(() => import('../link-node.vue'))
+const MathNode = defineAsyncComponent(() => import('../math-node.vue'))
+const TableNode = defineAsyncComponent(() => import('../table-node.vue'))
 
 export function createNodeRenderer(options: NodeRendererOptions) {
   const { context } = options

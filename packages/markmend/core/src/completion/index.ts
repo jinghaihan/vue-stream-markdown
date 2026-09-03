@@ -22,6 +22,8 @@ import { fixTable } from './table'
 import { fixTaskList } from './task-list'
 import { normalizeLaTeX } from './vendored/markdown-utils'
 
+type CompletionStep = (content: string, options?: CompletionContext) => string
+
 function normalizeLineEndings(content: string): string {
   return content.replace(crlfPattern, '\n').trimEnd()
 }
@@ -32,8 +34,6 @@ export function normalize(content: string): string {
     normalizeLaTeX,
   ])(content)
 }
-
-type CompletionStep = (content: string, options?: CompletionContext) => string
 
 const COMPLETION_STEP_NAMES: BuiltinCompletionType[] = [
   'code',

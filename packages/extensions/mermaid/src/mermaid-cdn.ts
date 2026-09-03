@@ -11,11 +11,11 @@ import {
 } from '@stream-markdown/core'
 import { MERMAID_VERSION } from './constants'
 
-let mermaidModule: typeof import('mermaid') | null = null
-
 export interface MermaidCdnLoaderOptions {
   cdnOptions?: MaybeGetter<SharedCdnOptions | undefined>
 }
+
+let mermaidModule: typeof import('mermaid') | null = null
 
 export function createMermaidCdnLoader(options?: MermaidCdnLoaderOptions) {
   function getCdnUrl(): string | undefined {

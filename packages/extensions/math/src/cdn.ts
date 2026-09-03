@@ -10,12 +10,12 @@ import {
 } from '@stream-markdown/core'
 import { KATEX_VERSION } from './constants'
 
-let katexModule: typeof import('katex') | null = null
-let katexCssLoaded = false
-
 export interface KatexCdnLoaderOptions {
   cdnOptions?: MaybeGetter<SharedCdnOptions | undefined>
 }
+
+let katexModule: typeof import('katex') | null = null
+let katexCssLoaded = false
 
 export function createKatexCdnLoader(options?: KatexCdnLoaderOptions) {
   function getCdnUrl(): string | undefined {

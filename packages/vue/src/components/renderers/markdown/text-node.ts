@@ -8,14 +8,14 @@ import {
 } from '@stream-markdown/core'
 import { h, TransitionGroup } from 'vue'
 
-const CSS_TEXT_ANIMATIONS = new Set(['blur-in', 'fade-in', 'slide-up'])
-
 export interface TextNodeRendererOptions {
   animatedTextKeys: Set<string>
   context: StreamMarkdownResolvedContext
   markTextRendered: (key: string) => void
   textAnimationScheduler: TextAnimationScheduler
 }
+
+const CSS_TEXT_ANIMATIONS = new Set(['blur-in', 'fade-in', 'slide-up'])
 
 export function renderTextNode(
   text: string,

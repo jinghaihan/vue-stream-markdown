@@ -21,6 +21,52 @@ import {
   resolveScrollableMaxHeight,
 } from '../utils'
 
+export interface CodePreviewableOptions<TComponent = unknown> {
+  previewers?: PreviewerConfig<TComponent>
+  language: string
+  nodeLoading?: boolean
+  hasMermaid?: boolean
+  progressiveRender?: boolean
+  isPreviewComponent?: (component: unknown) => boolean
+}
+
+export interface CodeMaxHeightOptions<TComponent = unknown> {
+  mode: 'preview' | 'source'
+  codeOptions?: CodeOptions<TComponent>
+  language: string
+}
+
+export interface CodeBlockControlDescriptorOptions {
+  collapsed: boolean
+  fullscreen: boolean
+  copied: boolean
+  language: string
+  showCollapse: boolean
+  showCopy: boolean
+  showDownload: boolean
+  showFullscreen: boolean
+  downloadOptions?: SelectOption[]
+}
+
+export interface CodeBlockControlState {
+  collapsed: boolean
+  fullscreen: boolean
+}
+
+export interface CodeBlockControlActionOptions {
+  key: string
+  select?: SelectOption
+  filename?: string
+  state: CodeBlockControlState
+  node: CodeBlockNode
+  language: string
+  beforeDownload?: (event: DownloadEvent) => MaybePromise<boolean>
+  copyText?: (content: string) => MaybePromise<void>
+  onCopied?: (content: string) => void
+  saveFile?: (filename: string, content: string | Blob, mimeType: string) => MaybePromise<void>
+  saveMermaid?: (format: 'svg' | 'png', code: string, filename?: string) => MaybePromise<void>
+}
+
 export interface CodeBlockNode {
   value: string
   lang?: string | null
@@ -140,15 +186,6 @@ export function resolvePreviewPlacement<TComponent = unknown>(
   return previewers.placement
 }
 
-export interface CodePreviewableOptions<TComponent = unknown> {
-  previewers?: PreviewerConfig<TComponent>
-  language: string
-  nodeLoading?: boolean
-  hasMermaid?: boolean
-  progressiveRender?: boolean
-  isPreviewComponent?: (component: unknown) => boolean
-}
-
 export function isCodePreviewable<TComponent = unknown>(
   options: CodePreviewableOptions<TComponent>,
 ): boolean {
@@ -206,12 +243,6 @@ export function resolveCodePreviewComponent<TComponent = unknown>(
   return previewer
 }
 
-export interface CodeMaxHeightOptions<TComponent = unknown> {
-  mode: 'preview' | 'source'
-  codeOptions?: CodeOptions<TComponent>
-  language: string
-}
-
 export function resolveCodeMaxHeight<TComponent = unknown>(
   options: CodeMaxHeightOptions<TComponent>,
 ): string | undefined {
@@ -233,37 +264,6 @@ export function getCodeDownloadOptions(language: string, hasMermaid: boolean): S
     { label: 'PNG', value: 'png' },
     { label: 'MMD', value: 'code' },
   ]
-}
-
-export interface CodeBlockControlDescriptorOptions {
-  collapsed: boolean
-  fullscreen: boolean
-  copied: boolean
-  language: string
-  showCollapse: boolean
-  showCopy: boolean
-  showDownload: boolean
-  showFullscreen: boolean
-  downloadOptions?: SelectOption[]
-}
-
-export interface CodeBlockControlState {
-  collapsed: boolean
-  fullscreen: boolean
-}
-
-export interface CodeBlockControlActionOptions {
-  key: string
-  select?: SelectOption
-  filename?: string
-  state: CodeBlockControlState
-  node: CodeBlockNode
-  language: string
-  beforeDownload?: (event: DownloadEvent) => MaybePromise<boolean>
-  copyText?: (content: string) => MaybePromise<void>
-  onCopied?: (content: string) => void
-  saveFile?: (filename: string, content: string | Blob, mimeType: string) => MaybePromise<void>
-  saveMermaid?: (format: 'svg' | 'png', code: string, filename?: string) => MaybePromise<void>
 }
 
 export function createCodeBlockControlDescriptors(

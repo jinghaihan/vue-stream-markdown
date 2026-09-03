@@ -2,19 +2,10 @@ import type { MaybeRefOrGetter } from 'vue'
 import { useEventListener } from '@vueuse/core'
 import { nextTick, ref, toValue, watch } from 'vue'
 
-const BOTTOM_THRESHOLD_PX = 8
-
 interface ScrollMetrics {
   clientHeight: number
   scrollHeight: number
   scrollTop: number
-}
-
-export function isScrollAtBottom(
-  metrics: ScrollMetrics,
-  threshold = BOTTOM_THRESHOLD_PX,
-): boolean {
-  return metrics.scrollHeight - metrics.scrollTop - metrics.clientHeight < threshold
 }
 
 interface UsePinnedScrollOptions {
@@ -22,6 +13,15 @@ interface UsePinnedScrollOptions {
   active: MaybeRefOrGetter<boolean>
   enabled: MaybeRefOrGetter<boolean>
   contentKey?: MaybeRefOrGetter<unknown>
+}
+
+const BOTTOM_THRESHOLD_PX = 8
+
+export function isScrollAtBottom(
+  metrics: ScrollMetrics,
+  threshold = BOTTOM_THRESHOLD_PX,
+): boolean {
+  return metrics.scrollHeight - metrics.scrollTop - metrics.clientHeight < threshold
 }
 
 export function usePinnedScroll(options: UsePinnedScrollOptions) {

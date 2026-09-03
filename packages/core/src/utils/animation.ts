@@ -1,9 +1,6 @@
 import type { TextPart } from './text'
 import { STREAM_MARKDOWN_PREFIX } from '../constants'
 
-const MAX_BACKLOG_MS = 320
-const MIN_STAGGER_MS = 4
-
 export interface AnimationSchedule {
   baseDelay: number
   step: number
@@ -32,6 +29,9 @@ export interface TextAnimationScheduler {
   commitPass: () => void
   schedule: (parts: TextPart[]) => ReadonlyMap<string, number>
 }
+
+const MAX_BACKLOG_MS = 320
+const MIN_STAGGER_MS = 4
 
 function defaultNow(): number {
   return typeof performance === 'undefined' ? Date.now() : performance.now()

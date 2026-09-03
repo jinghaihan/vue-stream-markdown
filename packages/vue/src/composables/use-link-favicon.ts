@@ -3,8 +3,6 @@ import type { LinkOptions } from '../types'
 import { isClient, resolveLinkFaviconUrl } from '@stream-markdown/core'
 import { computed, ref, toValue, watch } from 'vue'
 
-const STREAMING_FAVICON_DELAY = 300
-
 interface UseLinkFaviconOptions {
   enabled: MaybeRefOrGetter<boolean>
   favicon: MaybeRefOrGetter<LinkOptions['favicon']>
@@ -12,6 +10,8 @@ interface UseLinkFaviconOptions {
   url: MaybeRefOrGetter<string | null | undefined>
   waitingForDestination: MaybeRefOrGetter<boolean | undefined>
 }
+
+const STREAMING_FAVICON_DELAY = 300
 
 export function useLinkFavicon(options: UseLinkFaviconOptions) {
   const source = ref<string>()

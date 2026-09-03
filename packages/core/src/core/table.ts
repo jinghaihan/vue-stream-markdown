@@ -13,12 +13,6 @@ import {
   tableDataToTSV,
 } from '../utils'
 
-export const TABLE_FORMAT_OPTIONS: SelectOption[] = [
-  { label: 'CSV', value: 'csv' },
-  { label: 'TSV', value: 'tsv' },
-  { label: 'Markdown', value: 'markdown' },
-]
-
 export interface TableContent {
   content: string
   mimeType: string
@@ -41,6 +35,21 @@ export interface TableControlActionOptions {
   saveFile?: (filename: string, content: string | Blob, mimeType: string) => MaybePromise<void>
 }
 
+export interface TableControlDescriptorOptions {
+  copied: boolean
+  fullscreen: boolean
+  showCopy: boolean
+  showDownload: boolean
+  showFullscreen: boolean
+  options?: SelectOption[]
+}
+
+export const TABLE_FORMAT_OPTIONS: SelectOption[] = [
+  { label: 'CSV', value: 'csv' },
+  { label: 'TSV', value: 'tsv' },
+  { label: 'Markdown', value: 'markdown' },
+]
+
 export function getTableContent(
   format: TableFormat,
   tableData: TableData,
@@ -55,15 +64,6 @@ export function getTableContent(
     default:
       return { content: tableDataToCSV(tableData, csvSeparator), mimeType: 'text/csv', extension: 'csv' }
   }
-}
-
-export interface TableControlDescriptorOptions {
-  copied: boolean
-  fullscreen: boolean
-  showCopy: boolean
-  showDownload: boolean
-  showFullscreen: boolean
-  options?: SelectOption[]
 }
 
 export function createTableControlDescriptors(

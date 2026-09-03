@@ -1,6 +1,23 @@
 import type { ZoomControlPosition } from '../types'
 import { getConfigValue } from '../utils'
 
+export interface MermaidRenderState {
+  renderFlag: boolean
+  renderAttempt: boolean
+}
+
+export interface MermaidPreviewControllerState extends MermaidRenderState {
+  svg?: string
+  error?: string
+  measuredHeight: number
+}
+
+export interface MermaidRenderResult {
+  valid: boolean
+  svg?: string
+  error?: string
+}
+
 export interface MermaidPreviewModelOptions {
   code: string
   nodeLoading?: boolean
@@ -44,23 +61,6 @@ export function resolveMermaidContainerHeight(
   if (typeof containerHeight === 'number')
     return `${containerHeight}px`
   return measuredHeight ? `${measuredHeight}px` : 'auto'
-}
-
-export interface MermaidRenderState {
-  renderFlag: boolean
-  renderAttempt: boolean
-}
-
-export interface MermaidPreviewControllerState extends MermaidRenderState {
-  svg?: string
-  error?: string
-  measuredHeight: number
-}
-
-export interface MermaidRenderResult {
-  valid: boolean
-  svg?: string
-  error?: string
 }
 
 export function createMermaidRenderState(
