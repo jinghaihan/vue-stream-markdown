@@ -17,6 +17,10 @@ import {
  *
  * @param content - Markdown content, potentially incomplete during streaming.
  * @returns The content with the applicable completion applied.
+ *
+ * @example
+ * fixCode('`code')
+ * // Returns: '`code`'
  */
 export function fixCode(content: string): string {
   if (!content.includes('`'))

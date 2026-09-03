@@ -33,6 +33,10 @@ interface MarkerSearchOptions {
  * @param content - Markdown content, potentially incomplete during streaming.
  * @param options - Optional completion context.
  * @returns The content with the applicable completion applied.
+ *
+ * @example
+ * fixEmphasis('*text')
+ * // Returns: '*text*'
  */
 export function fixEmphasis(
   content: string,

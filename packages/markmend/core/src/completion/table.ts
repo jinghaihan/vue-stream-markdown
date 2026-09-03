@@ -31,6 +31,10 @@ interface TableHeaderState {
  * @param content - Markdown content, potentially incomplete during streaming.
  * @param context - Optional completion context.
  * @returns The content with the applicable completion applied.
+ *
+ * @example
+ * fixTable('| a | b |')
+ * // Returns: '| a | b |\n| --- | --- |'
  */
 export function fixTable(content: string, context?: CompletionContext): string {
   if (!content.includes('|'))

@@ -11,6 +11,10 @@ import {
  * @param content - Markdown content, potentially incomplete during streaming.
  * @param options - Optional completion context.
  * @returns The content with the applicable completion applied.
+ *
+ * @example
+ * fixComparisonOperators('- > 1')
+ * // Returns: '- \> 1'
  */
 export function fixComparisonOperators(
   content: string,

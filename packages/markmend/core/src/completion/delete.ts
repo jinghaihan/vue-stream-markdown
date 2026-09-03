@@ -28,6 +28,10 @@ interface TildeMarkerAnalysis {
  * @param content - Markdown content, potentially incomplete during streaming.
  * @param options - Optional completion context.
  * @returns The content with the applicable completion applied.
+ *
+ * @example
+ * fixDelete('~~text')
+ * // Returns: '~~text~~'
  */
 export function fixDelete(
   content: string,

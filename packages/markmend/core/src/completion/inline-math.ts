@@ -16,6 +16,10 @@ interface DollarScanState {
  * @param content - Markdown content, potentially incomplete during streaming.
  * @param context - Optional completion context.
  * @returns The content with the applicable completion applied.
+ *
+ * @example
+ * fixInlineMath('$$x')
+ * // Returns: '$$x$$'
  */
 export function fixInlineMath(content: string, context?: CompletionContext): string {
   // Handle bare single $ first

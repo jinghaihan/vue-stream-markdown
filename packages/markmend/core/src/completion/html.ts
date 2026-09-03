@@ -19,6 +19,10 @@ import {
  * @param content - Markdown content, potentially incomplete during streaming.
  * @param context - Optional completion context.
  * @returns The content with the applicable completion applied.
+ *
+ * @example
+ * fixHtml('Text <span')
+ * // Returns: 'Text '
  */
 export function fixHtml(content: string, context?: CompletionContext): string {
   if (!content.includes('<'))

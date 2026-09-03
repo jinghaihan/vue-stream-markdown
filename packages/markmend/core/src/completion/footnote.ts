@@ -38,6 +38,10 @@ interface FootnoteScanContext {
  * @param content - Markdown content, potentially incomplete during streaming.
  * @param completionContext - Optional completion context.
  * @returns The content with the applicable completion applied.
+ *
+ * @example
+ * fixFootnote('Text [^missing]')
+ * // Returns: 'Text '
  */
 export function fixFootnote(content: string, completionContext?: CompletionContext): string {
   if (!content.includes('[^'))

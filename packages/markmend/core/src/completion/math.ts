@@ -7,6 +7,10 @@ import { getCompletionAnalysis } from './context'
  * @param content - Markdown content, potentially incomplete during streaming.
  * @param context - Optional completion context.
  * @returns The content with the applicable completion applied.
+ *
+ * @example
+ * fixMath('$$\nx')
+ * // Returns: '$$\nx\n$$'
  */
 export function fixMath(content: string, context?: CompletionContext): string {
   if (!content.includes('$'))
