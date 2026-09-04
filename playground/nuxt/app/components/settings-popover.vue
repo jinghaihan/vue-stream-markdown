@@ -59,7 +59,8 @@ watch(() => typedStepMax.value, (value) => {
 })
 
 const BLOCK_CLASSES = [
-  'h-10',
+  'min-h-10',
+  'py-1',
   'flex',
   'items-center',
   'justify-between',
