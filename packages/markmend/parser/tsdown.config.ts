@@ -1,3 +1,4 @@
+import process from 'node:process'
 import { defineConfig } from 'tsdown'
 import ApiSnapshot from 'tsnapi/rolldown'
 
@@ -17,5 +18,5 @@ export default defineConfig({
     neverBundle: ['@markmend/core'],
     onlyBundle: false,
   },
-  plugins: [ApiSnapshot()],
+  plugins: process.env.CI ? [] : [ApiSnapshot()],
 })

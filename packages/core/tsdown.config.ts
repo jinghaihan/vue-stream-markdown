@@ -1,3 +1,4 @@
+import process from 'node:process'
 import { defineConfig } from 'tsdown'
 import ApiSnapshot from 'tsnapi/rolldown'
 
@@ -10,5 +11,5 @@ export default defineConfig({
   deps: {
     onlyBundle: false,
   },
-  plugins: [ApiSnapshot()],
+  plugins: process.env.CI ? [] : [ApiSnapshot()],
 })

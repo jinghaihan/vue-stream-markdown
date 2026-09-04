@@ -12,7 +12,7 @@ interface UseControlsOptions {
 }
 
 export function useControls(options: UseControlsOptions) {
-  const controls = computed(() => toValue(options.controls) ?? true)
+  const controls = computed(() => toValue(options.controls))
 
   function isControlEnabled(key: string) {
     return isConfigEnabled(controls.value, key)

@@ -1,4 +1,7 @@
 import type { UserConfig } from '../types'
+import { version } from 'vue-stream-markdown/package.json'
+
+const STORAGE_KEY = `user-config-${version}`
 
 const DEFAULT_USER_CONFIG: UserConfig = {
   locale: 'en-US',
@@ -30,13 +33,13 @@ export function useUserConfig() {
     userConfig,
     (data) => {
       if (typeof window !== 'undefined')
-        localStorage.setItem('user-config', JSON.stringify(data))
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
     },
     { deep: true },
   )
 
   onMounted(() => {
-    const data = localStorage.getItem('user-config')
+    const data = localStorage.getItem(STORAGE_KEY)
     if (data) {
       userConfig.value = {
         ...DEFAULT_USER_CONFIG,

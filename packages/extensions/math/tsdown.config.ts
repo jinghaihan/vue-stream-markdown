@@ -1,3 +1,4 @@
+import process from 'node:process'
 import { defineConfig } from 'tsdown'
 import ApiSnapshot from 'tsnapi/rolldown'
 
@@ -11,5 +12,5 @@ export default defineConfig({
     onlyBundle: false,
     neverBundle: ['katex'],
   },
-  plugins: [ApiSnapshot()],
+  plugins: process.env.CI ? [] : [ApiSnapshot()],
 })
