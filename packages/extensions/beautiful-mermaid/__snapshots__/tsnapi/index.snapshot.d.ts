@@ -17,12 +17,12 @@ export interface BeautifulMermaidExtensionOptions<TErrorComponent = never> {
 export declare function beautifulMermaid<TErrorComponent = never>(_?: BeautifulMermaidExtensionOptions<TErrorComponent>): MermaidExtension<TErrorComponent>;
 export declare function createBeautifulMermaidCdnLoader(_?: BeautifulMermaidCdnLoaderOptions): {
   getCdnUrl: () => string | undefined;
-  loadCdn: () => Promise<typeof import("beautiful-mermaid") | undefined>;
+  loadCdn: () => Promise<typeof import('beautiful-mermaid') | undefined>;
 };
 // #endregion
 
 // #region Variables
-export declare const BEAUTIFUL_MERMAID_SUPPORTED_PATTERNS: readonly ["flowchart", "graph", "stateDiagram", "sequence", "classDiagram", "erDiagram", "xychart"];
+export declare const BEAUTIFUL_MERMAID_SUPPORTED_PATTERNS: readonly ['flowchart', 'graph', 'stateDiagram', 'sequence', 'classDiagram', 'erDiagram', 'xychart'];
 export declare const BEAUTIFUL_MERMAID_VERSION: string;
 export declare const DEFAULT_BEAUTIFUL_MERMAID_THEME: [ThemeName$1, ThemeName$1];
 export declare const PRESET_BEAUTIFUL_MERMAID_CONFIG: RenderOptions$1;

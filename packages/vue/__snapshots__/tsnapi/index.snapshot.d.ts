@@ -168,7 +168,7 @@ export declare function useFloating(_: UseFloatingOptions): {
   referenceEl: import("vue").Ref<HTMLElement | undefined, HTMLElement | undefined>;
   floatingEl: import("vue").Ref<HTMLElement | undefined, HTMLElement | undefined>;
   open: import("vue").Ref<boolean, boolean>;
-  appendTo: import("vue").Ref<string | Element | Body | undefined, string | Element | Body | undefined>;
+  appendTo: import("vue").Ref<string | Body | Element | undefined, string | Body | Element | undefined>;
   floatingStyle: import("vue").ComputedRef<{
     position: "absolute" | "fixed";
     top: string;
@@ -268,14 +268,14 @@ export declare const UI: {
     new (...args: any[]): import("vue").CreateComponentPublicInstanceWithMixins<Readonly<import("@stream-markdown/core").UIAlertProps & {
       open?: boolean;
     }> & Readonly<{
-      "onUpdate:open"?: ((value: boolean) => any) | undefined;
-      onConfirm?: (() => any) | undefined;
       onCancel?: (() => any) | undefined;
+      onConfirm?: (() => any) | undefined;
+      "onUpdate:open"?: ((value: boolean) => any) | undefined;
     }>, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {
       "update:open": (value: boolean) => any;
     } & {
-      confirm: () => any;
       cancel: () => any;
+      confirm: () => any;
     }, import("vue").PublicProps, {
       icon: string;
       zIndex: number;
@@ -289,9 +289,9 @@ export declare const UI: {
     }, Readonly<import("@stream-markdown/core").UIAlertProps & {
       open?: boolean;
     }> & Readonly<{
-      "onUpdate:open"?: ((value: boolean) => any) | undefined;
-      onConfirm?: (() => any) | undefined;
       onCancel?: (() => any) | undefined;
+      onConfirm?: (() => any) | undefined;
+      "onUpdate:open"?: ((value: boolean) => any) | undefined;
     }>, {}, {}, {}, {}, {
       icon: string;
       zIndex: number;
@@ -302,14 +302,14 @@ export declare const UI: {
   } & import("vue").ComponentOptionsBase<Readonly<import("@stream-markdown/core").UIAlertProps & {
     open?: boolean;
   }> & Readonly<{
-    "onUpdate:open"?: ((value: boolean) => any) | undefined;
-    onConfirm?: (() => any) | undefined;
     onCancel?: (() => any) | undefined;
+    onConfirm?: (() => any) | undefined;
+    "onUpdate:open"?: ((value: boolean) => any) | undefined;
   }>, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {
     "update:open": (value: boolean) => any;
   } & {
-    confirm: () => any;
     cancel: () => any;
+    confirm: () => any;
   }, string, {
     icon: string;
     zIndex: number;
@@ -486,11 +486,11 @@ export declare const UI: {
   }, string, import("vue").PublicProps, Readonly<UISegmentedProps & {
     value?: string;
   }> & Readonly<{
-    "onUpdate:value"?: ((value: string) => any) | undefined;
     onChange?: ((value: string) => any) | undefined;
+    "onUpdate:value"?: ((value: string) => any) | undefined;
   }>, {
-    buttonStyle: import("vue").CSSProperties;
     options: import("@stream-markdown/core").SelectOption[];
+    buttonStyle: import("vue").CSSProperties;
   }, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
   readonly Spin: import("vue").DefineComponent<{}, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").PublicProps, Readonly<{}> & Readonly<{}>, {}, {}, {}, {}, string, import("vue").ComponentProvideOptions, true, {}, any>;
   readonly Table: {

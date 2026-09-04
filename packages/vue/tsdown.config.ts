@@ -1,14 +1,19 @@
-import process from 'node:process'
 import Vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'tsdown'
 import ApiSnapshot from 'tsnapi/rolldown'
 import Icons from 'unplugin-icons/vite'
+
+const compilerOptions = {
+  skipLibCheck: true,
+  stableTypeOrdering: true,
+}
 
 export default defineConfig({
   entry: ['./src/index'],
   platform: 'neutral',
   dts: {
     vue: true,
+    compilerOptions,
   },
   deps: {
     onlyBundle: false,
@@ -32,7 +37,7 @@ export default defineConfig({
     minify: true,
   },
   plugins: [
-    ...(process.env.CI ? [] : [ApiSnapshot()]),
+    ApiSnapshot(),
     Vue(),
     Icons({ compiler: 'vue3' }),
   ],
