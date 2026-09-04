@@ -20,7 +20,6 @@ import { useContext, useControls, useI18n, useMediumZoom } from '../composables'
 const props = withDefaults(defineProps<UIImageProps>(), {
   preview: true,
   margin: 16,
-  controls: true,
 })
 
 const emits = defineEmits<{
@@ -30,7 +29,8 @@ const emits = defineEmits<{
 
 const { icons, uiComponents: UI } = useContext()
 
-const { margin, controls: controlsConfig } = toRefs(props)
+const { margin } = toRefs(props)
+const controlsConfig = computed(() => props.controls ?? true)
 
 const { t } = useI18n()
 const { resolveControls } = useControls({

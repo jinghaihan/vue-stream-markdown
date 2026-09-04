@@ -427,7 +427,6 @@ export declare const UI: {
     onLoad?: ((event: Event) => any) | undefined;
   }>, {
     preview: boolean;
-    controls: ControlsConfig;
     margin: number;
   }, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
   readonly Modal: {
