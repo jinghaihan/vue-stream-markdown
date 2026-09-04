@@ -54,6 +54,7 @@
     "simple-git-hooks": "catalog:dev",
     "taze": "catalog:dev",
     "tinyglobby": "catalog:dev",
+    "tsnapi": "catalog:dev",
     "tsx": "catalog:dev",
     "turbo": "catalog:dev",
     "typescript": "catalog:dev",

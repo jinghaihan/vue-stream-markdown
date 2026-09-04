@@ -1,5 +1,6 @@
 import Vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'tsdown'
+import ApiSnapshot from 'tsnapi/rolldown'
 import Icons from 'unplugin-icons/vite'
 
 export default defineConfig({
@@ -30,6 +31,7 @@ export default defineConfig({
     minify: true,
   },
   plugins: [
+    ApiSnapshot(),
     Vue(),
     Icons({ compiler: 'vue3' }),
   ],
