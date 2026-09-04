@@ -5,7 +5,7 @@ navigation:
 description: Configure preview components for code blocks, enabling live HTML and Mermaid diagram rendering.
 ---
 
-The previewers configuration allows you to enable, disable, or customize preview components for any programming language in code blocks. By default, HTML and Mermaid diagrams have built-in previewers, but you can add custom previewers for any language.
+The previewers configuration allows you to enable, disable, or customize preview components for any programming language in code blocks. By default, HTML and [Mermaid](https://mermaid.js.org/) diagrams have built-in previewers, but you can add custom previewers for any language.
 
 ## previewers
 

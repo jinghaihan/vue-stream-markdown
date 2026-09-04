@@ -19,7 +19,7 @@ Without CJK-friendly parsing, the text above would render as plain text instead 
 
 ## The Solution
 
-Vue Stream Markdown combines Comark's Markdown parser with Markmend's streaming delimiter analysis. The completion layer treats CJK letters consistently with other Unicode letters and avoids inventing emphasis solely because a partial stream currently ends beside an asterisk, underscore, or tilde.
+Vue Stream Markdown combines [Comark](https://github.com/comarkdown/comark)'s Markdown parser with Markmend's streaming delimiter analysis. The completion layer treats CJK letters consistently with other Unicode letters and avoids inventing emphasis solely because a partial stream currently ends beside an asterisk, underscore, or tilde.
 
 ## Character Animation
 

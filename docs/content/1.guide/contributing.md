@@ -24,7 +24,7 @@ If you encounter any problems, please follow these steps:
    - This link contains all the necessary information to reproduce the issue
 
 2. **Enable Document Result**
-   - Enable the **Document Result** toggle to view the current Comark document
+   - Enable the **Document Result** toggle to view the current [Comark](https://github.com/comarkdown/comark) document
    - This helps understand how the markdown is being parsed
 
 3. **Collect Information**

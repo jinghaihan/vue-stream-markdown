@@ -22,7 +22,7 @@ pnpm add @stream-markdown/code
 # KaTeX parsing and rendering
 pnpm add @stream-markdown/math
 
-# Standard Mermaid
+# Mermaid renderer
 pnpm add @stream-markdown/mermaid
 
 # Beautiful Mermaid
@@ -84,7 +84,7 @@ Use `MarkdownProvider` around a message list to share extension lifecycles and t
 
 ## Custom tags
 
-Comark parses native HTML and custom HTML-like tags into the same compact document model. Map custom tags directly to Vue components:
+[Comark](https://github.com/comarkdown/comark) parses native HTML and custom HTML-like tags into the same compact document model. Map custom tags directly to Vue components:
 
 ```vue
 <script setup lang="ts">
@@ -101,7 +101,7 @@ const content = '<github name="vuejs/core" />'
 
 See [Components](/config/components) and [HTML Rendering](/feature/html-rendering).
 
-## Nuxt and SSR
+## [Nuxt](https://nuxt.com/) and SSR
 
 Add the styles you use to `nuxt.config.ts`:
 

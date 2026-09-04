@@ -81,7 +81,7 @@ With `@stream-markdown/math` configured, an unfinished equation remains renderab
 ::stream-markdown{example="feature-termination.incompleteInlineMath" mode="streaming"}
 ::
 
-See [Mathematics](/feature/mathematics) for extension setup and KaTeX styles.
+See [Mathematics](/feature/mathematics) for extension setup and [KaTeX](https://katex.org/) styles.
 
 ## Footnotes
 
@@ -111,4 +111,4 @@ function completion(markdown: string) {
 </template>
 ```
 
-See [Parser](/config/parser) for completion options and Comark plugins.
+See [Parser](/config/parser) for completion options and [Comark](https://github.com/comarkdown/comark) plugins.

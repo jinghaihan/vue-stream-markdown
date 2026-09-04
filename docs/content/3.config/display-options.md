@@ -376,7 +376,7 @@ interface LinkOptions {
 - **Type:** `boolean | undefined`
 - **Default:** `undefined` (auto-detected or `false`)
 
-Whether to use dark theme. This affects the theme selection for Shiki (syntax highlighting), Mermaid (diagrams), and other components that support theming.
+Whether to use dark theme. This affects the theme selection for [Shiki](https://shiki.style/) (syntax highlighting), [Mermaid](https://mermaid.js.org/) (diagrams), and other components that support theming.
 
 When `isDark` is `undefined`, it will automatically detect dark mode by checking if the `dark` class is present on `document.documentElement`, and will reactively update when the class changes.
 

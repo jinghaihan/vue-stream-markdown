@@ -5,7 +5,7 @@ navigation:
 description: Beautiful, built-in typography styles for all standard Markdown elements with responsive design.
 ---
 
-vue-stream-markdown comes with beautiful, built-in typography styles powered by Tailwind CSS. All standard Markdown elements are styled out of the box, ensuring your content looks polished without additional configuration.
+vue-stream-markdown comes with beautiful, built-in typography styles inspired by [Tailwind CSS](https://tailwindcss.com/). All standard Markdown elements are styled out of the box, ensuring your content looks polished without additional configuration.
 
 ## Headings
 

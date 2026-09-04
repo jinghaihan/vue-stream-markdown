@@ -11,7 +11,7 @@ vue-stream-markdown is designed to be flexible and customizable, allowing you to
 
 ## No Atomic CSS Required
 
-**Important**: vue-stream-markdown does not require Tailwind CSS, UnoCSS, or any other atomic CSS framework. All styles are self-contained and scoped strictly within the `.stream-markdown` class, ensuring they won't interfere with your existing styles or require additional dependencies.
+**Important**: vue-stream-markdown does not require [Tailwind CSS](https://tailwindcss.com/), [UnoCSS](https://unocss.dev/), or any other atomic CSS framework. All styles are self-contained and scoped strictly within the `.stream-markdown` class, ensuring they won't interfere with your existing styles or require additional dependencies.
 
 ## Scoped Styling
 

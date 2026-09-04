@@ -5,7 +5,7 @@ navigation:
 description: Move a 1.x integration to the Comark parser and optional extension packages.
 ---
 
-Version 2.0 replaces the mdast pipeline with Comark, renders its compact document directly, and moves large rendering runtimes behind optional extensions. The `Markdown` component and its core display options remain familiar, but parser customization and rich-renderer configuration have changed.
+Version 2.0 replaces the mdast pipeline with [Comark](https://github.com/comarkdown/comark), renders its compact document directly, and moves large rendering runtimes behind optional extensions. The `Markdown` component and its core display options remain familiar, but parser customization and rich-renderer configuration have changed.
 
 ## Parser return value
 

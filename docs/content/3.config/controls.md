@@ -5,7 +5,7 @@ navigation:
 description: Configure interactive controls for tables, code blocks, images, and Mermaid diagrams including copy, download, and zoom.
 ---
 
-The controls configuration allows you to enable or disable interactive controls for various markdown elements, including tables, code blocks, images, and Mermaid diagrams.
+The controls configuration allows you to enable or disable interactive controls for various markdown elements, including tables, code blocks, images, and [Mermaid](https://mermaid.js.org/) diagrams.
 
 > **Note:** All control types (`table`, `code`, `image`, `mermaid`) support the `customize` option for fully customizing controls. See the [Customizing Controls](#customizing-controls) section for details.
 
@@ -415,7 +415,7 @@ Position of the control buttons for images in preview mode. The control buttons 
 - **Type:** `boolean | MermaidControlsConfig`
 - **Default:** `true` (zoom controls enabled)
 
-Controls for Mermaid diagrams. Can be a boolean or an object with download and zoom options.
+Controls for [Mermaid](https://mermaid.js.org/) diagrams. Can be a boolean or an object with download and zoom options.
 
 ### Interface
 

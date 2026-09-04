@@ -5,7 +5,7 @@ navigation:
 description: Built-in support for rendering mathematical expressions using LaTeX syntax powered by KaTeX.
 ---
 
-Install the optional math extension to add Comark math parsing and [KaTeX](https://katex.org/) rendering:
+Install the optional math extension to add [Comark](https://github.com/comarkdown/comark) math parsing and [KaTeX](https://katex.org/) rendering:
 
 ```sh
 pnpm add @stream-markdown/math
@@ -350,6 +350,6 @@ $$\int f(x) \, dx$$
 
 ## Resources
 
-- [KaTeX Documentation](https://katex.org/docs/supported.html) - Complete list of supported functions
-- [KaTeX Support Table](https://katex.org/docs/support_table.html) - Feature compatibility
+- [KaTeX documentation](https://katex.org/docs/supported.html) - Complete list of supported functions
+- [KaTeX support table](https://katex.org/docs/support_table.html) - Feature compatibility
 - [LaTeX Math Symbols](https://www.overleaf.com/learn/latex/List_of_Greek_letters_and_math_symbols) - Symbol reference

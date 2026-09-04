@@ -18,7 +18,7 @@ In streaming scenarios, content arrives incrementally. The key to performance is
 
 ## Code Block Token-Level Updates
 
-When `@stream-markdown/code` is configured, code blocks use Shiki's `codeToTokens` API for **token-level incremental updates** instead of full DOM recreation:
+When `@stream-markdown/code` is configured, code blocks use [Shiki](https://shiki.style/)'s `codeToTokens` API for **token-level incremental updates** instead of full DOM recreation:
 
 ::stream-markdown{example="guide-performance.codeBlockExample"}
 ::
@@ -34,19 +34,19 @@ This approach ensures that:
 
 ## Stateful Comark Parsing
 
-Each `Markdown` instance owns one long-lived Comark parser. The component always supplies the complete source, while Comark tracks the stable prefix internally and parses the changing tail incrementally. Vue Stream Markdown does not split the document or build a second compatibility representation.
+Each `Markdown` instance owns one long-lived [Comark](https://github.com/comarkdown/comark) parser. The component always supplies the complete source, while Comark tracks the stable prefix internally and parses the changing tail incrementally. Vue Stream Markdown does not split the document or build a second compatibility representation.
 
 Simple Comark tuples are converted directly to VNodes. Only feature-heavy code and math rendering use lazily loaded Vue components.
 
 ## Comparison with Streamdown
 
-Streamdown was an important inspiration for this project. This comparison documents implementation trade-offs under reproducible workloads rather than presenting a universal ranking.
+[Streamdown](https://streamdown.ai/) was an important inspiration for this project. This comparison documents implementation trade-offs under reproducible workloads rather than presenting a universal ranking.
 
 The repository benchmarks the equivalent Vue Stream Markdown and Streamdown pipelines under the same inputs. These numbers are a local snapshot from an Apple M1 running Node.js 22.22.2; absolute throughput varies by machine, so the relative result is more useful than the exact operations per second.
 
 ### Completion and parsing
 
-`pnpm bench:parser` measures streaming completion plus Markdown parsing. Vue Stream Markdown uses Markmend with its long-lived Comark parser. The Streamdown path uses Remend, Streamdown block splitting, and Remark with GFM.
+`pnpm bench:parser` measures streaming completion plus Markdown parsing. Vue Stream Markdown uses Markmend with its long-lived Comark parser. The Streamdown path uses [Remend](https://github.com/vercel/streamdown/tree/main/packages/remend), Streamdown block splitting, and [Remark](https://remark.js.org/) with GFM.
 
 | Scenario                              | Vue Stream Markdown |  Streamdown | Faster |
 | ------------------------------------- | ------------------: | ----------: | -----: |

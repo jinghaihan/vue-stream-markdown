@@ -5,7 +5,7 @@ navigation:
 description: Add standard Mermaid, Beautiful Mermaid, or both with deterministic fallback behavior.
 ---
 
-Mermaid fences remain ordinary code blocks until a diagram extension is supplied. This keeps the main package independent of large diagram runtimes.
+[Mermaid](https://mermaid.js.org/) fences remain ordinary code blocks until a diagram extension is supplied. This keeps the main package independent of large diagram runtimes.
 
 ## Standard Mermaid
 
@@ -34,7 +34,7 @@ const extensions = {
 
 ## Beautiful Mermaid
 
-Beautiful Mermaid provides a smaller renderer with polished built-in themes for its supported diagram types:
+[Beautiful Mermaid](https://github.com/lukilabs/beautiful-mermaid) provides a smaller renderer with polished built-in themes for its supported diagram types:
 
 ```sh
 pnpm add @stream-markdown/beautiful-mermaid

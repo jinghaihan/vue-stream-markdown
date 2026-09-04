@@ -5,7 +5,7 @@ navigation:
 description: Map Markdown and custom HTML-like tags to Vue components.
 ---
 
-Use the `components` prop to replace a native tag or render a custom HTML-like tag. Keys use the lower-case tag name emitted by Comark.
+Use the `components` prop to replace a native tag or render a custom HTML-like tag. Keys use the lower-case tag name emitted by [Comark](https://github.com/comarkdown/comark).
 
 ```vue
 <script setup lang="ts">

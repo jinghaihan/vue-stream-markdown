@@ -26,7 +26,7 @@ In streaming mode, the renderer completes supported unfinished syntax before par
 - Streaming caret and text-entry animations
 - Link safety, image previews, table controls, and custom UI components
 - Custom HTML-like tags mapped directly to Vue components
-- Optional Shiki, KaTeX, Mermaid, and Beautiful Mermaid extensions
+- Optional [Shiki](https://shiki.style/), [KaTeX](https://katex.org/), [Mermaid](https://mermaid.js.org/), and [Beautiful Mermaid](https://github.com/lukilabs/beautiful-mermaid) extensions
 
 ## Start rendering
 

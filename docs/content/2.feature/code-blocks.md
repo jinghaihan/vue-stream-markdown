@@ -27,7 +27,7 @@ With the code extension configured, vue-stream-markdown applies syntax highlight
 
 ## Supported Languages
 
-Shiki supports 200+ programming languages out of the box, including:
+[Shiki](https://shiki.style/) supports 200+ programming languages out of the box, including:
 
 - **Web**: JavaScript, TypeScript, HTML, CSS, JSX, TSX, Vue, Svelte
 - **Backend**: Python, Java, Go, Rust, C, C++, C#, PHP, Ruby
@@ -72,7 +72,7 @@ const extensions = {
 </template>
 ```
 
-Refer to the [Shiki Themes](https://shiki.style/themes) page for a full list of available themes.
+Refer to the [Shiki themes](https://shiki.style/themes) page for a full list of available themes.
 
 ## Display Options
 

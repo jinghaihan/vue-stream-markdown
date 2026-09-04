@@ -39,10 +39,10 @@ Simple semantic elements render synchronously. Stateful features such as code hi
 
 The main package renders readable code fences without installing large third-party runtimes. Add only the extensions your application uses:
 
-- `@stream-markdown/code` for Shiki
-- `@stream-markdown/math` for KaTeX
-- `@stream-markdown/mermaid` for the official Mermaid renderer
-- `@stream-markdown/beautiful-mermaid` for lightweight diagrams
+- `@stream-markdown/code` for [Shiki](https://shiki.style/)
+- `@stream-markdown/math` for [KaTeX](https://katex.org/)
+- `@stream-markdown/mermaid` for the official [Mermaid](https://mermaid.js.org/) renderer
+- `@stream-markdown/beautiful-mermaid` for [Beautiful Mermaid](https://github.com/lukilabs/beautiful-mermaid) diagrams
 
 See [Extensions](/config/extensions) for installation and configuration.
 

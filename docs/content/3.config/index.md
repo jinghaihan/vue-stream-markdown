@@ -5,7 +5,7 @@ navigation:
 description: Configure parsing, rendering, controls, security, and integrations.
 ---
 
-`Markdown` accepts the complete Markdown source and renders a Comark document directly to Vue nodes.
+`Markdown` accepts the complete Markdown source and renders a [Comark](https://github.com/comarkdown/comark) document directly to Vue nodes.
 
 ## Core options
 

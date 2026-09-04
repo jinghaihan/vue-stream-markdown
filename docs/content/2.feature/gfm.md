@@ -5,7 +5,7 @@ navigation:
 description: Full support for GFM including tables, task lists, strikethrough, and autolinks.
 ---
 
-Vue Stream Markdown parses GitHub Flavored Markdown through Comark, including tables, task lists, autolinks, and strikethrough.
+Vue Stream Markdown parses GitHub Flavored Markdown through [Comark](https://github.com/comarkdown/comark), including tables, task lists, autolinks, and strikethrough.
 
 ## Tables
 
@@ -56,7 +56,7 @@ Tables support inline formatting:
 ```markdown
 | Feature          | Description                         | Status     |
 | ---------------- | ----------------------------------- | ---------- |
-| **Code blocks**  | Optional `Shiki` highlighting       | ✅ Ready   |
+| **Code blocks**  | Optional `Shiki` highlighting | ✅ Ready   |
 | _Custom tags_    | Map tags to Vue components          | ✅ Ready   |
 | ~~Legacy parser~~ | Replaced by incremental parsing     | ❌ Removed |
 ```

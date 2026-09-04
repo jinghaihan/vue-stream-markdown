@@ -5,7 +5,7 @@ navigation:
 description: Render native and custom HTML-like tags through Comark.
 ---
 
-HTML support is built into `vue-stream-markdown`; there is no HTML package or plugin to install. Comark's default HTML parser converts supported native HTML and custom HTML-like tags into its normal document tuples. Vue Stream Markdown renders native tags directly and lets you map custom tags through `components`; no separate HTML representation or renderer is involved.
+HTML support is built into `vue-stream-markdown`; there is no HTML package or plugin to install. [Comark](https://github.com/comarkdown/comark)'s default HTML parser converts supported native HTML and custom HTML-like tags into its normal document tuples. Vue Stream Markdown renders native tags directly and lets you map custom tags through `components`; no separate HTML representation or renderer is involved.
 
 ```vue
 <script setup lang="ts">

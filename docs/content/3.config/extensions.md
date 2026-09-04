@@ -5,7 +5,7 @@ navigation:
 description: Add syntax highlighting, mathematics, and diagrams only when your application needs them.
 ---
 
-`vue-stream-markdown` works without any rich-renderer package. Code remains readable source, math stays ordinary Markdown text, and Mermaid fences remain code blocks until the corresponding extension is supplied.
+`vue-stream-markdown` works without any rich-renderer package. Code remains readable source, math stays ordinary Markdown text, and [Mermaid](https://mermaid.js.org/) fences remain code blocks until the corresponding extension is supplied.
 
 Extension factories receive their renderer options and return instances for the `extensions` prop.
 
@@ -69,7 +69,7 @@ An instance can replace one provider extension or disable it with `false`:
 
 ## Code
 
-Install `@stream-markdown/code` to enable Shiki highlighting:
+Install `@stream-markdown/code` to enable [Shiki](https://shiki.style/) highlighting:
 
 ```sh
 pnpm add @stream-markdown/code
@@ -93,7 +93,7 @@ const codeExtension = code(options)
 
 ## Math
 
-Install `@stream-markdown/math` to add both Comark math parsing and KaTeX rendering:
+Install `@stream-markdown/math` to add both [Comark](https://github.com/comarkdown/comark) math parsing and [KaTeX](https://katex.org/) rendering:
 
 ```sh
 pnpm add @stream-markdown/math
@@ -115,17 +115,17 @@ const options: MathExtensionOptions = {
 const mathExtension = math(options)
 ```
 
-For local package loading, import KaTeX CSS in your application:
+For local package loading, import [KaTeX](https://katex.org/) CSS in your application:
 
 ```ts
 import 'katex/dist/katex.min.css'
 ```
 
-The extension adds both math parsing and KaTeX rendering. Without it, math-like source remains ordinary text.
+The extension adds both math parsing and [KaTeX](https://katex.org/) rendering. Without it, math-like source remains ordinary text.
 
 ## Mermaid
 
-The standard Mermaid renderer supports every diagram type supported by your Mermaid version:
+The standard [Mermaid](https://mermaid.js.org/) renderer supports every diagram type supported by your Mermaid version:
 
 ```sh
 pnpm add @stream-markdown/mermaid
@@ -148,7 +148,7 @@ const mermaidExtension = mermaid(options)
 
 ## Beautiful Mermaid
 
-Install the lightweight Beautiful Mermaid renderer independently:
+Install the lightweight [Beautiful Mermaid](https://github.com/lukilabs/beautiful-mermaid) renderer independently:
 
 ```sh
 pnpm add @stream-markdown/beautiful-mermaid
