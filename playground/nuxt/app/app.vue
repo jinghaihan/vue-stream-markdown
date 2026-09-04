@@ -321,6 +321,7 @@ onMounted(() => {
           class="my-4"
           :mode="renderMode"
           :caret="caret"
+          :enable-animate="userConfig.animation !== ''"
           :animation="userConfig.animation"
           :animation-split="userConfig.animationSplit"
           :animation-duration="userConfig.animationDuration"

@@ -62,7 +62,7 @@ const mermaidBeautifulLightTheme = defineModel<string>('mermaidBeautifulLightThe
 const mermaidBeautifulDarkTheme = defineModel<string>('mermaidBeautifulDarkTheme', { required: false, default: 'zinc-dark' })
 
 const caret = defineModel<StreamMarkdownProps['caret']>('caret', { required: false, default: 'block' })
-const animation = defineModel<NonNullable<StreamMarkdownProps['animation']>>('animation', { required: false, default: 'fade-in' })
+const animation = defineModel<NonNullable<StreamMarkdownProps['animation']>>('animation', { required: false, default: '' })
 const animationSplit = defineModel<NonNullable<StreamMarkdownProps['animationSplit']>>('animationSplit', { required: false, default: 'auto' })
 const animationDuration = defineModel<number>('animationDuration', { required: false, default: 500 })
 const animationStagger = defineModel<number>('animationStagger', { required: false, default: 40 })
