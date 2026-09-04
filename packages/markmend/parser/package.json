@@ -41,21 +41,5 @@
   },
   "devDependencies": {
     "tsdown": "catalog:build"
-  },
-  "inlinedDependencies": {
-    "comark": "0.6.2",
-    "entities": [
-      "7.0.1",
-      "8.0.0"
-    ],
-    "get-east-asian-width": "1.6.0",
-    "htmlparser2": "12.0.0",
-    "js-yaml": "5.4.1",
-    "linkify-it": "5.0.2",
-    "markdown-exit": "1.1.0-beta.2",
-    "markdown-it-cjk-friendly": "3.0.0",
-    "mdurl": "2.1.0",
-    "punycode.js": "2.3.1",
-    "uc.micro": "2.1.0"
   }
 }

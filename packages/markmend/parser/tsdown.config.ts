@@ -8,10 +8,6 @@ export default defineConfig({
     tsgo: true,
   },
   deps: {
-    alwaysBundle: [
-      /^comark(?:\/|$)/,
-      /^markdown-it-cjk-friendly(?:\/|$)/,
-    ],
     dts: {
       neverBundle: [
         '@markmend/core',
