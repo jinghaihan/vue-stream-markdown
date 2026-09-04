@@ -1,7 +1,7 @@
 {
   "name": "@stream-markdown/core",
   "type": "module",
-  "version": "2.0.0-beta.2",
+  "version": "2.0.0-beta.3",
   "homepage": "https://github.com/jinghaihan/vue-stream-markdown#readme",
   "repository": {
     "type": "git",
