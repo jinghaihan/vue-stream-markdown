@@ -1,11 +1,10 @@
+import type { BenchRunOptions } from 'vitest'
 import { autoCloseMarkdown } from 'comark'
 import remend from 'remend'
-import { afterAll, bench, describe } from 'vitest'
+import { afterAll, describe, it } from 'vitest'
 import { completeMarkdown } from '../packages/markmend/core/src/completion'
 
 type CompleteMarkdown = (content: string) => string
-type BenchOptions = NonNullable<Parameters<typeof bench>[2]>
-
 const implementations: Array<{
   name: string
   complete: CompleteMarkdown
@@ -15,8 +14,8 @@ const implementations: Array<{
   { name: 'comark', complete: autoCloseMarkdown },
 ]
 
-const standardOptions: BenchOptions = { time: 500, warmupTime: 100 }
-const pathologicalOptions: BenchOptions = { iterations: 10, warmupIterations: 2 }
+const standardOptions: BenchRunOptions = { time: 500, warmupTime: 100 }
+const pathologicalOptions: BenchRunOptions = { iterations: 10, warmupIterations: 2 }
 let benchmarkResult: unknown
 
 afterAll(() => {
@@ -32,13 +31,11 @@ function benchmarkInput(
 ): void {
   describe(`${category} > ${name}`, () => {
     for (const implementation of implementations) {
-      bench(
-        implementation.name,
-        () => {
+      it(implementation.name, async ({ bench }) => {
+        await bench(implementation.name, () => {
           benchmarkResult = implementation.complete(input)
-        },
-        options,
-      )
+        }).run(options)
+      })
     }
   })
 }
@@ -50,14 +47,12 @@ function benchmarkStream(
 ): void {
   describe(`${category} > ${name}`, () => {
     for (const implementation of implementations) {
-      bench(
-        implementation.name,
-        () => {
+      it(implementation.name, async ({ bench }) => {
+        await bench(implementation.name, () => {
           for (const input of inputs)
             benchmarkResult = implementation.complete(input)
-        },
-        standardOptions,
-      )
+        }).run(standardOptions)
+      })
     }
   })
 }

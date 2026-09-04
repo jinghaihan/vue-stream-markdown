@@ -32,7 +32,7 @@ export interface RenderMathOptions {
 // #region Functions
 export declare function createKatexCdnLoader(_?: KatexCdnLoaderOptions): {
   getCdnUrl: () => string | undefined;
-  loadCdn: () => Promise<typeof import('katex') | undefined>;
+  loadCdn: () => Promise<typeof import("katex") | undefined>;
   getCdnCssUrl: () => string | undefined;
   loadCss: () => void;
 };

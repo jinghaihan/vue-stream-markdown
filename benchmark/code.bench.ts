@@ -1,17 +1,18 @@
 // @vitest-environment jsdom
 
 import type { Root } from 'react-dom/client'
+import type { BenchRunOptions } from 'vitest'
 import { code } from '@streamdown/code'
 import { createElement } from 'react'
 import { flushSync } from 'react-dom'
 import { createRoot } from 'react-dom/client'
 import { Streamdown } from 'streamdown'
-import { afterAll, beforeAll, bench, describe } from 'vitest'
+import { afterAll, beforeAll, describe, it } from 'vitest'
 import { h, nextTick, render } from 'vue'
 import { Markdown as VueStreamMarkdown } from 'vue-stream-markdown'
 
 const APPEND_COUNT = 20
-const benchmarkOptions = {
+const benchmarkOptions: BenchRunOptions = {
   time: 1000,
   warmupTime: 300,
 }
@@ -139,15 +140,19 @@ beforeAll(warmHighlighters, 30_000)
 
 function benchmarkGrowingCode(name: string, baseLineCount: number): void {
   describe(`${name} with ${APPEND_COUNT} streaming appends`, () => {
-    bench('vue-stream-markdown', async () => {
-      const inputs = createGrowingCodeInputs(baseLineCount, sessionId += 1)
-      benchmarkResult = await runVueSession(inputs)
-    }, benchmarkOptions)
+    it('vue-stream-markdown', async ({ bench }) => {
+      await bench('vue-stream-markdown', async () => {
+        const inputs = createGrowingCodeInputs(baseLineCount, sessionId += 1)
+        benchmarkResult = await runVueSession(inputs)
+      }).run(benchmarkOptions)
+    })
 
-    bench('streamdown', async () => {
-      const inputs = createGrowingCodeInputs(baseLineCount, sessionId += 1)
-      benchmarkResult = await runReactSession(inputs)
-    }, benchmarkOptions)
+    it('streamdown', async ({ bench }) => {
+      await bench('streamdown', async () => {
+        const inputs = createGrowingCodeInputs(baseLineCount, sessionId += 1)
+        benchmarkResult = await runReactSession(inputs)
+      }).run(benchmarkOptions)
+    })
   })
 }
 

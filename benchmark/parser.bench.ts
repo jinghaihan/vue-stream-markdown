@@ -1,3 +1,4 @@
+import type { BenchRunOptions } from 'vitest'
 import { createMarkmendParser } from '@markmend/parser'
 import { createMarkdownParser } from 'comark'
 import remarkGfm from 'remark-gfm'
@@ -5,7 +6,7 @@ import remarkParse from 'remark-parse'
 import remend from 'remend'
 import { parseMarkdownIntoBlocks as parseStreamdownBlocks } from 'streamdown'
 import { unified } from 'unified'
-import { afterAll, bench, describe } from 'vitest'
+import { afterAll, describe, it } from 'vitest'
 
 type MaybePromise<T> = Promise<T> | T
 
@@ -15,8 +16,8 @@ interface Implementation {
   stream: (inputs: readonly string[]) => MaybePromise<number>
 }
 
-const standardOptions = { iterations: 50 }
-const largeOptions = { iterations: 10 }
+const standardOptions: BenchRunOptions = { iterations: 50 }
+const largeOptions: BenchRunOptions = { iterations: 10 }
 let benchmarkResult: unknown
 
 afterAll(() => {
@@ -99,9 +100,11 @@ const implementations: Implementation[] = [
 function benchmarkCold(name: string, input: string, options = standardOptions): void {
   describe(`cold parse > ${name}`, () => {
     for (const implementation of implementations) {
-      bench(implementation.name, async () => {
-        benchmarkResult = await implementation.coldParse(input)
-      }, options)
+      it(implementation.name, async ({ bench }) => {
+        await bench(implementation.name, async () => {
+          benchmarkResult = await implementation.coldParse(input)
+        }).run(options)
+      })
     }
   })
 }
@@ -113,9 +116,11 @@ function benchmarkStream(
 ): void {
   describe(`streaming > ${name} (${inputs.length} ticks)`, () => {
     for (const implementation of implementations) {
-      bench(implementation.name, async () => {
-        benchmarkResult = await implementation.stream(inputs)
-      }, options)
+      it(implementation.name, async ({ bench }) => {
+        await bench(implementation.name, async () => {
+          benchmarkResult = await implementation.stream(inputs)
+        }).run(options)
+      })
     }
   })
 }

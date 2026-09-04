@@ -35,7 +35,7 @@ export type ShikiEngine = MaybePromise<RegexEngine>;
 export declare function code(_?: CodeExtensionOptions): CodeExtension;
 export declare function createShikiCdnLoader(_?: ShikiCdnLoaderOptions): {
   getCdnUrl: () => string | undefined;
-  loadCdn: () => Promise<typeof import('shiki') | undefined>;
+  loadCdn: () => Promise<typeof import("shiki") | undefined>;
 };
 export declare function createShikiRuntime(_?: CodeRuntimeOptions): ShikiRuntime;
 export declare function disposeShikiHighlighter(): void;

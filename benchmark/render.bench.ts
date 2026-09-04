@@ -1,13 +1,14 @@
 // @vitest-environment jsdom
 
 import type { Root } from 'react-dom/client'
+import type { BenchRunOptions } from 'vitest'
 import { code as createCodeExtension } from '@stream-markdown/code'
 import { code } from '@streamdown/code'
 import { createElement } from 'react'
 import { flushSync } from 'react-dom'
 import { createRoot } from 'react-dom/client'
 import { Streamdown } from 'streamdown'
-import { afterAll, beforeAll, bench, describe } from 'vitest'
+import { afterAll, beforeAll, describe, it } from 'vitest'
 import { h, nextTick, render } from 'vue'
 import { Markdown as VueStreamMarkdown } from 'vue-stream-markdown'
 
@@ -64,7 +65,7 @@ const scenarios = [
 const streamdownCodePlugins = { code }
 const vueExtensions = { code: createCodeExtension() }
 
-const benchmarkOptions = {
+const benchmarkOptions: BenchRunOptions = {
   time: 1000,
   warmupTime: 500,
 }
@@ -336,20 +337,28 @@ beforeAll(async () => {
 
 for (const [name, document] of scenarios) {
   describe(`${name} initial render`, () => {
-    bench('vue-stream-markdown', async () => {
-      benchmarkResult = await runVueSession(document, 0)
-    }, benchmarkOptions)
-    bench('streamdown', async () => {
-      benchmarkResult = await runReactSession(document, 0)
-    }, benchmarkOptions)
+    it('vue-stream-markdown', async ({ bench }) => {
+      await bench('vue-stream-markdown', async () => {
+        benchmarkResult = await runVueSession(document, 0)
+      }).run(benchmarkOptions)
+    })
+    it('streamdown', async ({ bench }) => {
+      await bench('streamdown', async () => {
+        benchmarkResult = await runReactSession(document, 0)
+      }).run(benchmarkOptions)
+    })
   })
 
   describe(`${name} with 20 streaming appends`, () => {
-    bench('vue-stream-markdown', async () => {
-      benchmarkResult = await runVueSession(document, 20)
-    }, benchmarkOptions)
-    bench('streamdown', async () => {
-      benchmarkResult = await runReactSession(document, 20)
-    }, benchmarkOptions)
+    it('vue-stream-markdown', async ({ bench }) => {
+      await bench('vue-stream-markdown', async () => {
+        benchmarkResult = await runVueSession(document, 20)
+      }).run(benchmarkOptions)
+    })
+    it('streamdown', async ({ bench }) => {
+      await bench('streamdown', async () => {
+        benchmarkResult = await runReactSession(document, 20)
+      }).run(benchmarkOptions)
+    })
   })
 }

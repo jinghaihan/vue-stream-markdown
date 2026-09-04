@@ -36,14 +36,14 @@ export interface MermaidRuntimeOptions {
 // #region Functions
 export declare function createMermaidCdnLoader(_?: MermaidCdnLoaderOptions): {
   getCdnUrl: () => string | undefined;
-  loadCdn: () => Promise<typeof import('mermaid') | undefined>;
+  loadCdn: () => Promise<typeof import("mermaid") | undefined>;
 };
 export declare function createMermaidRuntime(_?: MermaidRuntimeOptions): MermaidRuntime;
 export declare function mermaid<TErrorComponent = never>(_?: MermaidExtensionOptions<TErrorComponent>): MermaidExtension<TErrorComponent>;
 // #endregion
 
 // #region Variables
-export declare const DEFAULT_MERMAID_THEME: readonly ['neutral', 'dark'];
+export declare const DEFAULT_MERMAID_THEME: readonly ["neutral", "dark"];
 export declare const MERMAID_VERSION: string;
 // #endregion
 

@@ -793,11 +793,11 @@ export declare function createImageModel<TComponent = unknown>(_: ImageModelOpti
   readonly alt: string;
   readonly title: string;
   readonly showCaption: boolean;
-  readonly figureWidth: "100%" | "auto";
+  readonly figureWidth: "auto" | "100%";
   readonly showSpin: boolean;
   readonly showImage: boolean;
   readonly showError: boolean;
-  readonly errorVariant: "harden-image" | "image";
+  readonly errorVariant: "image" | "harden-image";
 };
 export declare function createImagePreviewControlDescriptors(_: Pick<ImagePreviewModelOptions, 'controls' | 'hasDownload' | 'icons'> & {
   imageCount?: number;
@@ -1052,11 +1052,11 @@ export declare function zoomOutState(_: ZoomState, _?: ZoomOptions): ZoomState;
 // #endregion
 
 // #region Variables
-export declare const ANIMATION_SPLITS: readonly ['auto', 'word', 'char'];
-export declare const ANIMATION_TYPES: readonly ['fade-in', 'blur-in', 'slide-up'];
+export declare const ANIMATION_SPLITS: readonly ["auto", "word", "char"];
+export declare const ANIMATION_TYPES: readonly ["fade-in", "blur-in", "slide-up"];
 export declare const CARETS: {
-  readonly block: ' ▋';
-  readonly circle: ' ●';
+  readonly block: " ▋";
+  readonly circle: " ●";
 };
 export declare const CODE_META_NO_LINE_NUMBERS_PATTERN: RegExp;
 export declare const CODE_META_START_LINE_PATTERN: RegExp;
@@ -1075,10 +1075,10 @@ export declare const LANGUAGE_ALIAS: Record<string, string>;
 export declare const LANGUAGE_EXTENSIONS: Record<string, string>;
 export declare const MAX_HTML_PREVIEW_AUTO_HEIGHT: number;
 export declare const OVERLAY_CONTAINER_ID: string;
-export declare const SHADCN_SCHEMAS: readonly ['background', 'foreground', 'card', 'card-foreground', 'popover', 'popover-foreground', 'primary', 'primary-foreground', 'secondary', 'secondary-foreground', 'muted', 'muted-foreground', 'accent', 'accent-foreground', 'destructive', 'border', 'input', 'ring', 'chart-1', 'chart-2', 'chart-3', 'chart-4', 'chart-5', 'sidebar', 'sidebar-foreground', 'sidebar-primary', 'sidebar-primary-foreground', 'sidebar-accent', 'sidebar-accent-foreground', 'sidebar-border', 'sidebar-ring'];
+export declare const SHADCN_SCHEMAS: readonly ["background", "foreground", "card", "card-foreground", "popover", "popover-foreground", "primary", "primary-foreground", "secondary", "secondary-foreground", "muted", "muted-foreground", "accent", "accent-foreground", "destructive", "border", "input", "ring", "chart-1", "chart-2", "chart-3", "chart-4", "chart-5", "sidebar", "sidebar-foreground", "sidebar-primary", "sidebar-primary-foreground", "sidebar-accent", "sidebar-accent-foreground", "sidebar-border", "sidebar-ring"];
 export declare const STREAM_MARKDOWN_CSS_VARIABLES: {
-  readonly animationDuration: '--stream-markdown-animation-duration';
-  readonly defaultTransitionDuration: '--default-transition-duration';
+  readonly animationDuration: "--stream-markdown-animation-duration";
+  readonly defaultTransitionDuration: "--default-transition-duration";
 };
 export declare const STREAM_MARKDOWN_PREFIX: string;
 export declare const SUPPORT_LANGUAGES: SupportedLanguage[];
