@@ -30,10 +30,10 @@ interface TildeMarkerAnalysis {
  * @returns The content with the applicable completion applied.
  *
  * @example
- * fixDelete('~~text')
+ * completeDelete('~~text')
  * // Returns: '~~text~~'
  */
-export function fixDelete(
+export function completeDelete(
   content: string,
   options?: CompletionContext,
 ): string {

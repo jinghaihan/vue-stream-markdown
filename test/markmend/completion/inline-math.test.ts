@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { fixInlineMath } from '../../../packages/markmend/core/src/completion/inline-math'
+import { completeInlineMath } from '../../../packages/markmend/core/src/completion/inline-math'
 import { getTestCasesByCategories } from './test-cases'
 
-describe('fixInlineMath', () => {
+describe('completeInlineMath', () => {
   for (const testCase of getTestCasesByCategories(['inline-math'])) {
     it(testCase.description, () => {
-      expect(fixInlineMath(testCase.input)).toBe(testCase.expected)
+      expect(completeInlineMath(testCase.input)).toBe(testCase.expected)
     })
   }
 })

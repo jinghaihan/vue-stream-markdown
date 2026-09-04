@@ -58,6 +58,31 @@ function completeLinkDestination(markdown: string) {
 }
 ```
 
+### Completion steps
+
+For more control, override individual built-in steps with `completionSteps`.
+The built-in functions and their order are available from the main package, so
+an application can wrap or replace only the rule it needs:
+
+```ts
+import {
+  completeLink,
+  defaultCompletionSteps,
+} from 'vue-stream-markdown'
+
+const completion = {
+  completionSteps: {
+    ...defaultCompletionSteps,
+    link: (markdown, context) => completeLink(markdown, context),
+  },
+}
+```
+
+Each step receives the current Markdown and an optional completion context and
+returns the Markdown for the next step. Unspecified entries keep the default
+behavior. The exported `complete*` functions can also be composed directly in
+custom streaming integrations.
+
 ## parserOptions
 
 `parserOptions` exposes Comark parser options and plugins. `autoClose` is intentionally omitted because the `completion` prop owns that behavior.

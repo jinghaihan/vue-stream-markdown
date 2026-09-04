@@ -3,6 +3,8 @@ export interface CompletionOptions {
   comparisonOperators?: boolean
   /** Hide bare `*`, `**`, `_`, `__`, `~`, and `~~` markers while streaming. @default true */
   hideBareFormattingMarkers?: boolean
+  /** Override one or more built-in completion steps. */
+  completionSteps?: CompletionSteps
   singleDollarTextMath?: boolean
 }
 
@@ -21,6 +23,10 @@ export type BuiltinCompletionType
     | 'math'
 
 export type CompletionType = BuiltinCompletionType | (string & {})
+
+export type CompletionStep = (content: string, context?: CompletionContext) => string
+
+export type CompletionSteps = Partial<Record<BuiltinCompletionType, CompletionStep>>
 
 export interface CompletionInfo {
   phase?: string

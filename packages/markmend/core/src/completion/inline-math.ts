@@ -18,10 +18,10 @@ interface DollarScanState {
  * @returns The content with the applicable completion applied.
  *
  * @example
- * fixInlineMath('$$x')
+ * completeInlineMath('$$x')
  * // Returns: '$$x$$'
  */
-export function fixInlineMath(content: string, context?: CompletionContext): string {
+export function completeInlineMath(content: string, context?: CompletionContext): string {
   // Handle bare single $ first
   if (content === '$') {
     return ''

@@ -33,10 +33,10 @@ interface TableHeaderState {
  * @returns The content with the applicable completion applied.
  *
  * @example
- * fixTable('| a | b |')
+ * completeTable('| a | b |')
  * // Returns: '| a | b |\n| --- | --- |'
  */
-export function fixTable(content: string, context?: CompletionContext): string {
+export function completeTable(content: string, context?: CompletionContext): string {
   if (!content.includes('|'))
     return content
 

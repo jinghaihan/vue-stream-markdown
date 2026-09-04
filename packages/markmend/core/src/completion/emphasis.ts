@@ -35,10 +35,10 @@ interface MarkerSearchOptions {
  * @returns The content with the applicable completion applied.
  *
  * @example
- * fixEmphasis('*text')
+ * completeEmphasis('*text')
  * // Returns: '*text*'
  */
-export function fixEmphasis(
+export function completeEmphasis(
   content: string,
   options?: CompletionContext,
 ): string {

@@ -19,10 +19,10 @@ import {
  * @returns The content with the applicable completion applied.
  *
  * @example
- * fixCode('`code')
+ * completeCode('`code')
  * // Returns: '`code`'
  */
-export function fixCode(content: string): string {
+export function completeCode(content: string): string {
   if (!content.includes('`'))
     return content
 
@@ -43,12 +43,12 @@ export function fixCode(content: string): string {
   // If we were inside a code block and cleaned up trailing backticks,
   // we should still complete the code block
   if ((isInsideCodeBlock && wasCleanedUp) || !wasCleanedUp)
-    content = fixCodeBlock(content)
+    content = completeCodeBlock(content)
 
   // Finally handle inline code (single backticks) - only in last paragraph
   // But don't process if we just cleaned up (user is still typing)
   if (!wasCleanedUp)
-    content = fixInlineCode(content)
+    content = completeInlineCode(content)
 
   return content
 }
@@ -143,7 +143,7 @@ function removeTrailingIncompleteBackticks(content: string): string {
  * Fix unclosed code blocks (```)
  * Code blocks can span multiple paragraphs, so we check the entire content
  */
-function fixCodeBlock(content: string): string {
+function completeCodeBlock(content: string): string {
   // If we have an unclosed code block
   if (isInsideUnclosedCodeBlock(content)) {
     const lastFenceIndex = content.lastIndexOf('```')
@@ -172,7 +172,7 @@ function fixCodeBlock(content: string): string {
  * Fix unclosed inline code (`)
  * Only processes the last paragraph (content after the last blank line)
  */
-function fixInlineCode(content: string): string {
+function completeInlineCode(content: string): string {
   // Find the last paragraph
   const lines = content.split('\n')
   const { lastParagraph, startIndex: paragraphStartIndex } = getLastParagraphWithIndex(content)

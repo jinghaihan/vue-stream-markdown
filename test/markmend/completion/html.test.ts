@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { fixHtml } from '../../../packages/markmend/core/src/completion/html'
+import { completeHtml } from '../../../packages/markmend/core/src/completion/html'
 import { getTestCasesByCategory } from './test-cases'
 
-describe('fixHtml', () => {
+describe('completeHtml', () => {
   for (const testCase of getTestCasesByCategory('html')) {
     it(testCase.description, () => {
-      expect(fixHtml(testCase.input)).toBe(testCase.expected)
+      expect(completeHtml(testCase.input)).toBe(testCase.expected)
     })
   }
 })

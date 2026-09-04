@@ -21,10 +21,10 @@ import {
  * @returns The content with the applicable completion applied.
  *
  * @example
- * fixHtml('Text <span')
+ * completeHtml('Text <span')
  * // Returns: 'Text '
  */
-export function fixHtml(content: string, context?: CompletionContext): string {
+export function completeHtml(content: string, context?: CompletionContext): string {
   if (!content.includes('<'))
     return content
 

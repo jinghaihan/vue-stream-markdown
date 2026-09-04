@@ -91,14 +91,14 @@ When both diagram extensions are configured, supported diagrams use Beautiful Me
 | 1.x                                      | 2.0                                   |
 | ---------------------------------------- | ------------------------------------- |
 | `mdastOptions`                           | `parserOptions`                       |
-| Markmend preprocessing hooks             | `completion`                          |
+| Markmend preprocessing hooks             | `completion` / `completionSteps`      |
 | `nodeRenderers` keyed by mdast node type | `components` keyed by HTML/Comark tag |
 | `components` for built-in UI             | `uiComponents`                        |
 | `getMarkdownParser()`                    | Removed                               |
 | `getParsedNodes()`                       | `getDocument()`                       |
 | `getProcessedContent()`                  | Removed                               |
 
-The removed lifecycle hooks include `normalize`, `preprocess`, `preprocessSteps`, `parseMarkdownIntoBlocks`, `postnormalize`, and `postprocess`. Use a custom completion function for streaming syntax completion or a Comark plugin for document parsing behavior.
+The removed lifecycle hooks include `normalize`, `preprocess`, `parseMarkdownIntoBlocks`, `postnormalize`, and `postprocess`. Use `completion` for a complete custom function or `completionSteps` to replace selected built-in steps. The built-in completion functions are now exported with a `complete*` prefix (for example, `completeLink` and `completeMath`) and are also available through `defaultCompletionSteps`.
 
 ### Custom completion
 
@@ -115,6 +115,18 @@ function completion(markdown: string) {
 ```
 
 Completion runs only in streaming mode. Static mode parses the original source.
+
+To keep the default pipeline and replace one rule, pass a partial step map:
+
+```ts
+import { completeLink } from 'vue-stream-markdown'
+
+const completion = {
+  completionSteps: {
+    link: (markdown, context) => completeLink(markdown, context),
+  },
+}
+```
 
 ### Comark plugins
 

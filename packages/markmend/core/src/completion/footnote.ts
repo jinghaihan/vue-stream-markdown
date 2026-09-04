@@ -40,10 +40,10 @@ interface FootnoteScanContext {
  * @returns The content with the applicable completion applied.
  *
  * @example
- * fixFootnote('Text [^missing]')
+ * completeFootnote('Text [^missing]')
  * // Returns: 'Text '
  */
-export function fixFootnote(content: string, completionContext?: CompletionContext): string {
+export function completeFootnote(content: string, completionContext?: CompletionContext): string {
   if (!content.includes('[^'))
     return content
 

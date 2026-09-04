@@ -1,8 +1,26 @@
-export { completeMarkdown, completeMarkdownResult } from './completion'
+export {
+  completeCode,
+  completeComparisonOperators,
+  completeDelete,
+  completeEmphasis,
+  completeFootnote,
+  completeHtml,
+  completeInlineMath,
+  completeLink,
+  completeMarkdown,
+  completeMarkdownResult,
+  completeMath,
+  completeStrong,
+  completeTable,
+  completeTaskList,
+  defaultCompletionSteps,
+} from './completion'
 export type {
   BuiltinCompletionType,
   CompletionInfo,
   CompletionOptions,
   CompletionResult,
+  CompletionStep,
+  CompletionSteps,
   CompletionType,
 } from './types'

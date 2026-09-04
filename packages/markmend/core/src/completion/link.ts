@@ -11,10 +11,10 @@ import { findLastNonEmptyLineIndex, isEscapedCharacter } from './utils'
  * @returns The content with the applicable completion applied.
  *
  * @example
- * fixLink('[text]')
+ * completeLink('[text]')
  * // Returns: '[text]()'
  */
-export function fixLink(content: string, context?: CompletionContext): string {
+export function completeLink(content: string, context?: CompletionContext): string {
   if (!content.includes('['))
     return content
 

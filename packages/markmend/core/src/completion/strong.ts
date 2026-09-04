@@ -69,10 +69,10 @@ interface StrongMarkerState {
  * @returns The content with the applicable completion applied.
  *
  * @example
- * fixStrong('**text')
+ * completeStrong('**text')
  * // Returns: '**text**'
  */
-export function fixStrong(
+export function completeStrong(
   content: string,
   options?: CompletionContext,
 ): string {

@@ -30,6 +30,14 @@ describe('completeMarkdown', () => {
 })
 
 describe('completeMarkdownResult', () => {
+  it('allows overriding an individual completion step', () => {
+    expect(completeMarkdown('plain', {
+      completionSteps: {
+        code: content => `${content}!`,
+      },
+    })).toBe('plain!')
+  })
+
   it('reports the completion step that changed the markdown', () => {
     expect(completeMarkdownResult('**bold')).toEqual({
       markdown: '**bold**',

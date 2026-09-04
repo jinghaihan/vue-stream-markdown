@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { fixLink } from '../../../packages/markmend/core/src/completion/link'
+import { completeLink } from '../../../packages/markmend/core/src/completion/link'
 import { getTestCasesByCategories } from './test-cases'
 
-describe('fixLink', () => {
+describe('completeLink', () => {
   for (const testCase of getTestCasesByCategories(['link', 'image'])) {
     it(testCase.description, () => {
-      expect(fixLink(testCase.input)).toBe(testCase.expected)
+      expect(completeLink(testCase.input)).toBe(testCase.expected)
     })
   }
 })

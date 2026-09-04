@@ -9,10 +9,10 @@ import { getCompletionAnalysis } from './context'
  * @returns The content with the applicable completion applied.
  *
  * @example
- * fixMath('$$\nx')
+ * completeMath('$$\nx')
  * // Returns: '$$\nx\n$$'
  */
-export function fixMath(content: string, context?: CompletionContext): string {
+export function completeMath(content: string, context?: CompletionContext): string {
   if (!content.includes('$'))
     return content
 

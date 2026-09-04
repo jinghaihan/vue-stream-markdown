@@ -13,10 +13,10 @@ import {
  * @returns The content with the applicable completion applied.
  *
  * @example
- * fixComparisonOperators('- > 1')
+ * completeComparisonOperators('- > 1')
  * // Returns: '- \> 1'
  */
-export function fixComparisonOperators(
+export function completeComparisonOperators(
   content: string,
   options?: Pick<CompletionContext, 'comparisonOperators'>,
 ): string {

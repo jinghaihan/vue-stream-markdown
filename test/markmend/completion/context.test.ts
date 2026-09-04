@@ -1,20 +1,20 @@
 import { describe, expect, it } from 'vitest'
-import { fixCode } from '../../../packages/markmend/core/src/completion/code'
-import { fixComparisonOperators } from '../../../packages/markmend/core/src/completion/comparison-operators'
+import { completeCode } from '../../../packages/markmend/core/src/completion/code'
+import { completeComparisonOperators } from '../../../packages/markmend/core/src/completion/comparison-operators'
 import {
   createCompletionContext,
   getCompletionAnalysis,
 } from '../../../packages/markmend/core/src/completion/context'
-import { fixDelete } from '../../../packages/markmend/core/src/completion/delete'
-import { fixEmphasis } from '../../../packages/markmend/core/src/completion/emphasis'
-import { fixFootnote } from '../../../packages/markmend/core/src/completion/footnote'
-import { fixHtml } from '../../../packages/markmend/core/src/completion/html'
-import { fixInlineMath } from '../../../packages/markmend/core/src/completion/inline-math'
-import { fixLink } from '../../../packages/markmend/core/src/completion/link'
-import { fixMath } from '../../../packages/markmend/core/src/completion/math'
-import { fixStrong } from '../../../packages/markmend/core/src/completion/strong'
-import { fixTable } from '../../../packages/markmend/core/src/completion/table'
-import { fixTaskList } from '../../../packages/markmend/core/src/completion/task-list'
+import { completeDelete } from '../../../packages/markmend/core/src/completion/delete'
+import { completeEmphasis } from '../../../packages/markmend/core/src/completion/emphasis'
+import { completeFootnote } from '../../../packages/markmend/core/src/completion/footnote'
+import { completeHtml } from '../../../packages/markmend/core/src/completion/html'
+import { completeInlineMath } from '../../../packages/markmend/core/src/completion/inline-math'
+import { completeLink } from '../../../packages/markmend/core/src/completion/link'
+import { completeMath } from '../../../packages/markmend/core/src/completion/math'
+import { completeStrong } from '../../../packages/markmend/core/src/completion/strong'
+import { completeTable } from '../../../packages/markmend/core/src/completion/table'
+import { completeTaskList } from '../../../packages/markmend/core/src/completion/task-list'
 
 describe('completion context', () => {
   it('reuses analysis for unchanged content', () => {
@@ -61,18 +61,18 @@ describe('completion context', () => {
 
   it('keeps every step usable without a context', () => {
     const completionSteps = {
-      code: fixCode,
-      comparisonOperators: fixComparisonOperators,
-      delete: fixDelete,
-      emphasis: fixEmphasis,
-      footnote: fixFootnote,
-      html: fixHtml,
-      inlineMath: fixInlineMath,
-      link: fixLink,
-      math: fixMath,
-      strong: fixStrong,
-      table: fixTable,
-      taskList: fixTaskList,
+      code: completeCode,
+      comparisonOperators: completeComparisonOperators,
+      delete: completeDelete,
+      emphasis: completeEmphasis,
+      footnote: completeFootnote,
+      html: completeHtml,
+      inlineMath: completeInlineMath,
+      link: completeLink,
+      math: completeMath,
+      strong: completeStrong,
+      table: completeTable,
+      taskList: completeTaskList,
     }
     const inputs = {
       code: 'Text `code',

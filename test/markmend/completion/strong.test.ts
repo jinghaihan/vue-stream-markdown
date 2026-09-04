@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { fixStrong } from '../../../packages/markmend/core/src/completion/strong'
+import { completeStrong } from '../../../packages/markmend/core/src/completion/strong'
 import { getTestCasesByCategories } from './test-cases'
 
-describe('fixStrong', () => {
+describe('completeStrong', () => {
   for (const testCase of getTestCasesByCategories(['strong-asterisk', 'strong-underscore'])) {
     it(testCase.description, () => {
-      expect(fixStrong(testCase.input, testCase.completionOptions)).toBe(testCase.expected)
+      expect(completeStrong(testCase.input, testCase.completionOptions)).toBe(testCase.expected)
     })
   }
 })
