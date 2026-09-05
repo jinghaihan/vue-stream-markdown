@@ -40,6 +40,7 @@ const props = withDefaults(defineProps<StreamMarkdownProps>(), {
   components: () => ({}),
   uiComponents: () => ({}),
   icons: () => ({}),
+  completion: true,
   controls: true,
   previewers: true,
   enableAnimate: undefined,

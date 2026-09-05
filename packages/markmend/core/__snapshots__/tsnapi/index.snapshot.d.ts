@@ -21,7 +21,7 @@ export interface CompletionResult {
 // #region Types
 export type BuiltinCompletionType = 'code' | 'comparisonOperators' | 'html' | 'footnote' | 'strong' | 'emphasis' | 'delete' | 'taskList' | 'link' | 'table' | 'inlineMath' | 'math';
 export type CompletionStep = (_: string, _?: CompletionContext) => string;
-export type CompletionSteps = Partial<Record<BuiltinCompletionType, CompletionStep>>;
+export type CompletionSteps = Partial<Record<BuiltinCompletionType, CompletionStep | false>>;
 export type CompletionType = BuiltinCompletionType | (string & {});
 // #endregion
 
@@ -34,8 +34,8 @@ export declare function completeFootnote(_: string, _?: CompletionContext): stri
 export declare function completeHtml(_: string, _?: CompletionContext): string;
 export declare function completeInlineMath(_: string, _?: CompletionContext): string;
 export declare function completeLink(_: string, _?: CompletionContext): string;
-export declare function completeMarkdown(_: string, _?: CompletionOptions): string;
-export declare function completeMarkdownResult(_: string, _?: CompletionOptions): CompletionResult;
+export declare function completeMarkdown(_: string, _?: CompletionOptions | false): string;
+export declare function completeMarkdownResult(_: string, _?: CompletionOptions | false): CompletionResult;
 export declare function completeMath(_: string, _?: CompletionContext): string;
 export declare function completeStrong(_: string, _?: CompletionContext): string;
 export declare function completeTable(_: string, _?: CompletionContext): string;

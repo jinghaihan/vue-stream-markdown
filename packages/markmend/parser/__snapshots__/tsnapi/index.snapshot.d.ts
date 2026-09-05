@@ -24,7 +24,7 @@ export interface MarkmendSyntaxOptions {
 // #endregion
 
 // #region Types
-export type Completion = CompletionOptions | CompletionFunction;
+export type Completion = boolean | CompletionOptions | CompletionFunction;
 export type CompletionFunction = (_: string) => CompletionResult | string;
 export type MarkdownMode = 'static' | 'streaming';
 export type MarkmendParserOptions<TPlugins extends readonly ComarkPlugin<any, any>[] = readonly ComarkPlugin<any, any>[]> = Omit<ParserOptions<TPlugins>, 'autoClose'>;

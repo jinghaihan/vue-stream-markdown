@@ -3,6 +3,14 @@ import { math } from '@stream-markdown/math'
 import { describe, expect, it, vi } from 'vitest'
 
 describe('markmend parser', () => {
+  it('can disable completion while keeping streaming mode', async () => {
+    const engine = createMarkmendParser({ completion: false })
+
+    await expect(engine.parse('[label](', 'streaming')).resolves.toMatchObject({
+      completion: undefined,
+    })
+  })
+
   it('completes only streaming input', async () => {
     const completion = vi.fn(markdown => `${markdown} completed`)
     const engine = createMarkmendParser({ completion })

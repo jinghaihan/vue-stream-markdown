@@ -26,7 +26,7 @@ export type CompletionType = BuiltinCompletionType | (string & {})
 
 export type CompletionStep = (content: string, context?: CompletionContext) => string
 
-export type CompletionSteps = Partial<Record<BuiltinCompletionType, CompletionStep>>
+export type CompletionSteps = Partial<Record<BuiltinCompletionType, CompletionStep | false>>
 
 export interface CompletionInfo {
   phase?: string

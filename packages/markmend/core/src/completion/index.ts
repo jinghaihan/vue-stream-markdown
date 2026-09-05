@@ -97,19 +97,26 @@ function resolveCompletionInfo(
 
 export function completeMarkdownResult(
   content: string,
-  options?: CompletionOptions,
+  options?: CompletionOptions | false,
 ): CompletionResult {
+  if (options === false)
+    return { markdown: content }
+
   const context = createCompletionContext(options)
   let markdown = normalize(content)
   let completion: CompletionInfo | undefined
-  const completionSteps: Record<BuiltinCompletionType, CompletionStep> = {
+  const completionSteps: Record<BuiltinCompletionType, CompletionStep | false> = {
     ...defaultCompletionSteps,
     ...options?.completionSteps,
   }
 
   for (const type of COMPLETION_STEP_NAMES) {
     const before = markdown
-    markdown = (completionSteps[type] ?? defaultCompletionSteps[type])(before, context)
+    const step = completionSteps[type]
+    if (step === false)
+      continue
+
+    markdown = step(before, context)
     if (markdown !== before)
       completion = resolveCompletionInfo(type, before, markdown)
   }
@@ -119,7 +126,7 @@ export function completeMarkdownResult(
 
 export function completeMarkdown(
   content: string,
-  options?: CompletionOptions,
+  options?: CompletionOptions | false,
 ): string {
   return completeMarkdownResult(content, options).markdown
 }

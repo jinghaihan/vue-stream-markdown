@@ -28,7 +28,11 @@ only present when a completion type has a meaningful sub-stage.
 
 ## completion
 
-`completion` controls how incomplete Markdown is completed in streaming mode. It accepts Markmend options or a custom function:
+`completion` defaults to `true` and controls how incomplete Markdown is completed in streaming mode. It accepts a boolean, Markmend options, or a custom function. Set it to `false` to disable completion while keeping streaming mode enabled:
+
+```vue
+<Markdown :content="content" :completion="false" mode="streaming" />
+```
 
 ```vue
 <script setup lang="ts">
@@ -60,7 +64,7 @@ function completeLinkDestination(markdown: string) {
 
 ### Completion steps
 
-For more control, override individual built-in steps with `completionSteps`.
+For more control, override or disable individual built-in steps with `completionSteps`.
 The built-in functions and their order are available from the main package, so
 an application can wrap or replace only the rule it needs:
 
@@ -74,6 +78,7 @@ const completion = {
   completionSteps: {
     ...defaultCompletionSteps,
     link: (markdown, context) => completeLink(markdown, context),
+    math: false,
   },
 }
 ```

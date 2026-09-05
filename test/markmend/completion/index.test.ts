@@ -30,6 +30,22 @@ describe('completeMarkdown', () => {
 })
 
 describe('completeMarkdownResult', () => {
+  it('returns the source unchanged when completion is disabled', () => {
+    expect(completeMarkdownResult('**incomplete', false)).toEqual({
+      markdown: '**incomplete',
+      completion: undefined,
+    })
+    expect(completeMarkdown('**incomplete', false)).toBe('**incomplete')
+  })
+
+  it('can disable an individual completion step', () => {
+    expect(completeMarkdown('[label', {
+      completionSteps: {
+        link: false,
+      },
+    })).toBe('[label')
+  })
+
   it('allows overriding an individual completion step', () => {
     expect(completeMarkdown('plain', {
       completionSteps: {

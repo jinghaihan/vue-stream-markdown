@@ -10,7 +10,7 @@ import type security from 'comark/plugins/security'
 
 export type CompletionFunction = (markdown: string) => CompletionResult | string
 
-export type Completion = CompletionOptions | CompletionFunction
+export type Completion = boolean | CompletionOptions | CompletionFunction
 
 export type MarkmendParserOptions<
   TPlugins extends readonly ComarkPlugin<any, any>[] = readonly ComarkPlugin<any, any>[],

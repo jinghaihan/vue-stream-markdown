@@ -109,11 +109,18 @@ export function createMarkmendParser(
 }
 
 function resolveCompletion(completion?: Completion): (markdown: string) => CompletionResult {
+  if (completion === false) {
+    return markdown => ({ markdown })
+  }
+
   if (typeof completion === 'function') {
     return (markdown) => {
       const result = completion(markdown)
       return typeof result === 'string' ? { markdown: result } : result
     }
   }
-  return markdown => completeMarkdownResult(markdown, completion)
+  return markdown => completeMarkdownResult(
+    markdown,
+    typeof completion === 'object' ? completion : undefined,
+  )
 }

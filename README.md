@@ -25,7 +25,7 @@ A markdown renderer specially optimized for streaming scenarios, inspired by [St
 - **Native HTML and custom tags** - Render safe HTML and map custom tags directly to Vue components
 - **Interactive controls** - Copy and download buttons for images, tables, and code blocks
 - **Fully customizable** - Replace any Comark/native tag or UI component with your own Vue components
-- **Theme-aware scoped styles** - Scoped styles under `.stream-markdown` with semantic `data-stream-markdown` attributes, following [shadcn/ui](https://ui.shadcn.com/) design system
+- **Theme-aware scoped styles** - Scoped styles under `.stream-markdown` with semantic `data-stream-markdown` attributes, following [Shadcn UI](https://ui.shadcn.com/) design system
 - **Beautiful built-in typography** - No atomic CSS required ([Tailwind CSS](https://tailwindcss.com/)/[UnoCSS](https://unocss.dev/)), self-contained styles
 - **Content hardening & security** - Built-in protection against malicious Markdown with URL validation and protocol blocking
 - **SSR support** - Full server-side rendering compatibility with environment detection utilities
