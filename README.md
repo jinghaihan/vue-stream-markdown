@@ -50,13 +50,16 @@ This project also uses and benefits from:
 - [Mermaid](https://mermaid.js.org/) - Diagramming and charting tool
 - [Beautiful Mermaid](https://github.com/lukilabs/beautiful-mermaid) - Beautiful Mermaid diagram renderer with Shiki integration
 - [KaTeX](https://katex.org/) - Fast math typesetting library for the web
-- [Remend](https://github.com/vercel/streamdown/tree/main/packages/remend) - This project implements similar functionality inspired by Remend for intelligently parsing and completing incomplete Markdown blocks.
+
+### Inspiration
+
+- [Remend](https://github.com/vercel/streamdown/tree/main/packages/remend) - Inspired the incomplete-Markdown completion approach
+- [Markstream Vue](https://github.com/Simon-He95/markstream-vue) - Inspired custom Markdown rendering
+- [AST Explorer](https://github.com/sxzz/ast-explorer) - Inspired the playground layout and document inspection
+- [Medium Zoom](https://github.com/francoischalifour/medium-zoom) - Inspired the custom image zoom interaction
 
 ### Code Sources
 
-- [Markstream Vue](https://github.com/Simon-He95/markstream-vue) - The original inspiration for custom Markdown rendering
-- [AST Explorer](https://github.com/sxzz/ast-explorer) - Playground layout and Comark document inspection inspiration
-- [Medium Zoom](https://github.com/francoischalifour/medium-zoom) - Inspired the custom image zoom implementation
 - [Markdown Sanitizers](https://github.com/vercel-labs/markdown-sanitizers) - URL validation and security hardening logic in `packages/core/src/utils/harden.ts` is ported from [Rehype Harden](https://github.com/vercel-labs/markdown-sanitizers)
 - [Dify](https://github.com/langgenius/dify) - LaTeX normalization logic in `packages/markmend/core/src/completion/vendored/markdown-utils.ts` is ported from Dify
 
