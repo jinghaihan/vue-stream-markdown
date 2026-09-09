@@ -15,7 +15,7 @@ import {
   resolveEnableAnimate,
   resolveEnableCaret,
 } from '@stream-markdown/core'
-import { computed, onBeforeUnmount, onMounted, shallowRef, toRefs, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, shallowRef, toRefs, watch } from 'vue'
 import { UI } from './components'
 import { ICONS } from './components/icons'
 import MarkdownNodes from './components/renderers/markdown'
@@ -52,6 +52,7 @@ const props = withDefaults(defineProps<StreamMarkdownProps>(), {
 
 const emits = defineEmits<{
   (e: 'copied', content: string): void
+  (e: 'end'): void
 }>()
 
 const {
@@ -151,6 +152,7 @@ const uiComponents = computed((): UIComponents => ({
 }))
 
 let active = true
+let parseRevision = 0
 const ownedExtensions = resolveOwnedExtensions(
   provider?.extensions.value,
   extensionOverrides.value,
@@ -159,11 +161,19 @@ const ownedExtensions = resolveOwnedExtensions(
 watch(
   [content, mode],
   ([markdown, currentMode]) => {
-    void parser.parse(markdown, currentMode).then((result) => {
-      if (active) {
-        completionInfo.value = result.completion
-        const nextDocument = result.document
-        document.value = nextDocument
+    const revision = ++parseRevision
+    void parser.parse(markdown, currentMode).then(async (result) => {
+      if (!active || revision !== parseRevision)
+        return
+
+      completionInfo.value = result.completion
+      const nextDocument = result.document
+      document.value = nextDocument
+
+      if (currentMode === 'static') {
+        await nextTick()
+        if (active && revision === parseRevision)
+          emits('end')
       }
     })
   },

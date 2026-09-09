@@ -610,6 +610,29 @@ function handleCopied(content: string) {
 </template>
 ```
 
+### end
+
+- **Type:** `() => void`
+- **Triggered when:** The final static frame has been parsed and committed to the Vue DOM
+
+Emitted after the final Markdown parse completes and Vue has flushed the rendered nodes. In streaming UIs, this is useful for actions that must wait for the complete document, such as scrolling to the final rendered content.
+
+**Example:**
+
+```vue
+<script setup lang="ts">
+import { Markdown } from 'vue-stream-markdown'
+
+function handleEnd() {
+  console.log('Markdown rendering finished')
+}
+</script>
+
+<template>
+  <Markdown :content="content" mode="static" @end="handleEnd" />
+</template>
+```
+
 ### beforeDownload
 
 - **Type:** `(event: DownloadEvent) => MaybePromise<boolean>`
