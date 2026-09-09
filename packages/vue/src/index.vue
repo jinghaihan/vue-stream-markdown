@@ -15,7 +15,7 @@ import {
   resolveEnableAnimate,
   resolveEnableCaret,
 } from '@stream-markdown/core'
-import { computed, onBeforeUnmount, onMounted, shallowRef, toRefs, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, shallowRef, toRefs, watch } from 'vue'
 import { UI } from './components'
 import { ICONS } from './components/icons'
 import MarkdownNodes from './components/renderers/markdown'
@@ -54,6 +54,7 @@ const props = withDefaults(defineProps<StreamMarkdownProps>(), {
 
 const emits = defineEmits<{
   (e: 'copied', content: string): void
+  (e: 'end'): void
 }>()
 
 const {
@@ -169,13 +170,19 @@ const ownedExtensions = resolveOwnedExtensions(
 
 watch(
   frame,
-  ({ content: markdown, mode: currentMode }) => {
-    void parser.parse(markdown, currentMode).then((result) => {
+  ({ content: markdown, mode: currentMode, revision }) => {
+    void parser.parse(markdown, currentMode).then(async (result) => {
       if (active) {
         completionInfo.value = result.completion
         const nextDocument = result.document
         document.value = nextDocument
         acknowledge()
+
+        if (currentMode === 'static') {
+          await nextTick()
+          if (active && frame.value.revision === revision)
+            emits('end')
+        }
       }
     })
   },

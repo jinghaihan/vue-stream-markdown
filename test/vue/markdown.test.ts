@@ -63,6 +63,22 @@ describe('stream markdown', () => {
     wrapper.unmount()
   })
 
+  it('emits end after the final static document is flushed', async () => {
+    const end = vi.fn()
+    const wrapper = mount(Markdown, {
+      props: {
+        content: 'Content with a footnote.[^note]\n\n[^note]: Definition',
+        mode: 'static',
+        onEnd: end,
+      },
+    })
+
+    await flushPromises()
+
+    expect(end).toHaveBeenCalledOnce()
+    wrapper.unmount()
+  })
+
   it('applies code fence line number metadata', async () => {
     const wrapper = mount(Markdown, {
       props: {
@@ -426,6 +442,27 @@ describe('stream markdown', () => {
 
     expect(slot.find('[data-stream-markdown="link-favicon-placeholder"]').exists()).toBe(false)
     expect(slot.find('[data-stream-markdown="link-favicon-fallback"]').exists()).toBe(true)
+    wrapper.unmount()
+  })
+
+  it('uses a mail icon for email links without a website favicon', async () => {
+    const MailIcon = defineComponent({
+      setup(_, { attrs }) {
+        return () => h('svg', { ...attrs, 'data-icon': 'mail' })
+      },
+    })
+    const wrapper = mount(Markdown, {
+      props: {
+        content: '[Email](mailto:hello@example.com)',
+        icons: { mail: MailIcon },
+        mode: 'static',
+      },
+    })
+
+    await vi.dynamicImportSettled()
+    await flushPromises()
+
+    expect(wrapper.get('[data-stream-markdown="link-favicon-fallback"] [data-icon="mail"]')).toBeTruthy()
     wrapper.unmount()
   })
 

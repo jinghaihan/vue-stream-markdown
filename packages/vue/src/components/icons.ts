@@ -15,6 +15,7 @@ export const ICONS = {
   globe: defineAsyncComponent(() => import('~icons/lucide/globe')),
   image: defineAsyncComponent(() => import('~icons/lucide/image')),
   link: defineAsyncComponent(() => import('~icons/lucide/link')),
+  mail: defineAsyncComponent(() => import('~icons/lucide/mail')),
   maximize: defineAsyncComponent(() => import('~icons/lucide/maximize')),
   mermaid: defineAsyncComponent(() => import('~icons/simple-icons/mermaid')),
   minimize: defineAsyncComponent(() => import('~icons/lucide/minimize')),
