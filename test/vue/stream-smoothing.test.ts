@@ -42,7 +42,7 @@ describe('useStreamSmoothing', () => {
 
     smoothing.acknowledge()
     now = 64
-    await vi.advanceTimersByTimeAsync(32)
+    await vi.advanceTimersByTimeAsync(48)
     const firstPrefix = wrapper.text()
     expect(firstPrefix).toBeTruthy()
     expect('abcdefghijklmnopqrstuvwxyz'.startsWith(firstPrefix)).toBe(true)

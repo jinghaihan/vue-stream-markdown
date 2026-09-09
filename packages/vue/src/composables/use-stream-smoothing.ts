@@ -47,12 +47,26 @@ export function useStreamSmoothing(
   let revision = 0
   let finishMode: StreamMarkdownMode | undefined
   let timer: ReturnType<typeof setTimeout> | undefined
+  let rafId: number | undefined
 
   function clearTimer() {
     if (timer === undefined)
       return
     clearTimeout(timer)
     timer = undefined
+  }
+
+  function clearFrame() {
+    if (rafId === undefined)
+      return
+    if (typeof globalThis.cancelAnimationFrame === 'function')
+      globalThis.cancelAnimationFrame(rafId)
+    rafId = undefined
+  }
+
+  function clearSchedule() {
+    clearTimer()
+    clearFrame()
   }
 
   function emit(content: string, mode: StreamMarkdownMode) {
@@ -103,12 +117,35 @@ export function useStreamSmoothing(
 
     timer = setTimeout(() => {
       timer = undefined
-      drain()
+      startFrameLoop()
     }, Math.max(1, Math.ceil(smoother.getNextDelay())))
   }
 
+  function startFrameLoop() {
+    if (!mounted || waiting || rafId !== undefined)
+      return
+
+    if (typeof globalThis.requestAnimationFrame !== 'function') {
+      drain()
+      return
+    }
+
+    rafId = globalThis.requestAnimationFrame(() => {
+      rafId = undefined
+      if (!mounted || waiting)
+        return
+
+      if (smoother.getNextDelay() > 0) {
+        startFrameLoop()
+        return
+      }
+
+      drain()
+    })
+  }
+
   function enqueueImmediate(content: string, mode: StreamMarkdownMode) {
-    clearTimer()
+    clearSchedule()
     immediateFrames.push({ content, mode })
     drain()
   }
@@ -183,7 +220,7 @@ export function useStreamSmoothing(
 
   onBeforeUnmount(() => {
     mounted = false
-    clearTimer()
+    clearSchedule()
     immediateFrames.length = 0
   })
 
