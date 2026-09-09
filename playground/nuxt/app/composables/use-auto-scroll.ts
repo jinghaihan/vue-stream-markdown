@@ -9,11 +9,14 @@ interface UseAutoScrollOptions {
   active: MaybeRefOrGetter<boolean>
 }
 
+const SETTLE_QUIET_PERIOD_MS = 240
+
 export function useAutoScroll(options: UseAutoScrollOptions) {
   const pauseAutoScroll = ref<boolean>(false)
   const lastScrollTop = ref<number>(0)
   let scrollFrame: number | undefined
-  let settleFrame: number | undefined
+  let settleTimer: ReturnType<typeof setTimeout> | undefined
+  let settling = false
 
   function cancelPendingScroll() {
     if (typeof window === 'undefined')
@@ -21,10 +24,10 @@ export function useAutoScroll(options: UseAutoScrollOptions) {
 
     if (scrollFrame !== undefined)
       window.cancelAnimationFrame(scrollFrame)
-    if (settleFrame !== undefined)
-      window.cancelAnimationFrame(settleFrame)
+    if (settleTimer !== undefined)
+      clearTimeout(settleTimer)
     scrollFrame = undefined
-    settleFrame = undefined
+    settleTimer = undefined
   }
 
   function scrollToBottom() {
@@ -73,50 +76,26 @@ export function useAutoScroll(options: UseAutoScrollOptions) {
     }
 
     cancelPendingScroll()
+    settling = true
+    scheduleSettleReset()
+    void nextTick(scrollToBottom)
+  }
 
-    let lastScrollHeight = -1
-    let stableFrames = 0
-    const checkLayout = () => {
-      settleFrame = undefined
+  function scheduleSettleReset() {
+    if (!settling)
+      return
 
-      if (!options.enabled.value || pauseAutoScroll.value) {
-        reset()
-        return
-      }
-
-      const container = toValue(options.container)
-      if (!container) {
-        reset()
-        return
-      }
-
-      const scrollHeight = container.scrollHeight
-      container.scrollTo({
-        top: scrollHeight,
-        behavior: 'auto',
-      })
-
-      if (scrollHeight === lastScrollHeight)
-        stableFrames += 1
-      else
-        stableFrames = 0
-      lastScrollHeight = scrollHeight
-
-      if (stableFrames >= 3) {
-        reset()
-        return
-      }
-
-      settleFrame = window.requestAnimationFrame(checkLayout)
-    }
-
-    void nextTick(() => {
-      settleFrame = window.requestAnimationFrame(checkLayout)
-    })
+    if (settleTimer !== undefined)
+      clearTimeout(settleTimer)
+    settleTimer = setTimeout(() => {
+      settleTimer = undefined
+      reset()
+    }, SETTLE_QUIET_PERIOD_MS)
   }
 
   function reset() {
     cancelPendingScroll()
+    settling = false
     options.enabled.value = false
     pauseAutoScroll.value = false
     lastScrollTop.value = 0
@@ -125,6 +104,7 @@ export function useAutoScroll(options: UseAutoScrollOptions) {
   watch(() => toValue(options.active), (value) => {
     if (value) {
       cancelPendingScroll()
+      settling = false
       options.enabled.value = true
       scrollToBottom()
     }
@@ -142,7 +122,10 @@ export function useAutoScroll(options: UseAutoScrollOptions) {
     }
   })
 
-  useResizeObserver(() => toValue(options.content), scrollToBottom)
+  useResizeObserver(() => toValue(options.content), () => {
+    scrollToBottom()
+    scheduleSettleReset()
+  })
   onBeforeUnmount(cancelPendingScroll)
 
   return {
