@@ -121,6 +121,7 @@ describe('stream markdown', () => {
       props: {
         content: '# Stable\n\nTail',
         mode: 'streaming',
+        smoothing: false,
       },
     })
     const testWrapper = wrapper as unknown as MarkdownTestWrapper
@@ -402,6 +403,7 @@ describe('stream markdown', () => {
       props: {
         content: '[Link](https://example.com',
         mode: 'streaming',
+        smoothing: false,
       },
     })
     const testWrapper = wrapper as unknown as MarkdownTestWrapper
@@ -433,6 +435,7 @@ describe('stream markdown', () => {
         caret: 'block',
         content: '[Link](',
         mode: 'streaming',
+        smoothing: false,
       },
     })
     const testWrapper = wrapper as unknown as MarkdownTestWrapper

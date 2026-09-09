@@ -23,6 +23,7 @@ export function useMediumZoom(_) {}
 export function useMermaid(_) {}
 export function usePinnedScroll(_) {}
 export function useSanitizers(_) {}
+export function useStreamSmoothing(_) {}
 export function useTailwindV3Theme(_) {}
 export function useZoom(_) {}
 // #endregion
@@ -43,11 +44,11 @@ export*from"@markmend/parser";
 // #region Other
 export { P as ANIMATION_SPLITS }
 export { F as ANIMATION_TYPES }
-export { I as CARETS }
-export { L as DEFAULT_ANIMATION }
-export { z as DEFAULT_ANIMATION_SPLIT }
-export { H as DEFAULT_HARDEN_OPTIONS }
-export { U as DEFAULT_LANGUAGE }
-export { W as SHADCN_SCHEMAS }
-export { G as SUPPORT_LANGUAGES }
+export { fe as CARETS }
+export { pe as DEFAULT_ANIMATION }
+export { me as DEFAULT_ANIMATION_SPLIT }
+export { R as DEFAULT_HARDEN_OPTIONS }
+export { z as DEFAULT_LANGUAGE }
+export { B as SHADCN_SCHEMAS }
+export { V as SUPPORT_LANGUAGES }
 // #endregion

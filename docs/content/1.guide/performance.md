@@ -5,7 +5,9 @@ navigation:
 description: Incremental Comark parsing, stable Vue rendering, and token-level code updates.
 ---
 
-vue-stream-markdown minimizes repeated parsing and DOM work as a response grows. It keeps parser state for each document, preserves completed Vue nodes, and updates highlighted code at token level.
+vue-stream-markdown minimizes repeated parsing and DOM work as a response grows. It smooths bursty input before parsing, keeps parser state for each document, preserves completed Vue nodes, and updates highlighted code at token level.
+
+The adaptive stream smoothing implementation is heavily inspired by [LobeHub's streamdown package](https://github.com/lobehub/lobe-ui/tree/master/packages/streamdown).
 
 ## Incremental Rendering with Stable Keys
 
@@ -79,6 +81,7 @@ These are cross-framework end-to-end measurements—Vue for vue-stream-markdown 
 vue-stream-markdown's performance optimizations provide:
 
 - **Incremental Parsing** - Comark reuses the stable source prefix and processes the changing tail
+- **Adaptive Pacing** - Bursty input is exposed as ordered prefixes without building a parsing queue
 - **Stable Output** - Completed blocks remain stable and don't re-render, with nodes cached by Vue
 - **Direct Rendering** - Compact Comark tuples render directly to VNodes without an intermediate conversion model
 - **Minimal Overhead** - Heavy feature components and their event listeners are created only when needed

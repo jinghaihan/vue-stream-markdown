@@ -10,6 +10,7 @@ export interface UserConfig {
   locale: string
   staticMode: boolean
   autoScroll: boolean
+  smoothing: boolean
   typedStepMin: number
   typedStepMax: number
   typedDelay: number

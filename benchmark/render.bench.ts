@@ -108,6 +108,7 @@ function renderVue(host: HTMLElement, content: string): void {
     isDark: false,
     mode: 'streaming',
     previewers: false,
+    smoothing: false,
   }), host)
 }
 

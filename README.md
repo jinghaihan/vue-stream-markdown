@@ -53,6 +53,7 @@ This project also uses and benefits from:
 
 ### Inspiration
 
+- [LobeHub](https://github.com/lobehub/lobe-ui/tree/master/packages/streamdown) - The adaptive stream smoothing implementation is heavily inspired by its streamdown package
 - [Remend](https://github.com/vercel/streamdown/tree/main/packages/remend) - Inspired the incomplete-Markdown completion approach
 - [Markstream Vue](https://github.com/Simon-He95/markstream-vue) - Inspired custom Markdown rendering
 - [AST Explorer](https://github.com/sxzz/ast-explorer) - Inspired the playground layout and document inspection

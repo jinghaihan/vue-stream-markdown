@@ -24,6 +24,7 @@ import {
   useDarkDetector,
   useLocaleDetector,
   useMarkdownProvider,
+  useStreamSmoothing,
   useTailwindV3Theme,
 } from './composables'
 import { loadLocaleMessages } from './locales'
@@ -44,6 +45,7 @@ const props = withDefaults(defineProps<StreamMarkdownProps>(), {
   controls: true,
   previewers: true,
   enableAnimate: undefined,
+  smoothing: true,
   animation: DEFAULT_ANIMATION,
   animationSplit: DEFAULT_ANIMATION_SPLIT,
   animationStagger: DEFAULT_ANIMATION_STAGGER,
@@ -57,7 +59,7 @@ const emits = defineEmits<{
 const {
   controls,
   previewers,
-  mode,
+  mode: requestedMode,
   dir,
   content,
   isDark: darkProp,
@@ -73,6 +75,7 @@ const {
   animationSplit,
   animationStagger,
   caret,
+  smoothing,
 } = toRefs(props)
 
 const { provideContext } = useContext()
@@ -136,6 +139,13 @@ const parser = createMarkmendParser({
   },
 })
 
+const { acknowledge, frame } = useStreamSmoothing({
+  content,
+  enabled: smoothing,
+  mode: requestedMode,
+})
+const mode = computed(() => frame.value.mode)
+
 const enableAnimate = computed(() => resolveEnableAnimate(mode.value, props.enableAnimate))
 const enableCaret = computed(() => resolveEnableCaret(mode.value, props.caret))
 const rootStyle = computed(() => createRootStyle(cssVariables.value, props.animationDuration))
@@ -157,13 +167,14 @@ const ownedExtensions = resolveOwnedExtensions(
 )
 
 watch(
-  [content, mode],
-  ([markdown, currentMode]) => {
+  frame,
+  ({ content: markdown, mode: currentMode }) => {
     void parser.parse(markdown, currentMode).then((result) => {
       if (active) {
         completionInfo.value = result.completion
         const nextDocument = result.document
         document.value = nextDocument
+        acknowledge()
       }
     })
   },

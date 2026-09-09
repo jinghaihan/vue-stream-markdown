@@ -47,6 +47,7 @@ describe('text animation scheduling', () => {
       props: {
         content: 'Hello world',
         mode: 'streaming',
+        smoothing: false,
       },
     })
 

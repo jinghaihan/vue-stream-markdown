@@ -166,6 +166,9 @@ export interface CreateAnimationTimelineOptions {
   minStagger?: number;
   now?: () => number;
 }
+export interface CreateStreamSmootherOptions {
+  now?: () => number;
+}
 export interface DownloadControlOptions {
   filename: string;
 }
@@ -418,12 +421,21 @@ export interface StreamMarkdownViewProps<TMarkdownComponents = unknown, TIcons =
   uiComponents?: Partial<TUIComponents>;
   locale?: string | LocaleConfig;
   enableAnimate?: boolean;
+  smoothing?: boolean;
   animation?: AnimationType;
   animationSplit?: AnimationSplit;
   animationDuration?: number | string;
   animationStagger?: number;
   caret?: TCaret;
   themeElement?: () => HTMLElement | undefined;
+}
+export interface StreamSmoother {
+  getContent: () => string;
+  getNextDelay: () => number;
+  hasPending: () => boolean;
+  reset: (_: string) => string;
+  take: () => string | undefined;
+  update: (_: string) => StreamSmoothingUpdate;
 }
 export interface SvgIntrinsicSize {
   width: number;
@@ -711,6 +723,7 @@ export type SharedCdnModule = CdnModule;
 export type SharedCdnOptions = CdnOptions;
 export type StreamMarkdownMode = 'static' | 'streaming';
 export type StreamMarkdownProps<TMarkdownComponents = unknown, TIcons = unknown, TUIComponents = unknown, TCaret extends string = string, TControls = unknown, TPreviewers = unknown, THardenOptions = unknown, TCodeOptions = unknown, TImageOptions = unknown, TLinkOptions = unknown, TUIOptions = unknown, TExtensions = unknown> = StreamMarkdownContext<TControls, TPreviewers, THardenOptions, TCodeOptions, TImageOptions, TLinkOptions, TUIOptions, TExtensions> & StreamMarkdownViewProps<TMarkdownComponents, TIcons, TUIComponents, TCaret> & StreamMarkdownHooks;
+export type StreamSmoothingUpdate = 'immediate' | 'pending' | 'unchanged';
 export type SupportedLanguage = 'en-US' | 'zh-CN';
 export type TableAlign = 'left' | 'center' | 'right';
 export type TableControlsConfig<TTransformer = unknown> = boolean | {
@@ -856,6 +869,7 @@ export declare function createSegmentedModel<TStyle = Record<string, unknown>>(_
     backgroundColor: string | undefined;
   };
 };
+export declare function createStreamSmoother(_?: string, _?: CreateStreamSmootherOptions): StreamSmoother;
 export declare function createTableControlDescriptors(_: TableControlDescriptorOptions): ControlDescriptor[];
 export declare function createTextAnimationScheduler(_?: AnimationTimeline): TextAnimationScheduler;
 export declare function createTextParts(_: string, _?: string, _?: AnimationSplit): TextPart[];

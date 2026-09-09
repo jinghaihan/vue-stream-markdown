@@ -39,6 +39,11 @@ export interface MathRenderNode {
 export interface MathRenderProps {
   node: MathRenderNode;
 }
+export interface StreamContentFrame {
+  content: string;
+  mode: StreamMarkdownMode;
+  revision: number;
+}
 export interface StreamMarkdownProvideContext {
   controls?: MaybeRefOrGetter<StreamMarkdownContext['controls']>;
   previewers?: MaybeRefOrGetter<StreamMarkdownContext['previewers']>;
@@ -95,6 +100,15 @@ export interface StreamMarkdownResolvedContext {
   readonly getContainer: () => HTMLElement | undefined;
   readonly beforeDownload: NonNullable<StreamMarkdownProps['beforeDownload']>;
   readonly onCopied: (_: string) => void;
+}
+export interface UseStreamSmoothingOptions {
+  content: MaybeRefOrGetter<string>;
+  enabled: MaybeRefOrGetter<boolean>;
+  mode: MaybeRefOrGetter<StreamMarkdownMode>;
+}
+export interface UseStreamSmoothingReturn {
+  acknowledge: () => void;
+  frame: ShallowRef<StreamContentFrame>;
 }
 // #endregion
 
@@ -227,6 +241,7 @@ export declare function useSanitizers(_: UseSanitizersOptions): {
   transformedUrl: import("vue").ComputedRef<string | null>;
   isHardenUrl: import("vue").ComputedRef<boolean>;
 };
+export declare function useStreamSmoothing(_: UseStreamSmoothingOptions): UseStreamSmoothingReturn;
 export declare function useTailwindV3Theme(_: UseTailwindV3ThemeOptions): {
   element: import("vue").ComputedRef<HTMLElement | undefined>;
   cssVariables: import("vue").Ref<Record<string, string>, Record<string, string>>;

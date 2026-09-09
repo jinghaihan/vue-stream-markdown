@@ -45,6 +45,8 @@ export interface StreamMarkdownViewProps<
   uiComponents?: Partial<TUIComponents>
   locale?: string | LocaleConfig
   enableAnimate?: boolean
+  /** Smooth append-only streaming updates before parsing and rendering them. */
+  smoothing?: boolean
   animation?: AnimationType
   animationSplit?: AnimationSplit
   animationDuration?: number | string

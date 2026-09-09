@@ -45,6 +45,7 @@ export function createPointerDragStart(_, _) {}
 export function createPreviewSegmentedOptions(_) {}
 export function createRootStyle(_, _) {}
 export function createSegmentedModel(_) {}
+export function createStreamSmoother(_, _) {}
 export function createTableControlDescriptors(_) {}
 export function createTextAnimationScheduler(_) {}
 export function createTextParts(_, _, _) {}

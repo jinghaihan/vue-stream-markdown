@@ -19,6 +19,7 @@ description: Configure parsing, rendering, controls, security, and integrations.
 | `components`        | `MarkdownComponents`                                 | `{}`           | Map native or custom tags to Vue components                                 |
 | `dir`               | `'auto' \| 'ltr' \| 'rtl'`                           | `undefined`    | Configure text direction                                                    |
 | `enableAnimate`     | `boolean`                                            | follows `mode` | Enable enter animations                                                     |
+| `smoothing`         | `boolean`                                            | `true`         | Smooth append-only updates before parsing                                   |
 | `animation`         | `string`                                             | `'fade-in'`    | Select the enter animation                                                  |
 | `animationSplit`    | `'auto' \| 'word' \| 'char'`                         | `'auto'`       | Select text animation granularity                                           |
 | `animationDuration` | `number \| string`                                   | `500`          | Set animation duration                                                      |
@@ -40,6 +41,8 @@ Code, math, and diagram renderers are configured through `extensions`. Display, 
 ```
 
 The default `auto` split animates Latin text by word and CJK text by character. When a stream delivers content faster than the configured stagger, the renderer compresses pending delays to keep visible content within roughly 320ms of the source. Set `animationStagger` to `0` to make every new unit in a batch start together.
+
+Streaming smoothing adapts its output to the input rate and waits for each parse before exposing the next prefix. Set `smoothing` to `false` to parse every source update without buffering.
 
 ## Detailed configuration
 

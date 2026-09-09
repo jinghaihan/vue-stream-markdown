@@ -11,6 +11,7 @@ const props = withDefaults(defineProps<{
 
 const autoScroll = defineModel<boolean>('autoScroll', { required: false, default: false })
 const staticMode = defineModel<boolean>('staticMode', { required: false, default: false })
+const smoothing = defineModel<boolean>('smoothing', { required: false, default: true })
 
 const typingIndex = defineModel<number>('typingIndex', { required: false, default: 0 })
 const typedStepMin = defineModel<number>('typedStepMin', { required: false, default: 1 })
@@ -174,6 +175,11 @@ watch(() => staticMode.value, () => {
         <div :class="BLOCK_CLASSES">
           <Label :class="LABEL_CLASSES">Auto Scroll</Label>
           <Switch v-model:value="autoScroll" />
+        </div>
+
+        <div :class="BLOCK_CLASSES">
+          <Label :class="LABEL_CLASSES">Smooth Streaming</Label>
+          <Switch v-model:value="smoothing" />
         </div>
 
         <div :class="BLOCK_CLASSES">

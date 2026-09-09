@@ -42,6 +42,7 @@ const { copy, copied } = useClipboard({
 
 const staticMode = defineModel<boolean>('staticMode', { required: false, default: false })
 const autoScroll = defineModel<boolean>('autoScroll', { required: false, default: false })
+const smoothing = defineModel<boolean>('smoothing', { required: false, default: true })
 
 const typedEnable = defineModel<boolean>('typedEnable', { required: false, default: false })
 const typingIndex = defineModel<number>('typingIndex', { required: false, default: 0 })
@@ -178,6 +179,7 @@ const actions = computed((): Action[] => {
     <SettingsPopover
       v-model:auto-scroll="autoScroll"
       v-model:static-mode="staticMode"
+      v-model:smoothing="smoothing"
       v-model:caret="caret"
       v-model:animation="animation"
       v-model:animation-split="animationSplit"
