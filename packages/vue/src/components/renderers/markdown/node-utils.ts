@@ -24,6 +24,12 @@ const DIRECTION_IGNORED_TAGS = new Set([
   'var',
 ])
 
+const TEXT_RENDERING_IGNORED_TAGS = new Set([
+  'img',
+  'math',
+  'pre',
+])
+
 export function findLastRenderableIndex(nodes: Node[]): number {
   for (let index = nodes.length - 1; index >= 0; index--) {
     const node = nodes[index]!
@@ -51,6 +57,31 @@ export function collectImageSources(nodes: Node[]): string[] {
 
   visit(nodes)
   return sources
+}
+
+export function collectTextOffsets(nodes: Node[]): ReadonlyMap<string, number> {
+  const offsets = new Map<string, number>()
+  let offset = 0
+
+  function visit(children: Node[], parentKey: string) {
+    children.forEach((child, index) => {
+      const path = `${parentKey}-${index}`
+      if (typeof child === 'string') {
+        offsets.set(path, offset)
+        offset += child.length
+        return
+      }
+
+      const [tag, , ...nestedChildren] = child
+      if (tag === null || TEXT_RENDERING_IGNORED_TAGS.has(tag))
+        return
+
+      visit(nestedChildren, `${path}-${tag}`)
+    })
+  }
+
+  visit(nodes, 'root')
+  return offsets
 }
 
 export function resolveNodeDirection(

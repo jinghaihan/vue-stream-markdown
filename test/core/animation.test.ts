@@ -75,6 +75,37 @@ describe('animation timeline', () => {
     expect(delays.get('node-3')).toBe(110)
   })
 
+  it('keeps absolute start times and settled state across render passes', () => {
+    let now = 1000
+    const scheduler = createScheduler(() => now)
+    scheduler.beginPass({ enabled: true, stagger: 40 })
+    scheduler.schedule(createTextParts('Hello world', 'node'))
+    scheduler.commitPass()
+
+    expect(scheduler.getPartState('node-0')).toEqual({
+      settled: false,
+      startTime: 1000,
+    })
+    expect(scheduler.getPartState('node-6')).toEqual({
+      settled: false,
+      startTime: 1040,
+    })
+
+    scheduler.markPartSettled('node-0')
+    now = 1020
+    scheduler.beginPass({ enabled: true, stagger: 40 })
+    scheduler.schedule(createTextParts('Hello world again', 'node'))
+
+    expect(scheduler.getPartState('node-0')).toEqual({
+      settled: true,
+      startTime: 1000,
+    })
+    expect(scheduler.getPartState('node-12')).toEqual({
+      settled: false,
+      startTime: 1080,
+    })
+  })
+
   it('can disable scheduling without disabling entry animations', () => {
     const scheduler = createScheduler(() => 1000)
     scheduler.beginPass({ enabled: false, stagger: 40 })

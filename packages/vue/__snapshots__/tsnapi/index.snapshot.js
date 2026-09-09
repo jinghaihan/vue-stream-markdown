@@ -48,6 +48,6 @@ export { L as DEFAULT_ANIMATION }
 export { z as DEFAULT_ANIMATION_SPLIT }
 export { H as DEFAULT_HARDEN_OPTIONS }
 export { U as DEFAULT_LANGUAGE }
-export { G as SHADCN_SCHEMAS }
-export { K as SUPPORT_LANGUAGES }
+export { W as SHADCN_SCHEMAS }
+export { G as SUPPORT_LANGUAGES }
 // #endregion
