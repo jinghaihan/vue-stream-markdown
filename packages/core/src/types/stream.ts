@@ -4,6 +4,8 @@ import type { DownloadEvent } from './events'
 import type { LocaleConfig } from './i18n'
 import type { TableOptions } from './options'
 
+export type StreamSmoothingPreset = 'balanced' | 'realtime' | 'silky'
+
 export interface StreamMarkdownContext<
   TControls = unknown,
   TPreviewers = unknown,
@@ -46,7 +48,7 @@ export interface StreamMarkdownViewProps<
   locale?: string | LocaleConfig
   enableAnimate?: boolean
   /** Smooth append-only streaming updates before parsing and rendering them. */
-  smoothing?: boolean
+  smoothing?: false | StreamSmoothingPreset
   animation?: AnimationType
   animationSplit?: AnimationSplit
   animationDuration?: number | string

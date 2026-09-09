@@ -17,5 +17,6 @@ export type {
   LocaleConfig,
   MaybeArray,
   MaybePromise,
+  StreamSmoothingPreset,
   SupportedLanguage,
 } from '@stream-markdown/core'

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { StreamMarkdownProps } from 'vue-stream-markdown'
+import type { StreamMarkdownProps, StreamSmoothingPreset } from 'vue-stream-markdown'
 import type { Action } from '../types'
 import { useClipboard } from '@vueuse/core'
 import * as LZString from 'lz-string'
@@ -42,7 +42,7 @@ const { copy, copied } = useClipboard({
 
 const staticMode = defineModel<boolean>('staticMode', { required: false, default: false })
 const autoScroll = defineModel<boolean>('autoScroll', { required: false, default: false })
-const smoothing = defineModel<boolean>('smoothing', { required: false, default: true })
+const smoothing = defineModel<false | StreamSmoothingPreset>('smoothing', { required: false, default: 'balanced' })
 
 const typedEnable = defineModel<boolean>('typedEnable', { required: false, default: false })
 const typingIndex = defineModel<number>('typingIndex', { required: false, default: 0 })

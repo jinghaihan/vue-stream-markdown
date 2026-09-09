@@ -48,7 +48,7 @@ const content = ref('# Hello World\n\nThis is **streaming** Markdown.')
 
 Use `mode="static"` after streaming finishes when the source should be rendered exactly as supplied. Static mode skips Markmend completion.
 
-Append-only updates are smoothed by default. Set `smoothing` to `false` when every source update should be parsed without buffering.
+Append-only updates use the `balanced` smoothing preset by default. Set `smoothing` to `false` when every source update should be parsed without buffering, or choose the `realtime` or `silky` preset to adjust pacing.
 
 ## Enable rich renderers
 

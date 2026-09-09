@@ -105,6 +105,7 @@ export interface UseStreamSmoothingOptions {
   content: MaybeRefOrGetter<string>;
   enabled: MaybeRefOrGetter<boolean>;
   mode: MaybeRefOrGetter<StreamMarkdownMode>;
+  preset?: MaybeRefOrGetter<StreamSmoothingPreset$1>;
 }
 export interface UseStreamSmoothingReturn {
   acknowledge: () => void;
@@ -730,6 +731,7 @@ export { PreviewSegmentedPlacement }
 export { SelectOption }
 export { SHADCN_SCHEMAS }
 export { StreamMarkdownHooks }
+export { StreamSmoothingPreset }
 export { SUPPORT_LANGUAGES }
 export { SupportedLanguage }
 export { UIAlertProps }

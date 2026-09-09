@@ -167,6 +167,7 @@ export interface CreateAnimationTimelineOptions {
   now?: () => number;
 }
 export interface CreateStreamSmootherOptions {
+  preset?: StreamSmoothingPreset;
   now?: () => number;
 }
 export interface DownloadControlOptions {
@@ -421,7 +422,7 @@ export interface StreamMarkdownViewProps<TMarkdownComponents = unknown, TIcons =
   uiComponents?: Partial<TUIComponents>;
   locale?: string | LocaleConfig;
   enableAnimate?: boolean;
-  smoothing?: boolean;
+  smoothing?: false | StreamSmoothingPreset;
   animation?: AnimationType;
   animationSplit?: AnimationSplit;
   animationDuration?: number | string;
@@ -723,6 +724,7 @@ export type SharedCdnModule = CdnModule;
 export type SharedCdnOptions = CdnOptions;
 export type StreamMarkdownMode = 'static' | 'streaming';
 export type StreamMarkdownProps<TMarkdownComponents = unknown, TIcons = unknown, TUIComponents = unknown, TCaret extends string = string, TControls = unknown, TPreviewers = unknown, THardenOptions = unknown, TCodeOptions = unknown, TImageOptions = unknown, TLinkOptions = unknown, TUIOptions = unknown, TExtensions = unknown> = StreamMarkdownContext<TControls, TPreviewers, THardenOptions, TCodeOptions, TImageOptions, TLinkOptions, TUIOptions, TExtensions> & StreamMarkdownViewProps<TMarkdownComponents, TIcons, TUIComponents, TCaret> & StreamMarkdownHooks;
+export type StreamSmoothingPreset = 'balanced' | 'realtime' | 'silky';
 export type StreamSmoothingUpdate = 'immediate' | 'pending' | 'unchanged';
 export type SupportedLanguage = 'en-US' | 'zh-CN';
 export type TableAlign = 'left' | 'center' | 'right';

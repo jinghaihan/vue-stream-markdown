@@ -1,4 +1,4 @@
-import type { StreamMarkdownMode } from '@stream-markdown/core'
+import type { StreamMarkdownMode, StreamSmoothingPreset } from '@stream-markdown/core'
 import type { MaybeRefOrGetter, ShallowRef } from 'vue'
 import { createStreamSmoother } from '@stream-markdown/core'
 import { onBeforeUnmount, onMounted, shallowRef, toValue, watch } from 'vue'
@@ -13,6 +13,7 @@ export interface UseStreamSmoothingOptions {
   content: MaybeRefOrGetter<string>
   enabled: MaybeRefOrGetter<boolean>
   mode: MaybeRefOrGetter<StreamMarkdownMode>
+  preset?: MaybeRefOrGetter<StreamSmoothingPreset>
 }
 
 export interface UseStreamSmoothingReturn {
@@ -34,7 +35,7 @@ export function useStreamSmoothing(
 ): UseStreamSmoothingReturn {
   const initialContent = toValue(options.content)
   const initialMode = toValue(options.mode)
-  const smoother = createStreamSmoother(initialContent)
+  let smoother = createStreamSmoother(initialContent, { preset: toValue(options.preset) ?? 'balanced' })
   const frame = shallowRef<StreamContentFrame>({
     content: initialContent,
     mode: initialMode,
@@ -122,9 +123,11 @@ export function useStreamSmoothing(
       toValue(options.content),
       toValue(options.mode),
       toValue(options.enabled),
+      toValue(options.preset) ?? 'balanced',
     ] as const,
-    ([content, mode, enabled], previous) => {
+    ([content, mode, enabled, preset], previous) => {
       const modeChanged = previous !== undefined && mode !== previous[1]
+      const presetChanged = previous !== undefined && preset !== previous[3]
 
       if (!enabled) {
         finishMode = undefined
@@ -150,6 +153,13 @@ export function useStreamSmoothing(
       if (modeChanged) {
         finishMode = undefined
         smoother.reset(content)
+        enqueueImmediate(content, mode)
+        return
+      }
+
+      if (presetChanged) {
+        finishMode = undefined
+        smoother = createStreamSmoother(content, { preset })
         enqueueImmediate(content, mode)
         return
       }

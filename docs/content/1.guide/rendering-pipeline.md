@@ -20,7 +20,7 @@ flowchart TD
 
 ## 1. Smooth streaming updates
 
-Append-only updates are buffered briefly and exposed as steadily growing prefixes. Each prefix waits for the previous parse to finish, preventing a fast input stream from creating a long parsing queue. Set `smoothing` to `false` to expose every update directly.
+Append-only updates are buffered briefly and exposed as steadily growing prefixes. Each prefix waits for the previous parse to finish, preventing a fast input stream from creating a long parsing queue. Set `smoothing` to `false` to expose every update directly, or choose a smoothing preset for a different pacing profile.
 
 Content rendered in static mode is exposed immediately. When a live stream switches to static mode with buffered content still pending, the buffer drains first and then performs the final exact parse, avoiding a visible whole-document refresh.
 

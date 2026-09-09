@@ -1,7 +1,7 @@
 import type loader from '@monaco-editor/loader'
 import type { BuiltinTheme } from 'shiki'
 import type { Component } from 'vue'
-import type { StreamMarkdownProps } from 'vue-stream-markdown'
+import type { StreamMarkdownProps, StreamSmoothingPreset } from 'vue-stream-markdown'
 
 export type Monaco = Awaited<ReturnType<typeof loader.init>>
 export type Editor = Awaited<ReturnType<Monaco['editor']['create']>>
@@ -10,7 +10,7 @@ export interface UserConfig {
   locale: string
   staticMode: boolean
   autoScroll: boolean
-  smoothing: boolean
+  smoothing: false | StreamSmoothingPreset
   typedStepMin: number
   typedStepMax: number
   typedDelay: number

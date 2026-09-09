@@ -7,7 +7,7 @@ const DEFAULT_USER_CONFIG: UserConfig = {
   locale: 'en-US',
   staticMode: false,
   autoScroll: false,
-  smoothing: true,
+  smoothing: 'balanced',
   typedStepMin: 1,
   typedStepMax: 3,
   typedDelay: 16,

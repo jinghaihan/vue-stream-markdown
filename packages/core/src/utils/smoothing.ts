@@ -1,4 +1,9 @@
+import type { StreamSmoothingPreset } from '../types/stream'
+
+export type { StreamSmoothingPreset } from '../types/stream'
+
 export interface CreateStreamSmootherOptions {
+  preset?: StreamSmoothingPreset
   now?: () => number
 }
 
@@ -18,6 +23,7 @@ interface CurrentCpsOptions {
   backlog: number
   baseCps: number
   chunkSizeEma: number
+  config: StreamSmoothingConfig
   inputActive: boolean
   settling: boolean
   targetLag: number
@@ -33,20 +39,73 @@ interface RevealUnitsOptions {
   targetLag: number
 }
 
-const ACTIVE_INPUT_WINDOW_MS = 220
-const DEFAULT_CPS = 38
-const EMA_ALPHA = 0.2
-const FLUSH_CPS = 120
-const LARGE_APPEND_UNITS = 120
-const MAX_ACTIVE_CPS = 132
-const MAX_CPS = 72
-const MAX_FLUSH_CPS = 280
-const MIN_COMMIT_INTERVAL_MS = 48
-const MIN_CPS = 18
-const SETTLE_AFTER_MS = 360
-const SETTLE_DRAIN_MAX_MS = 520
-const SETTLE_DRAIN_MIN_MS = 180
-const TARGET_BUFFER_MS = 120
+interface StreamSmoothingConfig {
+  activeInputWindowMs: number
+  defaultCps: number
+  emaAlpha: number
+  flushCps: number
+  largeAppendUnits: number
+  maxActiveCps: number
+  maxCps: number
+  maxFlushCps: number
+  minCommitIntervalMs: number
+  minCps: number
+  settleAfterMs: number
+  settleDrainMaxMs: number
+  settleDrainMinMs: number
+  targetBufferMs: number
+}
+
+const PRESET_CONFIG: Record<StreamSmoothingPreset, StreamSmoothingConfig> = {
+  balanced: {
+    activeInputWindowMs: 220,
+    defaultCps: 38,
+    emaAlpha: 0.2,
+    flushCps: 120,
+    largeAppendUnits: 120,
+    maxActiveCps: 132,
+    maxCps: 72,
+    maxFlushCps: 280,
+    minCommitIntervalMs: 48,
+    minCps: 18,
+    settleAfterMs: 360,
+    settleDrainMaxMs: 520,
+    settleDrainMinMs: 180,
+    targetBufferMs: 120,
+  },
+  realtime: {
+    activeInputWindowMs: 140,
+    defaultCps: 50,
+    emaAlpha: 0.3,
+    flushCps: 170,
+    largeAppendUnits: 180,
+    maxActiveCps: 180,
+    maxCps: 96,
+    maxFlushCps: 360,
+    minCommitIntervalMs: 32,
+    minCps: 24,
+    settleAfterMs: 260,
+    settleDrainMaxMs: 360,
+    settleDrainMinMs: 140,
+    targetBufferMs: 40,
+  },
+  silky: {
+    activeInputWindowMs: 320,
+    defaultCps: 28,
+    emaAlpha: 0.14,
+    flushCps: 96,
+    largeAppendUnits: 100,
+    maxActiveCps: 102,
+    maxCps: 56,
+    maxFlushCps: 220,
+    minCommitIntervalMs: 56,
+    minCps: 14,
+    settleAfterMs: 460,
+    settleDrainMaxMs: 680,
+    settleDrainMinMs: 240,
+    targetBufferMs: 170,
+  },
+}
 
 /**
  * Creates a framework-independent display buffer for append-only streams.
@@ -57,14 +116,15 @@ export function createStreamSmoother(
   options: CreateStreamSmootherOptions = {},
 ): StreamSmoother {
   const now = options.now ?? defaultNow
+  const config = PRESET_CONFIG[options.preset ?? 'balanced']
   let targetContent = initialContent
   let targetUnits = countUnits(initialContent)
   let displayedContent = initialContent
   let displayedUnits = targetUnits
   let displayedOffset = initialContent.length
-  let emaCps = DEFAULT_CPS
+  let emaCps = config.defaultCps
   let chunkSizeEma = 1
-  let arrivalCpsEma = DEFAULT_CPS
+  let arrivalCpsEma = config.defaultCps
   let lastInputAt = now()
   let lastInputUnits = targetUnits
   let lastRevealAt = lastInputAt
@@ -76,9 +136,9 @@ export function createStreamSmoother(
     displayedContent = content
     displayedUnits = targetUnits
     displayedOffset = content.length
-    emaCps = DEFAULT_CPS
+    emaCps = config.defaultCps
     chunkSizeEma = 1
-    arrivalCpsEma = DEFAULT_CPS
+    arrivalCpsEma = config.defaultCps
     lastInputAt = timestamp
     lastInputUnits = targetUnits
     lastRevealAt = timestamp
@@ -96,7 +156,7 @@ export function createStreamSmoother(
 
     const appended = content.slice(targetContent.length)
     const appendedUnits = countUnits(appended)
-    if (appendedUnits > LARGE_APPEND_UNITS) {
+    if (appendedUnits > config.largeAppendUnits) {
       reset(content)
       return 'immediate'
     }
@@ -109,11 +169,11 @@ export function createStreamSmoother(
     const deltaMs = Math.max(1, timestamp - lastInputAt)
     if (deltaUnits > 0) {
       const instantCps = deltaUnits * 1000 / deltaMs
-      const normalizedCps = clamp(instantCps, MIN_CPS, MAX_FLUSH_CPS * 2)
+      const normalizedCps = clamp(instantCps, config.minCps, config.maxFlushCps * 2)
       const chunkAlpha = 0.35
       chunkSizeEma = chunkSizeEma * (1 - chunkAlpha) + appendedUnits * chunkAlpha
       arrivalCpsEma = arrivalCpsEma * (1 - chunkAlpha) + normalizedCps * chunkAlpha
-      emaCps = emaCps * (1 - EMA_ALPHA) + clamp(instantCps, MIN_CPS, MAX_ACTIVE_CPS) * EMA_ALPHA
+      emaCps = emaCps * (1 - config.emaAlpha) + clamp(instantCps, config.minCps, config.maxActiveCps) * config.emaAlpha
     }
 
     lastInputAt = timestamp
@@ -128,16 +188,16 @@ export function createStreamSmoother(
 
     const timestamp = now()
     const elapsedMs = timestamp - lastRevealAt
-    if (elapsedMs < MIN_COMMIT_INTERVAL_MS)
+    if (elapsedMs < config.minCommitIntervalMs)
       return undefined
 
     lastRevealAt = timestamp
     const elapsedSeconds = Math.max(0.001, Math.min(elapsedMs / 1000, 0.12))
     const idleMs = timestamp - lastInputAt
-    const inputActive = idleMs <= ACTIVE_INPUT_WINDOW_MS
-    const settling = !inputActive && idleMs >= SETTLE_AFTER_MS
-    const baseCps = clamp(emaCps, MIN_CPS, MAX_CPS)
-    const baseLag = Math.max(1, Math.round(baseCps * TARGET_BUFFER_MS / 1000))
+    const inputActive = idleMs <= config.activeInputWindowMs
+    const settling = !inputActive && idleMs >= config.settleAfterMs
+    const baseCps = clamp(emaCps, config.minCps, config.maxCps)
+    const baseLag = Math.max(1, Math.round(baseCps * config.targetBufferMs / 1000))
     const targetLag = inputActive
       ? Math.round(clamp(baseLag + chunkSizeEma * 0.35, baseLag, Math.max(baseLag + 2, baseLag * 3)))
       : 0
@@ -147,6 +207,7 @@ export function createStreamSmoother(
       backlog,
       baseCps,
       chunkSizeEma,
+      config,
       inputActive,
       settling,
       targetLag,
@@ -178,7 +239,7 @@ export function createStreamSmoother(
 
   return {
     getContent: () => displayedContent,
-    getNextDelay: () => Math.max(0, MIN_COMMIT_INTERVAL_MS - (now() - lastRevealAt)),
+    getNextDelay: () => Math.max(0, config.minCommitIntervalMs - (now() - lastRevealAt)),
     hasPending: () => displayedUnits < targetUnits,
     reset,
     take,
@@ -225,22 +286,22 @@ function resolveCurrentCps(options: CurrentCpsOptions): number {
       4.5,
     )
     const activeCap = clamp(
-      MAX_ACTIVE_CPS + options.chunkSizeEma * 6,
-      MAX_ACTIVE_CPS,
-      MAX_FLUSH_CPS,
+      options.config.maxActiveCps + options.chunkSizeEma * 6,
+      options.config.maxActiveCps,
+      options.config.maxFlushCps,
     )
-    return clamp(options.baseCps * pressure, MIN_CPS, activeCap)
+    return clamp(options.baseCps * pressure, options.config.minCps, activeCap)
   }
 
   if (options.settling) {
-    const drainMs = clamp(options.backlog * 8, SETTLE_DRAIN_MIN_MS, SETTLE_DRAIN_MAX_MS)
-    return clamp(options.backlog * 1000 / drainMs, FLUSH_CPS, MAX_FLUSH_CPS)
+    const drainMs = clamp(options.backlog * 8, options.config.settleDrainMinMs, options.config.settleDrainMaxMs)
+    return clamp(options.backlog * 1000 / drainMs, options.config.flushCps, options.config.maxFlushCps)
   }
 
   return clamp(
-    Math.max(FLUSH_CPS, options.baseCps * 1.8, options.arrivalCpsEma * 0.8),
-    FLUSH_CPS,
-    MAX_FLUSH_CPS,
+    Math.max(options.config.flushCps, options.baseCps * 1.8, options.arrivalCpsEma * 0.8),
+    options.config.flushCps,
+    options.config.maxFlushCps,
   )
 }
 

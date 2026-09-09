@@ -68,4 +68,21 @@ describe('stream smoothing', () => {
     expect(smoother.hasPending()).toBe(false)
     expect(smoother.getNextDelay()).toBe(48)
   })
+
+  it.each([
+    ['realtime', 32],
+    ['balanced', 48],
+    ['silky', 56],
+  ] as const)('uses the %s preset commit interval', (preset, interval) => {
+    let now = 0
+    const smoother = createStreamSmoother('', { now: () => now, preset })
+
+    now = 1
+    smoother.update('preset content')
+    now = interval - 1
+    expect(smoother.take()).toBeUndefined()
+
+    now = interval
+    expect(smoother.take()).toBeTruthy()
+  })
 })

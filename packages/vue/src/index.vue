@@ -45,7 +45,7 @@ const props = withDefaults(defineProps<StreamMarkdownProps>(), {
   controls: true,
   previewers: true,
   enableAnimate: undefined,
-  smoothing: true,
+  smoothing: 'balanced',
   animation: DEFAULT_ANIMATION,
   animationSplit: DEFAULT_ANIMATION_SPLIT,
   animationStagger: DEFAULT_ANIMATION_STAGGER,
@@ -141,8 +141,9 @@ const parser = createMarkmendParser({
 
 const { acknowledge, frame } = useStreamSmoothing({
   content,
-  enabled: smoothing,
+  enabled: computed(() => smoothing.value !== false),
   mode: requestedMode,
+  preset: computed(() => smoothing.value === false ? 'balanced' : smoothing.value),
 })
 const mode = computed(() => frame.value.mode)
 

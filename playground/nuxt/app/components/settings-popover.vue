@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SelectOption, StreamMarkdownProps } from 'vue-stream-markdown'
+import type { SelectOption, StreamMarkdownProps, StreamSmoothingPreset } from 'vue-stream-markdown'
 import { THEMES } from 'beautiful-mermaid'
 import { bundledThemesInfo } from 'shiki'
 import { ANIMATION_SPLITS, ANIMATION_TYPES, CARETS } from 'vue-stream-markdown'
@@ -11,7 +11,14 @@ const props = withDefaults(defineProps<{
 
 const autoScroll = defineModel<boolean>('autoScroll', { required: false, default: false })
 const staticMode = defineModel<boolean>('staticMode', { required: false, default: false })
-const smoothing = defineModel<boolean>('smoothing', { required: false, default: true })
+const smoothing = defineModel<false | StreamSmoothingPreset>('smoothing', { required: false, default: 'balanced' })
+
+const smoothingValue = computed({
+  get: () => smoothing.value === false ? 'false' : smoothing.value,
+  set: (value: string) => {
+    smoothing.value = value === 'false' ? false : value as StreamSmoothingPreset
+  },
+})
 
 const typingIndex = defineModel<number>('typingIndex', { required: false, default: 0 })
 const typedStepMin = defineModel<number>('typedStepMin', { required: false, default: 1 })
@@ -142,6 +149,13 @@ const ANIMATION_SPLIT_OPTIONS: SelectOption[] = ANIMATION_SPLITS.map(value => ({
   value,
 }))
 
+const SMOOTHING_OPTIONS: SelectOption[] = [
+  { label: 'Off', value: 'false' },
+  { label: 'Balanced', value: 'balanced' },
+  { label: 'Realtime', value: 'realtime' },
+  { label: 'Silky', value: 'silky' },
+]
+
 function onTypingIndexChange() {
   props.toStep(typingIndex.value)
 }
@@ -179,7 +193,11 @@ watch(() => staticMode.value, () => {
 
         <div :class="BLOCK_CLASSES">
           <Label :class="LABEL_CLASSES">Smooth Streaming</Label>
-          <Switch v-model:value="smoothing" />
+          <Select
+            v-model:value="smoothingValue"
+            :class="CONTROL_CLASSES"
+            :options="SMOOTHING_OPTIONS"
+          />
         </div>
 
         <div :class="BLOCK_CLASSES">
