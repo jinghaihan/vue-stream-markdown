@@ -46,7 +46,7 @@ const autoScroll = defineModel<boolean>('autoScroll', { required: false, default
 const typedEnable = defineModel<boolean>('typedEnable', { required: false, default: false })
 const typingIndex = defineModel<number>('typingIndex', { required: false, default: 0 })
 const typedStepMin = defineModel<number>('typedStepMin', { required: false, default: 1 })
-const typedStepMax = defineModel<number>('typedStepMax', { required: false, default: 8 })
+const typedStepMax = defineModel<number>('typedStepMax', { required: false, default: 3 })
 const typedDelay = defineModel<number>('typedDelay', { required: false, default: 16 })
 
 const showInputEditor = defineModel<boolean>('showInputEditor', { required: false, default: false })

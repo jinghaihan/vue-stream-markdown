@@ -14,7 +14,7 @@ const staticMode = defineModel<boolean>('staticMode', { required: false, default
 
 const typingIndex = defineModel<number>('typingIndex', { required: false, default: 0 })
 const typedStepMin = defineModel<number>('typedStepMin', { required: false, default: 1 })
-const typedStepMax = defineModel<number>('typedStepMax', { required: false, default: 8 })
+const typedStepMax = defineModel<number>('typedStepMax', { required: false, default: 3 })
 const typedDelay = defineModel<number>('typedDelay', { required: false, default: 16 })
 
 const shikiLightTheme = defineModel<string>('shikiLightTheme', { required: false, default: 'github-light' })
@@ -27,7 +27,7 @@ const mermaidBeautifulLightTheme = defineModel<string>('mermaidBeautifulLightThe
 const mermaidBeautifulDarkTheme = defineModel<string>('mermaidBeautifulDarkTheme', { required: false, default: 'zinc-dark' })
 
 const caret = defineModel<StreamMarkdownProps['caret']>('caret', { required: false, default: 'block' })
-const animation = defineModel<NonNullable<StreamMarkdownProps['animation']>>('animation', { required: false, default: '' })
+const animation = defineModel<NonNullable<StreamMarkdownProps['animation']>>('animation', { required: false, default: 'fade-in' })
 const animationSplit = defineModel<NonNullable<StreamMarkdownProps['animationSplit']>>('animationSplit', { required: false, default: 'auto' })
 const animationDuration = defineModel<number>('animationDuration', { required: false, default: 500 })
 const animationStagger = defineModel<number>('animationStagger', { required: false, default: 40 })
