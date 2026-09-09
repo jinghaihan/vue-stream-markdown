@@ -13,6 +13,7 @@ dist
 dist-ssr
 dev-dist
 *.local
+/packages/**/README.md
 
 # Editor directories and files
 .idea
