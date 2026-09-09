@@ -348,7 +348,7 @@ const imageOptions: ImageOptions = {
 - **Type:** `LinkOptions | undefined`
 - **Default:** `undefined` (favicons and link safety enabled by default)
 
-External links display their favicon by default. A fixed loading slot prevents the link text from moving, and failed favicon requests fall back to the built-in Globe icon.
+External HTTP(S) links display their favicon by default. A fixed loading slot prevents the link text from moving, and failed favicon requests fall back to the built-in Globe icon. Email links use the built-in Mail icon because they do not have a website favicon.
 
 ```typescript
 interface LinkOptions {

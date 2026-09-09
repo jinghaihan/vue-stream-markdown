@@ -31,6 +31,7 @@ const { transformedUrl, isHardenUrl } = useSanitizers({
 })
 const Error = computed(() => hardenOptions.value?.errorComponent ?? UI.value.ErrorComponent)
 const showFavicon = computed(() => !internal.value && !footnoteBackref.value && !isHardenUrl.value)
+const faviconFallbackIcon = computed(() => /^mailto:/i.test(transformedUrl.value ?? '') ? 'mail' : 'globe')
 const {
   failed: faviconFailed,
   handleError: handleFaviconError,
@@ -137,7 +138,7 @@ function handleFootnoteBackref() {
           :is="UI.Icon"
           v-if="faviconFailed"
           data-stream-markdown="link-favicon-fallback"
-          icon="globe"
+          :icon="faviconFallbackIcon"
           :width="14"
           :height="14"
         />

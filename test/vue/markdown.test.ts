@@ -443,6 +443,27 @@ describe('stream markdown', () => {
     wrapper.unmount()
   })
 
+  it('uses a mail icon for email links without a website favicon', async () => {
+    const MailIcon = defineComponent({
+      setup(_, { attrs }) {
+        return () => h('svg', { ...attrs, 'data-icon': 'mail' })
+      },
+    })
+    const wrapper = mount(Markdown, {
+      props: {
+        content: '[Email](mailto:hello@example.com)',
+        icons: { mail: MailIcon },
+        mode: 'static',
+      },
+    })
+
+    await vi.dynamicImportSettled()
+    await flushPromises()
+
+    expect(wrapper.get('[data-stream-markdown="link-favicon-fallback"] [data-icon="mail"]')).toBeTruthy()
+    wrapper.unmount()
+  })
+
   it('replaces the link caret with a spinner while waiting for its destination', async () => {
     const wrapper = mount(Markdown, {
       props: {
