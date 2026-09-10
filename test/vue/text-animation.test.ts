@@ -9,10 +9,9 @@ vi.mock('../../packages/vue/src/utils', async () => ({
 }))
 
 describe('text animation scheduling', () => {
-  it('applies stagger delays through the public Markdown prop', async () => {
+  it('animates new text parts without a configurable stagger', async () => {
     const wrapper = mount(Markdown, {
       props: {
-        animationStagger: 25,
         content: 'Hello world 你好',
         mode: 'streaming',
       },
@@ -24,10 +23,10 @@ describe('text animation scheduling', () => {
     const characters = wrapper.findAll('[data-stream-markdown="text-char"]')
     expect(words.map(node => node.text())).toEqual(['Hello', 'world'])
     expect(words[0]?.attributes('style')).toBeUndefined()
-    expect(words[1]?.attributes('style')).toContain('animation-delay: 25ms')
+    expect(words[1]?.attributes('style')).toContain('animation-delay:')
     expect(characters.map(node => node.text())).toEqual(['你', '好'])
-    expect(characters[0]?.attributes('style')).toContain('animation-delay: 50ms')
-    expect(characters[1]?.attributes('style')).toContain('animation-delay: 75ms')
+    expect(characters[0]?.attributes('style')).toContain('animation-delay:')
+    expect(characters[1]?.attributes('style')).toContain('animation-delay:')
 
     const world = words[1]!.element
     await (wrapper as unknown as {
@@ -37,7 +36,7 @@ describe('text animation scheduling', () => {
 
     const updatedWords = wrapper.findAll('[data-stream-markdown="text-word"]')
     expect(updatedWords[1]?.element).toBe(world)
-    expect(updatedWords[1]?.attributes('style')).toContain('animation-delay: 25ms')
+    expect(updatedWords[1]?.attributes('style')).toContain('animation-delay:')
 
     wrapper.unmount()
   })

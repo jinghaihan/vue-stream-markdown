@@ -27,7 +27,6 @@ export interface UserConfig {
   animation: NonNullable<StreamMarkdownProps['animation']>
   animationSplit: NonNullable<StreamMarkdownProps['animationSplit']>
   animationDuration: number
-  animationStagger: number
 }
 
 export interface IconButtonProps {

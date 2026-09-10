@@ -52,7 +52,6 @@ export interface StreamMarkdownViewProps<
   animation?: AnimationType
   animationSplit?: AnimationSplit
   animationDuration?: number | string
-  animationStagger?: number
   caret?: TCaret
   themeElement?: () => HTMLElement | undefined
 }

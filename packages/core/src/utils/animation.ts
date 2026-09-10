@@ -21,7 +21,6 @@ export interface CreateAnimationTimelineOptions {
 
 export interface TextAnimationPassOptions {
   enabled: boolean
-  stagger: number
 }
 
 export interface TextAnimationScheduler {
@@ -32,6 +31,9 @@ export interface TextAnimationScheduler {
 
 const MAX_BACKLOG_MS = 320
 const MIN_STAGGER_MS = 4
+const DEFAULT_TEXT_ANIMATION_PACE_MS = 18
+const MIN_TEXT_ANIMATION_PACE_MS = 2
+const MAX_TEXT_ANIMATION_GAP_MS = 160
 
 function defaultNow(): number {
   return typeof performance === 'undefined' ? Date.now() : performance.now()
@@ -94,29 +96,30 @@ export function createTextAnimationScheduler(
 ): TextAnimationScheduler {
   let passTime = 0
   let enabled = false
-  let stagger = 0
-  let committedPartKeys = new Set<string>()
-  let committedPartDelays = new Map<string, number>()
   let pendingPartKeys = new Set<string>()
-  let pendingPartDelays = new Map<string, number>()
+  let partBirthTimes = new Map<string, number>()
+  let passPace: number | undefined
+  let lastRevealAt: number | undefined
 
   return {
     beginPass(options) {
       enabled = options.enabled
-      stagger = options.stagger
       pendingPartKeys = new Set<string>()
-      pendingPartDelays = new Map<string, number>()
+      passPace = undefined
       if (enabled) {
         passTime = timeline.beginPass()
       }
       else {
         passTime = 0
+        partBirthTimes = new Map<string, number>()
+        lastRevealAt = undefined
         timeline.reset()
       }
     },
     commitPass() {
-      committedPartKeys = pendingPartKeys
-      committedPartDelays = pendingPartDelays
+      partBirthTimes = new Map(
+        [...partBirthTimes].filter(([key]) => pendingPartKeys.has(key)),
+      )
       if (enabled)
         timeline.commitPass()
     },
@@ -128,35 +131,39 @@ export function createTextAnimationScheduler(
         return new Map<string, number>()
 
       const newParts = parts.filter(part => (
-        !part.whitespace && !committedPartKeys.has(part.key)
+        !part.whitespace && !partBirthTimes.has(part.key)
       ))
-      const schedule = timeline.take(newParts.length, stagger, passTime)
+      if (newParts.length > 0) {
+        if (passPace === undefined) {
+          const gap = lastRevealAt === undefined
+            ? 16
+            : Math.min(
+                Math.max(passTime - lastRevealAt, 16),
+                MAX_TEXT_ANIMATION_GAP_MS,
+              )
+          passPace = Math.min(
+            DEFAULT_TEXT_ANIMATION_PACE_MS,
+            Math.max(MIN_TEXT_ANIMATION_PACE_MS, gap / newParts.length),
+          )
+          lastRevealAt = passTime
+        }
+
+        const schedule = timeline.take(newParts.length, passPace, passTime)
+        newParts.forEach((part, index) => {
+          partBirthTimes.set(
+            part.key,
+            passTime + schedule.baseDelay + index * schedule.step,
+          )
+        })
+      }
+
       const delays = new Map<string, number>()
-
       for (const part of parts) {
-        const committedDelay = committedPartDelays.get(part.key)
-        if (committedDelay !== undefined)
-          delays.set(part.key, committedDelay)
+        const birthAt = partBirthTimes.get(part.key)
+        if (birthAt === undefined)
+          continue
+        delays.set(part.key, Math.round(birthAt - passTime))
       }
-
-      newParts.forEach((part, index) => {
-        delays.set(part.key, Math.round(schedule.baseDelay + index * schedule.step))
-      })
-
-      let previousDelay: number | undefined
-      const firstDelay = newParts.length ? delays.get(newParts[0]!.key) : undefined
-      for (const part of parts) {
-        const delay = delays.get(part.key)
-        if (delay !== undefined) {
-          previousDelay = delay
-        }
-        else if (part.whitespace && !committedPartKeys.has(part.key)) {
-          delays.set(part.key, previousDelay ?? firstDelay ?? 0)
-        }
-      }
-
-      for (const [key, delay] of delays)
-        pendingPartDelays.set(key, delay)
 
       return delays
     },

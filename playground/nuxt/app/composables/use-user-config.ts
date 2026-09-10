@@ -24,7 +24,6 @@ const DEFAULT_USER_CONFIG: UserConfig = {
   animation: 'fade-in',
   animationSplit: 'auto',
   animationDuration: 180,
-  animationStagger: 40,
 }
 
 export function useUserConfig() {

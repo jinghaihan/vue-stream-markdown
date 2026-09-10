@@ -11,7 +11,6 @@ import {
   createRootStyle,
   DEFAULT_ANIMATION,
   DEFAULT_ANIMATION_SPLIT,
-  DEFAULT_ANIMATION_STAGGER,
   resolveEnableAnimate,
   resolveEnableCaret,
 } from '@stream-markdown/core'
@@ -48,7 +47,6 @@ const props = withDefaults(defineProps<StreamMarkdownProps>(), {
   smoothing: 'balanced',
   animation: DEFAULT_ANIMATION,
   animationSplit: DEFAULT_ANIMATION_SPLIT,
-  animationStagger: DEFAULT_ANIMATION_STAGGER,
   isDark: undefined,
 })
 
@@ -74,7 +72,6 @@ const {
   uiOptions,
   animation,
   animationSplit,
-  animationStagger,
   caret,
   smoothing,
 } = toRefs(props)
@@ -229,7 +226,6 @@ provideContext({
   enableAnimate,
   animation,
   animationSplit,
-  animationStagger,
   enableCaret,
   caret,
   documentNodes: computed(() => document.value.nodes),

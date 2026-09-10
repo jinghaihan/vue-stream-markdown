@@ -66,7 +66,6 @@ const caret = defineModel<StreamMarkdownProps['caret']>('caret', { required: fal
 const animation = defineModel<NonNullable<StreamMarkdownProps['animation']>>('animation', { required: false, default: '' })
 const animationSplit = defineModel<NonNullable<StreamMarkdownProps['animationSplit']>>('animationSplit', { required: false, default: 'auto' })
 const animationDuration = defineModel<number>('animationDuration', { required: false, default: 180 })
-const animationStagger = defineModel<number>('animationStagger', { required: false, default: 40 })
 
 function wrapAction(action: Omit<Action, 'key'>): Action | null {
   if (action.visible && !action.visible?.())
@@ -184,7 +183,6 @@ const actions = computed((): Action[] => {
       v-model:animation="animation"
       v-model:animation-split="animationSplit"
       v-model:animation-duration="animationDuration"
-      v-model:animation-stagger="animationStagger"
       v-model:typing-index="typingIndex"
       v-model:typed-step-min="typedStepMin"
       v-model:typed-step-max="typedStepMax"

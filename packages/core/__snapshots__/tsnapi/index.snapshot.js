@@ -119,7 +119,6 @@ export function resetImagePreviewTransformState() {}
 export function resetZoomState(_) {}
 export function resolveAnimation(_) {}
 export function resolveAnimationSplit(_) {}
-export function resolveAnimationStagger(_) {}
 export function resolveCaret(_) {}
 export function resolveCodeLanguage(_) {}
 export function resolveCodeMaxHeight(_) {}
@@ -191,7 +190,6 @@ export var CODE_META_NO_LINE_NUMBERS_PATTERN /* const */
 export var CODE_META_START_LINE_PATTERN /* const */
 export var DEFAULT_ANIMATION /* const */
 export var DEFAULT_ANIMATION_SPLIT /* const */
-export var DEFAULT_ANIMATION_STAGGER /* const */
 export var DEFAULT_HARDEN_OPTIONS /* const */
 export var DEFAULT_HTML_PREVIEW_HEIGHT /* const */
 export var DEFAULT_HTML_PREVIEW_SANDBOX /* const */

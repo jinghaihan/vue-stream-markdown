@@ -42,11 +42,11 @@ export*from"@markmend/parser";
 // #endregion
 
 // #region Other
-export { A as ANIMATION_SPLITS }
-export { j as ANIMATION_TYPES }
-export { M as CARETS }
-export { N as DEFAULT_ANIMATION }
-export { F as DEFAULT_ANIMATION_SPLIT }
+export { j as ANIMATION_SPLITS }
+export { M as ANIMATION_TYPES }
+export { N as CARETS }
+export { P as DEFAULT_ANIMATION }
+export { I as DEFAULT_ANIMATION_SPLIT }
 export { R as DEFAULT_HARDEN_OPTIONS }
 export { z as DEFAULT_LANGUAGE }
 export { V as SHADCN_SCHEMAS }

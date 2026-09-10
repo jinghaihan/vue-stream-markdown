@@ -47,7 +47,6 @@ export default defineComponent({
       renderedTextKeys = new Set<string>()
       textAnimationScheduler.beginPass({
         enabled: context.enableAnimate.value,
-        stagger: context.animationStagger.value,
       })
       const rendered = renderNodes(props.nodes, props.loading)
       for (const key of animatedTextKeys) {

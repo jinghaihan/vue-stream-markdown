@@ -23,24 +23,22 @@ description: Configure parsing, rendering, controls, security, and integrations.
 | `animation`         | `string`                                             | `'fade-in'`    | Select the enter animation                                                  |
 | `animationSplit`    | `'auto' \| 'word' \| 'char'`                         | `'auto'`       | Select text animation granularity                                           |
 | `animationDuration` | `number \| string`                                   | `180`          | Set animation duration                                                      |
-| `animationStagger`  | `number`                                             | `40`           | Delay adjacent streaming animation units                                    |
 | `caret`             | `'block' \| 'circle'`                                | `undefined`    | Show a streaming caret                                                      |
 
 Code, math, and diagram renderers are configured through `extensions`. Display, control, preview, security, theme, and locale options remain on `Markdown` or `MarkdownProvider`.
 
 ## Streaming animation timing
 
-`animationDuration` controls how long each entry animation lasts. `animationStagger` controls how many milliseconds apart adjacent words or characters begin:
+`animationDuration` controls how long each entry animation lasts. New text parts in each streaming update begin together, so smoothing controls the pacing between updates:
 
 ```vue
 <Markdown
   :animation-duration="180"
-  :animation-stagger="40"
   animation-split="auto"
 />
 ```
 
-The default `auto` split animates Latin text by word and CJK text by character. When a stream delivers content faster than the configured stagger, the renderer compresses pending delays to keep visible content within roughly 320ms of the source. Set `animationStagger` to `0` to make every new unit in a batch start together.
+The default `auto` split animates Latin text by word and CJK text by character. Smoothing controls how frequently new batches are exposed while animation duration controls how long each batch enters.
 
 Streaming smoothing adapts its output to the input rate and waits for each parse before exposing the next prefix. Use `smoothing: false` to parse every source update without buffering, or choose `'realtime'` and `'silky'` to trade off responsiveness and pacing.
 

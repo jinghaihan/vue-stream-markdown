@@ -426,7 +426,6 @@ export interface StreamMarkdownViewProps<TMarkdownComponents = unknown, TIcons =
   animation?: AnimationType;
   animationSplit?: AnimationSplit;
   animationDuration?: number | string;
-  animationStagger?: number;
   caret?: TCaret;
   themeElement?: () => HTMLElement | undefined;
 }
@@ -478,7 +477,6 @@ export interface TableOptions {
 }
 export interface TextAnimationPassOptions {
   enabled: boolean;
-  stagger: number;
 }
 export interface TextAnimationScheduler {
   beginPass: (_: TextAnimationPassOptions) => void;
@@ -985,7 +983,6 @@ export declare function resetImagePreviewTransformState(): ImagePreviewTransform
 export declare function resetZoomState(_?: ZoomOptions): ZoomState;
 export declare function resolveAnimation(_?: AnimationType): AnimationType;
 export declare function resolveAnimationSplit(_?: AnimationSplit): AnimationSplit;
-export declare function resolveAnimationStagger(_?: number): number;
 export declare function resolveCaret(_?: string): string | undefined;
 export declare function resolveCodeLanguage(_?: string | null): string;
 export declare function resolveCodeMaxHeight<TComponent = unknown>(_: CodeMaxHeightOptions<TComponent>): string | undefined;
@@ -1078,7 +1075,6 @@ export declare const CODE_META_NO_LINE_NUMBERS_PATTERN: RegExp;
 export declare const CODE_META_START_LINE_PATTERN: RegExp;
 export declare const DEFAULT_ANIMATION: "fade-in";
 export declare const DEFAULT_ANIMATION_SPLIT: "auto";
-export declare const DEFAULT_ANIMATION_STAGGER: number;
 export declare const DEFAULT_HARDEN_OPTIONS: HardenOptions;
 export declare const DEFAULT_HTML_PREVIEW_HEIGHT: number;
 export declare const DEFAULT_HTML_PREVIEW_SANDBOX: string;

@@ -46,51 +46,51 @@ describe('animation timeline', () => {
 
   it('shares one sequence across Latin and CJK text nodes', () => {
     const scheduler = createScheduler(() => 1000)
-    scheduler.beginPass({ enabled: true, stagger: 40 })
+    scheduler.beginPass({ enabled: true })
 
     const latin = scheduler.schedule(createTextParts('Hello world', 'latin'))
     const cjk = scheduler.schedule(createTextParts('你好', 'cjk'))
 
     expect(latin.get('latin-0')).toBe(0)
-    expect(latin.get('latin-5')).toBe(0)
-    expect(latin.get('latin-6')).toBe(40)
-    expect(cjk.get('cjk-0')).toBe(80)
-    expect(cjk.get('cjk-1')).toBe(120)
+    expect(latin.get('latin-5')).toBeUndefined()
+    expect(latin.get('latin-6')).toBe(8)
+    expect(cjk.get('cjk-0')).toBe(16)
+    expect(cjk.get('cjk-1')).toBe(24)
   })
 
   it('keeps committed delays stable and schedules only newly inserted units', () => {
     let now = 1000
     const scheduler = createScheduler(() => now)
-    scheduler.beginPass({ enabled: true, stagger: 40 })
+    scheduler.beginPass({ enabled: true })
     scheduler.schedule(createTextParts('你好', 'node'))
     scheduler.commitPass()
 
     now = 1010
-    scheduler.beginPass({ enabled: true, stagger: 40 })
+    scheduler.beginPass({ enabled: true })
     const delays = scheduler.schedule(createTextParts('你好世界', 'node'))
 
-    expect(delays.get('node-0')).toBe(0)
-    expect(delays.get('node-1')).toBe(40)
-    expect(delays.get('node-2')).toBe(70)
-    expect(delays.get('node-3')).toBe(110)
+    expect(delays.get('node-0')).toBe(-10)
+    expect(delays.get('node-1')).toBe(-2)
+    expect(delays.get('node-2')).toBe(6)
+    expect(delays.get('node-3')).toBe(14)
   })
 
   it('can disable scheduling without disabling entry animations', () => {
     const scheduler = createScheduler(() => 1000)
-    scheduler.beginPass({ enabled: false, stagger: 40 })
+    scheduler.beginPass({ enabled: false })
     expect(scheduler.schedule(createTextParts('Hello world', 'node')).size).toBe(0)
 
-    scheduler.beginPass({ enabled: true, stagger: 0 })
+    scheduler.beginPass({ enabled: true })
     const delays = scheduler.schedule(createTextParts('Hello world', 'node'))
     expect(delays.get('node-0')).toBe(0)
-    expect(delays.get('node-6')).toBe(0)
+    expect(delays.get('node-6')).toBe(8)
   })
 
   it('creates an independent sequence for every renderer instance', () => {
     const first = createScheduler(() => 1000)
     const second = createScheduler(() => 1000)
-    first.beginPass({ enabled: true, stagger: 40 })
-    second.beginPass({ enabled: true, stagger: 40 })
+    first.beginPass({ enabled: true })
+    second.beginPass({ enabled: true })
 
     expect(first.schedule(createTextParts('First', 'node')).get('node-0')).toBe(0)
     expect(second.schedule(createTextParts('Second', 'node')).get('node-0')).toBe(0)
