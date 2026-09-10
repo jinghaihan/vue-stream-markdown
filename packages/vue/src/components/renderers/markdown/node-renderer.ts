@@ -3,7 +3,7 @@ import type { TextAnimationScheduler } from '@stream-markdown/core'
 import type { VNodeChild } from 'vue'
 import type { MarkdownComponents, StreamMarkdownResolvedContext } from '../../../types'
 import { createCommentVNode, defineAsyncComponent, h } from 'vue'
-import { BLOCK_STYLES, ELEMENT_STYLES } from './node-styles'
+import { BLOCK_STYLES, ELEMENT_STYLES, ORDERED_LIST_STYLES } from './node-styles'
 import {
   findLastRenderableIndex,
   resolveAttributes,
@@ -31,22 +31,84 @@ const TableNode = defineAsyncComponent(() => import('../table-node.vue'))
 export function createNodeRenderer(options: NodeRendererOptions) {
   const { context } = options
 
+  function renderListNode(
+    tag: string,
+    attrs: Record<string, unknown>,
+    className: unknown[],
+    children: Node[],
+    loading: boolean,
+    key: string,
+    hideCaret: boolean,
+    orderedListItemNumber: number | undefined,
+  ): VNodeChild {
+    if (tag === 'ol') {
+      const hasCustomListItem = Boolean(options.getComponents().li)
+      const orderedListClassName = hasCustomListItem
+        ? ['leading-6 pl-5 whitespace-normal list-decimal', attrs.class]
+        : className
+      return h(tag, {
+        ...attrs,
+        key,
+        'class': orderedListClassName,
+        'data-stream-markdown': resolveDataAttribute(tag),
+      }, renderNodes(
+        children,
+        loading,
+        key,
+        hideCaret,
+        hasCustomListItem ? undefined : resolveOrderedListStart(attrs),
+      ))
+    }
+
+    return h(tag, {
+      ...attrs,
+      key,
+      'class': [...className, ORDERED_LIST_STYLES.item],
+      'style': [attrs.style, { paddingInlineStart: 0 }],
+      'data-stream-markdown': resolveDataAttribute(tag),
+    }, [
+      h('span', {
+        'aria-hidden': 'true',
+        'class': ORDERED_LIST_STYLES.marker,
+        'data-stream-markdown': 'list-marker',
+      }, `${orderedListItemNumber}.`),
+      h('div', {
+        'class': ORDERED_LIST_STYLES.content,
+        'data-stream-markdown': 'list-item-content',
+      }, renderNodes(children, loading, key, hideCaret)),
+    ])
+  }
+
   function renderNodes(
     nodes: Node[],
     loading: boolean,
     parentKey = 'root',
     hideCaret = false,
+    orderedListStart?: number,
   ): VNodeChild[] {
     const lastIndex = findLastRenderableIndex(nodes)
-    return nodes.map((node, index) => renderNode(
-      node,
-      loading && index === lastIndex,
-      `${parentKey}-${index}`,
-      hideCaret,
-    ))
+    let nextOrderedListItemNumber = orderedListStart ?? 1
+    return nodes.map((node, index) => {
+      const orderedListItemNumber = orderedListStart !== undefined && isOrderedListItem(node)
+        ? nextOrderedListItemNumber++
+        : undefined
+      return renderNode(
+        node,
+        loading && index === lastIndex,
+        `${parentKey}-${index}`,
+        hideCaret,
+        orderedListItemNumber,
+      )
+    })
   }
 
-  function renderNode(node: Node, loading: boolean, path: string, hideCaret: boolean): VNodeChild {
+  function renderNode(
+    node: Node,
+    loading: boolean,
+    path: string,
+    hideCaret: boolean,
+    orderedListItemNumber?: number,
+  ): VNodeChild {
     if (typeof node === 'string')
       return renderTextNode(node, loading && !hideCaret, path, options)
 
@@ -90,6 +152,9 @@ export function createNodeRenderer(options: NodeRendererOptions) {
       ELEMENT_STYLES[tag],
       resolvedAttrs.class,
     ]
+
+    if (tag === 'ol' || orderedListItemNumber !== undefined)
+      return renderListNode(tag, resolvedAttrs, className, children, loading, key, hideCaret, orderedListItemNumber)
 
     if (tag === 'a') {
       const completion = options.getCompletionInfo()
@@ -150,4 +215,19 @@ export function createNodeRenderer(options: NodeRendererOptions) {
   }
 
   return renderNodes
+}
+
+function resolveOrderedListStart(attrs: Record<string, unknown>): number {
+  const start = attrs.start
+  if (typeof start === 'number' && Number.isInteger(start))
+    return start
+
+  if (typeof start === 'string' && /^-?\d+$/.test(start))
+    return Number(start)
+
+  return 1
+}
+
+function isOrderedListItem(node: Node): boolean {
+  return typeof node !== 'string' && node[0] === 'li'
 }
