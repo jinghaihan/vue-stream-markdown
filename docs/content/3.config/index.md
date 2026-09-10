@@ -22,7 +22,7 @@ description: Configure parsing, rendering, controls, security, and integrations.
 | `smoothing`         | `false \| 'balanced' \| 'realtime' \| 'silky'`       | `'balanced'`   | Smooth append-only updates before parsing                                   |
 | `animation`         | `string`                                             | `'fade-in'`    | Select the enter animation                                                  |
 | `animationSplit`    | `'auto' \| 'word' \| 'char'`                         | `'auto'`       | Select text animation granularity                                           |
-| `animationDuration` | `number \| string`                                   | `500`          | Set animation duration                                                      |
+| `animationDuration` | `number \| string`                                   | `180`          | Set animation duration                                                      |
 | `animationStagger`  | `number`                                             | `40`           | Delay adjacent streaming animation units                                    |
 | `caret`             | `'block' \| 'circle'`                                | `undefined`    | Show a streaming caret                                                      |
 
@@ -34,7 +34,7 @@ Code, math, and diagram renderers are configured through `extensions`. Display, 
 
 ```vue
 <Markdown
-  :animation-duration="500"
+  :animation-duration="180"
   :animation-stagger="40"
   animation-split="auto"
 />
