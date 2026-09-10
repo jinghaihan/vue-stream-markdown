@@ -463,10 +463,6 @@ export interface TableData {
 export interface TableOptions {
   maxHeight?: number | string;
 }
-export interface TextAnimationPartState {
-  readonly settled: boolean;
-  readonly startTime: number;
-}
 export interface TextAnimationPassOptions {
   enabled: boolean;
   stagger: number;
@@ -474,9 +470,6 @@ export interface TextAnimationPassOptions {
 export interface TextAnimationScheduler {
   beginPass: (_: TextAnimationPassOptions) => void;
   commitPass: () => void;
-  getCurrentTime: () => number;
-  getPartState: (_: string) => TextAnimationPartState | undefined;
-  markPartSettled: (_: string) => void;
   schedule: (_: TextPart[]) => ReadonlyMap<string, number>;
 }
 export interface TextPart {

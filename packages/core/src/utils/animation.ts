@@ -27,25 +27,7 @@ export interface TextAnimationPassOptions {
 export interface TextAnimationScheduler {
   beginPass: (options: TextAnimationPassOptions) => void
   commitPass: () => void
-  getCurrentTime: () => number
-  getPartState: (key: string) => TextAnimationPartState | undefined
-  markPartSettled: (key: string) => void
   schedule: (parts: TextPart[]) => ReadonlyMap<string, number>
-}
-
-export interface TextAnimationPartState {
-  readonly settled: boolean
-  readonly startTime: number
-}
-
-interface MutableTextAnimationPartState {
-  settled: boolean
-  startTime: number
-}
-
-interface TextAnimationEntry {
-  delay: number
-  state: MutableTextAnimationPartState
 }
 
 const MAX_BACKLOG_MS = 320
@@ -113,14 +95,17 @@ export function createTextAnimationScheduler(
   let passTime = 0
   let enabled = false
   let stagger = 0
-  let committedParts = new Map<string, TextAnimationEntry>()
-  let pendingParts = new Map<string, TextAnimationEntry>()
+  let committedPartKeys = new Set<string>()
+  let committedPartDelays = new Map<string, number>()
+  let pendingPartKeys = new Set<string>()
+  let pendingPartDelays = new Map<string, number>()
 
   return {
     beginPass(options) {
       enabled = options.enabled
       stagger = options.stagger
-      pendingParts = new Map<string, TextAnimationEntry>()
+      pendingPartKeys = new Set<string>()
+      pendingPartDelays = new Map<string, number>()
       if (enabled) {
         passTime = timeline.beginPass()
       }
@@ -130,79 +115,48 @@ export function createTextAnimationScheduler(
       }
     },
     commitPass() {
-      committedParts = pendingParts
+      committedPartKeys = pendingPartKeys
+      committedPartDelays = pendingPartDelays
       if (enabled)
         timeline.commitPass()
     },
-    getCurrentTime() {
-      return passTime
-    },
-    getPartState(key) {
-      return (pendingParts.get(key) ?? committedParts.get(key))?.state
-    },
-    markPartSettled(key) {
-      const committed = committedParts.get(key)
-      if (committed)
-        committed.state.settled = true
-
-      const pending = pendingParts.get(key)
-      if (pending)
-        pending.state.settled = true
-    },
     schedule(parts) {
+      for (const part of parts)
+        pendingPartKeys.add(part.key)
+
       if (!enabled)
         return new Map<string, number>()
 
-      for (const part of parts) {
-        const committed = committedParts.get(part.key)
-        if (committed)
-          pendingParts.set(part.key, { ...committed })
-      }
-
       const newParts = parts.filter(part => (
-        !part.whitespace && !pendingParts.has(part.key)
+        !part.whitespace && !committedPartKeys.has(part.key)
       ))
       const schedule = timeline.take(newParts.length, stagger, passTime)
+      const delays = new Map<string, number>()
+
+      for (const part of parts) {
+        const committedDelay = committedPartDelays.get(part.key)
+        if (committedDelay !== undefined)
+          delays.set(part.key, committedDelay)
+      }
 
       newParts.forEach((part, index) => {
-        const delay = Math.round(schedule.baseDelay + index * schedule.step)
-        pendingParts.set(part.key, {
-          delay,
-          state: {
-            settled: false,
-            startTime: passTime + delay,
-          },
-        })
+        delays.set(part.key, Math.round(schedule.baseDelay + index * schedule.step))
       })
 
-      let previousEntry: TextAnimationEntry | undefined
-      const firstEntry = parts
-        .map(part => pendingParts.get(part.key))
-        .find(entry => entry && !entry.state.settled)
-
+      let previousDelay: number | undefined
+      const firstDelay = newParts.length ? delays.get(newParts[0]!.key) : undefined
       for (const part of parts) {
-        const entry = pendingParts.get(part.key)
-        if (entry) {
-          previousEntry = entry
+        const delay = delays.get(part.key)
+        if (delay !== undefined) {
+          previousDelay = delay
         }
-        else if (part.whitespace) {
-          const adjacentEntry = previousEntry ?? firstEntry
-          pendingParts.set(part.key, {
-            delay: adjacentEntry?.delay ?? 0,
-            state: {
-              settled: true,
-              startTime: adjacentEntry?.state.startTime ?? passTime,
-            },
-          })
+        else if (part.whitespace && !committedPartKeys.has(part.key)) {
+          delays.set(part.key, previousDelay ?? firstDelay ?? 0)
         }
       }
 
-      const delays = new Map<string, number>()
-      for (const part of parts) {
-        const entry = pendingParts.get(part.key)
-        if (entry)
-          delays.set(part.key, entry.delay)
-      }
+      for (const [key, delay] of delays)
+        pendingPartDelays.set(key, delay)
 
       return delays
     },
