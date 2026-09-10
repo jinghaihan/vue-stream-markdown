@@ -151,6 +151,34 @@ describe('stream markdown', () => {
     wrapper.unmount()
   })
 
+  it('does not rerender a stable top-level block while the tail grows', async () => {
+    let renderCount = 0
+    const Callout = markRaw(defineComponent({
+      setup(_props, { slots }) {
+        return () => {
+          renderCount += 1
+          return h('aside', slots.default?.())
+        }
+      },
+    }))
+    const wrapper = mount(Markdown, {
+      props: {
+        components: { callout: Callout },
+        content: '::callout\nStable\n::\n\nTail',
+        mode: 'streaming',
+      },
+    })
+    const testWrapper = wrapper as unknown as MarkdownTestWrapper
+    await flushPromises()
+    expect(renderCount).toBe(1)
+
+    await testWrapper.setProps({ content: '::callout\nStable\n::\n\nTail grows' })
+    await flushPromises()
+
+    expect(renderCount).toBe(1)
+    wrapper.unmount()
+  })
+
   it.each([
     '| Name | Age |\n| --- | --- |',
     '| Name | Age |\n| --- | --- |\n| Alice | 30 |',

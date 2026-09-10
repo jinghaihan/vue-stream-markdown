@@ -22,13 +22,30 @@ export interface NodeRendererOptions {
   textAnimationScheduler: TextAnimationScheduler
 }
 
+export interface NodeRenderer {
+  renderNode: (
+    node: Node,
+    loading: boolean,
+    path: string,
+    hideCaret: boolean,
+    orderedListItemNumber?: number,
+  ) => VNodeChild
+  renderNodes: (
+    nodes: Node[],
+    loading: boolean,
+    parentKey?: string,
+    hideCaret?: boolean,
+    orderedListStart?: number,
+  ) => VNodeChild[]
+}
+
 const CodeBlock = defineAsyncComponent(() => import('../code-block.vue'))
 const ImageNode = defineAsyncComponent(() => import('../image-node.vue'))
 const LinkNode = defineAsyncComponent(() => import('../link-node.vue'))
 const MathNode = defineAsyncComponent(() => import('../math-node.vue'))
 const TableNode = defineAsyncComponent(() => import('../table-node.vue'))
 
-export function createNodeRenderer(options: NodeRendererOptions) {
+export function createNodeRenderer(options: NodeRendererOptions): NodeRenderer {
   const { context } = options
 
   function renderListNode(
@@ -214,7 +231,7 @@ export function createNodeRenderer(options: NodeRendererOptions) {
     }, renderNodes(children, loading, key, hideCaret))
   }
 
-  return renderNodes
+  return { renderNode, renderNodes }
 }
 
 function resolveOrderedListStart(attrs: Record<string, unknown>): number {
