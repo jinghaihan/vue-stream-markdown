@@ -6,7 +6,7 @@ export const BLOCK_STYLES: Record<string, string> = {
   h4: 'font-semibold mb-2 mt-6 text-lg',
   h5: 'font-semibold mb-2 mt-6 text-base',
   h6: 'font-semibold mb-2 mt-6 text-sm',
-  ol: 'leading-6 pl-5 whitespace-normal list-decimal',
+  ol: 'leading-6 whitespace-normal list-none stream-markdown-ordered-list',
   p: 'my-4 align-middle transition-[height] duration-[var(--default-transition-duration)] ease',
   ul: 'leading-6 pl-5 whitespace-normal list-disc',
 }

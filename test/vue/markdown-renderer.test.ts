@@ -73,6 +73,19 @@ describe('markdown renderer', () => {
     wrapper.unmount()
   })
 
+  it('renders ordered list markers without clipping multi-digit values', async () => {
+    const nodes = shallowRef<Node[]>([
+      ['ol', { start: '98' }, ['li', {}, 'Ninety-eight'], ['li', {}, 'Ninety-nine'], ['li', {}, 'One hundred']],
+    ])
+    const wrapper = mountNodes(nodes)
+
+    const markers = wrapper.findAll('[data-stream-markdown="list-marker"]')
+    expect(markers.map(marker => marker.text())).toEqual(['98.', '99.', '100.'])
+    expect(wrapper.get('ol').classes()).toContain('stream-markdown-ordered-list')
+    expect(wrapper.findAll('[data-stream-markdown="list-item-content"]')).toHaveLength(3)
+    wrapper.unmount()
+  })
+
   it('passes attributes, children, and the raw node to custom components', () => {
     let receivedNode: Node | undefined
     const Callout = defineComponent({
