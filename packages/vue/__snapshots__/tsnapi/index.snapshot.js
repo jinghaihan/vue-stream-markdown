@@ -42,10 +42,10 @@ export*from"@markmend/parser";
 // #endregion
 
 // #region Other
-export { M as ANIMATION_SPLITS }
-export { N as ANIMATION_TYPES }
-export { he as CARETS }
-export { ge as DEFAULT_ANIMATION }
+export { A as ANIMATION_SPLITS }
+export { j as ANIMATION_TYPES }
+export { M as CARETS }
+export { N as DEFAULT_ANIMATION }
 export { F as DEFAULT_ANIMATION_SPLIT }
 export { R as DEFAULT_HARDEN_OPTIONS }
 export { z as DEFAULT_LANGUAGE }
