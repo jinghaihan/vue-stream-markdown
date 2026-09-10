@@ -6,10 +6,16 @@ export const BLOCK_STYLES: Record<string, string> = {
   h4: 'font-semibold mb-2 mt-6 text-lg',
   h5: 'font-semibold mb-2 mt-6 text-base',
   h6: 'font-semibold mb-2 mt-6 text-sm',
-  ol: 'leading-6 whitespace-normal list-none stream-markdown-ordered-list',
+  ol: 'leading-6 whitespace-normal list-none',
   p: 'my-4 align-middle transition-[height] duration-[var(--default-transition-duration)] ease',
   ul: 'leading-6 pl-5 whitespace-normal list-disc',
 }
+
+export const ORDERED_LIST_STYLES = {
+  item: 'grid grid-cols-[minmax(1.25rem,max-content)_minmax(0,1fr)] gap-x-1',
+  marker: 'text-end select-none',
+  content: 'min-w-0',
+} as const
 
 export const ELEMENT_STYLES: Record<string, string> = {
   a: 'text-primary underline cursor-pointer [overflow-wrap:anywhere]',

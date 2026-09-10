@@ -81,7 +81,9 @@ describe('markdown renderer', () => {
 
     const markers = wrapper.findAll('[data-stream-markdown="list-marker"]')
     expect(markers.map(marker => marker.text())).toEqual(['98.', '99.', '100.'])
-    expect(wrapper.get('ol').classes()).toContain('stream-markdown-ordered-list')
+    expect(wrapper.get('ol').classes()).toContain('list-none')
+    expect(wrapper.get('li').classes()).toContain('grid')
+    expect(wrapper.get('li').classes()).toContain('gap-x-1')
     expect(wrapper.findAll('[data-stream-markdown="list-item-content"]')).toHaveLength(3)
     wrapper.unmount()
   })

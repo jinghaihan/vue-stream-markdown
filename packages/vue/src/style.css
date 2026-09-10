@@ -28,26 +28,6 @@
     margin-bottom: 0 !important;
   }
 
-  & .stream-markdown-ordered-list {
-    list-style: none;
-    padding-inline-start: 0;
-  }
-
-  & .stream-markdown-ordered-item {
-    display: grid;
-    grid-template-columns: minmax(1.25rem, max-content) minmax(0, 1fr);
-    column-gap: 0.25rem;
-  }
-
-  & .stream-markdown-list-marker {
-    text-align: end;
-    user-select: none;
-  }
-
-  & .stream-markdown-list-item-content {
-    min-width: 0;
-  }
-
   & ::-webkit-scrollbar {
     width: 6px;
     height: 6px;

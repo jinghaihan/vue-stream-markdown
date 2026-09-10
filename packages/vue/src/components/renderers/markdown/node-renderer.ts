@@ -3,7 +3,7 @@ import type { TextAnimationScheduler } from '@stream-markdown/core'
 import type { VNodeChild } from 'vue'
 import type { MarkdownComponents, StreamMarkdownResolvedContext } from '../../../types'
 import { createCommentVNode, defineAsyncComponent, h } from 'vue'
-import { BLOCK_STYLES, ELEMENT_STYLES } from './node-styles'
+import { BLOCK_STYLES, ELEMENT_STYLES, ORDERED_LIST_STYLES } from './node-styles'
 import {
   findLastRenderableIndex,
   resolveAttributes,
@@ -63,17 +63,17 @@ export function createNodeRenderer(options: NodeRendererOptions) {
     return h(tag, {
       ...attrs,
       key,
-      'class': [...className, 'stream-markdown-ordered-item'],
+      'class': [...className, ORDERED_LIST_STYLES.item],
       'style': [attrs.style, { paddingInlineStart: 0 }],
       'data-stream-markdown': resolveDataAttribute(tag),
     }, [
       h('span', {
         'aria-hidden': 'true',
-        'class': 'stream-markdown-list-marker',
+        'class': ORDERED_LIST_STYLES.marker,
         'data-stream-markdown': 'list-marker',
       }, `${orderedListItemNumber}.`),
       h('div', {
-        'class': 'stream-markdown-list-item-content',
+        'class': ORDERED_LIST_STYLES.content,
         'data-stream-markdown': 'list-item-content',
       }, renderNodes(children, loading, key, hideCaret)),
     ])
