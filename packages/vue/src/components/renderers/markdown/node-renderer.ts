@@ -13,11 +13,12 @@ import {
 import { renderTextNode } from './text-node'
 
 export interface NodeRendererOptions {
+  animatedTextKeys: Set<string>
   context: StreamMarkdownResolvedContext
   getCompletionInfo: () => CompletionInfo | undefined
   getComponents: () => MarkdownComponents
   getImageSources: () => string[]
-  refreshTextAnimation: () => void
+  markTextRendered: (key: string) => void
   textAnimationScheduler: TextAnimationScheduler
 }
 
@@ -35,7 +36,6 @@ export function createNodeRenderer(options: NodeRendererOptions) {
     loading: boolean,
     parentKey = 'root',
     hideCaret = false,
-    textOffsets: ReadonlyMap<string, number> = new Map<string, number>(),
   ): VNodeChild[] {
     const lastIndex = findLastRenderableIndex(nodes)
     return nodes.map((node, index) => renderNode(
@@ -43,19 +43,12 @@ export function createNodeRenderer(options: NodeRendererOptions) {
       loading && index === lastIndex,
       `${parentKey}-${index}`,
       hideCaret,
-      textOffsets,
     ))
   }
 
-  function renderNode(
-    node: Node,
-    loading: boolean,
-    path: string,
-    hideCaret: boolean,
-    textOffsets: ReadonlyMap<string, number>,
-  ): VNodeChild {
+  function renderNode(node: Node, loading: boolean, path: string, hideCaret: boolean): VNodeChild {
     if (typeof node === 'string')
-      return renderTextNode(node, loading && !hideCaret, path, textOffsets.get(path), options)
+      return renderTextNode(node, loading && !hideCaret, path, options)
 
     const [tag, attrs, ...children] = node
     if (tag === null)
@@ -69,7 +62,7 @@ export function createNodeRenderer(options: NodeRendererOptions) {
         key,
         node,
       }, {
-        default: () => renderNodes(children, loading, key, hideCaret, textOffsets),
+        default: () => renderNodes(children, loading, key, hideCaret),
       })
     }
 
@@ -116,7 +109,6 @@ export function createNodeRenderer(options: NodeRendererOptions) {
           loading,
           key,
           hideCaret || waitingForDestination,
-          textOffsets,
         ),
       })
     }
@@ -142,7 +134,7 @@ export function createNodeRenderer(options: NodeRendererOptions) {
           ...resolvedAttrs,
           'class': className,
           'data-stream-markdown': 'table',
-        }, renderNodes(children, loading, key, true, textOffsets)),
+        }, renderNodes(children, loading, key, true)),
       })
     }
 
@@ -154,7 +146,7 @@ export function createNodeRenderer(options: NodeRendererOptions) {
       'dir': tag === 'code'
         ? 'ltr'
         : resolvedAttrs.dir ?? resolveNodeDirection(tag, node, context.dir.value),
-    }, renderNodes(children, loading, key, hideCaret, textOffsets))
+    }, renderNodes(children, loading, key, hideCaret))
   }
 
   return renderNodes
