@@ -22,7 +22,7 @@ export interface UserConfig {
   mermaidDarkTheme: string
   mermaidBeautifulLightTheme: string
   mermaidBeautifulDarkTheme: string
-  caret: StreamMarkdownProps['caret']
+  caret: NonNullable<StreamMarkdownProps['caret']> | ''
   animation: NonNullable<StreamMarkdownProps['animation']>
   animationSplit: NonNullable<StreamMarkdownProps['animationSplit']>
   animationDuration: number
