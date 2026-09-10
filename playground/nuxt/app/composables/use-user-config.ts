@@ -22,7 +22,7 @@ const DEFAULT_USER_CONFIG: UserConfig = {
   caret: 'block',
   animation: 'fade-in',
   animationSplit: 'auto',
-  animationDuration: 500,
+  animationDuration: 180,
   animationStagger: 40,
 }
 

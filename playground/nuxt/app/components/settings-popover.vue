@@ -29,14 +29,14 @@ const mermaidBeautifulDarkTheme = defineModel<string>('mermaidBeautifulDarkTheme
 const caret = defineModel<StreamMarkdownProps['caret']>('caret', { required: false, default: 'block' })
 const animation = defineModel<NonNullable<StreamMarkdownProps['animation']>>('animation', { required: false, default: 'fade-in' })
 const animationSplit = defineModel<NonNullable<StreamMarkdownProps['animationSplit']>>('animationSplit', { required: false, default: 'auto' })
-const animationDuration = defineModel<number>('animationDuration', { required: false, default: 500 })
+const animationDuration = defineModel<number>('animationDuration', { required: false, default: 180 })
 const animationStagger = defineModel<number>('animationStagger', { required: false, default: 40 })
 
 const animationDurationInput = computed({
   get: () => animationDuration.value,
   set: (value: number | string) => {
     const nextValue = Number(value)
-    animationDuration.value = Number.isFinite(nextValue) ? nextValue : 500
+    animationDuration.value = Number.isFinite(nextValue) ? nextValue : 180
   },
 })
 
