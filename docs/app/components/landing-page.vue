@@ -8,8 +8,6 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { Markdown } from 'vue-stream-markdown'
 import liveDemo from '../content/landing-page.md?raw'
 
-const colorMode = useColorMode()
-const isDark = computed(() => colorMode.value === 'dark')
 const { copy, copied } = useClipboard({ legacy: true })
 
 const installCommand = 'npm install vue-stream-markdown'
@@ -170,7 +168,6 @@ async function replayStream() {
               locale="en-US"
               :content="liveContent"
               :extensions="extensions"
-              :is-dark="isDark"
             />
           </div>
         </div>

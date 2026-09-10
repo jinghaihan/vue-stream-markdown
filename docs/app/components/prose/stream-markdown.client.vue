@@ -41,8 +41,6 @@ const props = withDefaults(defineProps<{
   imageFallback: undefined,
 })
 
-const colorMode = useColorMode()
-const isDark = computed(() => colorMode.value === 'dark')
 const isMobile = useMediaQuery('(max-width: 1023px)')
 
 const isTyping = ref(false)
@@ -161,7 +159,6 @@ onBeforeUnmount(stopTyping)
       :mode="currentMode"
       :content="renderedContent"
       :caret="caret"
-      :is-dark="isDark"
       :extensions="extensions"
       :code-options="codeOptions"
       :controls="controls"
