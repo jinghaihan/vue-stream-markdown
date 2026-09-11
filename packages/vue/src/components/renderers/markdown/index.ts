@@ -112,6 +112,8 @@ export default defineComponent({
     })
 
     return () => {
+      if (!context.enableAnimate.value)
+        animatedTextKeys.clear()
       textAnimationScheduler.beginPass({
         enabled: context.enableAnimate.value,
         stagger: context.animationStagger.value,

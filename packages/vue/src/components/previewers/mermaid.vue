@@ -60,7 +60,9 @@ const error = computed(() => previewState.value.error)
 const loading = computed(() => model.value.loading)
 const showControl = computed(() => model.value.showControl)
 const controlPosition = computed(() => model.value.controlPosition)
-const height = computed(() => model.value.height)
+const height = computed(() => model.value.height === 'auto'
+  ? `${model.value.minHeight}px`
+  : model.value.height)
 
 const { shouldRender } = useDeferredRender({
   targetRef: containerRef,

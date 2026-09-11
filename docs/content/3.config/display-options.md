@@ -18,6 +18,7 @@ Configuration for code block display options, including language indicators and 
 
 ```typescript
 interface CodeOptions {
+  variant?: 'modern' | 'classic' | 'minimal'
   languageIcon?: boolean
   languageName?: boolean
   lineNumbers?: boolean
@@ -39,6 +40,19 @@ interface CodeOptionsLanguage extends Omit<CodeOptions, 'languageIcon'> {
 ```
 
 All options default to `true` (visible). Set any option to `false` to hide the corresponding element.
+
+### variant
+
+- **Type:** `'modern' | 'classic' | 'minimal' | undefined`
+- **Default:** `'modern'`
+
+Code block presentation. `modern` uses the nested card style, `classic` keeps the traditional header layout, and `minimal` reduces the header to the action icons (including a single preview/source toggle when preview is available).
+
+```ts
+const codeOptions: CodeOptions = {
+  variant: 'modern',
+}
+```
 
 ### languageIcon
 

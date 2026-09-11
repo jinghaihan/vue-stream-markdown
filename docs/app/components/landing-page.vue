@@ -10,7 +10,7 @@ import liveDemo from '../content/landing-page.md?raw'
 
 const { copy, copied } = useClipboard({ legacy: true })
 
-const installCommand = 'npm install vue-stream-markdown'
+const installCommand = 'pnpm add vue-stream-markdown'
 const typingDelay = 20
 const extensions = {
   beautifulMermaid: beautifulMermaid(),
@@ -497,7 +497,7 @@ async function replayStream() {
 }
 
 .landing-markdown {
-  --background: transparent;
+  --background: var(--ui-bg);
   --foreground: var(--landing-ink);
   min-width: 0;
 }

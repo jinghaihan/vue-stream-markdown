@@ -94,11 +94,13 @@ const copyContent = computed(() => {
 
 const codeOptions = computed((): CodeOptions => {
   const options: CodeOptions = {
+    variant: userConfig.value.codeBlockVariant,
     languageIcon: !isMobile.value,
     languageName: !isMobile.value,
   }
 
   return {
+    ...options,
     language: {
       mermaid: options,
       html: options,
@@ -283,6 +285,7 @@ onMounted(() => {
         v-model:animation-split="userConfig.animationSplit"
         v-model:animation-duration="userConfig.animationDuration"
         v-model:animation-stagger="userConfig.animationStagger"
+        v-model:code-block-variant="userConfig.codeBlockVariant"
         :content="content"
         :prev-step="prevStep"
         :next-step="nextStep"
@@ -321,7 +324,7 @@ onMounted(() => {
           class="my-4"
           :mode="renderMode"
           :caret="caret"
-          :enable-animate="userConfig.animation !== ''"
+          :enable-animate="!userConfig.staticMode && userConfig.animation !== ''"
           :animation="userConfig.animation"
           :animation-split="userConfig.animationSplit"
           :animation-duration="userConfig.animationDuration"

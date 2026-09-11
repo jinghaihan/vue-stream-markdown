@@ -24,6 +24,7 @@ const DEFAULT_USER_CONFIG: UserConfig = {
   animationSplit: 'auto',
   animationDuration: 180,
   animationStagger: 40,
+  codeBlockVariant: 'modern',
 }
 
 export function useUserConfig() {

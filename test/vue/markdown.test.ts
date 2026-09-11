@@ -3,6 +3,7 @@ import type { MarkdownElement } from 'vue-stream-markdown'
 import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, markRaw, onMounted, onUnmounted } from 'vue'
+import MinimalVariant from '../../packages/vue/src/components/code-block/variants/minimal.vue'
 import Markdown from '../../packages/vue/src/index.vue'
 
 // These tests exercise Markdown processing, not background UI component loading.
@@ -16,7 +17,7 @@ interface MarkdownTestVm {
 }
 
 interface MarkdownTestWrapper {
-  setProps: (props: { content?: string, mode?: 'static' | 'streaming' }) => Promise<void>
+  setProps: (props: { content?: string, enableAnimate?: boolean, mode?: 'static' | 'streaming' }) => Promise<void>
 }
 
 describe('stream markdown', () => {
@@ -94,6 +95,85 @@ describe('stream markdown', () => {
     expect(code.attributes('data-start-line')).toBe('10')
     expect(code.attributes('data-show-line-numbers')).toBe('false')
     expect(code.attributes('style')).toContain('counter-reset: line 9')
+    wrapper.unmount()
+  })
+
+  it.each(['modern', 'classic', 'minimal'] as const)('renders the %s code block variant', async (variant) => {
+    const wrapper = mount(Markdown, {
+      props: {
+        content: '```ts\nconst value = 1\n```',
+        codeOptions: { variant },
+        mode: 'static',
+      },
+    })
+
+    await vi.dynamicImportSettled()
+    await flushPromises()
+
+    expect(wrapper.get('[data-stream-markdown="code-block"]').attributes('data-variant')).toBe(variant)
+    wrapper.unmount()
+  })
+
+  it('does not render a collapse control for minimal code blocks', async () => {
+    const wrapper = mount(Markdown, {
+      props: {
+        content: '```ts\nconst value = 1\n```',
+        codeOptions: { variant: 'minimal' },
+        controls: { code: { collapse: true } },
+        mode: 'static',
+      },
+    })
+
+    await vi.dynamicImportSettled()
+    await flushPromises()
+
+    expect(wrapper.find('[aria-label="Collapse"]').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('keeps minimal code block actions floating over the code', () => {
+    const wrapper = mount(MinimalVariant, {
+      props: {
+        collapsed: false,
+        loading: false,
+        actionCount: 3,
+        setScrollRef: () => {},
+      },
+      slots: {
+        actions: () => h('button', 'Copy'),
+      },
+    })
+
+    const actions = wrapper.get('[data-stream-markdown="actions"]')
+    expect(actions.classes()).toContain('absolute')
+    expect(actions.classes()).toContain('right-4')
+    expect(actions.classes()).not.toContain('shrink-0')
+    expect(wrapper.get('[data-stream-markdown="fade-overlay"]').attributes('style')).toContain('width: 163px')
+    wrapper.unmount()
+  })
+
+  it('gives minimal Mermaid previews a definite minimum height', async () => {
+    const wrapper = mount(Markdown, {
+      props: {
+        content: '```mermaid\ngraph TD\n```',
+        codeOptions: { variant: 'minimal' },
+        extensions: {
+          mermaid: {
+            preload: async () => {},
+            dispose: () => {},
+            supports: () => true,
+            render: async () => ({ valid: true, svg: '<svg width="100" height="50"></svg>' }),
+          },
+        },
+        mode: 'static',
+      },
+    })
+
+    await vi.dynamicImportSettled()
+    await flushPromises()
+
+    expect(wrapper.get('[data-stream-markdown="mermaid-previewer"]').attributes('style'))
+      .toContain('height: 128px')
     wrapper.unmount()
   })
 
@@ -417,6 +497,27 @@ describe('stream markdown', () => {
 
     wrapper.unmount()
     expect(unmountCount).toBe(1)
+  })
+
+  it('removes streaming text animations when switching to static mode', async () => {
+    const wrapper = mount(Markdown, {
+      props: {
+        animation: 'fade-in',
+        enableAnimate: true,
+        content: 'Animated text',
+        mode: 'streaming',
+      },
+    })
+    const testWrapper = wrapper as unknown as MarkdownTestWrapper
+    await flushPromises()
+
+    expect(wrapper.find('.stream-markdown-text-fade-in').exists()).toBe(true)
+
+    await testWrapper.setProps({ enableAnimate: false, mode: 'static' })
+    await flushPromises()
+
+    expect(wrapper.find('.stream-markdown-text-fade-in').exists()).toBe(false)
+    wrapper.unmount()
   })
 
   it('disables only the loading link and restores it in static mode', async () => {

@@ -694,6 +694,7 @@ export { CARETS }
 export { CaretType }
 export { CdnModule }
 export { CdnOptions }
+export { CodeBlockVariant }
 export { ComarkPlugin }
 export { Completion }
 export { CompletionFunction }
