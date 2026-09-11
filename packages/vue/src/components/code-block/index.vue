@@ -119,6 +119,12 @@ const PreviewComponent = computed((): Component | undefined => {
 const inlineInteractive = computed(() => codeBlockModel.value.inlineInteractive)
 const maxHeight = computed(() => codeBlockModel.value.maxHeight)
 const previewVisible = computed(() => previewable.value && mode.value === 'preview')
+const minimalPreviewMinHeight = computed(() => {
+  if (variant.value !== 'minimal' || !previewVisible.value)
+    return undefined
+
+  return 128
+})
 const VariantComponent = computed(() => ({
   modern: ModernVariant,
   classic: ClassicVariant,
@@ -234,7 +240,6 @@ async function handleControlClick(key: string, item?: SelectOption) {
     :collapsed="collapsed"
     :loading="!!props.node.loading"
     :max-height="maxHeight"
-    :preview-visible="previewVisible"
     :set-scroll-ref="setScrollRef"
   >
     <template #title>
@@ -282,6 +287,7 @@ async function handleControlClick(key: string, item?: SelectOption) {
         v-show="mode === 'preview'"
         v-bind="props"
         :interactive="inlineInteractive"
+        :min-height="minimalPreviewMinHeight"
       />
       <main v-show="mode === 'source'">
         <slot />
@@ -334,6 +340,7 @@ async function handleControlClick(key: string, item?: SelectOption) {
       v-bind="props"
       :immediate-render="true"
       container-height="100%"
+      :min-height="minimalPreviewMinHeight"
     />
     <CodeNode
       v-show="mode === 'source'"

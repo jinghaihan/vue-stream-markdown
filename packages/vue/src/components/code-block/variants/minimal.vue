@@ -28,7 +28,6 @@ defineProps<CodeBlockVariantProps>()
       :ref="setScrollRef"
       data-stream-markdown="code-block-content"
       class="overflow-auto"
-      :class="{ 'min-h-24': previewVisible }"
       :style="{ maxHeight }"
     >
       <slot />

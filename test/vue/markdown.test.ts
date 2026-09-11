@@ -3,7 +3,6 @@ import type { MarkdownElement } from 'vue-stream-markdown'
 import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, markRaw, onMounted, onUnmounted } from 'vue'
-import MinimalVariant from '../../packages/vue/src/components/code-block/variants/minimal.vue'
 import Markdown from '../../packages/vue/src/index.vue'
 
 // These tests exercise Markdown processing, not background UI component loading.
@@ -131,17 +130,28 @@ describe('stream markdown', () => {
     wrapper.unmount()
   })
 
-  it('reserves preview space for minimal code blocks', () => {
-    const wrapper = mount(MinimalVariant, {
+  it('gives minimal Mermaid previews a definite minimum height', async () => {
+    const wrapper = mount(Markdown, {
       props: {
-        collapsed: false,
-        loading: false,
-        previewVisible: true,
-        setScrollRef: () => {},
+        content: '```mermaid\ngraph TD\n```',
+        codeOptions: { variant: 'minimal' },
+        extensions: {
+          mermaid: {
+            preload: async () => {},
+            dispose: () => {},
+            supports: () => true,
+            render: async () => ({ valid: true, svg: '<svg width="100" height="50"></svg>' }),
+          },
+        },
+        mode: 'static',
       },
     })
 
-    expect(wrapper.get('[data-stream-markdown="code-block-content"]').classes()).toContain('min-h-24')
+    await vi.dynamicImportSettled()
+    await flushPromises()
+
+    expect(wrapper.get('[data-stream-markdown="mermaid-previewer"]').attributes('style'))
+      .toContain('height: 128px')
     wrapper.unmount()
   })
 
