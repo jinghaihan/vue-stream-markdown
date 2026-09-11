@@ -10,17 +10,14 @@ defineProps<CodeBlockVariantProps>()
     data-variant="modern"
     dir="ltr"
     :data-collapsed="collapsed"
-    class="my-4 p-1 border border-border/70 rounded-xl bg-background overflow-clip data-[collapsed=true]:[&_.code-block-header]:border-b-0"
+    class="my-4 p-0.5 border border-border/70 rounded-2xl bg-muted/80 overflow-clip"
     :class="[
       { 'code-loading': loading },
     ]"
   >
     <header
       data-stream-markdown="code-block-header"
-      :class="[
-        { 'border-b': !collapsed },
-      ]"
-      class="code-block-header text-sm text-muted-foreground px-3 py-1.5 border-border/70 rounded-lg bg-muted/80 flex items-center top-0 justify-between sticky z-[5] max-lg:px-2 [&>*:last-child]:flex [&>*:first-child]:flex-1 [&>*:last-child]:flex-1 [&>*:nth-child(2)]:left-1/2 [&>*:last-child]:justify-end [&>*:nth-child(2)]:absolute [&>*:nth-child(2)]:-translate-x-1/2"
+      class="code-block-header text-sm text-muted-foreground px-3 py-1.5 pr-2.5 flex gap-2 items-center top-0 justify-between sticky z-[5] max-lg:px-2 [&>*:last-child]:flex [&>*:first-child]:flex-1 [&>*:last-child]:shrink-0 [&>*:first-child]:min-w-0 [&>*:last-child]:items-center [&>*:nth-child(2)]:left-1/2 [&>*:nth-child(2)]:absolute [&>*:nth-child(2)]:-translate-x-1/2"
     >
       <slot name="title" />
       <slot name="header-center" />
@@ -31,7 +28,7 @@ defineProps<CodeBlockVariantProps>()
       v-show="!collapsed"
       :ref="setScrollRef"
       data-stream-markdown="code-block-content"
-      class="mt-1 border border-border/70 rounded-lg overflow-auto"
+      class="mt-0.5 border border-border/70 rounded-xl bg-background max-w-full min-w-full w-0 overflow-auto"
       :style="{ maxHeight }"
     >
       <slot />
