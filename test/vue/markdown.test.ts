@@ -113,6 +113,23 @@ describe('stream markdown', () => {
     wrapper.unmount()
   })
 
+  it('does not render a collapse control for minimal code blocks', async () => {
+    const wrapper = mount(Markdown, {
+      props: {
+        content: '```ts\nconst value = 1\n```',
+        codeOptions: { variant: 'minimal' },
+        controls: { code: { collapse: true } },
+        mode: 'static',
+      },
+    })
+
+    await vi.dynamicImportSettled()
+    await flushPromises()
+
+    expect(wrapper.find('[aria-label="Collapse"]').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
   it('provides every document image to the image renderer', async () => {
     let sources: string[] | undefined
     const Image = markRaw(defineComponent({

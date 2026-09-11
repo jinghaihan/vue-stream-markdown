@@ -83,7 +83,7 @@ const showLanguageIcon = computed(() => codeBlockModel.value.showLanguageIcon)
 const showLanguageName = computed(() => codeBlockModel.value.showLanguageName)
 const showLanguageTitle = computed(() => codeBlockModel.value.showLanguageTitle)
 
-const showCollapse = computed(() => isControlEnabled('code.collapse'))
+const showCollapse = computed(() => variant.value !== 'minimal' && isControlEnabled('code.collapse'))
 const showCopy = computed(() => isControlEnabled('code.copy'))
 const showDownload = computed(() => {
   if (language.value !== 'mermaid')
@@ -156,7 +156,8 @@ const builtinControls = computed((): Control[] => createCodeBlockControlDescript
 })))
 
 const headerControls = computed(
-  () => resolveControls<CodeBlockProps>('code', builtinControls.value, props),
+  () => resolveControls<CodeBlockProps>('code', builtinControls.value, props)
+    .filter(item => variant.value !== 'minimal' || item.key !== 'collapse'),
 )
 
 const modalControls = computed(
