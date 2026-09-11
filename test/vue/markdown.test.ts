@@ -16,7 +16,7 @@ interface MarkdownTestVm {
 }
 
 interface MarkdownTestWrapper {
-  setProps: (props: { content?: string, mode?: 'static' | 'streaming' }) => Promise<void>
+  setProps: (props: { content?: string, enableAnimate?: boolean, mode?: 'static' | 'streaming' }) => Promise<void>
 }
 
 describe('stream markdown', () => {
@@ -350,6 +350,27 @@ describe('stream markdown', () => {
 
     wrapper.unmount()
     expect(unmountCount).toBe(1)
+  })
+
+  it('removes streaming text animations when switching to static mode', async () => {
+    const wrapper = mount(Markdown, {
+      props: {
+        animation: 'fade-in',
+        enableAnimate: true,
+        content: 'Animated text',
+        mode: 'streaming',
+      },
+    })
+    const testWrapper = wrapper as unknown as MarkdownTestWrapper
+    await flushPromises()
+
+    expect(wrapper.find('.stream-markdown-text-fade-in').exists()).toBe(true)
+
+    await testWrapper.setProps({ enableAnimate: false, mode: 'static' })
+    await flushPromises()
+
+    expect(wrapper.find('.stream-markdown-text-fade-in').exists()).toBe(false)
+    wrapper.unmount()
   })
 
   it('disables only the loading link and restores it in static mode', async () => {
