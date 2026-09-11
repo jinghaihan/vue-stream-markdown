@@ -69,8 +69,12 @@ export function createAnimationTimeline(
       const minimumStep = idealStep === 0
         ? 0
         : Math.min(idealStep, minStagger)
-      const start = Math.max(pendingNextStart, currentTime)
       const budgetEnd = currentTime + maxBacklog
+      const queuedStart = Math.max(pendingNextStart, currentTime)
+      // Do not let a long document push later nodes indefinitely into the
+      // future. Once the queue has fallen behind the display budget, start a
+      // fresh local sequence for the remaining nodes in this pass.
+      const start = queuedStart >= budgetEnd ? currentTime : queuedStart
       const idealEnd = start + Math.max(0, count - 1) * idealStep
       let step = idealStep
 

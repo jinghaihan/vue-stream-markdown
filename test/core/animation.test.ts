@@ -28,6 +28,15 @@ describe('animation timeline', () => {
     expect(finalDelay).toBeCloseTo(320)
   })
 
+  it('drops an over-budget queue before scheduling later sibling batches', () => {
+    const timeline = createAnimationTimeline({ now: () => 1000 })
+    const now = timeline.beginPass()
+
+    timeline.take(20, 40, now)
+
+    expect(timeline.take(1, 40, now).baseDelay).toBe(0)
+  })
+
   it('drops stale backlog and can be reset', () => {
     let now = 1000
     const timeline = createAnimationTimeline({ now: () => now })

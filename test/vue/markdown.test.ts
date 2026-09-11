@@ -231,6 +231,89 @@ describe('stream markdown', () => {
     wrapper.unmount()
   })
 
+  it('does not rerender a stable top-level block while the tail grows', async () => {
+    let renderCount = 0
+    const Callout = markRaw(defineComponent({
+      setup(_props, { slots }) {
+        return () => {
+          renderCount += 1
+          return h('aside', slots.default?.())
+        }
+      },
+    }))
+    const wrapper = mount(Markdown, {
+      props: {
+        components: { callout: Callout },
+        content: '::callout\nStable\n::\n\nTail',
+        mode: 'streaming',
+      },
+    })
+    const testWrapper = wrapper as unknown as MarkdownTestWrapper
+    await flushPromises()
+    expect(renderCount).toBe(1)
+
+    await testWrapper.setProps({ content: '::callout\nStable\n::\n\nTail grows' })
+    await flushPromises()
+
+    expect(renderCount).toBe(1)
+    wrapper.unmount()
+  })
+
+  it('keeps generated footnotes stable when later blocks arrive', async () => {
+    const wrapper = mount(Markdown, {
+      props: {
+        content: 'Reference[^note]\n\n[^note]: Definition',
+        enableAnimate: false,
+        mode: 'streaming',
+      },
+    })
+    const testWrapper = wrapper as unknown as MarkdownTestWrapper
+    await flushPromises()
+    const footnotes = wrapper.get('section').element
+
+    await testWrapper.setProps({
+      content: 'Reference[^note]\n\n[^note]: Definition\n\n## Later',
+    })
+    await flushPromises()
+
+    expect(wrapper.get('section').element).toBe(footnotes)
+    wrapper.unmount()
+  })
+
+  it('renders animated footnote definitions', async () => {
+    const wrapper = mount(Markdown, {
+      props: {
+        content: 'Reference[^note]\n\n[^note]: Definition',
+        mode: 'streaming',
+      },
+    })
+    await vi.dynamicImportSettled()
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Definition')
+    expect(wrapper.find('[data-stream-markdown="footnote-definition-button"]').exists()).toBe(true)
+    wrapper.unmount()
+  })
+
+  it('flushes footnote definitions when streaming switches to static mode', async () => {
+    const content = 'Reference[^note]\n\n[^note]: Definition\n\n## Later\n\nMore'
+    const wrapper = mount(Markdown, {
+      props: {
+        content,
+        enableAnimate: false,
+        mode: 'streaming',
+      },
+    })
+    const testWrapper = wrapper as unknown as MarkdownTestWrapper
+    await flushPromises()
+
+    await testWrapper.setProps({ mode: 'static' })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Definition')
+    wrapper.unmount()
+  })
+
   it.each([
     '| Name | Age |\n| --- | --- |',
     '| Name | Age |\n| --- | --- |\n| Alice | 30 |',
