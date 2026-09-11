@@ -100,6 +100,7 @@ const codeOptions = computed((): CodeOptions => {
   }
 
   return {
+    ...options,
     language: {
       mermaid: options,
       html: options,
