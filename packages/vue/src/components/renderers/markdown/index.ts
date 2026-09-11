@@ -86,8 +86,8 @@ export default defineComponent({
     const reconcileRenderedTextKeys = () => {
       const renderedTextKeys = new Set<string>()
       const activePaths = new Set<string>()
-      props.nodes.forEach((_, index) => {
-        const path = `root-${index}`
+      props.nodes.forEach((node, index) => {
+        const path = resolveTopLevelPath(node, index)
         activePaths.add(path)
         for (const key of renderedTextKeysByPath.get(path) ?? [])
           renderedTextKeys.add(key)
@@ -118,16 +118,26 @@ export default defineComponent({
       })
       const lastIndex = findLastRenderableIndex(props.nodes)
       return props.nodes.map((node, index) => {
+        const path = resolveTopLevelPath(node, index)
         const tag = typeof node === 'string' ? 'text' : node[0] ?? 'comment'
         return h(MarkdownBlock, {
-          key: `root-${index}-${tag}`,
+          key: `${path}-${tag}`,
           components: props.components,
           loading: props.loading && index === lastIndex,
           node,
           onRendered: onBlockRendered,
-          path: `root-${index}`,
+          path,
         })
       })
     }
   },
 })
+
+function resolveTopLevelPath(node: Node, index: number): string {
+  if (Array.isArray(node)) {
+    const [tag, attrs] = node
+    if (tag === 'section' && attrs && attrs.class === 'footnotes')
+      return 'root-footnotes'
+  }
+  return `root-${index}`
+}
