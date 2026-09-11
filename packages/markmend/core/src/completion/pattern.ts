@@ -37,6 +37,8 @@ export const separatorPattern = /^\|[\s:]*-{3,}[\s:]*(?:\|[\s:]*-{3,}[\s:]*)+\|?
 /** Match standalone `-` without trailing space (to distinguish from regular list items like `- `) */
 /** Match incomplete task list item `- [` or `-[` (with optional space between - and [, and optional trailing whitespace) */
 export const incompleteTaskListPattern = /^\s*-\s*\[\s*$/
+/** Match an indented standalone dash while a nested list item is still empty */
+export const indentedStandaloneDashPattern = /^[ \t]+-[ \t]*$/
 /** Match standalone `> -` without trailing space */
 /** Match incomplete task list item in quote block `> - [` or `> -[` (with optional space between - and [, and optional trailing whitespace) */
 export const quoteIncompleteTaskListPattern = /^>\s*-\s*\[\s*$/

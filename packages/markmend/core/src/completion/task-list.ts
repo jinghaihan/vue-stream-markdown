@@ -2,6 +2,7 @@ import type { CompletionContext } from '../types'
 import { getCompletionAnalysis } from './context'
 import {
   incompleteTaskListPattern,
+  indentedStandaloneDashPattern,
   orderedListItemPattern,
   quoteIncompleteTaskListPattern,
 } from './pattern'
@@ -76,6 +77,16 @@ export function completeTaskList(content: string, context?: CompletionContext): 
   }
 
   const previousLine = lines.at(-2)
+  if (previousLine !== undefined
+    && isListItem(previousLine)
+    && indentedStandaloneDashPattern.test(lastLine)) {
+    // A nested bare dash is ambiguous to Markdown parsers: while it has no
+    // item content, Comark can interpret it as a Setext underline for the
+    // parent list item's text. Hide this transient line until its content
+    // arrives so the parent item does not change shape mid-stream.
+    return lines.slice(0, -1).join('\n')
+  }
+
   if (previousLine !== undefined
     && previousLine.trim() !== ''
     && !isListItem(previousLine)
