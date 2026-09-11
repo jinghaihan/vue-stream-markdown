@@ -10,7 +10,7 @@ defineProps<CodeBlockVariantProps>()
     data-variant="classic"
     dir="ltr"
     :data-collapsed="collapsed"
-    class="my-4 border border-border rounded-xl overflow-clip data-[collapsed=true]:[&_.code-block-header]:border-b-0"
+    class="my-4 border border-border rounded-xl bg-background overflow-clip data-[collapsed=true]:[&_.code-block-header]:border-b-0"
     :class="[
       { 'code-loading': loading },
     ]"
