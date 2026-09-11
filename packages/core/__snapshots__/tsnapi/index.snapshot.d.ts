@@ -116,6 +116,7 @@ export interface CodeMaxHeightOptions<TComponent = unknown> {
   language: string;
 }
 export interface CodeOptions<TComponent = unknown> {
+  variant?: CodeBlockVariant;
   languageIcon?: boolean;
   languageName?: boolean;
   lineNumbers?: boolean;
@@ -127,6 +128,7 @@ export interface CodeOptionsLanguage<TComponent = unknown> extends Omit<CodeOpti
 }
 export interface CodeOptionsModel<TComponent = unknown> {
   languageCodeOptions: CodeOptionsLanguage<TComponent>;
+  variant: CodeBlockVariant;
   showLanguageIcon: boolean;
   showLanguageName: boolean;
   showLineNumbers: boolean;
@@ -642,6 +644,7 @@ export type BuiltinPreviewers = 'mermaid' | 'html';
 export type BuiltinUIComponents = 'Alert' | 'Button' | 'Caret' | 'CodeBlock' | 'Dropdown' | 'ErrorComponent' | 'Icon' | 'Image' | 'Modal' | 'Segmented' | 'Spin' | 'Table' | 'Tooltip' | 'ZoomContainer';
 export type CaretType = 'block' | 'circle';
 export type CdnModule = 'shiki' | 'mermaid' | 'beautiful-mermaid' | 'katex' | 'katex-css';
+export type CodeBlockVariant = 'modern' | 'classic' | 'minimal';
 export type CodeControlsConfig<TTransformer = unknown> = boolean | {
   collapse?: boolean;
   copy?: boolean;

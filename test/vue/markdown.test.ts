@@ -97,6 +97,22 @@ describe('stream markdown', () => {
     wrapper.unmount()
   })
 
+  it.each(['modern', 'classic', 'minimal'] as const)('renders the %s code block variant', async (variant) => {
+    const wrapper = mount(Markdown, {
+      props: {
+        content: '```ts\nconst value = 1\n```',
+        codeOptions: { variant },
+        mode: 'static',
+      },
+    })
+
+    await vi.dynamicImportSettled()
+    await flushPromises()
+
+    expect(wrapper.get('[data-stream-markdown="code-block"]').attributes('data-variant')).toBe(variant)
+    wrapper.unmount()
+  })
+
   it('provides every document image to the image renderer', async () => {
     let sources: string[] | undefined
     const Image = markRaw(defineComponent({

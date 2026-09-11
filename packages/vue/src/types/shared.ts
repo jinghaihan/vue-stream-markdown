@@ -29,6 +29,7 @@ import type { UIButtonProps } from './ui'
 export type {
   BuiltinPreviewers,
   BuiltinUIComponents,
+  CodeBlockVariant,
   CSVSeparator,
   DownloadControlConfig,
   DownloadControlOptions,

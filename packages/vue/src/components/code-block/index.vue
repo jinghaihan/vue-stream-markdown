@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Component } from 'vue'
+import type { Component, VNodeRef } from 'vue'
 import type { CodeBlockProps, Control, SelectOption } from '../../types'
 import {
   createCodeBlockControlDescriptors,
@@ -17,6 +17,10 @@ import Actions from './actions.vue'
 import { LANGUAGE_ICONS } from './language-icons'
 import LanguageTitle from './language-title.vue'
 import PreviewSegmented from './preview-segmented.vue'
+import PreviewToggle from './preview-toggle.vue'
+import ClassicVariant from './variants/classic.vue'
+import MinimalVariant from './variants/minimal.vue'
+import ModernVariant from './variants/modern.vue'
 
 defineOptions({
   inheritAttrs: false,
@@ -74,6 +78,7 @@ const codeBlockModel = computed(() => createCodeBlockModel<Component>({
 }))
 
 const language = computed(() => codeBlockModel.value.language)
+const variant = computed(() => codeBlockModel.value.variant)
 const showLanguageIcon = computed(() => codeBlockModel.value.showLanguageIcon)
 const showLanguageName = computed(() => codeBlockModel.value.showLanguageName)
 const showLanguageTitle = computed(() => codeBlockModel.value.showLanguageTitle)
@@ -113,6 +118,11 @@ const PreviewComponent = computed((): Component | undefined => {
 
 const inlineInteractive = computed(() => codeBlockModel.value.inlineInteractive)
 const maxHeight = computed(() => codeBlockModel.value.maxHeight)
+const VariantComponent = computed(() => ({
+  modern: ModernVariant,
+  classic: ClassicVariant,
+  minimal: MinimalVariant,
+}[variant.value]))
 const downloadOptions = computed(() => codeBlockModel.value.downloadOptions)
 const downloadFilename = computed(() => {
   const type = language.value === 'mermaid' ? 'mermaid' : 'code'
@@ -156,6 +166,10 @@ const modalControls = computed(
 
 const modalLabel = computed(() => t('dialog.fullscreen', 'button.maximize'))
 const modalTitleId = computed(() => showLanguageName.value ? `${props.nodeKey}-fullscreen-title` : undefined)
+
+const setScrollRef: VNodeRef = (element) => {
+  scrollRef.value = element instanceof HTMLElement ? element : undefined
+}
 
 watch(
   () => previewable.value,
@@ -213,26 +227,20 @@ async function handleControlClick(key: string, item?: SelectOption) {
     <div v-else />
   </DefineTemplate>
 
-  <div
-    data-stream-markdown="code-block"
-    dir="ltr"
-    :data-collapsed="collapsed"
-    class="my-4 border border-border rounded-xl overflow-clip data-[collapsed=true]:[&_.code-block-header]:border-b-0"
-    :class="[
-      { 'code-loading': props.node.loading },
-    ]"
+  <component
+    :is="VariantComponent"
+    :collapsed="collapsed"
+    :loading="!!props.node.loading"
+    :max-height="maxHeight"
+    :set-scroll-ref="setScrollRef"
   >
-    <header
-      data-stream-markdown="code-block-header"
-      :class="[
-        { 'border-b': !collapsed },
-      ]"
-      class="code-block-header text-sm text-muted-foreground px-4 py-1.5 border-border bg-muted/80 flex items-center top-0 justify-between sticky z-[5] max-lg:px-3 [&>*:last-child]:flex [&>*:first-child]:flex-1 [&>*:last-child]:flex-1 [&>*:nth-child(2)]:left-1/2 [&>*:last-child]:justify-end [&>*:nth-child(2)]:absolute [&>*:nth-child(2)]:-translate-x-1/2"
-    >
+    <template #title>
       <slot name="title">
         <ReuseTemplate :show-preview="previewPlacement === 'left'" />
       </slot>
+    </template>
 
+    <template #header-center>
       <slot name="header-center">
         <PreviewSegmented
           v-if="previewable && previewPlacement === 'center'"
@@ -241,29 +249,30 @@ async function handleControlClick(key: string, item?: SelectOption) {
         />
         <div v-else />
       </slot>
+    </template>
 
+    <template #actions>
       <slot name="actions">
         <div
           data-stream-markdown="actions"
           class="flex gap-1 items-center"
         >
+          <PreviewToggle
+            v-if="variant === 'minimal' && previewable"
+            v-model:mode="mode"
+            v-model:collapsed="collapsed"
+          />
           <PreviewSegmented
-            v-if="previewable && previewPlacement === 'right'"
+            v-else-if="previewable && previewPlacement === 'right'"
             v-model:mode="mode"
             v-model:collapsed="collapsed"
           />
           <Actions :actions="headerControls" />
         </div>
       </slot>
-    </header>
+    </template>
 
-    <main
-      v-show="!collapsed"
-      ref="scrollRef"
-      data-stream-markdown="code-block-content"
-      class="overflow-auto"
-      :style="{ maxHeight }"
-    >
+    <template #default>
       <component
         :is="PreviewComponent"
         v-if="previewable"
@@ -274,59 +283,59 @@ async function handleControlClick(key: string, item?: SelectOption) {
       <main v-show="mode === 'source'">
         <slot />
       </main>
-    </main>
+    </template>
+  </component>
 
-    <component
-      :is="UI.Modal"
-      v-if="modalMounted"
-      v-model:open="fullscreen"
-      :aria-label="modalLabel"
-      :title-id="modalTitleId"
-      :header-style="{
-        backgroundColor: 'color-mix(in oklab, var(--muted) 80%, transparent)',
-        color: 'var(--muted-foreground)',
-        borderBottom: '1px solid var(--border)',
-      }"
-    >
-      <template #title>
-        <ReuseTemplate :show-preview="previewPlacement === 'left'" />
-      </template>
+  <component
+    :is="UI.Modal"
+    v-if="modalMounted"
+    v-model:open="fullscreen"
+    :aria-label="modalLabel"
+    :title-id="modalTitleId"
+    :header-style="{
+      backgroundColor: 'color-mix(in oklab, var(--muted) 80%, transparent)',
+      color: 'var(--muted-foreground)',
+      borderBottom: '1px solid var(--border)',
+    }"
+  >
+    <template #title>
+      <ReuseTemplate :show-preview="previewPlacement === 'left'" />
+    </template>
 
-      <template #header-center>
+    <template #header-center>
+      <PreviewSegmented
+        v-if="previewable && previewPlacement === 'center'"
+        v-model:mode="mode"
+        v-model:collapsed="collapsed"
+      />
+    </template>
+
+    <template #actions>
+      <div
+        data-stream-markdown="actions"
+        class="flex gap-1 items-center"
+      >
         <PreviewSegmented
-          v-if="previewable && previewPlacement === 'center'"
+          v-if="previewable && previewPlacement === 'right'"
           v-model:mode="mode"
           v-model:collapsed="collapsed"
         />
-      </template>
+        <Actions :actions="modalControls" />
+      </div>
+    </template>
 
-      <template #actions>
-        <div
-          data-stream-markdown="actions"
-          class="flex gap-1 items-center"
-        >
-          <PreviewSegmented
-            v-if="previewable && previewPlacement === 'right'"
-            v-model:mode="mode"
-            v-model:collapsed="collapsed"
-          />
-          <Actions :actions="modalControls" />
-        </div>
-      </template>
-
-      <component
-        :is="PreviewComponent"
-        v-if="previewable"
-        v-show="mode === 'preview'"
-        v-bind="props"
-        :immediate-render="true"
-        container-height="100%"
-      />
-      <CodeNode
-        v-show="mode === 'source'"
-        v-bind="props"
-        :show-header="false"
-      />
-    </component>
-  </div>
+    <component
+      :is="PreviewComponent"
+      v-if="previewable"
+      v-show="mode === 'preview'"
+      v-bind="props"
+      :immediate-render="true"
+      container-height="100%"
+    />
+    <CodeNode
+      v-show="mode === 'source'"
+      v-bind="props"
+      :show-header="false"
+    />
+  </component>
 </template>

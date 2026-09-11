@@ -64,10 +64,16 @@ describe('core models', () => {
 
     expect(model).toMatchObject({
       language: 'mermaid',
+      variant: 'modern',
       previewable: true,
       previewPlacement: 'center',
       maxHeight: '240px',
     })
+    expect(createCodeBlockModel({
+      node: { lang: 'ts', value: 'const value = 1' },
+      codeOptions: { variant: 'classic' },
+      mode: 'source',
+    }).variant).toBe('classic')
     expect(model.downloadOptions.map(option => option.value)).toEqual(['svg', 'png', 'code'])
     expect(getCodeFileExtension('typescript')).toBe('ts')
     expect(syncCodeBlockMode({ mode: 'source' }, true)).toEqual({ mode: 'preview' })

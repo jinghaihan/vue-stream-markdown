@@ -37,12 +37,15 @@ export interface LinkOptions {
 }
 
 export interface CodeOptions<TComponent = unknown> {
+  variant?: CodeBlockVariant
   languageIcon?: boolean
   languageName?: boolean
   lineNumbers?: boolean
   maxHeight?: number | string
   language?: Record<string, CodeOptionsLanguage<TComponent>>
 }
+
+export type CodeBlockVariant = 'modern' | 'classic' | 'minimal'
 
 export interface CodeOptionsLanguage<TComponent = unknown> extends Omit<CodeOptions<TComponent>, 'languageIcon'> {
   languageIcon?: boolean | TComponent

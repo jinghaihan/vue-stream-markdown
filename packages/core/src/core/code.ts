@@ -1,4 +1,5 @@
 import type {
+  CodeBlockVariant,
   CodeOptions,
   CodeOptionsLanguage,
   ControlDescriptor,
@@ -80,6 +81,7 @@ export interface CodeBlockModeState {
 
 export interface CodeOptionsModel<TComponent = unknown> {
   languageCodeOptions: CodeOptionsLanguage<TComponent>
+  variant: CodeBlockVariant
   showLanguageIcon: boolean
   showLanguageName: boolean
   showLineNumbers: boolean
@@ -106,6 +108,9 @@ export interface CodeBlockModel<TComponent = unknown> extends CodeOptionsModel<T
   downloadOptions: SelectOption[]
 }
 
+const CODE_BLOCK_VARIANTS = ['modern', 'classic', 'minimal'] as const
+const DEFAULT_CODE_BLOCK_VARIANT: CodeBlockVariant = 'modern'
+
 export function resolveCodeLanguage(lang?: string | null): string {
   if (!lang)
     return 'plaintext'
@@ -117,12 +122,17 @@ export function createCodeOptionsModel<TComponent = unknown>(
   language: string,
 ): CodeOptionsModel<TComponent> {
   const languageCodeOptions = resolveCodeOptions(codeOptions, language)
+  const configuredVariant = languageCodeOptions.variant
+  const variant = CODE_BLOCK_VARIANTS.includes(configuredVariant as typeof CODE_BLOCK_VARIANTS[number])
+    ? configuredVariant as CodeBlockVariant
+    : DEFAULT_CODE_BLOCK_VARIANT
   const showLanguageIcon = isCodeOptionEnabled(languageCodeOptions.languageIcon)
   const showLanguageName = isCodeOptionEnabled(languageCodeOptions.languageName)
   const showLineNumbers = isCodeOptionEnabled(languageCodeOptions.lineNumbers)
 
   return {
     languageCodeOptions,
+    variant,
     showLanguageIcon,
     showLanguageName,
     showLineNumbers,
