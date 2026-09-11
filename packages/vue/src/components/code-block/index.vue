@@ -167,6 +167,9 @@ const headerControls = computed(
     .filter(item => variant.value !== 'minimal' || item.key !== 'collapse'),
 )
 
+const actionCount = computed(() => headerControls.value.length
+  + (variant.value === 'minimal' && previewable.value ? 1 : 0))
+
 const modalControls = computed(
   () => resolveControls<CodeBlockProps>('code', headerControls.value, props)
     .filter(i => i.key !== 'collapse'),
@@ -240,6 +243,7 @@ async function handleControlClick(key: string, item?: SelectOption) {
     :collapsed="collapsed"
     :loading="!!props.node.loading"
     :max-height="maxHeight"
+    :action-count="actionCount"
     :set-scroll-ref="setScrollRef"
   >
     <template #title>

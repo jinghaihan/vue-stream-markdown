@@ -3,6 +3,7 @@ import type { MarkdownElement } from 'vue-stream-markdown'
 import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, markRaw, onMounted, onUnmounted } from 'vue'
+import MinimalVariant from '../../packages/vue/src/components/code-block/variants/minimal.vue'
 import Markdown from '../../packages/vue/src/index.vue'
 
 // These tests exercise Markdown processing, not background UI component loading.
@@ -127,6 +128,27 @@ describe('stream markdown', () => {
     await flushPromises()
 
     expect(wrapper.find('[aria-label="Collapse"]').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('keeps minimal code block actions floating over the code', () => {
+    const wrapper = mount(MinimalVariant, {
+      props: {
+        collapsed: false,
+        loading: false,
+        actionCount: 3,
+        setScrollRef: () => {},
+      },
+      slots: {
+        actions: () => h('button', 'Copy'),
+      },
+    })
+
+    const actions = wrapper.get('[data-stream-markdown="actions"]')
+    expect(actions.classes()).toContain('absolute')
+    expect(actions.classes()).toContain('right-4')
+    expect(actions.classes()).not.toContain('shrink-0')
+    expect(wrapper.get('[data-stream-markdown="fade-overlay"]').attributes('style')).toContain('width: 163px')
     wrapper.unmount()
   })
 
