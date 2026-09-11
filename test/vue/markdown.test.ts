@@ -3,6 +3,7 @@ import type { MarkdownElement } from 'vue-stream-markdown'
 import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, markRaw, onMounted, onUnmounted } from 'vue'
+import MinimalVariant from '../../packages/vue/src/components/code-block/variants/minimal.vue'
 import Markdown from '../../packages/vue/src/index.vue'
 
 // These tests exercise Markdown processing, not background UI component loading.
@@ -127,6 +128,20 @@ describe('stream markdown', () => {
     await flushPromises()
 
     expect(wrapper.find('[aria-label="Collapse"]').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('reserves preview space for minimal code blocks', () => {
+    const wrapper = mount(MinimalVariant, {
+      props: {
+        collapsed: false,
+        loading: false,
+        previewVisible: true,
+        setScrollRef: () => {},
+      },
+    })
+
+    expect(wrapper.get('[data-stream-markdown="code-block-content"]').classes()).toContain('min-h-24')
     wrapper.unmount()
   })
 

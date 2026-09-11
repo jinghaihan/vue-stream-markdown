@@ -118,6 +118,7 @@ const PreviewComponent = computed((): Component | undefined => {
 
 const inlineInteractive = computed(() => codeBlockModel.value.inlineInteractive)
 const maxHeight = computed(() => codeBlockModel.value.maxHeight)
+const previewVisible = computed(() => previewable.value && mode.value === 'preview')
 const VariantComponent = computed(() => ({
   modern: ModernVariant,
   classic: ClassicVariant,
@@ -233,6 +234,7 @@ async function handleControlClick(key: string, item?: SelectOption) {
     :collapsed="collapsed"
     :loading="!!props.node.loading"
     :max-height="maxHeight"
+    :preview-visible="previewVisible"
     :set-scroll-ref="setScrollRef"
   >
     <template #title>

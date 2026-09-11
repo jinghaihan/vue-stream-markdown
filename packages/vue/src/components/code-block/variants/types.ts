@@ -4,5 +4,6 @@ export interface CodeBlockVariantProps {
   collapsed: boolean
   loading: boolean
   maxHeight?: string
+  previewVisible: boolean
   setScrollRef: VNodeRef
 }
