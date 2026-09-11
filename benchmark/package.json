@@ -6,7 +6,8 @@
     "bench:code": "vitest bench --run code.bench.ts",
     "bench:completion": "vitest bench --run completion.bench.ts",
     "bench:parser": "vitest bench --run parser.bench.ts",
-    "bench:render": "vitest bench --run render.bench.ts"
+    "bench:render": "vitest bench --run render.bench.ts",
+    "bench:stable-tail": "vitest bench --run stable-tail.bench.ts --reporter=verbose"
   },
   "devDependencies": {
     "@streamdown/code": "catalog:benchmark",
