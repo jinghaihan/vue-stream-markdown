@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SelectOption, StreamMarkdownProps } from 'vue-stream-markdown'
+import type { CodeBlockVariant, SelectOption, StreamMarkdownProps } from 'vue-stream-markdown'
 import { THEMES } from 'beautiful-mermaid'
 import { bundledThemesInfo } from 'shiki'
 import { ANIMATION_SPLITS, ANIMATION_TYPES, CARETS } from 'vue-stream-markdown'
@@ -31,6 +31,7 @@ const animation = defineModel<NonNullable<StreamMarkdownProps['animation']>>('an
 const animationSplit = defineModel<NonNullable<StreamMarkdownProps['animationSplit']>>('animationSplit', { required: false, default: 'auto' })
 const animationDuration = defineModel<number>('animationDuration', { required: false, default: 180 })
 const animationStagger = defineModel<number>('animationStagger', { required: false, default: 40 })
+const codeBlockVariant = defineModel<CodeBlockVariant>('codeBlockVariant', { required: false, default: 'modern' })
 
 const animationDurationInput = computed({
   get: () => animationDuration.value,
@@ -141,6 +142,12 @@ const ANIMATION_SPLIT_OPTIONS: SelectOption[] = ANIMATION_SPLITS.map(value => ({
   value,
 }))
 
+const CODE_BLOCK_VARIANT_OPTIONS: SelectOption[] = [
+  { label: 'Modern', value: 'modern' },
+  { label: 'Classic', value: 'classic' },
+  { label: 'Minimal', value: 'minimal' },
+]
+
 function onTypingIndexChange() {
   props.toStep(typingIndex.value)
 }
@@ -218,6 +225,20 @@ watch(() => staticMode.value, () => {
             :class="CONTROL_CLASSES"
             type="number"
             placeholder="Typed delay"
+          />
+        </div>
+
+        <hr :class="DIVIDER_CLASSES">
+        <h3 :class="BLOCK_TITLE_CLASSES">
+          Code Block
+        </h3>
+
+        <div :class="BLOCK_CLASSES">
+          <Label :class="LABEL_CLASSES">Variant</Label>
+          <Select
+            v-model:value="codeBlockVariant"
+            :class="CONTROL_CLASSES"
+            :options="CODE_BLOCK_VARIANT_OPTIONS"
           />
         </div>
 
