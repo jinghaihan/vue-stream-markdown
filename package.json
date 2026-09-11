@@ -23,6 +23,7 @@
     "bench:completion": "pnpm -F benchmark bench:completion",
     "bench:parser": "pnpm -F benchmark bench:parser",
     "bench:render": "pnpm -F benchmark bench:render",
+    "bench:stable-tail": "pnpm -F benchmark bench:stable-tail",
     "playground:dev": "pnpm -F nuxt-playground dev",
     "playground:build": "pnpm -F nuxt-playground generate",
     "playground:typecheck": "pnpm -F nuxt-playground typecheck",
