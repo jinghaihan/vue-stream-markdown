@@ -11,6 +11,29 @@ import {
   PRESET_BEAUTIFUL_MERMAID_CONFIG,
 } from './constants'
 
+function assertBeautifulMermaidModule(
+  module: unknown,
+  source: string,
+): asserts module is typeof import('beautiful-mermaid') {
+  const candidate = module as Partial<typeof import('beautiful-mermaid')> | null
+  const missing = [
+    typeof candidate?.renderMermaidSVGAsync === 'function' ? undefined : 'renderMermaidSVGAsync',
+    candidate?.THEMES && typeof candidate.THEMES === 'object' ? undefined : 'THEMES',
+    typeof candidate?.fromShikiTheme === 'function' ? undefined : 'fromShikiTheme',
+  ].filter((name): name is string => !!name)
+
+  if (missing.length > 0) {
+    const exports = candidate && typeof candidate === 'object'
+      ? Object.keys(candidate).sort().join(', ') || '(none)'
+      : typeof candidate
+    throw new Error(
+      `[vue-stream-markdown] Invalid Beautiful Mermaid module from ${source}. `
+      + `Missing: ${missing.join(', ')}. `
+      + `Received exports: ${exports}. Expected the full "beautiful-mermaid" entry.`,
+    )
+  }
+}
+
 const DIAGRAM_TYPE_PATTERN = new RegExp(`^(${BEAUTIFUL_MERMAID_SUPPORTED_PATTERNS.join('|')})`)
 
 function extractDiagramType(code: string): string {
@@ -36,6 +59,10 @@ export function beautifulMermaid<TErrorComponent = never>(
 
   async function load() {
     module ??= await cdnLoader.loadCdn() ?? await import('beautiful-mermaid')
+    assertBeautifulMermaidModule(
+      module,
+      cdnLoader.getCdnUrl() ?? 'the local "beautiful-mermaid" package',
+    )
     return module
   }
 
