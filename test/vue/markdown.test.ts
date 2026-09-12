@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, markRaw, onMounted, onUnmounted } from 'vue'
 import MinimalVariant from '../../packages/vue/src/components/code-block/variants/minimal.vue'
 import Markdown from '../../packages/vue/src/index.vue'
+import footnoteContent from '../../playground/nuxt/app/markdown/footnote.md?raw'
 
 // These tests exercise Markdown processing, not background UI component loading.
 vi.mock('../../packages/vue/src/utils', async () => ({
@@ -317,6 +318,57 @@ describe('stream markdown', () => {
 
     expect(wrapper.text()).toContain('Definition')
     expect(wrapper.find('[data-stream-markdown="footnote-definition-button"]').exists()).toBe(true)
+    wrapper.unmount()
+  })
+
+  it('keeps unresolved footnote markers invisible until their definitions arrive', async () => {
+    const wrapper = mount(Markdown, { props: { content: 'Text[^note]', mode: 'streaming' } })
+    const update = wrapper as unknown as MarkdownTestWrapper
+    await flushPromises()
+    expect(wrapper.get('span[hidden]').isVisible()).toBe(false)
+    const text = wrapper.get('[data-stream-markdown="text-word"]').element
+    await update.setProps({ content: 'Text[^note]\n\n[^note]: Definition' })
+    await vi.dynamicImportSettled()
+    await flushPromises()
+    expect(wrapper.find('span[hidden]').exists()).toBe(false)
+    expect(wrapper.get('.footnote-ref').isVisible()).toBe(true)
+    expect(wrapper.get('#fn-note').text()).toContain('Definition')
+    expect(wrapper.get('[data-stream-markdown="text-word"]').element).toBe(text)
+    wrapper.unmount()
+  })
+
+  it('grows all four late footnotes without replacing settled text or waiting for static mode', async () => {
+    const content = footnoteContent
+    const start = content.indexOf('\n[^1]:')
+    const wrapper = mount(Markdown, { props: { content: content.slice(0, start), mode: 'streaming' } })
+    const update = wrapper as unknown as MarkdownTestWrapper
+    await flushPromises()
+    const bodyWord = wrapper.get('[data-stream-markdown="text-word"]').element
+    const footnoteElements = new Map<string, Element>()
+    for (let index = start + 1; index <= content.length; index++) {
+      const input = content.slice(0, index)
+      await update.setProps({ content: input })
+      await flushPromises()
+      expect(wrapper.get('[data-stream-markdown="text-word"]').element).toBe(bodyWord)
+      for (const match of input.matchAll(/^\[\^([1-4])\]:(.*)$/gm)) {
+        const id = `fn-${match[1]}`
+        const item = wrapper.get(`[id="${id}"]`)
+        const definition = match[2]!.trim()
+        // A lone opening link bracket is intentionally hidden by completion.
+        if (definition !== '[')
+          expect(item.text()).toContain(definition)
+        if (footnoteElements.has(id))
+          expect(item.element).toBe(footnoteElements.get(id))
+        footnoteElements.set(id, item.element)
+      }
+    }
+    expect(footnoteElements.size).toBe(4)
+    const before = wrapper.text()
+    await update.setProps({ mode: 'static' })
+    await flushPromises()
+    expect(wrapper.text()).toBe(before)
+    for (const [id, element] of footnoteElements)
+      expect(wrapper.get(`[id="${id}"]`).element).toBe(element)
     wrapper.unmount()
   })
 

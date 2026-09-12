@@ -20,16 +20,11 @@ export const inlineDollarMathPattern = /(^|[^\\])\$(.+?)\$/g
 export const dollarPlaceholderPattern = /_TMP_REPLACE_DOLLAR_/g
 
 export const incompleteBracketPattern = /!?\[[^\]]*$/
-export const incompleteLinkTextPattern = /!?\[[^\]]*\]\s*$/
+export const incompleteLinkTextPattern = /(?:!\[[^\]]*|\[(?!\^)[^\]]*)\]\s*$/
 export const incompleteFootnoteRefPattern = /\[\^[^\]]*$/
 export const standaloneBracketPattern = /(!?\[)\s*$/
 
 /** Footnote patterns */
-export const footnoteDefPattern = /\[\^[^\]]+\]:/g
-export const footnoteRefPattern = /\[\^[^\]]+\]/g
-export const footnoteDefLinePattern = /^\s*\[\^[^\]]+\]:/
-export const footnoteDefLabelPattern = /\[\^([^\]]+)\]:/
-export const footnoteRefLabelPattern = /\[\^([^\]]+)\]/
 
 export const tableRowPattern = /^\|.*\|.*\|/
 export const separatorPattern = /^\|[\s:]*-{3,}[\s:]*(?:\|[\s:]*-{3,}[\s:]*)+\|?$/

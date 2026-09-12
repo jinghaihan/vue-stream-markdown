@@ -1,15 +1,7 @@
 import type { CompletionContext } from '../types'
 import type { TextRange } from './utils'
 import { getCompletionAnalysis } from './context'
-import {
-  codeBlockPattern,
-  footnoteDefLabelPattern,
-  footnoteDefLinePattern,
-  footnoteDefPattern,
-  footnoteRefLabelPattern,
-  footnoteRefPattern,
-  incompleteFootnoteRefPattern,
-} from './pattern'
+import { incompleteFootnoteRefPattern } from './pattern'
 import {
   calculateAbsolutePosition,
   findClosedCodeBlockRanges,
@@ -19,17 +11,10 @@ import {
 
 } from './utils'
 
-interface FootnoteReference {
-  start: number
-  end: number
-  label: string
-}
-
 interface FootnoteScanContext {
   lines: string[]
   codeBlockRanges: TextRange[]
   inlineCodeRanges: TextRange[]
-  footnoteDefRanges: TextRange[]
 }
 
 /**
@@ -40,8 +25,8 @@ interface FootnoteScanContext {
  * @returns The content with the applicable completion applied.
  *
  * @example
- * completeFootnote('Text [^missing]')
- * // Returns: 'Text '
+ * completeFootnote('Text [^missing')
+ * // Returns: 'Text'
  */
 export function completeFootnote(content: string, completionContext?: CompletionContext): string {
   if (!content.includes('[^'))
@@ -51,86 +36,19 @@ export function completeFootnote(content: string, completionContext?: Completion
     return content
   }
 
-  const definedLabels = getDefinedFootnoteLabels(content)
-  let context = buildScanContext(content)
-
-  let result = removeIncompleteReferenceInLastParagraph(content, context)
-  if (result !== content) {
-    content = result
-    context = buildScanContext(content)
-  }
-
-  const references = collectCompleteReferences(content, context)
-  if (references.length === 0) {
-    return content
-  }
-
-  for (let i = references.length - 1; i >= 0; i--) {
-    const ref = references[i]
-    if (!ref || definedLabels.has(ref.label)) {
-      continue
-    }
-
-    let refStart = ref.start
-    if (refStart > 0 && result[refStart - 1] === ' ') {
-      refStart--
-    }
-
-    result = result.substring(0, refStart) + result.substring(ref.end)
-  }
-
-  return result
-}
-
-function getDefinedFootnoteLabels(content: string): Set<string> {
-  const contentWithoutCodeBlocks = content.replace(codeBlockPattern, '')
-  const defMatches = contentWithoutCodeBlocks.match(footnoteDefPattern)
-  const definedLabels = new Set<string>()
-
-  if (!defMatches) {
-    return definedLabels
-  }
-
-  for (const def of defMatches) {
-    const labelMatch = def.match(footnoteDefLabelPattern)
-    if (labelMatch && labelMatch[1]) {
-      definedLabels.add(labelMatch[1])
-    }
-  }
-
-  return definedLabels
-}
-
-function getFootnoteDefinitionLineRanges(lines: string[]): TextRange[] {
-  const ranges: TextRange[] = []
-  let lineOffset = 0
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i] || ''
-    if (footnoteDefLinePattern.test(line)) {
-      ranges.push({ start: lineOffset, end: lineOffset + line.length })
-    }
-
-    lineOffset += line.length
-    if (i < lines.length - 1) {
-      lineOffset += 1
-    }
-  }
-
-  return ranges
+  // Complete references may resolve to definitions later in the stream.
+  return removeIncompleteReferenceInLastParagraph(content, buildScanContext(content))
 }
 
 function buildScanContext(content: string): FootnoteScanContext {
   const lines = content.split('\n')
   const codeBlockRanges = findClosedCodeBlockRanges(content)
   const inlineCodeRanges = findInlineCodeRanges(content, codeBlockRanges)
-  const footnoteDefRanges = getFootnoteDefinitionLineRanges(lines)
 
   return {
     lines,
     codeBlockRanges,
     inlineCodeRanges,
-    footnoteDefRanges,
   }
 }
 
@@ -169,37 +87,4 @@ function removeIncompleteReferenceInLastParagraph(
   const absoluteEnd = calculateAbsolutePosition(lastParagraphStartIndex, refEnd, context.lines)
 
   return content.substring(0, absoluteStart) + content.substring(absoluteEnd)
-}
-
-function collectCompleteReferences(
-  content: string,
-  context: FootnoteScanContext,
-): FootnoteReference[] {
-  const references: FootnoteReference[] = []
-  footnoteRefPattern.lastIndex = 0
-  let match: RegExpExecArray | null = footnoteRefPattern.exec(content)
-
-  while (match !== null) {
-    const absolutePos = match.index ?? 0
-    const refText = match[0] || ''
-
-    const isInCodeBlock = isPositionInRanges(absolutePos, context.codeBlockRanges)
-    const isInInlineCode = isPositionInRanges(absolutePos, context.inlineCodeRanges)
-    const isInFootnoteDef = isPositionInRanges(absolutePos, context.footnoteDefRanges)
-
-    if (!isInCodeBlock && !isInInlineCode && !isInFootnoteDef) {
-      const labelMatch = refText.match(footnoteRefLabelPattern)
-      if (labelMatch && labelMatch[1]) {
-        references.push({
-          start: absolutePos,
-          end: absolutePos + refText.length,
-          label: labelMatch[1],
-        })
-      }
-    }
-
-    match = footnoteRefPattern.exec(content)
-  }
-
-  return references
 }

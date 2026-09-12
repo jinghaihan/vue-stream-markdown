@@ -85,7 +85,7 @@ See [Mathematics](/feature/mathematics) for extension setup and [KaTeX](https://
 
 ## Footnotes
 
-A footnote reference is hidden until its matching definition is present, avoiding a reference that cannot navigate anywhere yet.
+An incomplete footnote marker is hidden while it is being typed. Complete references are preserved for parsing but remain hidden during streaming until their definitions arrive. The parser then displays the resolved reference numbers and updates the footnote content as it grows.
 
 ::stream-markdown{example="feature-termination.incompleteFootnote" mode="streaming"}
 ::

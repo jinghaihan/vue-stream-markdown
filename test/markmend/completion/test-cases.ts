@@ -1417,9 +1417,9 @@ export const taskListTestCases: TestCasesByCategory = {
 export const footnoteTestCases: TestCasesByCategory = {
   footnote: [
     {
-      description: 'should remove reference without definition',
+      description: 'should keep complete reference while its definition is pending',
       input: 'Text [^1]',
-      expected: 'Text',
+      expected: 'Text [^1]',
     },
     {
       description: 'should keep reference with definition',
@@ -1427,19 +1427,19 @@ export const footnoteTestCases: TestCasesByCategory = {
       expected: 'Text [^1]\n\n[^1]: Definition',
     },
     {
-      description: 'should remove multiple references without definitions',
+      description: 'should keep multiple references without definitions',
       input: 'Text [^1] and [^2]',
-      expected: 'Text and',
+      expected: 'Text [^1] and [^2]',
     },
     {
-      description: 'should remove only references without definitions',
+      description: 'should keep both resolved and pending references',
       input: 'Text [^1] and [^2]\n\n[^1]: First',
-      expected: 'Text [^1] and\n\n[^1]: First',
+      expected: 'Text [^1] and [^2]\n\n[^1]: First',
     },
     {
-      description: 'should remove references from end to start',
+      description: 'should preserve reference order while definitions arrive',
       input: 'Text [^1] and [^2] and [^3]\n\n[^2]: Second',
-      expected: 'Text and [^2] and\n\n[^2]: Second',
+      expected: 'Text [^1] and [^2] and [^3]\n\n[^2]: Second',
     },
     {
       description: 'should remove incomplete reference',
@@ -1467,44 +1467,44 @@ export const footnoteTestCases: TestCasesByCategory = {
       expected: 'Text\nMore text',
     },
     {
-      description: 'should remove reference spanning multiple lines',
+      description: 'should keep complete reference before a newline',
       input: 'Text [^1]\nand more text',
-      expected: 'Text\nand more text',
+      expected: 'Text [^1]\nand more text',
     },
     {
       description: 'should handle mixed references in multiple paragraphs',
       input: 'Para1 [^1]\n\nPara2 [^2]\n\n[^1]: First',
-      expected: 'Para1 [^1]\n\nPara2\n\n[^1]: First',
+      expected: 'Para1 [^1]\n\nPara2 [^2]\n\n[^1]: First',
     },
     {
       description: 'should ignore references in code blocks',
       input: '```\n[^1]\n```\n\nText [^1]',
-      expected: '```\n[^1]\n```\n\nText',
+      expected: '```\n[^1]\n```\n\nText [^1]',
     },
     {
       description: 'should ignore references in inline code',
       input: 'Text `[^1]` and [^1]',
-      expected: 'Text `[^1]` and',
+      expected: 'Text `[^1]` and [^1]',
     },
     {
       description: 'should skip references in code blocks when finding',
       input: '```\n[^1]\n```\n\nText [^1]',
-      expected: '```\n[^1]\n```\n\nText',
+      expected: '```\n[^1]\n```\n\nText [^1]',
     },
     {
       description: 'should skip references in inline code when finding',
       input: 'Text `[^1]` and [^1]',
-      expected: 'Text `[^1]` and',
+      expected: 'Text `[^1]` and [^1]',
     },
     {
       description: 'should ignore footnote-like text in code blocks',
       input: '```\n[^1]: This is not a real definition\n```\n\nText [^1]',
-      expected: '```\n[^1]: This is not a real definition\n```\n\nText',
+      expected: '```\n[^1]: This is not a real definition\n```\n\nText [^1]',
     },
     {
       description: 'should handle nested code blocks',
       input: '```\n```\n[^1]\n```\n```\n\nText [^1]',
-      expected: '```\n```\n\n```\n```\n\nText',
+      expected: '```\n```\n[^1]\n```\n```\n\nText [^1]',
     },
     {
       description: 'should recalculate code blocks after removing reference',

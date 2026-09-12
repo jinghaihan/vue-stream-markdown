@@ -10,6 +10,7 @@ import { createMarkdownParser } from 'comark'
 import footnotes from 'comark/plugins/footnotes'
 import security from 'comark/plugins/security'
 import cjkFriendly from 'markdown-it-cjk-friendly'
+import { hidePendingFootnoteReferences } from './footnotes'
 import { createLiteralTagContentProcessor } from './literal-tag-content'
 
 export type MarkdownMode = 'static' | 'streaming'
@@ -83,10 +84,24 @@ export function createMarkmendParser(
       try {
         activeMode = mode
         activeCompletion = undefined
+        // Footnotes depend on references outside the unstable tail. Comark's
+        // post-processed reference nodes cannot safely be reused by its
+        // footnote plugin, so parse these documents with full source context.
+        const hasFootnotes = options.syntax?.footnotes !== false && markdown.includes('[^')
         const nextDocument = await parseMarkdown(markdown, {
-          streaming: mode === 'streaming',
+          streaming: mode === 'streaming' && !hasFootnotes,
         })
         literalTagContent?.flatten(nextDocument.nodes)
+        if (hasFootnotes) {
+          if (mode === 'streaming')
+            hidePendingFootnoteReferences(nextDocument)
+          nextDocument.nodes = nextDocument.nodes.map((node, index) => {
+            const previous = document.nodes[index]
+            return previous !== undefined && JSON.stringify(previous) === JSON.stringify(node)
+              ? previous
+              : node
+          })
+        }
         document = nextDocument
         parseResult = {
           document,
