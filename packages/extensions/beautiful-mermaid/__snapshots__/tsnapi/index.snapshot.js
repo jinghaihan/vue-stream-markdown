@@ -4,6 +4,7 @@
 // #region Functions
 export function beautifulMermaid(_) {}
 export function createBeautifulMermaidCdnLoader(_) {}
+export function createBeautifulMermaidRuntime(_) {}
 // #endregion
 
 // #region Variables
