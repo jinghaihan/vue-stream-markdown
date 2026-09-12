@@ -36,6 +36,7 @@ export interface NodeRenderer {
     parentKey?: string,
     hideCaret?: boolean,
     orderedListStart?: number,
+    indexOffset?: number,
   ) => VNodeChild[]
 }
 
@@ -102,6 +103,7 @@ export function createNodeRenderer(options: NodeRendererOptions): NodeRenderer {
     parentKey = 'root',
     hideCaret = false,
     orderedListStart?: number,
+    indexOffset = 0,
   ): VNodeChild[] {
     const lastIndex = findLastRenderableIndex(nodes)
     let nextOrderedListItemNumber = orderedListStart ?? 1
@@ -112,7 +114,7 @@ export function createNodeRenderer(options: NodeRendererOptions): NodeRenderer {
       return renderNode(
         node,
         loading && index === lastIndex,
-        `${parentKey}-${index}`,
+        `${parentKey}-${index + indexOffset}`,
         hideCaret,
         orderedListItemNumber,
       )
@@ -173,6 +175,9 @@ export function createNodeRenderer(options: NodeRendererOptions): NodeRenderer {
     if (tag === 'ol' || orderedListItemNumber !== undefined)
       return renderListNode(tag, resolvedAttrs, className, children, loading, key, hideCaret, orderedListItemNumber)
 
+    if (tag === 'li')
+      return renderListItem(tag, resolvedAttrs, className, children, loading, key, hideCaret, node)
+
     if (tag === 'a') {
       const completion = options.getCompletionInfo()
       const waitingForDestination = loading
@@ -231,7 +236,56 @@ export function createNodeRenderer(options: NodeRendererOptions): NodeRenderer {
     }, renderNodes(children, loading, key, hideCaret))
   }
 
+  function renderListItem(
+    tag: string,
+    attrs: Record<string, unknown>,
+    className: unknown[],
+    children: Node[],
+    loading: boolean,
+    key: string,
+    hideCaret: boolean,
+    node: Node,
+  ): VNodeChild {
+    const firstBlockIndex = children.findIndex(child => isBlockNode(child))
+    if (firstBlockIndex === 0) {
+      return h(tag, {
+        ...attrs,
+        key,
+        'class': className,
+        'data-stream-markdown': resolveDataAttribute(tag),
+        'dir': resolveNodeDirection(tag, node, context.dir.value),
+      }, renderNodes(children, loading, key, hideCaret))
+    }
+
+    const inlineEnd = firstBlockIndex === -1 ? children.length : firstBlockIndex
+    const inlineChildren = children.slice(0, inlineEnd)
+    const blockChildren = children.slice(inlineEnd)
+    const paragraph: Node = ['p', {}, ...inlineChildren]
+
+    return h(tag, {
+      ...attrs,
+      key,
+      'class': className,
+      'data-stream-markdown': resolveDataAttribute(tag),
+      'dir': resolveNodeDirection(tag, node, context.dir.value),
+    }, [
+      renderNode(
+        paragraph,
+        loading && blockChildren.length === 0,
+        `${key}-0`,
+        hideCaret,
+      ),
+      ...renderNodes(blockChildren, loading, key, hideCaret, undefined, firstBlockIndex),
+    ])
+  }
+
   return { renderNode, renderNodes }
+}
+
+function isBlockNode(node: Node): boolean {
+  return typeof node !== 'string'
+    && node[0] !== null
+    && BLOCK_STYLES[node[0]] !== undefined
 }
 
 function resolveOrderedListStart(attrs: Record<string, unknown>): number {

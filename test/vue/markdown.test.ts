@@ -231,6 +231,31 @@ describe('stream markdown', () => {
     wrapper.unmount()
   })
 
+  it('preserves list item text when a nested list starts streaming', async () => {
+    const parent = '- Stable blocks are reused as the tail grows\n- Only unfinished content keeps changing'
+    const wrapper = mount(Markdown, {
+      props: {
+        content: parent,
+        enableAnimate: true,
+        mode: 'streaming',
+      },
+    })
+    const testWrapper = wrapper as unknown as MarkdownTestWrapper
+    await flushPromises()
+
+    const findOnlyText = () => wrapper.findAll('[data-stream-markdown="text"]')
+      .find(node => node.text().includes('Only'))!
+    const text = findOnlyText()
+    expect(text.element.parentElement?.tagName).toBe('P')
+
+    await testWrapper.setProps({ content: `${parent}\n  - t` })
+    await flushPromises()
+
+    expect(findOnlyText().element).toBe(text.element)
+    expect(wrapper.findAll('ul')).toHaveLength(2)
+    wrapper.unmount()
+  })
+
   it('does not rerender a stable top-level block while the tail grows', async () => {
     let renderCount = 0
     const Callout = markRaw(defineComponent({

@@ -1,5 +1,6 @@
 // @vitest-environment happy-dom
 import type { CodeExtension, MermaidExtension } from '@stream-markdown/core'
+import type { Component } from 'vue'
 import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { defineComponent, h } from 'vue'
@@ -11,7 +12,7 @@ vi.mock('../../packages/vue/src/utils', async () => ({
   preloadAsyncComponents: async () => {},
 }))
 
-function createMermaidExtension(): MermaidExtension {
+function createMermaidExtension(): MermaidExtension<Component> {
   return {
     preload: vi.fn(async () => {}),
     dispose: vi.fn(() => {}),
