@@ -1,6 +1,6 @@
-import type { TextAnimationScheduler } from '@stream-markdown/core'
 import type { VNodeChild } from 'vue'
 import type { StreamMarkdownResolvedContext } from '../../../types'
+import type { TextAnimationController } from './text-animation'
 import {
   createTextParts,
   DISABLED_TRANSITION_NAME,
@@ -12,7 +12,7 @@ export interface TextNodeRendererOptions {
   animatedTextKeys: Set<string>
   context: StreamMarkdownResolvedContext
   markTextRendered: (key: string) => void
-  textAnimationScheduler: TextAnimationScheduler
+  textAnimationScheduler: TextAnimationController
 }
 
 const CSS_TEXT_ANIMATIONS = new Set(['blur-in', 'fade-in', 'slide-up'])
@@ -46,16 +46,9 @@ export function renderTextNode(
 
   const useCssAnimation = CSS_TEXT_ANIMATIONS.has(context.animation.value)
   const parts = createTextParts(text, textKey, context.animationSplit.value)
-  const delays = textAnimationScheduler.schedule(parts)
+  textAnimationScheduler.schedule(parts)
   const children = () => [
     ...parts.map((part) => {
-      const delay = delays.get(part.key)
-      const delayStyle = delay
-        ? {
-            animationDelay: `${delay}ms`,
-            transitionDelay: `${delay}ms`,
-          }
-        : undefined
       return h('span', {
         'key': part.key,
         'data-stream-markdown': part.whitespace ? 'text-space' : `text-${part.animationSplit}`,
@@ -64,7 +57,8 @@ export function renderTextNode(
           !part.whitespace && 'inline-block max-w-full whitespace-pre-wrap break-words',
           useCssAnimation && `stream-markdown-text-${context.animation.value}`,
         ],
-        'style': delayStyle,
+        'onVnodeMounted': vnode => textAnimationScheduler.mount(part.key, vnode.el as HTMLElement),
+        'onVnodeBeforeUnmount': vnode => textAnimationScheduler.unmount(part.key, vnode.el as HTMLElement),
       }, part.value)
     }),
     caret,

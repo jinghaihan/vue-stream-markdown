@@ -1,7 +1,7 @@
 import type { CompletionInfo, Node } from '@markmend/parser'
-import type { TextAnimationScheduler } from '@stream-markdown/core'
 import type { VNodeChild } from 'vue'
 import type { MarkdownComponents, StreamMarkdownResolvedContext } from '../../../types'
+import type { TextAnimationController } from './text-animation'
 import { createCommentVNode, defineAsyncComponent, h } from 'vue'
 import { BLOCK_STYLES, ELEMENT_STYLES, ORDERED_LIST_STYLES } from './node-styles'
 import {
@@ -19,7 +19,7 @@ export interface NodeRendererOptions {
   getComponents: () => MarkdownComponents
   getImageSources: () => string[]
   markTextRendered: (key: string) => void
-  textAnimationScheduler: TextAnimationScheduler
+  textAnimationScheduler: TextAnimationController
 }
 
 export interface NodeRenderer {

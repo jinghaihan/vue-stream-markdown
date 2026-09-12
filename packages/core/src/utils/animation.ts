@@ -14,8 +14,6 @@ export interface AnimationTimeline {
 }
 
 export interface CreateAnimationTimelineOptions {
-  maxBacklog?: number
-  minStagger?: number
   now?: () => number
 }
 
@@ -26,12 +24,10 @@ export interface TextAnimationPassOptions {
 
 export interface TextAnimationScheduler {
   beginPass: (options: TextAnimationPassOptions) => void
-  commitPass: () => void
+  commitPass: (compareKeys?: (left: string, right: string) => number) => ReadonlyMap<string, number>
+  retain: (keys: ReadonlySet<string>) => void
   schedule: (parts: TextPart[]) => ReadonlyMap<string, number>
 }
-
-const MAX_BACKLOG_MS = 320
-const MIN_STAGGER_MS = 4
 
 function defaultNow(): number {
   return typeof performance === 'undefined' ? Date.now() : performance.now()
@@ -40,18 +36,13 @@ function defaultNow(): number {
 export function createAnimationTimeline(
   options: CreateAnimationTimelineOptions = {},
 ): AnimationTimeline {
-  const maxBacklog = options.maxBacklog ?? MAX_BACKLOG_MS
-  const minStagger = options.minStagger ?? MIN_STAGGER_MS
   const now = options.now ?? defaultNow
   let committedNextStart = 0
   let pendingNextStart = 0
 
   return {
     beginPass(currentTime = now()) {
-      pendingNextStart = Math.min(
-        Math.max(committedNextStart, currentTime),
-        currentTime + maxBacklog,
-      )
+      pendingNextStart = Math.max(committedNextStart, currentTime)
       return currentTime
     },
     commitPass() {
@@ -66,28 +57,11 @@ export function createAnimationTimeline(
       if (count <= 0)
         return { baseDelay: 0, step: idealStep }
 
-      const minimumStep = idealStep === 0
-        ? 0
-        : Math.min(idealStep, minStagger)
-      const budgetEnd = currentTime + maxBacklog
       const queuedStart = Math.max(pendingNextStart, currentTime)
-      // Do not let a long document push later nodes indefinitely into the
-      // future. Once the queue has fallen behind the display budget, start a
-      // fresh local sequence for the remaining nodes in this pass.
-      const start = queuedStart >= budgetEnd ? currentTime : queuedStart
-      const idealEnd = start + Math.max(0, count - 1) * idealStep
-      let step = idealStep
-
-      if (idealEnd > budgetEnd && count > 1) {
-        step = start < budgetEnd
-          ? Math.max(minimumStep, (budgetEnd - start) / (count - 1))
-          : minimumStep
-      }
-
-      pendingNextStart = start + count * step
+      pendingNextStart = queuedStart + count * idealStep
       return {
-        baseDelay: Math.max(0, Math.round(start - currentTime)),
-        step,
+        baseDelay: Math.max(0, Math.round(queuedStart - currentTime)),
+        step: idealStep,
       }
     },
   }
@@ -96,72 +70,72 @@ export function createAnimationTimeline(
 export function createTextAnimationScheduler(
   timeline: AnimationTimeline = createAnimationTimeline(),
 ): TextAnimationScheduler {
-  let passTime = 0
   let enabled = false
   let stagger = 0
-  let committedPartKeys = new Set<string>()
-  let committedPartDelays = new Map<string, number>()
-  let pendingPartKeys = new Set<string>()
-  let pendingPartDelays = new Map<string, number>()
+  let lastBatchTime: number | undefined
+  const committedPartDelays = new Map<string, number>()
+  const pendingParts = new Map<string, TextPart>()
 
   return {
     beginPass(options) {
       enabled = options.enabled
       stagger = options.stagger
-      pendingPartKeys = new Set<string>()
-      pendingPartDelays = new Map<string, number>()
-      if (enabled) {
-        passTime = timeline.beginPass()
-      }
-      else {
-        passTime = 0
+      if (!enabled) {
+        pendingParts.clear()
+        lastBatchTime = undefined
         timeline.reset()
       }
     },
-    commitPass() {
-      committedPartKeys = pendingPartKeys
-      committedPartDelays = pendingPartDelays
-      if (enabled)
-        timeline.commitPass()
+    commitPass(compareKeys) {
+      const delays = new Map<string, number>()
+      if (!pendingParts.size)
+        return delays
+
+      const now = timeline.beginPass()
+      const parts = [...pendingParts.values()]
+      if (compareKeys)
+        parts.sort((left, right) => compareKeys(left.key, right.key))
+      const count = parts.filter(part => !part.whitespace).length
+      // A batch fits within the observed arrival cadence, capped by the
+      // configured stagger. No waiting time carries into the next batch.
+      const window = lastBatchTime === undefined
+        ? stagger
+        : Math.min(stagger, Math.max(0, now - lastBatchTime))
+      const step = count > 1 ? window / (count - 1) : 0
+      let index = 0
+      let previousDelay = 0
+      for (const part of parts) {
+        if (!part.whitespace)
+          previousDelay = Math.round(index++ * step)
+        delays.set(part.key, previousDelay)
+        committedPartDelays.set(part.key, previousDelay)
+      }
+      pendingParts.clear()
+      if (count)
+        lastBatchTime = now
+      return delays
+    },
+    retain(keys) {
+      for (const key of committedPartDelays.keys()) {
+        if (!keys.has(key))
+          committedPartDelays.delete(key)
+      }
+      for (const key of pendingParts.keys()) {
+        if (!keys.has(key))
+          pendingParts.delete(key)
+      }
     },
     schedule(parts) {
-      for (const part of parts)
-        pendingPartKeys.add(part.key)
-
-      if (!enabled)
-        return new Map<string, number>()
-
-      const newParts = parts.filter(part => (
-        !part.whitespace && !committedPartKeys.has(part.key)
-      ))
-      const schedule = timeline.take(newParts.length, stagger, passTime)
       const delays = new Map<string, number>()
-
+      if (!enabled)
+        return delays
       for (const part of parts) {
-        const committedDelay = committedPartDelays.get(part.key)
-        if (committedDelay !== undefined)
-          delays.set(part.key, committedDelay)
+        const delay = committedPartDelays.get(part.key)
+        if (delay === undefined)
+          pendingParts.set(part.key, part)
+        else
+          delays.set(part.key, delay)
       }
-
-      newParts.forEach((part, index) => {
-        delays.set(part.key, Math.round(schedule.baseDelay + index * schedule.step))
-      })
-
-      let previousDelay: number | undefined
-      const firstDelay = newParts.length ? delays.get(newParts[0]!.key) : undefined
-      for (const part of parts) {
-        const delay = delays.get(part.key)
-        if (delay !== undefined) {
-          previousDelay = delay
-        }
-        else if (part.whitespace && !committedPartKeys.has(part.key)) {
-          delays.set(part.key, previousDelay ?? firstDelay ?? 0)
-        }
-      }
-
-      for (const [key, delay] of delays)
-        pendingPartDelays.set(key, delay)
-
       return delays
     },
   }

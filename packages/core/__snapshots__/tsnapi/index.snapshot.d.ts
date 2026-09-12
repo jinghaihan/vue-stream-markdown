@@ -164,8 +164,6 @@ export interface ControlDescriptor<TStyle = UIStyleValue> {
   iconHeight?: number;
 }
 export interface CreateAnimationTimelineOptions {
-  maxBacklog?: number;
-  minStagger?: number;
   now?: () => number;
 }
 export interface DownloadControlOptions {
@@ -471,7 +469,8 @@ export interface TextAnimationPassOptions {
 }
 export interface TextAnimationScheduler {
   beginPass: (_: TextAnimationPassOptions) => void;
-  commitPass: () => void;
+  commitPass: (_?: (_: string, _: string) => number) => ReadonlyMap<string, number>;
+  retain: (_: ReadonlySet<string>) => void;
   schedule: (_: TextPart[]) => ReadonlyMap<string, number>;
 }
 export interface TextPart {

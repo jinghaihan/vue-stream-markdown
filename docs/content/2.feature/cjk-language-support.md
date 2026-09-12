@@ -32,7 +32,7 @@ Streaming animations use `animationSplit="auto"` by default. CJK characters are 
 />
 ```
 
-Adjacent animation units start `40ms` apart by default. Use `animationStagger` to change the cadence, or set it to `0` to reveal each received batch at once:
+New animation units in a received batch start within `40ms` of each other by default. Faster streams shorten this window to follow the arrival cadence without accumulating a playback queue. Use `animationStagger` to change the maximum batch window, or set it to `0` to reveal each received batch at once:
 
 ```vue
 <StreamMarkdown

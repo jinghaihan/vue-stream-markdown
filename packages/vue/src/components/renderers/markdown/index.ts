@@ -1,11 +1,11 @@
 import type { CompletionInfo, Node } from '@markmend/parser'
 import type { PropType } from 'vue'
 import type { MarkdownComponents } from '../../../types'
-import { createTextAnimationScheduler } from '@stream-markdown/core'
-import { computed, defineComponent, h, onMounted, onUpdated } from 'vue'
+import { computed, defineComponent, h, onMounted, onUnmounted, onUpdated } from 'vue'
 import { useContext } from '../../../composables'
 import { createNodeRenderer } from './node-renderer'
 import { collectImageSources, findLastRenderableIndex } from './node-utils'
+import { createTextAnimationController } from './text-animation'
 
 export default defineComponent({
   name: 'MarkdownNodes',
@@ -28,7 +28,8 @@ export default defineComponent({
     const context = useContext()
     const imageSources = computed(() => collectImageSources(props.nodes))
     const animatedTextKeys = new Set<string>()
-    const textAnimationScheduler = createTextAnimationScheduler()
+    const textAnimationScheduler = createTextAnimationController(context)
+    onUnmounted(textAnimationScheduler.dispose)
     const renderedTextKeysByPath = new Map<string, Set<string>>()
 
     const onBlockRendered = (path: string, keys: Set<string>) => {
@@ -102,22 +103,12 @@ export default defineComponent({
       }
     }
 
-    onMounted(() => {
-      reconcileRenderedTextKeys()
-      textAnimationScheduler.commitPass()
-    })
-    onUpdated(() => {
-      reconcileRenderedTextKeys()
-      textAnimationScheduler.commitPass()
-    })
+    onMounted(reconcileRenderedTextKeys)
+    onUpdated(reconcileRenderedTextKeys)
 
     return () => {
       if (!context.enableAnimate.value)
         animatedTextKeys.clear()
-      textAnimationScheduler.beginPass({
-        enabled: context.enableAnimate.value,
-        stagger: context.animationStagger.value,
-      })
       const lastIndex = findLastRenderableIndex(props.nodes)
       return props.nodes.map((node, index) => {
         const path = resolveTopLevelPath(node, index)
