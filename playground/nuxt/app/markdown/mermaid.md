@@ -4,29 +4,32 @@
 
 ## Basic Usage
 
-Create Mermaid diagrams using code blocks with the `mermaid` language identifier:
+Use a `mermaid` code block to turn a small decision into a diagram. Switch between **Preview** and **Source** to see how it is written.
 
 ```mermaid
-graph TD
-    A[Start] --> B{Decision}
-    B -->|Yes| C[Success]
-    B -->|No| D[Try Again]
-    D --> B
+flowchart TB
+    A([Response]) --> B{Mode}
+    B -->|Streaming| C[Complete syntax]
+    B -->|Static| D[Use original source]
+    C --> E[Animate new text]
+    D --> F[Show document]
 ```
 
 ## Diagram Types
 
 ### Flowcharts
 
-Create flowcharts to visualize processes and workflows:
+Follow Markdown from one source into different kinds of rendered content:
 
 ```mermaid
-graph TD
-    A[Christmas] -->|Get money| B(Go shopping)
-    B --> C{Let me think}
-    C -->|One| D[Laptop]
-    C -->|Two| E[iPhone]
-    C -->|Three| F[Car]
+flowchart TB
+    A([Markdown]) --> B[Parse content]
+    B --> C[Text]
+    B --> D[Code]
+    B --> E[Diagrams]
+    C --> F[Vue typography]
+    D --> G[Syntax highlighting]
+    E --> H[Mermaid preview]
 ```
 
 **Node Shapes:**
@@ -46,21 +49,18 @@ graph TD
 
 ### Sequence Diagrams
 
-Visualize interactions between different actors or systems:
+Show a short exchange between an app, an API, and a model:
 
 ```mermaid
 sequenceDiagram
-    participant User
-    participant Browser
-    participant Server
-    participant Database
+    participant App
+    participant API
+    participant Model
 
-    User->>Browser: Enter URL
-    Browser->>Server: HTTP Request
-    Server->>Database: Query data
-    Database-->>Server: Return results
-    Server-->>Browser: HTTP Response
-    Browser-->>User: Display page
+    App->>API: Send prompt
+    API->>Model: Generate
+    Model-->>API: Text chunk
+    API-->>App: Update response
 ```
 
 **Arrow Types:**
@@ -72,17 +72,14 @@ sequenceDiagram
 
 ### State Diagrams
 
-Model state machines and state transitions:
+Show the possible outcomes of an active response:
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Idle
-    Idle --> Loading: start
-    Loading --> Success: data received
-    Loading --> Error: failed
-    Success --> Idle: reset
-    Error --> Loading: retry
-    Success --> [*]
+    direction TB
+    Streaming --> Complete: finish
+    Streaming --> Cancelled: stop
+    Streaming --> Failed: error
 ```
 
 ### Class Diagrams
@@ -91,16 +88,15 @@ Document object-oriented designs:
 
 ```mermaid
 classDiagram
+    direction LR
     class User {
         +String name
         +String email
         +login()
-        +logout()
     }
     class Post {
         +String title
         +String content
-        +Date createdAt
         +publish()
     }
     User "1" --> "*" Post: creates
@@ -142,6 +138,7 @@ Model database relationships:
 
 ```mermaid
 erDiagram
+    direction LR
     USER ||--o{ POST : creates
     USER {
         int id PK
@@ -154,12 +151,6 @@ erDiagram
         string title
         text content
     }
-    POST ||--o{ COMMENT : has
-    COMMENT {
-        int id PK
-        int postId FK
-        string content
-    }
 ```
 
 ### Git Graphs
@@ -168,15 +159,13 @@ Visualize Git workflows:
 
 ```mermaid
 gitGraph
-    commit
-    commit
-    branch develop
-    checkout develop
-    commit
-    commit
+    commit id: "init"
+    branch feature
+    checkout feature
+    commit id: "add preview"
     checkout main
-    merge develop
-    commit
+    commit id: "docs"
+    merge feature id: "release"
 ```
 
 ### XY Data Charts
