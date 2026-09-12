@@ -35,12 +35,9 @@ describe('cDN module guards', () => {
       cdnOptions: cdnModule(),
     })
 
-    const error = await runtime.preload().catch(error => error as Error)
-
-    expect(error.message).toMatch(
-      /Invalid Shiki module.*bundledLanguagesInfo.*bundledThemesInfo|Invalid Shiki module.*bundledThemesInfo.*bundledLanguagesInfo/,
+    await expect(runtime.preload()).rejects.toThrow(
+      /Invalid Shiki module from https:\/\/cdn\.example\.test\/module\.js.*bundledLanguagesInfo.*bundledThemesInfo|Invalid Shiki module from https:\/\/cdn\.example\.test\/module\.js.*bundledThemesInfo.*bundledLanguagesInfo/,
     )
-    expect(error.message).toContain('https://cdn.example.test/module.js')
   })
 
   it('reports an incomplete Mermaid module', async () => {
