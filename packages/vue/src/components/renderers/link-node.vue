@@ -21,7 +21,7 @@ const open = ref(false)
 const alertMounted = ref(false)
 const { copy, copied } = useClipboard({ legacy: true })
 
-const url = computed(() => String(props.attributes.href ?? ''))
+const url = computed(() => typeof props.attributes.href === 'string' ? props.attributes.href : '')
 const internal = computed(() => url.value.startsWith('#'))
 const footnoteBackref = computed(() => String(props.attributes.class ?? '').split(/\s+/).includes('footnote-backref'))
 const { transformedUrl, isHardenUrl } = useSanitizers({
@@ -30,7 +30,7 @@ const { transformedUrl, isHardenUrl } = useSanitizers({
   loading: () => props.loading,
 })
 const Error = computed(() => hardenOptions.value?.errorComponent ?? UI.value.ErrorComponent)
-const showFavicon = computed(() => !internal.value && !footnoteBackref.value && !isHardenUrl.value)
+const showFavicon = computed(() => !!transformedUrl.value && !internal.value && !footnoteBackref.value && !isHardenUrl.value)
 const faviconFallbackIcon = computed(() => /^mailto:/i.test(transformedUrl.value ?? '') ? 'mail' : 'globe')
 const {
   failed: faviconFailed,
@@ -99,6 +99,10 @@ function handleFootnoteBackref() {
       :button-style="{ padding: '0.25rem' }"
       @click="handleFootnoteBackref"
     />
+
+    <span v-else-if="!transformedUrl && !isHardenUrl">
+      <slot />
+    </span>
 
     <a
       v-else-if="!isHardenUrl && typeof transformedUrl === 'string'"

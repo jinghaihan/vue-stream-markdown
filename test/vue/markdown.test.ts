@@ -22,6 +22,25 @@ interface MarkdownTestWrapper {
 }
 
 describe('stream markdown', () => {
+  it.each(['static', 'streaming'] as const)('renders sanitized and empty HTML links as inert text in %s mode', async (mode) => {
+    const wrapper = mount(Markdown, {
+      props: {
+        content: '<a href="javascript:alert(1)">Unsafe link</a>\n\n<a href="">Empty link</a>',
+        enableAnimate: false,
+        mode,
+      },
+    })
+
+    await vi.dynamicImportSettled()
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Unsafe link')
+    expect(wrapper.text()).toContain('Empty link')
+    expect(wrapper.findAll('a').map(link => link.html())).toEqual([])
+    expect(wrapper.find('[data-stream-markdown="link-favicon"]').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
   it('runs extension lifecycle hooks', async () => {
     const preload = vi.fn(async () => {})
     const dispose = vi.fn(() => {})
