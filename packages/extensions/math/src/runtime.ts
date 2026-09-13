@@ -11,6 +11,27 @@ async function hasBundledKatexModule() {
   }
 }
 
+function assertKatexModule(
+  module: unknown,
+  source: string,
+): asserts module is typeof import('katex') {
+  const candidate = module as Partial<typeof import('katex')> | null
+  const missing = [
+    typeof candidate?.renderToString === 'function' ? undefined : 'renderToString',
+  ].filter((name): name is string => !!name)
+
+  if (missing.length > 0) {
+    const exports = candidate && typeof candidate === 'object'
+      ? Object.keys(candidate).sort().join(', ') || '(none)'
+      : typeof candidate
+    throw new Error(
+      `[vue-stream-markdown] Invalid KaTeX module from ${source}. `
+      + `Missing: ${missing.join(', ')}. `
+      + `Received exports: ${exports}. Expected the KaTeX runtime API.`,
+    )
+  }
+}
+
 export function createKatexRuntime(options: MathRuntimeOptions = {}): KatexRuntime {
   const cdnLoader = createKatexCdnLoader({
     cdnOptions: options.cdnOptions,
@@ -21,7 +42,12 @@ export function createKatexRuntime(options: MathRuntimeOptions = {}): KatexRunti
   }
 
   async function getKatex(): Promise<typeof import('katex')> {
-    return await cdnLoader.loadCdn() ?? await import('katex')
+    const katexImport = await cdnLoader.loadCdn() ?? await import('katex')
+    const katexModule = katexImport.default && typeof katexImport.default === 'object'
+      ? { ...katexImport, ...katexImport.default }
+      : katexImport
+    assertKatexModule(katexModule, cdnLoader.getCdnUrl() ?? 'the local "katex" package')
+    return katexModule
   }
 
   async function renderToHtml(code: string, options?: RenderMathOptions) {

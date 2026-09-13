@@ -5,10 +5,19 @@
 export interface BeautifulMermaidCdnLoaderOptions {
   cdnOptions?: MaybeGetter<SharedCdnOptions | undefined>;
 }
-export interface BeautifulMermaidExtensionOptions<TErrorComponent = never> {
+export interface BeautifulMermaidExtensionOptions<TErrorComponent = never> extends BeautifulMermaidRuntimeOptions {
+  errorComponent?: TErrorComponent;
+}
+export interface BeautifulMermaidRuntime {
+  preload: () => Promise<void>;
+  load: () => Promise<typeof import('beautiful-mermaid')>;
+  dispose: () => void;
+  supports: (_: string) => boolean;
+  render: (_: MermaidRenderInput) => Promise<MermaidExtensionRenderResult>;
+}
+export interface BeautifulMermaidRuntimeOptions {
   cdnOptions?: MaybeGetter<SharedCdnOptions | undefined>;
   config?: MaybeGetter<RenderOptions$1 | undefined>;
-  errorComponent?: TErrorComponent;
   theme?: MaybeGetter<[ThemeName$1, ThemeName$1] | undefined>;
 }
 // #endregion
@@ -19,6 +28,7 @@ export declare function createBeautifulMermaidCdnLoader(_?: BeautifulMermaidCdnL
   getCdnUrl: () => string | undefined;
   loadCdn: () => Promise<typeof import('beautiful-mermaid') | undefined>;
 };
+export declare function createBeautifulMermaidRuntime(_?: BeautifulMermaidRuntimeOptions): BeautifulMermaidRuntime;
 // #endregion
 
 // #region Variables

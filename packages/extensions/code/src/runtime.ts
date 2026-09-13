@@ -43,6 +43,29 @@ function normalizeShikiModule(module: typeof import('shiki')): typeof import('sh
   return module
 }
 
+function assertShikiModule(
+  module: unknown,
+  source: string,
+): asserts module is typeof import('shiki') {
+  const candidate = module as Partial<typeof import('shiki')> | null
+  const missing = [
+    typeof candidate?.createHighlighter === 'function' ? undefined : 'createHighlighter',
+    Array.isArray(candidate?.bundledThemesInfo) ? undefined : 'bundledThemesInfo',
+    Array.isArray(candidate?.bundledLanguagesInfo) ? undefined : 'bundledLanguagesInfo',
+  ].filter((name): name is string => !!name)
+
+  if (missing.length > 0) {
+    const exports = candidate && typeof candidate === 'object'
+      ? Object.keys(candidate).sort().join(', ') || '(none)'
+      : typeof candidate
+    throw new Error(
+      `[vue-stream-markdown] Invalid Shiki module from ${source}. `
+      + `Missing: ${missing.join(', ')}. `
+      + `Received exports: ${exports}. Expected the full "shiki" entry.`,
+    )
+  }
+}
+
 async function hasBundledShikiModule() {
   try {
     await import('shiki')
@@ -79,7 +102,9 @@ export function createShikiRuntime(options: CodeRuntimeOptions = {}): ShikiRunti
 
   async function getShiki(): Promise<typeof import('shiki')> {
     const module = await cdnLoader.loadCdn() ?? await import('shiki')
-    return normalizeShikiModule(module)
+    const normalized = normalizeShikiModule(module)
+    assertShikiModule(normalized, cdnLoader.getCdnUrl() ?? 'the local "shiki" package')
+    return normalized
   }
 
   async function hasShiki() {
