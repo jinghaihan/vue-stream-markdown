@@ -31,6 +31,6 @@ export const ELEMENT_STYLES: Record<string, string> = {
   table: 'border border-border rounded-lg w-full overflow-hidden border-collapse [&_p]:m-0 [&_tr]:border-b [&_tr]:border-border',
   tbody: 'font-semibold border-y border-border bg-muted/40 relative [&_td]:text-sm [&_td]:px-4 [&_td]:py-2',
   td: 'text-sm px-4 py-2',
-  th: 'text-sm text-left px-4 py-2 whitespace-nowrap',
+  th: 'text-sm text-left px-4 py-2 whitespace-nowrap [&_*]:!whitespace-nowrap',
   thead: 'bg-muted/80 relative',
 }

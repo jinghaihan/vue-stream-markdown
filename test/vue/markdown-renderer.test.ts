@@ -53,6 +53,7 @@ describe('markdown renderer', () => {
     expect(wrapper.get('input').element).toMatchObject({ checked: true, disabled: true })
     expect(wrapper.get('[data-stream-markdown="table-wrapper"]')).toBeTruthy()
     expect(wrapper.get('th').classes()).toContain('text-left')
+    expect(wrapper.get('th').classes()).toContain('[&_*]:!whitespace-nowrap')
     wrapper.unmount()
   })
 
