@@ -3,6 +3,7 @@ import type { CodeBlockVariant, SelectOption, StreamMarkdownProps } from 'vue-st
 import { THEMES } from 'beautiful-mermaid'
 import { bundledThemesInfo } from 'shiki'
 import { ANIMATION_SPLITS, ANIMATION_TYPES, CARETS } from 'vue-stream-markdown'
+import { useI18n } from '../composables/use-i18n'
 import { Settings } from '../icons'
 
 const props = withDefaults(defineProps<{
@@ -32,6 +33,7 @@ const animationSplit = defineModel<NonNullable<StreamMarkdownProps['animationSpl
 const animationDuration = defineModel<number>('animationDuration', { required: false, default: 180 })
 const animationStagger = defineModel<number>('animationStagger', { required: false, default: 40 })
 const codeBlockVariant = defineModel<CodeBlockVariant>('codeBlockVariant', { required: false, default: 'modern' })
+const { t } = useI18n()
 
 const animationDurationInput = computed({
   get: () => animationDuration.value,
@@ -81,7 +83,8 @@ const LABEL_CLASSES = [
   'text-muted-foreground',
   'font-semibold',
   'shrink-0',
-  'w-24',
+  'w-32',
+  'whitespace-pre-line',
 ]
 
 const CONTROL_CLASSES = [
@@ -98,55 +101,55 @@ const SHIKI_THEMES: SelectOption[] = bundledThemesInfo.map(theme => ({
   value: theme.id,
 }))
 
-const MERMAID_RENDERERS: SelectOption[] = [
-  { label: 'Official Mermaid', value: 'vanilla' },
-  { label: 'Beautiful Mermaid', value: 'beautiful' },
-]
+const MERMAID_RENDERERS = computed<SelectOption[]>(() => [
+  { label: t('settings.options.mermaid'), value: 'vanilla' },
+  { label: t('settings.options.beautifulMermaid'), value: 'beautiful' },
+])
 
-const MERMAID_THEMES: SelectOption[] = [
-  { label: 'Default', value: 'default' },
-  { label: 'Dark', value: 'dark' },
-  { label: 'Forest', value: 'forest' },
-  { label: 'Neutral', value: 'neutral' },
-  { label: 'Base', value: 'base' },
-]
+const MERMAID_THEMES = computed<SelectOption[]>(() => [
+  { label: t('settings.options.default'), value: 'default' },
+  { label: t('settings.options.dark'), value: 'dark' },
+  { label: t('settings.options.forest'), value: 'forest' },
+  { label: t('settings.options.neutral'), value: 'neutral' },
+  { label: t('settings.options.base'), value: 'base' },
+])
 
-const MERMAID_BEAUTIFUL_THEMES: SelectOption[] = [
-  { label: 'Default', value: 'default' },
+const MERMAID_BEAUTIFUL_THEMES = computed<SelectOption[]>(() => [
+  { label: t('settings.options.default'), value: 'default' },
   ...Object.keys(THEMES).map(key => ({
     label: key.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
     value: key,
   })),
   ...SHIKI_THEMES,
-]
+])
 
-const CARETS_OPTIONS: SelectOption[] = [
-  { label: 'None', value: '' },
+const CARETS_OPTIONS = computed<SelectOption[]>(() => [
+  { label: t('settings.options.none'), value: '' },
   ...Object.entries(CARETS).map(([key, value]) => ({ label: value, value: key })),
-]
+])
 
-const ANIMATION_OPTIONS: SelectOption[] = [
-  { label: 'None', value: '' },
+const ANIMATION_OPTIONS = computed<SelectOption[]>(() => [
+  { label: t('settings.options.none'), value: '' },
   ...ANIMATION_TYPES.map(value => ({
     label: value.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
     value,
   })),
-]
+])
 
-const ANIMATION_SPLIT_OPTIONS: SelectOption[] = ANIMATION_SPLITS.map(value => ({
+const ANIMATION_SPLIT_OPTIONS = computed<SelectOption[]>(() => ANIMATION_SPLITS.map(value => ({
   label: {
-    auto: 'Auto',
-    word: 'Word',
-    char: 'Character',
+    auto: t('settings.options.auto'),
+    word: t('settings.options.word'),
+    char: t('settings.options.character'),
   }[value],
   value,
-}))
+})))
 
-const CODE_BLOCK_VARIANT_OPTIONS: SelectOption[] = [
-  { label: 'Modern', value: 'modern' },
-  { label: 'Classic', value: 'classic' },
-  { label: 'Minimal', value: 'minimal' },
-]
+const CODE_BLOCK_VARIANT_OPTIONS = computed<SelectOption[]>(() => [
+  { label: t('settings.options.modern'), value: 'modern' },
+  { label: t('settings.options.classic'), value: 'classic' },
+  { label: t('settings.options.minimal'), value: 'minimal' },
+])
 
 function onTypingIndexChange() {
   props.toStep(typingIndex.value)
@@ -170,71 +173,71 @@ watch(() => staticMode.value, () => {
     <template #content>
       <div class="px-2 py-3 overscroll-contain flex flex-col max-h-[80vh] overflow-x-hidden overflow-y-auto">
         <h3 :class="BLOCK_TITLE_CLASSES">
-          General
+          {{ t('settings.sections.general') }}
         </h3>
 
         <div :class="BLOCK_CLASSES">
-          <Label :class="LABEL_CLASSES">Static Mode</Label>
+          <Label :class="LABEL_CLASSES">{{ t('settings.labels.staticMode') }}</Label>
           <Switch v-model:value="staticMode" />
         </div>
 
         <div :class="BLOCK_CLASSES">
-          <Label :class="LABEL_CLASSES">Auto Scroll</Label>
+          <Label :class="LABEL_CLASSES">{{ t('settings.labels.autoScroll') }}</Label>
           <Switch v-model:value="autoScroll" />
         </div>
 
         <div :class="BLOCK_CLASSES">
-          <Label :class="LABEL_CLASSES">Typing Index</Label>
+          <Label :class="LABEL_CLASSES">{{ t('settings.labels.typingIndex') }}</Label>
           <Input
             v-model:value="typingIndex"
             :class="CONTROL_CLASSES"
             type="number"
-            placeholder="Typing index"
+            :placeholder="t('settings.placeholders.typingIndex')"
             @change="onTypingIndexChange"
           />
         </div>
 
         <div :class="BLOCK_CLASSES">
-          <Label :class="LABEL_CLASSES">Step Min</Label>
+          <Label :class="LABEL_CLASSES">{{ t('settings.labels.stepMin') }}</Label>
           <Input
             v-model:value="typedStepMin"
             :class="CONTROL_CLASSES"
             type="number"
             min="1"
             step="1"
-            placeholder="Minimum step"
+            :placeholder="t('settings.placeholders.minimumStep')"
           />
         </div>
 
         <div :class="BLOCK_CLASSES">
-          <Label :class="LABEL_CLASSES">Step Max</Label>
+          <Label :class="LABEL_CLASSES">{{ t('settings.labels.stepMax') }}</Label>
           <Input
             v-model:value="typedStepMax"
             :class="CONTROL_CLASSES"
             type="number"
             min="1"
             step="1"
-            placeholder="Maximum step"
+            :placeholder="t('settings.placeholders.maximumStep')"
           />
         </div>
 
         <div :class="BLOCK_CLASSES">
-          <Label :class="LABEL_CLASSES">Typed Delay</Label>
+          <Label :class="LABEL_CLASSES">{{ t('settings.labels.typedDelay') }}</Label>
           <Input
             v-model:value="typedDelay"
             :class="CONTROL_CLASSES"
             type="number"
-            placeholder="Typed delay"
+            :placeholder="t('settings.placeholders.typedDelay')"
           />
         </div>
 
         <hr :class="DIVIDER_CLASSES">
         <h3 :class="BLOCK_TITLE_CLASSES">
-          Code Block
+          {{ t('settings.sections.codeBlock') }}
         </h3>
 
         <div :class="BLOCK_CLASSES">
-          <Label :class="LABEL_CLASSES">Variant</Label>
+          <Label :class="LABEL_CLASSES">{{ t('settings.labels.variant') }}</Label>
           <Select
             v-model:value="codeBlockVariant"
             :class="CONTROL_CLASSES"
@@ -244,11 +247,11 @@ watch(() => staticMode.value, () => {
 
         <hr :class="DIVIDER_CLASSES">
         <h3 :class="BLOCK_TITLE_CLASSES">
-          Shiki
+          {{ t('settings.sections.shiki') }}
         </h3>
 
         <div :class="BLOCK_CLASSES">
-          <Label :class="LABEL_CLASSES">Light Theme</Label>
+          <Label :class="LABEL_CLASSES">{{ t('settings.labels.lightTheme') }}</Label>
           <Select
             v-model:value="shikiLightTheme"
             :class="CONTROL_CLASSES"
@@ -257,7 +260,7 @@ watch(() => staticMode.value, () => {
         </div>
 
         <div :class="BLOCK_CLASSES">
-          <Label :class="LABEL_CLASSES">Dark Theme</Label>
+          <Label :class="LABEL_CLASSES">{{ t('settings.labels.darkTheme') }}</Label>
           <Select
             v-model:value="shikiDarkTheme"
             :class="CONTROL_CLASSES"
@@ -267,11 +270,11 @@ watch(() => staticMode.value, () => {
 
         <hr :class="DIVIDER_CLASSES">
         <h3 :class="BLOCK_TITLE_CLASSES">
-          Mermaid
+          {{ t('settings.sections.mermaid') }}
         </h3>
 
         <div :class="BLOCK_CLASSES">
-          <Label :class="LABEL_CLASSES">Renderer</Label>
+          <Label :class="LABEL_CLASSES">{{ t('settings.labels.renderer') }}</Label>
           <Select
             v-model:value="mermaidRenderer"
             :class="CONTROL_CLASSES"
@@ -280,7 +283,7 @@ watch(() => staticMode.value, () => {
         </div>
 
         <div :class="BLOCK_CLASSES">
-          <Label :class="LABEL_CLASSES">Light Theme</Label>
+          <Label :class="LABEL_CLASSES">{{ t('settings.labels.mermaidLightTheme') }}</Label>
           <Select
             v-model:value="mermaidLightTheme"
             :class="CONTROL_CLASSES"
@@ -289,7 +292,7 @@ watch(() => staticMode.value, () => {
         </div>
 
         <div :class="BLOCK_CLASSES">
-          <Label :class="LABEL_CLASSES">Dark Theme</Label>
+          <Label :class="LABEL_CLASSES">{{ t('settings.labels.mermaidDarkTheme') }}</Label>
           <Select
             v-model:value="mermaidDarkTheme"
             :class="CONTROL_CLASSES"
@@ -298,7 +301,7 @@ watch(() => staticMode.value, () => {
         </div>
 
         <div :class="BLOCK_CLASSES">
-          <Label :class="LABEL_CLASSES">Beautiful Light Theme</Label>
+          <Label :class="LABEL_CLASSES">{{ t('settings.labels.beautifulMermaidLightTheme') }}</Label>
           <Select
             v-model:value="mermaidBeautifulLightTheme"
             :class="CONTROL_CLASSES"
@@ -307,7 +310,7 @@ watch(() => staticMode.value, () => {
         </div>
 
         <div :class="BLOCK_CLASSES">
-          <Label :class="LABEL_CLASSES">Beautiful Dark Theme</Label>
+          <Label :class="LABEL_CLASSES">{{ t('settings.labels.beautifulMermaidDarkTheme') }}</Label>
           <Select
             v-model:value="mermaidBeautifulDarkTheme"
             :class="CONTROL_CLASSES"
@@ -317,11 +320,11 @@ watch(() => staticMode.value, () => {
 
         <hr :class="DIVIDER_CLASSES">
         <h3 :class="BLOCK_TITLE_CLASSES">
-          Caret
+          {{ t('settings.sections.caret') }}
         </h3>
 
         <div :class="BLOCK_CLASSES">
-          <Label :class="LABEL_CLASSES">Caret</Label>
+          <Label :class="LABEL_CLASSES">{{ t('settings.labels.caret') }}</Label>
           <Select
             v-model:value="caret"
             :class="CONTROL_CLASSES"
@@ -330,7 +333,7 @@ watch(() => staticMode.value, () => {
         </div>
 
         <div :class="BLOCK_CLASSES">
-          <Label :class="LABEL_CLASSES">Animation</Label>
+          <Label :class="LABEL_CLASSES">{{ t('settings.labels.animation') }}</Label>
           <Select
             v-model:value="animation"
             :class="CONTROL_CLASSES"
@@ -339,7 +342,7 @@ watch(() => staticMode.value, () => {
         </div>
 
         <div :class="BLOCK_CLASSES">
-          <Label :class="LABEL_CLASSES">Split</Label>
+          <Label :class="LABEL_CLASSES">{{ t('settings.labels.split') }}</Label>
           <Select
             v-model:value="animationSplit"
             :class="CONTROL_CLASSES"
@@ -348,26 +351,26 @@ watch(() => staticMode.value, () => {
         </div>
 
         <div :class="BLOCK_CLASSES">
-          <Label :class="LABEL_CLASSES">Duration</Label>
+          <Label :class="LABEL_CLASSES">{{ t('settings.labels.duration') }}</Label>
           <Input
             v-model:value="animationDurationInput"
             :class="CONTROL_CLASSES"
             type="number"
             min="0"
             step="50"
-            placeholder="Duration (ms)"
+            :placeholder="t('settings.placeholders.duration')"
           />
         </div>
 
         <div :class="BLOCK_CLASSES">
-          <Label :class="LABEL_CLASSES">Stagger</Label>
+          <Label :class="LABEL_CLASSES">{{ t('settings.labels.stagger') }}</Label>
           <Input
             v-model:value="animationStaggerInput"
             :class="CONTROL_CLASSES"
             type="number"
             min="0"
             step="10"
-            placeholder="Stagger (ms)"
+            :placeholder="t('settings.placeholders.stagger')"
           />
         </div>
       </div>

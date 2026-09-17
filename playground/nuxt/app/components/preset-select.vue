@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { SelectOption } from 'vue-stream-markdown'
+import { useI18n } from '../composables/use-i18n'
 import { SwatchBook } from '../icons'
 import { getPresetOptions } from '../markdown'
 
@@ -10,6 +11,7 @@ const emits = defineEmits<{
 const tooltipRef = ref()
 
 const options = getPresetOptions()
+const { t } = useI18n()
 
 const BUTTON_CLASSES = [
   'text-muted-foreground',
@@ -36,7 +38,7 @@ function onSelect(item: SelectOption) {
       :class="BUTTON_CLASSES"
     >
       <SwatchBook />
-      Examples
+      {{ t('common.examples') }}
     </button>
 
     <template #content>

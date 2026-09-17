@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useResizeObserver } from '@vueuse/core'
 import VueJsonPretty from 'vue-json-pretty'
+import { useI18n } from '../composables/use-i18n'
 import { filterObjectKeys } from '../utils'
 import 'vue-json-pretty/lib/styles.css'
 
@@ -11,6 +12,7 @@ const props = withDefaults(defineProps<{
 })
 
 const { isDark } = useDark()
+const { t } = useI18n()
 
 const containerRef = ref<HTMLDivElement>()
 const height = ref<number>(0)
@@ -68,8 +70,12 @@ onMounted(updateHeight)
     <ScrollTriggerGroup :get-container="getContainer">
       <div class="flex gap-1 w-80 items-center">
         <CopyButton :content="content" />
-        <Label class="shrink-0">Hide Keys:</Label>
-        <Input v-model:value="hideKeysValue" class="pointer-events-auto" placeholder="field1, field2, ..." />
+        <Label class="shrink-0">{{ t('documentResult.hideKeys') }}</Label>
+        <Input
+          v-model:value="hideKeysValue"
+          class="pointer-events-auto"
+          :placeholder="t('documentResult.hideKeysPlaceholder')"
+        />
       </div>
     </ScrollTriggerGroup>
 

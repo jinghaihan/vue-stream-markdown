@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useI18n } from '../composables/use-i18n'
 import { ArrowDownToLine, ArrowUpToLine } from '../icons'
 
 const props = withDefaults(defineProps<{
@@ -10,7 +11,8 @@ const props = withDefaults(defineProps<{
 })
 
 const icon = computed(() => props.variant === 'up' ? ArrowUpToLine : ArrowDownToLine)
-const name = computed(() => props.variant === 'up' ? 'Scroll Up' : 'Scroll Down')
+const { t } = useI18n()
+const name = computed(() => props.variant === 'up' ? t('common.scrollUp') : t('common.scrollDown'))
 const placement = computed(() => props.variant === 'up' ? 'bottom' : 'top')
 
 function onClick() {

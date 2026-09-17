@@ -4,6 +4,7 @@ import type { Action } from '../types'
 import { useClipboard } from '@vueuse/core'
 import * as LZString from 'lz-string'
 import { homepage } from 'vue-stream-markdown/package.json'
+import { useI18n } from '../composables/use-i18n'
 import {
   BookOpenText,
   BrushClean,
@@ -35,6 +36,7 @@ const props = withDefaults(defineProps<{
 })
 
 const { isDark, toggleDark } = useDark()
+const { t } = useI18n()
 
 const { copy, copied } = useClipboard({
   legacy: true,
@@ -83,7 +85,7 @@ function wrapAction(action: Omit<Action, 'key'>): Action | null {
 const actions = computed((): Action[] => {
   return [
     wrapAction({
-      name: 'Generate Share Links',
+      name: t('actions.generateShareLinks'),
       icon: copied.value ? Check : Share,
       onClick: () => {
         if (!props.content)
@@ -98,7 +100,7 @@ const actions = computed((): Action[] => {
       },
     }),
     wrapAction({
-      name: 'Clear Content',
+      name: t('actions.clearContent'),
       icon: typedEnable.value ? CircleStop : BrushClean,
       buttonClass: typedEnable.value
         ? [isDark.value
@@ -109,13 +111,13 @@ const actions = computed((): Action[] => {
       onClick: () => props.terminateTypeWriting(),
     }),
     wrapAction({
-      name: 'Previous Step',
+      name: t('actions.previousStep'),
       icon: SkipBack,
       visible: () => !staticMode.value,
       onClick: () => props.prevStep(),
     }),
     wrapAction({
-      name: typedEnable.value ? 'Stop Typing' : 'Start Typing',
+      name: typedEnable.value ? t('actions.stopTyping') : t('actions.startTyping'),
       icon: typedEnable.value ? CirclePause : CirclePlay,
       buttonClass: typedEnable.value
         ? []
@@ -131,42 +133,42 @@ const actions = computed((): Action[] => {
       },
     }),
     wrapAction({
-      name: 'Next Step',
+      name: t('actions.nextStep'),
       icon: SkipForward,
       visible: () => !staticMode.value,
       onClick: () => props.nextStep(),
     }),
     wrapAction({
-      name: 'Toggle Input Editor',
+      name: t('actions.toggleInputEditor'),
       icon: SquareCode,
       variant: 'toggle',
       defaultActive: showInputEditor.value,
       onClick: () => showInputEditor.value = !showInputEditor.value,
     }),
     wrapAction({
-      name: 'Toggle Document Result',
+      name: t('actions.toggleDocumentResult'),
       icon: ListTree,
       variant: 'toggle',
       defaultActive: showDocumentResult.value,
       onClick: () => showDocumentResult.value = !showDocumentResult.value,
     }),
     wrapAction({
-      name: 'Change Languages',
+      name: t('actions.changeLanguages'),
       icon: Languages,
       onClick: () => props.toggleLanguage(),
     }),
     wrapAction({
-      name: 'Toggle Dark Mode',
+      name: t('actions.toggleDarkMode'),
       icon: isDark.value ? Sun : Moon,
       onClick: toggleDark,
     }),
     wrapAction({
-      name: 'Documentation',
+      name: t('actions.documentation'),
       icon: BookOpenText,
       onClick: () => window.open('https://docs-vue-stream-markdown.netlify.app', '_blank'),
     }),
     wrapAction({
-      name: 'View on GitHub',
+      name: t('actions.viewOnGitHub'),
       icon: GitHub,
       onClick: () => window.open(homepage, '_blank'),
     }),

@@ -16,6 +16,7 @@ import { useCycleList } from '@vueuse/core'
 import * as LZString from 'lz-string'
 import { hydrateOnVisible } from 'vue'
 import { Markdown, SUPPORT_LANGUAGES, useTailwindV3Theme } from 'vue-stream-markdown'
+import { provideI18n } from './composables/use-i18n'
 import { ChartPie } from './icons'
 import { DEFAULT_MARKDOWN_PATH, getPresetContent } from './markdown'
 import { getContentFromUrl } from './utils'
@@ -42,6 +43,7 @@ const content = ref<string>('')
 const { state: locale, next: toggleLanguage } = useCycleList(SUPPORT_LANGUAGES, {
   initialValue: userConfig.value.locale,
 })
+provideI18n(locale)
 
 const typedEnable = ref<boolean>(false)
 
