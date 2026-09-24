@@ -31,9 +31,7 @@ const content = ref('')
 </script>
 
 <template>
-  <Markdown caret="block">
-    {{ content }}
-  </Markdown>
+  <Markdown :content="content" caret="block" />
 </template>
 ```
 
@@ -47,9 +45,7 @@ The block caret displays a vertical bar (`▋`) similar to a terminal cursor:
 
 ```vue
 <template>
-  <Markdown caret="block">
-    Streaming content...
-  </Markdown>
+  <Markdown content="Streaming content..." caret="block" />
 </template>
 ```
 
@@ -62,9 +58,7 @@ The circle caret displays a filled circle (`●`) for a subtler indicator:
 
 ```vue
 <template>
-  <Markdown caret="circle">
-    Streaming content...
-  </Markdown>
+  <Markdown content="Streaming content..." caret="circle" />
 </template>
 ```
 
@@ -92,15 +86,14 @@ vue-stream-markdown doesn't know about roles or message ordering, so you should 
   <Markdown
     v-for="(message, index) in messages"
     :key="message.id"
+    :content="message.content"
     :caret="isAssistant(message) && isLatest(index)
       ? 'block'
       : undefined"
     :mode="isAssistant(message) && isLatest(index) && isStreaming
       ? 'streaming'
       : 'static'"
-  >
-    {{ message.content }}
-  </Markdown>
+  />
 </template>
 ```
 
