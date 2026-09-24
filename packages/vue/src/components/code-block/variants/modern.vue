@@ -17,7 +17,8 @@ defineProps<CodeBlockVariantProps>()
   >
     <header
       data-stream-markdown="code-block-header"
-      class="code-block-header text-sm text-muted-foreground px-3 py-1 pr-2.5 bg-[color-mix(in_srgb,var(--muted)_80%,var(--background)_20%)] flex gap-2 items-center top-0 justify-between sticky z-[5] max-lg:px-2 [&>*:last-child]:flex [&>*:first-child]:flex-1 [&>*:last-child]:shrink-0 [&>*:first-child]:min-w-0 [&>*:last-child]:items-center [&>*:nth-child(2)]:left-1/2 [&>*:nth-child(2)]:absolute [&>*:nth-child(2)]:-translate-x-1/2"
+      :class="{ 'sticky top-0 z-[5]': stickyHeader }"
+      class="code-block-header text-sm text-muted-foreground px-3 py-1 pr-2.5 bg-[color-mix(in_srgb,var(--muted)_80%,var(--background)_20%)] flex gap-2 items-center justify-between max-lg:px-2 [&>*:last-child]:flex [&>*:first-child]:flex-1 [&>*:last-child]:shrink-0 [&>*:first-child]:min-w-0 [&>*:last-child]:items-center [&>*:nth-child(2)]:left-1/2 [&>*:nth-child(2)]:absolute [&>*:nth-child(2)]:-translate-x-1/2"
     >
       <slot name="title" />
       <slot name="header-center" />

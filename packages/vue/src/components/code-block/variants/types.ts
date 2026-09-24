@@ -5,5 +5,6 @@ export interface CodeBlockVariantProps {
   collapsed: boolean
   loading: boolean
   maxHeight?: string
+  stickyHeader: boolean
   setScrollRef: VNodeRef
 }

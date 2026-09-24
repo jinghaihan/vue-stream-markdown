@@ -19,6 +19,7 @@ Configuration for code block display options, including language indicators and 
 ```typescript
 interface CodeOptions {
   variant?: 'modern' | 'classic' | 'minimal'
+  stickyHeader?: boolean
   languageIcon?: boolean
   languageName?: boolean
   lineNumbers?: boolean
@@ -53,6 +54,19 @@ const codeOptions: CodeOptions = {
   variant: 'modern',
 }
 ```
+
+### stickyHeader
+
+- **Type:** `boolean | undefined`
+- **Default:** `true`
+
+Keep the code block header visible while its surrounding content scrolls. Set `stickyHeader: false` to let the header scroll with the code block. This applies to the `modern` and `classic` variants; `minimal` has no header.
+
+```vue
+<Markdown :content="content" :code-options="{ stickyHeader: false }" />
+```
+
+You can also override this option for a specific language with `codeOptions.language`.
 
 ### languageIcon
 

@@ -82,6 +82,7 @@ export interface CodeBlockModeState {
 export interface CodeOptionsModel<TComponent = unknown> {
   languageCodeOptions: CodeOptionsLanguage<TComponent>
   variant: CodeBlockVariant
+  stickyHeader: boolean
   showLanguageIcon: boolean
   showLanguageName: boolean
   showLineNumbers: boolean
@@ -133,6 +134,7 @@ export function createCodeOptionsModel<TComponent = unknown>(
   return {
     languageCodeOptions,
     variant,
+    stickyHeader: isCodeOptionEnabled(languageCodeOptions.stickyHeader),
     showLanguageIcon,
     showLanguageName,
     showLineNumbers,

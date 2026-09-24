@@ -87,6 +87,7 @@ const codeOptions: CodeOptions = {
   languageIcon: true, // Show language icon (default: true)
   languageName: true, // Show language name (default: true)
   lineNumbers: true, // Show line numbers (default: true)
+  stickyHeader: true, // Keep the header visible while scrolling (default: true)
 }
 </script>
 
@@ -96,6 +97,8 @@ const codeOptions: CodeOptions = {
 ```
 
 All options default to `true` (visible). Set any option to `false` to hide the corresponding element.
+
+Set `stickyHeader: false` to let the header scroll normally in the `modern` and `classic` variants. The `minimal` variant has no header.
 
 ### Fence Metadata
 

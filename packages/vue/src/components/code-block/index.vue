@@ -79,6 +79,7 @@ const codeBlockModel = computed(() => createCodeBlockModel<Component>({
 
 const language = computed(() => codeBlockModel.value.language)
 const variant = computed(() => codeBlockModel.value.variant)
+const stickyHeader = computed(() => codeBlockModel.value.stickyHeader)
 const showLanguageIcon = computed(() => codeBlockModel.value.showLanguageIcon)
 const showLanguageName = computed(() => codeBlockModel.value.showLanguageName)
 const showLanguageTitle = computed(() => codeBlockModel.value.showLanguageTitle)
@@ -243,6 +244,7 @@ async function handleControlClick(key: string, item?: SelectOption) {
     :collapsed="collapsed"
     :loading="!!props.node.loading"
     :max-height="maxHeight"
+    :sticky-header="stickyHeader"
     :action-count="actionCount"
     :set-scroll-ref="setScrollRef"
   >

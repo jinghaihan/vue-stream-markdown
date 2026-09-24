@@ -38,6 +38,7 @@ export interface LinkOptions {
 
 export interface CodeOptions<TComponent = unknown> {
   variant?: CodeBlockVariant
+  stickyHeader?: boolean
   languageIcon?: boolean
   languageName?: boolean
   lineNumbers?: boolean

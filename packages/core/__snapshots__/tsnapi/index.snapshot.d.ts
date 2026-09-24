@@ -117,6 +117,7 @@ export interface CodeMaxHeightOptions<TComponent = unknown> {
 }
 export interface CodeOptions<TComponent = unknown> {
   variant?: CodeBlockVariant;
+  stickyHeader?: boolean;
   languageIcon?: boolean;
   languageName?: boolean;
   lineNumbers?: boolean;
@@ -129,6 +130,7 @@ export interface CodeOptionsLanguage<TComponent = unknown> extends Omit<CodeOpti
 export interface CodeOptionsModel<TComponent = unknown> {
   languageCodeOptions: CodeOptionsLanguage<TComponent>;
   variant: CodeBlockVariant;
+  stickyHeader: boolean;
   showLanguageIcon: boolean;
   showLanguageName: boolean;
   showLineNumbers: boolean;
