@@ -13,7 +13,7 @@ import { code } from '@stream-markdown/code'
 import { math } from '@stream-markdown/math'
 import { mermaid } from '@stream-markdown/mermaid'
 import { useCycleList } from '@vueuse/core'
-import * as LZString from 'lz-string'
+import { decompressFromEncodedURIComponent } from 'lz-string-es'
 import { hydrateOnVisible } from 'vue'
 import { Markdown, SUPPORT_LANGUAGES, useTailwindV3Theme } from 'vue-stream-markdown'
 import { provideI18n } from './composables/use-i18n'
@@ -222,7 +222,7 @@ async function initContent() {
   const compressedContent = getContentFromUrl(location.href)
   try {
     if (compressedContent)
-      content.value = LZString.decompressFromEncodedURIComponent(compressedContent)
+      content.value = decompressFromEncodedURIComponent(compressedContent) ?? ''
     else
       content.value = await getPresetContent(DEFAULT_MARKDOWN_PATH)
   }

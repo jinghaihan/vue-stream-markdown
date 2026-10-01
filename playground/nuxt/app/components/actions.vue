@@ -2,7 +2,7 @@
 import type { CodeBlockVariant, StreamMarkdownProps } from 'vue-stream-markdown'
 import type { Action } from '../types'
 import { useClipboard } from '@vueuse/core'
-import * as LZString from 'lz-string'
+import { compressToEncodedURIComponent } from 'lz-string-es'
 import { homepage } from 'vue-stream-markdown/package.json'
 import { useI18n } from '../composables/use-i18n'
 import {
@@ -91,7 +91,7 @@ const actions = computed((): Action[] => {
         if (!props.content)
           return
 
-        const compressed = LZString.compressToEncodedURIComponent(props.content)
+        const compressed = compressToEncodedURIComponent(props.content)
         copy(`${location.origin}?content=${compressed}`)
 
         const url = new URL(location.href)
