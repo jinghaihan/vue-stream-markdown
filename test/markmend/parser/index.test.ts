@@ -4,6 +4,41 @@ import { describe, expect, it, vi } from 'vitest'
 import footnoteContent from '../../../playground/nuxt/app/markdown/footnote.md?raw'
 
 describe('markmend parser', () => {
+  it.each([
+    ['> ', '> '],
+    ['> > ', '> > '],
+    ['- ', '  '],
+    ['12. ', '    '],
+    ['1. item\n\n    ', '    '],
+    ['- item\n\n  ', '  '],
+    ['- item\n\n  > ', '  > '],
+    ['> - ', '>   '],
+  ])('updates nested code without stale or extra blocks (%j)', async (opening, continuation) => {
+    for (const fence of ['```', '~~~']) {
+      const engine = createMarkmendParser()
+      let stableHeading
+      for (const body of ['abc', 'abcdef', `abcdef\n${continuation}\n${continuation}ghijkl`]) {
+        const source = `# Stable\n\n${opening}${fence}js\n${continuation}${body}`
+        const streamed = await engine.parse(source, 'streaming')
+        const settled = await createMarkmendParser().parse(source, 'static')
+
+        const withoutSourcePositions = (key: string, value: unknown) => key === '$' ? undefined : value
+        expect(JSON.stringify(streamed.document.nodes, withoutSourcePositions))
+          .toBe(JSON.stringify(settled.document.nodes, withoutSourcePositions))
+        expect(JSON.stringify(streamed.document.nodes).match(/"pre",/g)).toHaveLength(1)
+        if (stableHeading)
+          expect(streamed.document.nodes[0]).toBe(stableHeading)
+        stableHeading = streamed.document.nodes[0]
+      }
+
+      const closed = `# Stable\n\n${opening}${fence}js\n${continuation}abcdef\n${continuation}${fence}\n\nDone`
+      const streamed = await engine.parse(closed, 'streaming')
+      const settled = await engine.parse(closed, 'static')
+      expect(JSON.stringify(streamed.document.nodes, (key, value) => key === '$' ? undefined : value))
+        .toBe(JSON.stringify(settled.document.nodes))
+    }
+  })
+
   it('keeps tilde-fenced code literal throughout streaming updates and static parsing', async () => {
     const engine = createMarkmendParser()
     const body = '{"type":"card","text":"~~literal **bold `code \\\\(math\\\\)"}'

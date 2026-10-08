@@ -6,6 +6,7 @@ import {
 import {
   analyzeCodeFences,
   calculateParagraphOffset,
+  getCodeFencePrefix,
   isBacktickPartOfTriple,
   isEscapedCharacter,
   isInsideUnclosedCodeBlock,
@@ -28,7 +29,7 @@ export function completeCode(content: string): string {
     const scan = analyzeCodeFences(content)
     const fence = scan.unclosedFence
     if (fence?.marker.startsWith('~'))
-      return `${content}${content.endsWith('\n') ? '' : '\n'}${fence.marker}`
+      return `${content}${content.endsWith('\n') ? '' : '\n'}${getCodeFencePrefix(content, fence.start) ?? ''}${fence.marker}`
 
     const lastRange = scan.ranges.at(-1)
     if (lastRange && content[lastRange.start] === '~' && content.slice(lastRange.end).trim() === '')
@@ -170,11 +171,12 @@ function completeCodeBlock(content: string): string {
 
     // If there's actual content (language or code after newline), complete the block
     if (hasLanguage || hasNewline) {
+      const prefix = getCodeFencePrefix(content, lastFenceIndex) ?? ''
       // If content doesn't end with newline, add one before closing fence
       if (!content.endsWith('\n'))
-        return `${content}\n\`\`\``
+        return `${content}\n${prefix}\`\`\``
 
-      return `${content}\`\`\``
+      return `${content}${prefix}\`\`\``
     }
   }
 

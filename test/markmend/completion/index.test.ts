@@ -1,4 +1,4 @@
-import { completeMarkdown, completeMarkdownResult } from '@markmend/core'
+import { completeCode, completeMarkdown, completeMarkdownResult } from '@markmend/core'
 import { describe, expect, it } from 'vitest'
 import { normalize } from '../../../packages/markmend/core/src/completion'
 import { getTestCases, getTestCasesByCategory } from './test-cases'
@@ -30,6 +30,33 @@ describe('completeMarkdown', () => {
 })
 
 describe('completeMarkdownResult', () => {
+  it.each([
+    ['> ', '> '],
+    ['> > ', '> > '],
+    ['>> ', '>> '],
+    ['- ', '  '],
+    ['12. ', '    '],
+    ['1. item\n\n    ', '    '],
+    ['- item\n\n  ', '  '],
+    ['- item\n\n  > ', '  > '],
+    ['> - ', '>   '],
+  ])('keeps the container prefix when closing nested fences (%j)', (opening, continuation) => {
+    for (const fence of ['```', '~~~']) {
+      const source = `${opening}${fence}js\n${continuation}abcdef`
+      expect(completeMarkdownResult(source)).toEqual({
+        markdown: `${source}\n${continuation}${fence}`,
+        completion: { type: 'code' },
+      })
+      expect(completeMarkdown(`${source}\n${continuation}${fence}`)).toBe(`${source}\n${continuation}${fence}`)
+    }
+  })
+
+  it('does not close a root tilde fence with a quoted marker or treat indented code as a fence', () => {
+    const source = '~~~text\n> ~~~\nliteral'
+    expect(completeMarkdown(source)).toBe(`${source}\n~~~`)
+    expect(completeCode('    ~~~text\n    literal')).toBe('    ~~~text\n    literal')
+  })
+
   it.each(['', '\n'])('completes an unclosed tilde fence without changing its JSON body (suffix %j)', (suffix) => {
     const source = '~~~json\n{"type":"card","text":"example"}'
 
