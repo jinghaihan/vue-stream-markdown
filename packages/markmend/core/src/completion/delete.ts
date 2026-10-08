@@ -1,7 +1,7 @@
 import type { CompletionContext } from '../types'
 import type { TextRange } from './utils'
 import { getCompletionAnalysis } from './context'
-import { codeBlockPattern, doubleTildePattern } from './pattern'
+import { doubleTildePattern } from './pattern'
 import {
   findClosedCodeBlockRanges,
   findInlineCodeRanges,
@@ -13,6 +13,7 @@ import {
   isWithinMathBlock,
   maskEscapedMarkdownMarkers,
   maskInlineCodeMarkdownMarkers,
+  removeCodeBlocks,
   removeUrlsFromText,
 } from './utils'
 
@@ -83,6 +84,7 @@ export function completeDelete(
       lastParagraph,
       inlineCodeRanges,
       markerAnalysis.maskedEscapedContent,
+      paragraph.codeBlockRanges,
     )
     if (actualLastTildePos === -1) {
       return content
@@ -129,7 +131,7 @@ function analyzeTildeMarkers(
 ): TildeMarkerAnalysis {
   const withoutInlineCode = maskInlineCodeMarkdownMarkers(content, inlineCodeRanges)
   const maskedEscapedContent = maskEscapedMarkdownMarkers(withoutInlineCode, '~')
-  const withoutCodeBlocks = maskedEscapedContent.replace(codeBlockPattern, '')
+  const withoutCodeBlocks = removeCodeBlocks(maskedEscapedContent)
   const countingContent = removeUrlsFromText(withoutCodeBlocks)
 
   return {
@@ -143,6 +145,7 @@ function findLastTildePosition(
   paragraph: string,
   inlineCodeRanges: TextRange[],
   maskedEscapedTildes: string,
+  codeBlockRanges: TextRange[],
 ): number {
   let inCodeBlock = false
   let lastTildePos = -1
@@ -157,7 +160,8 @@ function findLastTildePosition(
     if (inCodeBlock || !paragraph.startsWith('~~', index))
       continue
 
-    if (isPositionInRanges(index, inlineCodeRanges)
+    if (isPositionInRanges(index, codeBlockRanges)
+      || isPositionInRanges(index, inlineCodeRanges)
       || maskedEscapedTildes.substring(index, index + 2) !== '~~') {
       index += 1
       continue

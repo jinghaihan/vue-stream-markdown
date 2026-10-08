@@ -1,6 +1,5 @@
 import type { CompletionContext } from '../types'
 import {
-  codeBlockPattern,
   horizontalWhitespaceGlobalPattern,
   htmlTagInitialPattern,
   htmlTagNameInitialPattern,
@@ -37,6 +36,7 @@ interface AsteriskRunAnalysis {
 export interface CodeFenceScan {
   ranges: TextRange[]
   markers: number[]
+  unclosedFence?: { start: number, marker: string }
 }
 
 /**
@@ -196,7 +196,7 @@ export function calculateParagraphOffset(paragraphStartIndex: number, lines: str
 }
 
 /**
- * Check if a position is within a code block (between ``` markers)
+ * Check if a position is within a backtick or tilde code block.
  *
  * @param text - The text to check
  * @param position - The position to check
@@ -232,27 +232,66 @@ export function findClosedCodeBlockRanges(content: string): TextRange[] {
   return analyzeCodeFences(content).ranges
 }
 
+function findTildeClosingFence(content: string, searchStart: number, length: number): TextRange | undefined {
+  const pattern = /^ {0,3}(~{3,})[\t ]*\r?$/gm
+  pattern.lastIndex = searchStart
+  for (const match of content.matchAll(pattern)) {
+    const marker = match[1]
+    if (!marker || marker.length < length)
+      continue
+    const start = match.index + match[0].indexOf('~')
+    return { start, end: start + marker.length }
+  }
+}
+
 export function analyzeCodeFences(content: string): CodeFenceScan {
   const markers: number[] = []
   const ranges: TextRange[] = []
+  const tildeOpeningPattern = /^ {0,3}(~{3,})(?!~)[^\n]*/gm
   let searchStart = 0
 
   while (true) {
-    const marker = content.indexOf('```', searchStart)
-    if (marker === -1)
+    const backtick = content.indexOf('```', searchStart)
+    tildeOpeningPattern.lastIndex = searchStart
+    const tilde = tildeOpeningPattern.exec(content)
+    if (backtick === -1 && !tilde)
       break
 
-    markers.push(marker)
-    const closing = content.indexOf('```', marker + 3)
+    if (tilde?.[1] && (backtick === -1 || tilde.index < backtick)) {
+      const marker = tilde[1]
+      const start = tilde.index + tilde[0].indexOf('~')
+      markers.push(start)
+      const closing = findTildeClosingFence(content, tildeOpeningPattern.lastIndex, marker.length)
+      if (!closing)
+        return { markers, ranges, unclosedFence: { start, marker } }
+
+      ranges.push({ start, end: closing.end })
+      markers.push(closing.start)
+      searchStart = closing.end
+      continue
+    }
+
+    markers.push(backtick)
+    const closing = content.indexOf('```', backtick + 3)
     if (closing === -1)
-      break
+      return { markers, ranges, unclosedFence: { start: backtick, marker: '```' } }
 
-    ranges.push({ start: marker, end: closing + 3 })
+    ranges.push({ start: backtick, end: closing + 3 })
     markers.push(closing)
     searchStart = closing + 3
   }
 
   return { markers, ranges }
+}
+
+export function removeCodeBlocks(content: string, ranges = findClosedCodeBlockRanges(content)): string {
+  let result = ''
+  let offset = 0
+  for (const { start, end } of ranges) {
+    result += content.slice(offset, start)
+    offset = end
+  }
+  return result + content.slice(offset)
 }
 
 /**
@@ -617,8 +656,12 @@ export function isWithinMathBlock(
   let inBlockMath = false
   let inInlineMath = false
   const singleDollarEnabled = options?.singleDollarTextMath === true
+  const codeBlockRanges = findClosedCodeBlockRanges(text)
 
   for (let i = 0; i < text.length && i < position; i += 1) {
+    if (isPositionInRanges(i, codeBlockRanges))
+      continue
+
     // Skip escaped dollar signs
     if (text[i] === '\\' && text[i + 1] === '$') {
       i += 1 // Skip the next character
@@ -709,9 +752,7 @@ export function isWithinHtmlTag(text: string, position: number): boolean {
  */
 export function removeUrlsFromText(text: string): string {
   // First, remove code blocks to avoid processing URLs inside them
-  const withoutCodeBlocks = text.includes('```')
-    ? text.replace(codeBlockPattern, '')
-    : text
+  const withoutCodeBlocks = removeCodeBlocks(text)
 
   // Remove HTML tags (including their attributes which may contain URLs)
   // This handles cases like <file url="http://example.com/path_with_underscore">

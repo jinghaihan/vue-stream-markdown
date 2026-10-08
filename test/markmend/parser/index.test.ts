@@ -4,6 +4,25 @@ import { describe, expect, it, vi } from 'vitest'
 import footnoteContent from '../../../playground/nuxt/app/markdown/footnote.md?raw'
 
 describe('markmend parser', () => {
+  it('keeps tilde-fenced code literal throughout streaming updates and static parsing', async () => {
+    const engine = createMarkmendParser()
+    const body = '{"type":"card","text":"~~literal **bold `code \\\\(math\\\\)"}'
+    const source = `~~~json\n${body}`
+    const expectedCode = ['code', { class: 'language-json' }, body]
+
+    await engine.parse('~~~json\n{"type":"card"', 'streaming')
+
+    for (const input of [source, `${source}\n`, `${source}\n~~~`]) {
+      const { document } = await engine.parse(input, 'streaming')
+
+      expect(document.nodes).toHaveLength(1)
+      expect(document.nodes[0]?.[2]).toEqual(expectedCode)
+    }
+
+    const { document } = await engine.parse(source, 'static')
+    expect(document.nodes).toEqual([['pre', { language: 'json' }, expectedCode]])
+  })
+
   it('hides pending references only during streaming and resolves them when definitions arrive', async () => {
     const engine = createMarkmendParser()
     const pending = await engine.parse('Text[^note]', 'streaming')

@@ -1,5 +1,7 @@
 import type { CompletionContext } from '../types'
+import type { TextRange } from './utils'
 import { getCompletionAnalysis } from './context'
+import { isPositionInRanges } from './utils'
 
 /**
  * Complete incomplete block math syntax.
@@ -23,7 +25,7 @@ export function completeMath(content: string, context?: CompletionContext): stri
   }
 
   const { lines } = analysis
-  const blockMathDelimiters = findBlockMathDelimiters(lines)
+  const blockMathDelimiters = findBlockMathDelimiters(lines, analysis.codeBlockRanges)
 
   // If we have an odd number of block math delimiters, we have an unclosed block math
   if (blockMathDelimiters.length % 2 === 1) {
@@ -53,19 +55,15 @@ export function completeMath(content: string, context?: CompletionContext): stri
   return content
 }
 
-function findBlockMathDelimiters(lines: string[]): number[] {
-  let inCodeBlock = false
+function findBlockMathDelimiters(lines: string[], codeBlockRanges: TextRange[]): number[] {
   const delimiters: number[] = []
+  let offset = 0
 
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index] ?? ''
-    if (line.trim().startsWith('```')) {
-      inCodeBlock = !inCodeBlock
-      continue
-    }
-
-    if (!inCodeBlock && line.trim() === '$$')
+    if (line.trim() === '$$' && !isPositionInRanges(offset, codeBlockRanges))
       delimiters.push(index)
+    offset += line.length + 1
   }
 
   return delimiters
