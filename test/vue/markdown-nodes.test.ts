@@ -4,14 +4,14 @@ import type { MarkdownElement, MarkdownNode } from 'vue-stream-markdown'
 import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { computed, defineComponent, h, markRaw, ref, shallowRef } from 'vue'
-import { Markdown, NodeList, useContext } from 'vue-stream-markdown'
+import { Markdown, MarkdownNodes, useContext } from 'vue-stream-markdown'
 
 vi.mock('../../packages/vue/src/utils', async () => ({
   ...await vi.importActual<typeof import('../../packages/vue/src/utils')>('../../packages/vue/src/utils'),
   preloadAsyncComponents: async () => {},
 }))
 
-describe('public NodeList', () => {
+describe('public MarkdownNodes', () => {
   it('renders updated Comark nodes with stable keys and tail loading state', async () => {
     const nodes = shallowRef<MarkdownNode[]>([
       ['strong', {}, 'Stable'],
@@ -31,7 +31,7 @@ describe('public NodeList', () => {
     const Host = defineComponent({
       setup() {
         useContext().provideContext({ enableAnimate: false, enableCaret: true })
-        return () => h('div', [h(NodeList, {
+        return () => h('div', [h(MarkdownNodes, {
           nodes: nodes.value,
           nodeKey: 'selected',
           components: { strong: Strong },
@@ -86,7 +86,7 @@ describe('public NodeList', () => {
           const [, , ...children] = props.node
           return [...children, ['pre', { language: 'js' }, ['code', {}, 'generated']]]
         })
-        return () => h('blockquote', [h(NodeList, { nodes: nodes.value, loading: props.loading })])
+        return () => h('blockquote', [h(MarkdownNodes, { nodes: nodes.value, nodeKey: props.nodeKey, loading: props.loading })])
       },
     }))
     const wrapper = mount(Markdown, {
@@ -120,7 +120,7 @@ describe('public NodeList', () => {
       setup(props) {
         return () => {
           const [, , ...nodes] = props.node
-          return h('blockquote', [h(NodeList, { nodes, nodeKey: props.nodeKey, loading: props.loading })])
+          return h('blockquote', [h(MarkdownNodes, { nodes, nodeKey: props.nodeKey, loading: props.loading })])
         }
       },
     }))

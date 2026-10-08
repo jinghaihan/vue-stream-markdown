@@ -26,6 +26,14 @@ export interface MarkdownControlContext<TNode = ElementNode> {
   node: TNode;
   nodeKey: string;
 }
+export interface MarkdownNodesProps {
+  nodes?: Node$1[];
+  nodeKey?: string;
+  loading?: boolean;
+  hideCaret?: boolean;
+  components?: MarkdownComponents;
+  completionInfo?: CompletionInfo;
+}
 export interface MarkdownProviderContext {
   cssVariables: Ref<Record<string, string>> | ComputedRef<Record<string, string>>;
   extensions: ComputedRef<Extensions | undefined>;
@@ -46,14 +54,6 @@ export interface MathRenderNode {
 }
 export interface MathRenderProps {
   node: MathRenderNode;
-}
-export interface NodeListProps {
-  nodes?: Node[];
-  nodeKey?: string;
-  loading?: boolean;
-  hideCaret?: boolean;
-  components?: MarkdownComponents;
-  completionInfo?: CompletionInfo;
 }
 export interface StreamMarkdownProvideContext {
   controls?: MaybeRefOrGetter<StreamMarkdownContext['controls']>;
@@ -77,7 +77,7 @@ export interface StreamMarkdownProvideContext {
   animationStagger?: MaybeRefOrGetter<StreamMarkdownProps['animationStagger']>;
   enableCaret?: MaybeRefOrGetter<boolean>;
   caret?: MaybeRefOrGetter<StreamMarkdownProps['caret']>;
-  documentNodes?: MaybeRefOrGetter<Node[]>;
+  documentNodes?: MaybeRefOrGetter<Node$1[]>;
   getContainer?: () => HTMLElement | undefined;
   beforeDownload?: StreamMarkdownProps['beforeDownload'];
   onCopied?: (_: string) => void;
@@ -107,7 +107,7 @@ export interface StreamMarkdownResolvedContext {
   animationStagger: ComputedRef<number>;
   enableCaret: ComputedRef<boolean | undefined>;
   caret: ComputedRef<string | undefined>;
-  documentNodes: ComputedRef<Node[]>;
+  documentNodes: ComputedRef<Node$1[]>;
   readonly getContainer: () => HTMLElement | undefined;
   readonly beforeDownload: NonNullable<StreamMarkdownProps['beforeDownload']>;
   readonly onCopied: (_: string) => void;
@@ -308,14 +308,49 @@ export declare const LinkRenderer: {
 });
 export declare const localeMessages: import("vue").Ref<LocaleConfig$1 | undefined, LocaleConfig$1 | undefined>;
 export declare const Markdown: typeof __VLS_export$1;
+export declare const MarkdownNodes: import("vue").DefineComponent<import("vue").ExtractPropTypes<{
+  completionInfo: {
+    type: PropType<NonNullable<MarkdownNodesProps["completionInfo"]>>;
+    default: undefined;
+  };
+  components: {
+    type: PropType<NonNullable<MarkdownNodesProps["components"]>>;
+    default: undefined;
+  };
+  hideCaret: BooleanConstructor;
+  loading: BooleanConstructor;
+  nodeKey: StringConstructor;
+  nodes: {
+    type: PropType<NonNullable<MarkdownNodesProps["nodes"]>>;
+    default: () => never[];
+  };
+}>, () => import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
+  [key: string]: any;
+}>[], {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").PublicProps, Readonly<import("vue").ExtractPropTypes<{
+  completionInfo: {
+    type: PropType<NonNullable<MarkdownNodesProps["completionInfo"]>>;
+    default: undefined;
+  };
+  components: {
+    type: PropType<NonNullable<MarkdownNodesProps["components"]>>;
+    default: undefined;
+  };
+  hideCaret: BooleanConstructor;
+  loading: BooleanConstructor;
+  nodeKey: StringConstructor;
+  nodes: {
+    type: PropType<NonNullable<MarkdownNodesProps["nodes"]>>;
+    default: () => never[];
+  };
+}>> & Readonly<{}>, {
+  completionInfo: import("@markmend/parser").CompletionInfo;
+  components: MarkdownComponents;
+  hideCaret: boolean;
+  loading: boolean;
+  nodes: Node[];
+}, {}, {}, {}, string, import("vue").ComponentProvideOptions, true, {}, any>;
 export declare const MarkdownProvider: typeof __VLS_export;
 export declare const MathRenderer: import("vue").DefineComponent<MarkdownRendererProps, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").PublicProps, Readonly<MarkdownRendererProps> & Readonly<{}>, {}, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
-export declare const NodeList: import("vue").DefineComponent<NodeListProps, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").PublicProps, Readonly<NodeListProps> & Readonly<{}>, {
-  nodes: Node$1[];
-  nodeKey: string;
-  loading: boolean;
-  hideCaret: boolean;
-}, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
 export declare const TableRenderer: {
   new (...args: any[]): import("vue").CreateComponentPublicInstanceWithMixins<Readonly<MarkdownRendererProps> & Readonly<{}>, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, import("vue").PublicProps, {}, false, {}, {}, import("vue").GlobalComponents, import("vue").GlobalDirectives, string, {}, any, import("vue").ComponentProvideOptions, {
     P: {};
@@ -687,7 +722,6 @@ export * from "@markmend/parser";
 
 // #region Referenced (internal)
 type BaseStreamMarkdownProps = StreamMarkdownProps$1<MarkdownComponents, Icons, UIComponents, CaretType$1, ControlsConfig, PreviewerConfig, HardenOptions, CodeOptions, ImageOptions, LinkOptions, UIOptions, ExtensionOverrides>;
-type Node$1 = ElementNode$1 | TextNode | CommentNode;
 interface ScrollMetrics {
   clientHeight: number;
   scrollHeight: number;

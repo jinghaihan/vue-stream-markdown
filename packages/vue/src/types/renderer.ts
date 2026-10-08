@@ -1,7 +1,7 @@
 import type { CompletionInfo } from '@markmend/parser'
 import type { MarkdownComponents, MarkdownElement, MarkdownNode } from './comark'
 
-export interface NodeListProps {
+export interface MarkdownNodesProps {
   nodes?: MarkdownNode[]
   nodeKey?: string
   loading?: boolean
