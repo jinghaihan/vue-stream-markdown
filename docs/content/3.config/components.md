@@ -25,6 +25,11 @@ const components = {
 
 A component receives the Comark element tuple as `node`, the element attributes as props, and rendered child nodes through its default slot:
 
+- `loading`: whether this node is in the active streaming tail. Completed preceding nodes and all nodes in static mode receive `false`.
+- `nodeKey`: the renderer's key for this node. It stays the same while the node remains at the same position and its content grows; it is not a persistent document ID.
+
+These renderer props take precedence over HTML attributes with the same names.
+
 ```vue
 <script setup lang="ts">
 import type { MarkdownComponentProps } from 'vue-stream-markdown'

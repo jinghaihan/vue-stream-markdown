@@ -15,7 +15,9 @@ export interface ExtensionOverrides {
   mermaid?: Extensions['mermaid'] | false;
 }
 export interface MarkdownComponentProps {
+  loading: boolean;
   node: ElementNode;
+  nodeKey: string;
 }
 export interface MarkdownControlContext<TNode = ElementNode> {
   node: TNode;

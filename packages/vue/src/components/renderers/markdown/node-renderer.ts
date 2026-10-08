@@ -141,7 +141,9 @@ export function createNodeRenderer(options: NodeRendererOptions): NodeRenderer {
       return h(component, {
         ...resolveAttributes(attrs),
         key,
+        loading,
         node,
+        nodeKey: key,
       }, {
         default: () => renderNodes(children, loading, key, hideCaret),
       })

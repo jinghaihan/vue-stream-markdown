@@ -539,6 +539,53 @@ describe('stream markdown', () => {
     wrapper.unmount()
   })
 
+  it('passes per-node streaming state and stable keys to custom code blocks', async () => {
+    const CodeBlock = markRaw(defineComponent({
+      inheritAttrs: false,
+      props: ['node', 'loading', 'nodeKey'],
+      setup(_props, { slots }) {
+        return () => h('section', slots.default?.())
+      },
+    }))
+    const prefix = '```js\nfirst\n```\n\n'
+    const wrapper = mount(Markdown, {
+      props: {
+        components: { pre: CodeBlock },
+        content: `${prefix}> \`\`\`js\n> abc`,
+        mode: 'streaming',
+      },
+    })
+    const update = wrapper as unknown as MarkdownTestWrapper
+    await flushPromises()
+
+    const initial = wrapper.findAllComponents(CodeBlock)
+    expect(initial.map(block => block.props('loading'))).toEqual([false, true])
+    const keys = initial.map(block => block.props('nodeKey'))
+    expect(keys.every(key => typeof key === 'string' && key.length > 0)).toBe(true)
+    expect(new Set(keys).size).toBe(2)
+    const elements = initial.map(block => block.element)
+
+    await update.setProps({ content: `${prefix}> \`\`\`js\n> abcdef` })
+    await flushPromises()
+    const growing = wrapper.findAllComponents(CodeBlock)
+    expect(growing.map(block => block.props('nodeKey'))).toEqual(keys)
+    expect(growing.map(block => block.props('loading'))).toEqual([false, true])
+    expect(growing.map(block => block.element)).toEqual(elements)
+    expect(growing[1]?.text()).toBe('abcdef')
+
+    await update.setProps({ content: `${prefix}> \`\`\`js\n> abcdef\n> \`\`\`\n\nTail` })
+    await flushPromises()
+    expect(wrapper.findAllComponents(CodeBlock).map(block => block.props('loading'))).toEqual([false, false])
+
+    await update.setProps({ content: `${prefix}> \`\`\`js\n> abcdef`, mode: 'static' })
+    await flushPromises()
+    const settled = wrapper.findAllComponents(CodeBlock)
+    expect(settled.map(block => block.props('loading'))).toEqual([false, false])
+    expect(settled.map(block => block.props('nodeKey'))).toEqual(keys)
+    expect(settled.map(block => block.element)).toEqual(elements)
+    wrapper.unmount()
+  })
+
   it('renders configured literal tag content without Markdown formatting', async () => {
     const Mention = markRaw(defineComponent({
       setup(_props, { slots }) {
