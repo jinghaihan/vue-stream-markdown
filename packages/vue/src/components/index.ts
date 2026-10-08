@@ -5,6 +5,8 @@ import { defineAsyncComponent } from 'vue'
 export * from './previewers'
 export * from './renderers'
 
+export const NodeList = defineAsyncComponent(() => import('./node-list.vue'))
+
 export const UI = {
   Alert: defineAsyncComponent(() => import('./alert.vue')),
   Button: defineAsyncComponent(() => import('./button.vue')),

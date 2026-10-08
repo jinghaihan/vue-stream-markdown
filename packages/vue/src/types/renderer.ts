@@ -1,4 +1,14 @@
-import type { MarkdownElement } from './comark'
+import type { CompletionInfo } from '@markmend/parser'
+import type { MarkdownComponents, MarkdownElement, MarkdownNode } from './comark'
+
+export interface NodeListProps {
+  nodes?: MarkdownNode[]
+  nodeKey?: string
+  loading?: boolean
+  hideCaret?: boolean
+  components?: MarkdownComponents
+  completionInfo?: CompletionInfo
+}
 
 export interface MarkdownControlContext<TNode = MarkdownElement> {
   node: TNode

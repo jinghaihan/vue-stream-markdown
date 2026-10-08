@@ -81,6 +81,41 @@ The Comark renderers accept `node`, `nodeKey`, and optional `loading` through `M
 
 `CodeRenderer` accepts `CodeRendererProps`: a normalized `CodeBlockNode`, `nodeKey`, and optional `showWrapper` (default: `false`). It renders only the highlighted code body by default; set `:show-wrapper="true"` to include the built-in header and wrapper. `CodeBlockRenderer` enables this automatically.
 
+## Rendering Node Lists
+
+Use `NodeList` to render existing Comark nodes after selecting or modifying them. For example, this custom heading appends a generated node to the original children:
+
+```vue
+<script setup lang="ts">
+import type { MarkdownComponentProps, MarkdownNode } from 'vue-stream-markdown'
+import { computed } from 'vue'
+import { NodeList } from 'vue-stream-markdown'
+
+const props = defineProps<MarkdownComponentProps>()
+const nodes = computed<MarkdownNode[]>(() => {
+  const [, , ...children] = props.node
+  return [...children, ['em', {}, ' (updated)']]
+})
+</script>
+
+<template>
+  <component :is="node[0]">
+    <NodeList :nodes="nodes" :node-key="nodeKey" :loading="loading" />
+  </component>
+</template>
+```
+
+`NodeList` accepts `NodeListProps`:
+
+- `nodes`: Comark nodes to render; defaults to an empty list. String nodes render as text; `NodeList` does not parse or complete Markdown.
+- `nodeKey`: the parent key used to build child keys; defaults to `root`. Forward the custom component's `nodeKey`, and use separate key prefixes when rendering multiple lists.
+- `loading`: whether the list has an active streaming tail; defaults to `false`. Only the last renderable node receives the active state.
+- `hideCaret`: suppress the tail caret; defaults to `false`.
+- `components`: optional tag-to-component mapping, replacing the inherited mapping.
+- `completionInfo`: optional parser completion metadata, replacing inherited metadata for streaming links.
+
+Inside a custom `Markdown` component, lists inherit renderer options, extensions, UI components, component mappings, and completion metadata. For an unchanged set of children, use the default slot.
+
 ## Literal Tag Content
 
 Use `literalTagContent` when a custom tag contains a data label rather than Markdown prose. Markdown markers inside configured tags are preserved as text:

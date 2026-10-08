@@ -47,6 +47,14 @@ export interface MathRenderNode {
 export interface MathRenderProps {
   node: MathRenderNode;
 }
+export interface NodeListProps {
+  nodes?: Node[];
+  nodeKey?: string;
+  loading?: boolean;
+  hideCaret?: boolean;
+  components?: MarkdownComponents;
+  completionInfo?: CompletionInfo;
+}
 export interface StreamMarkdownProvideContext {
   controls?: MaybeRefOrGetter<StreamMarkdownContext['controls']>;
   previewers?: MaybeRefOrGetter<StreamMarkdownContext['previewers']>;
@@ -302,6 +310,12 @@ export declare const localeMessages: import("vue").Ref<LocaleConfig$1 | undefine
 export declare const Markdown: typeof __VLS_export$1;
 export declare const MarkdownProvider: typeof __VLS_export;
 export declare const MathRenderer: import("vue").DefineComponent<MarkdownRendererProps, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").PublicProps, Readonly<MarkdownRendererProps> & Readonly<{}>, {}, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
+export declare const NodeList: import("vue").DefineComponent<NodeListProps, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").PublicProps, Readonly<NodeListProps> & Readonly<{}>, {
+  nodes: Node$1[];
+  nodeKey: string;
+  loading: boolean;
+  hideCaret: boolean;
+}, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
 export declare const TableRenderer: {
   new (...args: any[]): import("vue").CreateComponentPublicInstanceWithMixins<Readonly<MarkdownRendererProps> & Readonly<{}>, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, import("vue").PublicProps, {}, false, {}, {}, import("vue").GlobalComponents, import("vue").GlobalDirectives, string, {}, any, import("vue").ComponentProvideOptions, {
     P: {};
@@ -673,6 +687,7 @@ export * from "@markmend/parser";
 
 // #region Referenced (internal)
 type BaseStreamMarkdownProps = StreamMarkdownProps$1<MarkdownComponents, Icons, UIComponents, CaretType$1, ControlsConfig, PreviewerConfig, HardenOptions, CodeOptions, ImageOptions, LinkOptions, UIOptions, ExtensionOverrides>;
+type Node$1 = ElementNode$1 | TextNode | CommentNode;
 interface ScrollMetrics {
   clientHeight: number;
   scrollHeight: number;
