@@ -80,7 +80,7 @@ describe('public built-in renderers', () => {
     wrapper.unmount()
   })
 
-  it('renders a code body without a header using the configured highlighting extension', async () => {
+  it('renders only the code body by default using the configured highlighting extension', async () => {
     const highlight = vi.fn(async () => ({ tokens: [[{ content: 'short', htmlStyle: { color: 'red' } }]] }))
     const Body = markRaw(defineComponent({
       inheritAttrs: false,
@@ -89,7 +89,6 @@ describe('public built-in renderers', () => {
         return () => h(CodeRenderer, {
           node: { value: 'short', lang: 'js' },
           nodeKey: props.nodeKey,
-          showHeader: false,
         })
       },
     }))

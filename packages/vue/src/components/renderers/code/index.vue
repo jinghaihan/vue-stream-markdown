@@ -7,7 +7,7 @@ import { useCodeOptions, useContext } from '../../../composables'
 import CodeContent from './content.vue'
 
 const props = withDefaults(defineProps<CodeRendererProps>(), {
-  showHeader: true,
+  showHeader: false,
 })
 
 const { codeOptions, extensions, isDark, uiComponents: UI } = useContext()
