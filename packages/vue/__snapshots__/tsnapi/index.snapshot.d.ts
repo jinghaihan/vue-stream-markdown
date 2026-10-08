@@ -8,6 +8,9 @@ export interface CodeBlockNode {
   meta?: string;
   loading?: boolean;
 }
+export interface CodeRendererProps extends CodeBlockProps {
+  showHeader?: boolean;
+}
 export interface ExtensionOverrides {
   beautifulMermaid?: Extensions['beautifulMermaid'] | false;
   code?: Extensions['code'] | false;
@@ -32,6 +35,9 @@ export interface MarkdownProviderProps {
   extensions?: Extensions;
   isDark?: boolean;
   themeElement?: () => HTMLElement | undefined;
+}
+export interface MarkdownRendererProps extends MarkdownControlContext {
+  loading?: boolean;
 }
 export interface MathRenderNode {
   value: string;
@@ -261,10 +267,60 @@ export declare function useZoom(_?: ZoomOptions): {
 
 // #region Variables
 export declare const CODE_PREVIEWERS: Partial<Record<string, Component>> & Record<BuiltinPreviewers$1, Component>;
+export declare const CodeBlockRenderer: import("vue").DefineComponent<MarkdownRendererProps, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").PublicProps, Readonly<MarkdownRendererProps> & Readonly<{}>, {}, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
+export declare const CodeRenderer: import("vue").DefineComponent<CodeRendererProps, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").PublicProps, Readonly<CodeRendererProps> & Readonly<{}>, {
+  showHeader: boolean;
+}, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
 export declare const currentLocale: import("vue").Ref<SupportedLanguage$1, SupportedLanguage$1>;
+export declare const ImageRenderer: import("vue").DefineComponent<MarkdownRendererProps & {
+  sources?: string[];
+}, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").PublicProps, Readonly<MarkdownRendererProps & {
+  sources?: string[];
+}> & Readonly<{}>, {}, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
+export declare const LinkRenderer: {
+  new (...args: any[]): import("vue").CreateComponentPublicInstanceWithMixins<Readonly<MarkdownRendererProps> & Readonly<{}>, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, import("vue").PublicProps, {}, false, {}, {}, import("vue").GlobalComponents, import("vue").GlobalDirectives, string, {}, any, import("vue").ComponentProvideOptions, {
+    P: {};
+    B: {};
+    D: {};
+    C: {};
+    M: {};
+    Defaults: {};
+  }, Readonly<MarkdownRendererProps> & Readonly<{}>, {}, {}, {}, {}, {}>;
+  __isFragment?: never;
+  __isTeleport?: never;
+  __isSuspense?: never;
+} & import("vue").ComponentOptionsBase<Readonly<MarkdownRendererProps> & Readonly<{}>, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, {}, {}, string, {}, import("vue").GlobalComponents, import("vue").GlobalDirectives, string, import("vue").ComponentProvideOptions> & import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps & (new () => {
+  $slots: {
+    default?: (props: {}) => any;
+  } & {
+    default?: (props: {}) => any;
+  } & {
+    default?: (props: {}) => any;
+  };
+});
 export declare const localeMessages: import("vue").Ref<LocaleConfig$1 | undefined, LocaleConfig$1 | undefined>;
 export declare const Markdown: typeof __VLS_export$1;
 export declare const MarkdownProvider: typeof __VLS_export;
+export declare const MathRenderer: import("vue").DefineComponent<MarkdownRendererProps, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").PublicProps, Readonly<MarkdownRendererProps> & Readonly<{}>, {}, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
+export declare const TableRenderer: {
+  new (...args: any[]): import("vue").CreateComponentPublicInstanceWithMixins<Readonly<MarkdownRendererProps> & Readonly<{}>, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, import("vue").PublicProps, {}, false, {}, {}, import("vue").GlobalComponents, import("vue").GlobalDirectives, string, {}, any, import("vue").ComponentProvideOptions, {
+    P: {};
+    B: {};
+    D: {};
+    C: {};
+    M: {};
+    Defaults: {};
+  }, Readonly<MarkdownRendererProps> & Readonly<{}>, {}, {}, {}, {}, {}>;
+  __isFragment?: never;
+  __isTeleport?: never;
+  __isSuspense?: never;
+} & import("vue").ComponentOptionsBase<Readonly<MarkdownRendererProps> & Readonly<{}>, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, {}, {}, string, {}, import("vue").GlobalComponents, import("vue").GlobalDirectives, string, import("vue").ComponentProvideOptions> & import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps & (new () => {
+  $slots: {
+    default?: (props: {}) => any;
+  } & {
+    default?: (props: {}) => any;
+  };
+});
 export declare const UI: {
   readonly Alert: {
     new (...args: any[]): import("vue").CreateComponentPublicInstanceWithMixins<Readonly<import("@stream-markdown/core").UIAlertProps & {

@@ -29,10 +29,16 @@ export function useZoom(_) {}
 
 // #region Variables
 export var CODE_PREVIEWERS /* const */
+export var CodeBlockRenderer /* const */
+export var CodeRenderer /* const */
 export var currentLocale /* const */
+export var ImageRenderer /* const */
+export var LinkRenderer /* const */
 export var localeMessages /* const */
 export var Markdown
 export var MarkdownProvider
+export var MathRenderer /* const */
+export var TableRenderer /* const */
 export var UI /* const */
 // #endregion
 
@@ -41,13 +47,13 @@ export*from"@markmend/parser";
 // #endregion
 
 // #region Other
-export { M as ANIMATION_SPLITS }
-export { N as ANIMATION_TYPES }
-export { P as CARETS }
-export { F as DEFAULT_ANIMATION }
-export { L as DEFAULT_ANIMATION_SPLIT }
-export { B as DEFAULT_HARDEN_OPTIONS }
-export { V as DEFAULT_LANGUAGE }
-export { U as SHADCN_SCHEMAS }
-export { W as SUPPORT_LANGUAGES }
+export { L as ANIMATION_SPLITS }
+export { R as ANIMATION_TYPES }
+export { z as CARETS }
+export { B as DEFAULT_ANIMATION }
+export { H as DEFAULT_ANIMATION_SPLIT }
+export { G as DEFAULT_HARDEN_OPTIONS }
+export { K as DEFAULT_LANGUAGE }
+export { q as SHADCN_SCHEMAS }
+export { de as SUPPORT_LANGUAGES }
 // #endregion

@@ -1,19 +1,25 @@
 <script setup lang="ts">
-import type { ElementNode } from '@markmend/parser'
+import type { MarkdownRendererProps } from '../../types'
 import { getDocumentBody, openExternalUrl, scrollToElement } from '@stream-markdown/core'
 import { useClipboard } from '@vueuse/core'
-import { computed, ref } from 'vue'
+import { computed, inject, ref } from 'vue'
 import { useContext, useI18n, useLinkFavicon, useSanitizers } from '../../composables'
+import MarkdownNodes from './markdown'
+import { MARKDOWN_RENDER_CONTEXT } from './markdown/context'
+import { resolveAttributes } from './markdown/node-utils'
 
 defineOptions({ inheritAttrs: false })
 
-const props = defineProps<{
-  attributes: Record<string, unknown>
-  loading?: boolean
-  node: ElementNode
-  nodeKey: string
-  waitingForDestination?: boolean
-}>()
+const props = defineProps<MarkdownRendererProps>()
+const renderContext = inject(MARKDOWN_RENDER_CONTEXT, undefined)
+const attributes = computed(() => resolveAttributes(props.node[1]))
+const waitingForDestination = computed(() => props.loading
+  && renderContext?.completionInfo.value?.type === 'link'
+  && renderContext.completionInfo.value.phase === 'destination')
+const children = computed(() => {
+  const [, , ...children] = props.node
+  return children
+})
 
 const { uiComponents: UI, linkOptions, hardenOptions, getContainer } = useContext()
 const { t } = useI18n()
@@ -21,9 +27,9 @@ const open = ref(false)
 const alertMounted = ref(false)
 const { copy, copied } = useClipboard({ legacy: true })
 
-const url = computed(() => typeof props.attributes.href === 'string' ? props.attributes.href : '')
+const url = computed(() => typeof attributes.value.href === 'string' ? attributes.value.href : '')
 const internal = computed(() => url.value.startsWith('#'))
-const footnoteBackref = computed(() => String(props.attributes.class ?? '').split(/\s+/).includes('footnote-backref'))
+const footnoteBackref = computed(() => String(attributes.value.class ?? '').split(/\s+/).includes('footnote-backref'))
 const { transformedUrl, isHardenUrl } = useSanitizers({
   url,
   hardenOptions,
@@ -44,7 +50,7 @@ const {
   favicon: () => linkOptions.value?.favicon,
   loading: () => props.loading,
   url: transformedUrl,
-  waitingForDestination: () => props.waitingForDestination,
+  waitingForDestination,
 })
 const { transformedUrl: transformedFaviconUrl, isHardenUrl: isHardenFaviconUrl } = useSanitizers({
   url: faviconSource,
@@ -101,7 +107,9 @@ function handleFootnoteBackref() {
     />
 
     <span v-else-if="!transformedUrl && !isHardenUrl">
-      <slot />
+      <slot>
+        <MarkdownNodes :nodes="children" :loading="loading" :node-key="nodeKey" :hide-caret="!!waitingForDestination" />
+      </slot>
     </span>
 
     <a
@@ -147,11 +155,15 @@ function handleFootnoteBackref() {
           :height="14"
         />
       </span>
-      <slot />
+      <slot>
+        <MarkdownNodes :nodes="children" :loading="loading" :node-key="nodeKey" :hide-caret="!!waitingForDestination" />
+      </slot>
     </a>
 
     <component :is="Error" v-else variant="harden-link">
-      <slot />
+      <slot>
+        <MarkdownNodes :nodes="children" :loading="loading" :node-key="nodeKey" :hide-caret="!!waitingForDestination" />
+      </slot>
     </component>
 
     <component

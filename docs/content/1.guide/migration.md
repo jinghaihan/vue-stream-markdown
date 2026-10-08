@@ -166,6 +166,8 @@ const components = {
 
 The same mapping handles native Markdown elements and custom HTML-like tags.
 
+To reuse a built-in renderer previously accessed through `NODE_RENDERERS`, import a named renderer such as `CodeBlockRenderer` or `LinkRenderer`. These accept Comark elements through `MarkdownRendererProps`; `CodeRenderer` also exposes the highlighted code body. See [Built-in Renderers](/config/components#built-in-renderers) for the exports and a wrapper example.
+
 If you previously passed built-in UI replacements through `components`, rename that prop:
 
 ```vue

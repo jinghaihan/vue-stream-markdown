@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import type { ElementNode } from '@markmend/parser'
 import type { TableFormat } from '@stream-markdown/core'
-import type { Control, SelectOption } from '../../types'
+import type { Control, MarkdownRendererProps, SelectOption } from '../../types'
 import {
   createTableControlDescriptors,
   extractTableDataFromElement,
@@ -15,12 +14,16 @@ import {
 import { useClipboard, useClipboardItems } from '@vueuse/core'
 import { computed, ref } from 'vue'
 import { useContext, useControls, useI18n, usePinnedScroll } from '../../composables'
+import MarkdownNodes from './markdown'
+import { ELEMENT_STYLES } from './markdown/node-styles'
+import { resolveAttributes } from './markdown/node-utils'
 
-const props = defineProps<{
-  loading?: boolean
-  node: ElementNode
-  nodeKey: string
-}>()
+const props = defineProps<MarkdownRendererProps>()
+const attributes = computed(() => resolveAttributes(props.node[1]))
+const children = computed(() => {
+  const [, , ...children] = props.node
+  return children
+})
 
 const {
   beforeDownload,
@@ -144,7 +147,11 @@ async function handleControlClick(key: string, item?: SelectOption) {
       class="w-full overflow-x-auto overflow-y-auto"
       :style="{ maxHeight }"
     >
-      <slot />
+      <slot>
+        <table v-bind="attributes" data-stream-markdown="table" :class="[ELEMENT_STYLES.table, attributes.class]">
+          <MarkdownNodes :nodes="children" :loading="loading" :node-key="nodeKey" hide-caret />
+        </table>
+      </slot>
     </div>
 
     <div v-if="loading" class="flex justify-center">
@@ -183,7 +190,11 @@ async function handleControlClick(key: string, item?: SelectOption) {
         class="p-4 h-full overflow-auto [&_thead]:top-0 [&_thead]:sticky [&_thead]:z-10"
         @click.self="fullscreen = false"
       >
-        <slot />
+        <slot>
+          <table v-bind="attributes" data-stream-markdown="table" :class="[ELEMENT_STYLES.table, attributes.class]">
+            <MarkdownNodes :nodes="children" :loading="loading" :node-key="nodeKey" hide-caret />
+          </table>
+        </slot>
       </div>
     </component>
   </div>

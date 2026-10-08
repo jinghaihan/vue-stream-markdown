@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import type { CodeHighlightResult } from '@stream-markdown/core'
-import type { CodeBlockProps } from '../../../types'
+import type { CodeRendererProps } from '../../../types'
 import { createCodeRendererModel } from '@stream-markdown/core'
 import { computed, shallowRef, watch } from 'vue'
 import { useCodeOptions, useContext } from '../../../composables'
 import CodeContent from './content.vue'
 
-const props = withDefaults(defineProps<CodeBlockProps & {
-  showHeader?: boolean
-}>(), {
+const props = withDefaults(defineProps<CodeRendererProps>(), {
   showHeader: true,
 })
 

@@ -2,7 +2,8 @@ import type { CompletionInfo, Node } from '@markmend/parser'
 import type { VNodeChild } from 'vue'
 import type { MarkdownComponents, StreamMarkdownResolvedContext } from '../../../types'
 import type { TextAnimationController } from './text-animation'
-import { createCommentVNode, defineAsyncComponent, h } from 'vue'
+import { createCommentVNode, h } from 'vue'
+import { CodeBlockRenderer, ImageRenderer, LinkRenderer, MathRenderer, TableRenderer } from '..'
 import { BLOCK_STYLES, ELEMENT_STYLES, ORDERED_LIST_STYLES } from './node-styles'
 import {
   findLastRenderableIndex,
@@ -39,12 +40,6 @@ export interface NodeRenderer {
     indexOffset?: number,
   ) => VNodeChild[]
 }
-
-const CodeBlock = defineAsyncComponent(() => import('../code-block.vue'))
-const ImageNode = defineAsyncComponent(() => import('../image-node.vue'))
-const LinkNode = defineAsyncComponent(() => import('../link-node.vue'))
-const MathNode = defineAsyncComponent(() => import('../math-node.vue'))
-const TableNode = defineAsyncComponent(() => import('../table-node.vue'))
 
 export function createNodeRenderer(options: NodeRendererOptions): NodeRenderer {
   const { context } = options
@@ -150,7 +145,7 @@ export function createNodeRenderer(options: NodeRendererOptions): NodeRenderer {
     }
 
     if (tag === 'pre') {
-      return h(CodeBlock, {
+      return h(CodeBlockRenderer, {
         key,
         loading,
         node,
@@ -159,7 +154,7 @@ export function createNodeRenderer(options: NodeRendererOptions): NodeRenderer {
     }
 
     if (tag === 'math') {
-      return h(MathNode, {
+      return h(MathRenderer, {
         key,
         loading,
         node,
@@ -185,13 +180,11 @@ export function createNodeRenderer(options: NodeRendererOptions): NodeRenderer {
       const waitingForDestination = loading
         && completion?.type === 'link'
         && completion.phase === 'destination'
-      return h(LinkNode, {
+      return h(LinkRenderer, {
         key,
-        attributes: resolvedAttrs,
         loading,
         node,
         nodeKey: key,
-        waitingForDestination,
       }, {
         default: () => renderNodes(
           children,
@@ -203,7 +196,7 @@ export function createNodeRenderer(options: NodeRendererOptions): NodeRenderer {
     }
 
     if (tag === 'img') {
-      return h(ImageNode, {
+      return h(ImageRenderer, {
         key,
         loading,
         node,
@@ -213,7 +206,7 @@ export function createNodeRenderer(options: NodeRendererOptions): NodeRenderer {
     }
 
     if (tag === 'table') {
-      return h(TableNode, {
+      return h(TableRenderer, {
         key,
         loading,
         node,

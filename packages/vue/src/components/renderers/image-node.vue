@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import type { ElementNode } from '@markmend/parser'
+import type { MarkdownRendererProps } from '../../types'
 import { createImageModel, resolveTextDirection, saveImage } from '@stream-markdown/core'
 import { computed, ref } from 'vue'
 import { useContext, useControls, useI18n, useSanitizers } from '../../composables'
+import { collectImageSources } from './markdown/node-utils'
 
-const props = defineProps<{
-  loading?: boolean
-  node: ElementNode
-  nodeKey: string
+const props = defineProps<MarkdownRendererProps & {
   sources?: string[]
 }>()
 
@@ -15,10 +13,12 @@ const {
   beforeDownload,
   controls,
   dir,
+  documentNodes,
   hardenOptions,
   imageOptions,
   uiComponents: UI,
 } = useContext()
+const imageSources = computed(() => props.sources ?? collectImageSources(documentNodes.value))
 
 const { t } = useI18n()
 const { isControlEnabled } = useControls({ controls })
@@ -138,7 +138,7 @@ function setMaskOpacity(opacity: number) {
         :title="title"
         :preview="!fallbackAttempted && enablePreview"
         :referrer-policy="imageOptions?.referrerPolicy"
-        :sources="sources"
+        :sources="imageSources"
         :controls="controls"
         :transform-harden-url="transformHardenUrl"
         :node-props="controlContext"

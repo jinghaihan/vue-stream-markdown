@@ -1,15 +1,10 @@
 <script setup lang="ts">
-import type { ElementNode } from '@markmend/parser'
-import type { MathRenderNode } from '../../types'
+import type { MarkdownRendererProps, MathRenderNode } from '../../types'
 import { computed } from 'vue'
 import InlineMathRenderer from './inline-math.vue'
 import MathRenderer from './math.vue'
 
-const props = defineProps<{
-  loading?: boolean
-  node: ElementNode
-  nodeKey: string
-}>()
+const props = defineProps<MarkdownRendererProps>()
 
 const inline = computed(() => String(props.node[1].class ?? '').split(/\s+/).includes('inline'))
 const mathNode = computed<MathRenderNode>(() => ({
