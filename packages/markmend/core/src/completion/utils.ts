@@ -232,14 +232,57 @@ export function findClosedCodeBlockRanges(content: string): TextRange[] {
   return analyzeCodeFences(content).ranges
 }
 
-function findTildeClosingFence(content: string, searchStart: number, length: number): TextRange | undefined {
-  const pattern = /^ {0,3}(~{3,})[\t ]*\r?$/gm
+export function getCodeFencePrefix(content: string, position: number): string | undefined {
+  const lineStart = content.lastIndexOf('\n', position - 1) + 1
+  const prefix = content.slice(lineStart, position)
+  if (!/^[\t ]*(?:>[\t ]*|(?:[-+*]|\d{1,9}[.)])[\t ]+)*$/.test(prefix))
+    return undefined
+
+  // List markers become indentation on continuation lines; quote markers stay.
+  return prefix.replace(/[-+*]|\d{1,9}[.)]/g, marker => ' '.repeat(marker.length))
+}
+
+function isTildeFencePrefix(content: string, lineStart: number, prefix: string): boolean {
+  if (prefix.trim() || prefix.length <= 3)
+    return true
+
+  // Four or more spaces can introduce a fence within a list, but at the
+  // document root they introduce indented code instead.
+  const lines = content.slice(0, lineStart).split('\n')
+  for (const line of lines.reverse()) {
+    if (!line.trim())
+      continue
+    const indentation = line.length - line.trimStart().length
+    if (indentation >= prefix.length)
+      continue
+    const marker = line.match(/^[\t ]*(?:[-+*]|\d{1,9}[.)])[\t ]+/)
+    return marker !== null && marker[0].length <= prefix.length
+  }
+  return false
+}
+
+function findTildeOpeningFence(content: string, searchStart: number): RegExpExecArray | undefined {
+  if (!content.includes('~~~', searchStart))
+    return undefined
+
+  const pattern = /^([\t ]*(?:>[\t ]*|(?:[-+*]|\d{1,9}[.)])[\t ]+)*)(~{3,})(?!~)[^\n]*/gm
   pattern.lastIndex = searchStart
   for (const match of content.matchAll(pattern)) {
-    const marker = match[1]
-    if (!marker || marker.length < length)
+    if (isTildeFencePrefix(content, match.index, match[1] ?? ''))
+      return match
+  }
+}
+
+function findTildeClosingFence(content: string, searchStart: number, length: number, prefix: string): TextRange | undefined {
+  const pattern = /^([\t >]*)(~{3,})[\t ]*\r?$/gm
+  pattern.lastIndex = searchStart
+  for (const match of content.matchAll(pattern)) {
+    const marker = match[2]
+    if (!marker || marker.length < length
+      || (match[1]?.match(/>/g)?.length ?? 0) !== (prefix.match(/>/g)?.length ?? 0)) {
       continue
-    const start = match.index + match[0].indexOf('~')
+    }
+    const start = match.index + (match[1]?.length ?? 0)
     return { start, end: start + marker.length }
   }
 }
@@ -247,21 +290,19 @@ function findTildeClosingFence(content: string, searchStart: number, length: num
 export function analyzeCodeFences(content: string): CodeFenceScan {
   const markers: number[] = []
   const ranges: TextRange[] = []
-  const tildeOpeningPattern = /^ {0,3}(~{3,})(?!~)[^\n]*/gm
   let searchStart = 0
 
   while (true) {
     const backtick = content.indexOf('```', searchStart)
-    tildeOpeningPattern.lastIndex = searchStart
-    const tilde = tildeOpeningPattern.exec(content)
+    const tilde = findTildeOpeningFence(content, searchStart)
     if (backtick === -1 && !tilde)
       break
 
-    if (tilde?.[1] && (backtick === -1 || tilde.index < backtick)) {
-      const marker = tilde[1]
-      const start = tilde.index + tilde[0].indexOf('~')
+    if (tilde?.[2] && (backtick === -1 || tilde.index < backtick)) {
+      const marker = tilde[2]
+      const start = tilde.index + (tilde[1]?.length ?? 0)
       markers.push(start)
-      const closing = findTildeClosingFence(content, tildeOpeningPattern.lastIndex, marker.length)
+      const closing = findTildeClosingFence(content, tilde.index + tilde[0].length, marker.length, tilde[1] ?? '')
       if (!closing)
         return { markers, ranges, unclosedFence: { start, marker } }
 
