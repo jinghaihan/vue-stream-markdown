@@ -1,8 +1,8 @@
 import type { CompletionContext } from '../types'
 import type { CompletionParagraphAnalysis } from './context'
 import { getCompletionAnalysis } from './context'
-import { codeBlockPattern, doubleDollarPattern, inlineCodePattern } from './pattern'
-import { isBacktickPartOfTriple } from './utils'
+import { doubleDollarPattern, inlineCodePattern } from './pattern'
+import { findClosedCodeBlockRanges, isBacktickPartOfTriple, isPositionInRanges, removeCodeBlocks } from './utils'
 
 interface DollarScanState {
   lastPos: number
@@ -40,7 +40,7 @@ export function completeInlineMath(content: string, context?: CompletionContext)
   const lastParagraph = paragraph.content
 
   // Remove code blocks and inline code from the last paragraph to avoid counting $$ inside them
-  let withoutCodeBlocks = lastParagraph.replace(codeBlockPattern, '')
+  let withoutCodeBlocks = removeCodeBlocks(lastParagraph, paragraph.codeBlockRanges)
   withoutCodeBlocks = withoutCodeBlocks.replace(inlineCodePattern, '')
 
   // Count $$ in the last paragraph only (excluding code blocks and inline code)
@@ -99,6 +99,7 @@ function completeInlineMathContent(
  * Find the last $$ pair that is not inside a code block or inline code
  */
 function findLastDollarPairNotInCodeBlock(text: string): number {
+  const codeBlockRanges = findClosedCodeBlockRanges(text)
   const state: DollarScanState = {
     lastPos: -1,
     inCodeBlock: false,
@@ -106,6 +107,9 @@ function findLastDollarPairNotInCodeBlock(text: string): number {
   }
 
   for (let i = 0; i < text.length; i++) {
+    if (isPositionInRanges(i, codeBlockRanges))
+      continue
+
     if (consumeCodeFence(text, i, state)) {
       i += 2
       continue

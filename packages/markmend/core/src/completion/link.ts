@@ -1,7 +1,7 @@
 import type { CompletionContext } from '../types'
 import { getCompletionAnalysis } from './context'
-import { codeBlockPattern, incompleteBracketPattern, incompleteLinkTextPattern, standaloneBracketPattern } from './pattern'
-import { findLastNonEmptyLineIndex, isEscapedCharacter } from './utils'
+import { incompleteBracketPattern, incompleteLinkTextPattern, standaloneBracketPattern } from './pattern'
+import { findLastNonEmptyLineIndex, isEscapedCharacter, removeCodeBlocks } from './utils'
 
 /**
  * Complete incomplete link and image syntax.
@@ -33,7 +33,7 @@ export function completeLink(content: string, context?: CompletionContext): stri
   const lastParagraph = paragraph.content
 
   // Remove code blocks from the last paragraph to avoid processing links inside them
-  const lastParagraphWithoutCodeBlocks = lastParagraph.replace(codeBlockPattern, '')
+  const lastParagraphWithoutCodeBlocks = removeCodeBlocks(lastParagraph, paragraph.codeBlockRanges)
 
   // Check the last non-empty line for trailing standalone bracket
   // This handles cases where content ends with [\n or [ with trailing whitespace

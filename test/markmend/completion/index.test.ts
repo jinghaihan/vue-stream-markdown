@@ -30,6 +30,52 @@ describe('completeMarkdown', () => {
 })
 
 describe('completeMarkdownResult', () => {
+  it.each(['', '\n'])('completes an unclosed tilde fence without changing its JSON body (suffix %j)', (suffix) => {
+    const source = '~~~json\n{"type":"card","text":"example"}'
+
+    expect(completeMarkdownResult(source + suffix)).toEqual({
+      markdown: `${source}\n~~~`,
+      completion: { type: 'code' },
+    })
+  })
+
+  it.each([
+    '`literal',
+    '``literal',
+    '```js\n~~strike **bold [link',
+    '\\(literal\\)\n$$\n- > 25',
+    'line\n\n~~literal **bold `code \\(math\\)',
+  ])('preserves literal syntax inside a tilde fence: %j', (body) => {
+    const source = `~~~text\n${body}`
+
+    expect(completeMarkdownResult(source)).toEqual({
+      markdown: `${source}\n~~~`,
+      completion: { type: 'code' },
+    })
+  })
+
+  it('preserves closed tilde code while completing prose after it', () => {
+    const code = '~~~text\n\n~~literal\n$$\n\\(literal\\)\n`literal\n~~~'
+
+    expect(completeMarkdown(code)).toBe(code)
+    expect(completeMarkdown(`${code}\n\nText ~~strike`)).toBe(`${code}\n\nText ~~strike~~`)
+    expect(completeMarkdown(`${code}\nText ~~strike`)).toBe(`${code}\nText ~~strike~~`)
+  })
+
+  it('matches tilde closing fences by length and keeps shorter runs literal', () => {
+    const source = '~~~~text\n~~~\n~~literal'
+
+    expect(completeMarkdown(source)).toBe(`${source}\n~~~~`)
+    expect(completeMarkdown('~~~text\n~~literal\n~~~~')).toBe('~~~text\n~~literal\n~~~~')
+  })
+
+  it('keeps tilde fences inside backtick code literal and still completes strikethrough', () => {
+    const source = '```text\n~~~\n~~literal\n```'
+
+    expect(completeMarkdown(source)).toBe(source)
+    expect(completeMarkdown('Text ~~strike')).toBe('Text ~~strike~~')
+  })
+
   it('returns the source unchanged when completion is disabled', () => {
     expect(completeMarkdownResult('**incomplete', false)).toEqual({
       markdown: '**incomplete',

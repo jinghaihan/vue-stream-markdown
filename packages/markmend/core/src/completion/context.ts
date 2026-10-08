@@ -1,9 +1,7 @@
 import type { CompletionContext } from '../types'
 import type { CodeFenceScan, TextRange } from './utils'
-import { codeBlockPattern } from './pattern'
 import {
   analyzeCodeFences,
-  findClosedCodeBlockRanges,
   findInlineCodeRanges,
   findLastParagraphStart,
   maskInlineCodeMarkdownMarkers,
@@ -11,6 +9,7 @@ import {
   maskInvalidUnderscoreMarkers,
   maskPairedMarkerRuns,
   maskThematicBreakMarkers,
+  removeCodeBlocks,
   removeMathBlocksFromText,
   removeUrlsFromText,
 } from './utils'
@@ -80,7 +79,7 @@ class CachedFormattingMarkerAnalysis implements FormattingMarkerAnalysis {
 
   get withoutCodeBlocksAndUrls(): string {
     this.cachedWithoutCodeBlocksAndUrls ??= removeUrlsFromText(
-      this.maskedContent.replace(codeBlockPattern, ''),
+      removeCodeBlocks(this.maskedContent, this.paragraph.codeBlockRanges),
     )
     return this.cachedWithoutCodeBlocksAndUrls
   }
@@ -119,19 +118,24 @@ class CachedParagraphAnalysis extends CachedCodeBlockAnalysis implements Complet
   readonly startIndex: number
   readonly startOffset: number
 
-  constructor(lines: string[], skipTrailingEmpty: boolean) {
+  constructor(lines: string[], skipTrailingEmpty: boolean, codeBlockRanges: TextRange[]) {
     super()
     this.startIndex = findLastParagraphStart(lines, skipTrailingEmpty)
     this.content = lines.slice(this.startIndex).join('\n')
     this.startOffset = this.startIndex === 0
       ? 0
       : lines.slice(0, this.startIndex).join('\n').length + 1
+    this.cachedCodeBlockRanges = codeBlockRanges
+      .filter(range => range.end > this.startOffset)
+      .map(range => ({
+        start: Math.max(0, range.start - this.startOffset),
+        end: range.end - this.startOffset,
+      }))
     this.formattingMarkers = new CachedFormattingMarkerAnalysis(this)
   }
 
   get codeBlockRanges(): TextRange[] {
-    this.cachedCodeBlockRanges ??= findClosedCodeBlockRanges(this.content)
-    return this.cachedCodeBlockRanges
+    return this.cachedCodeBlockRanges ?? []
   }
 
   get inlineCodeRanges(): TextRange[] {
@@ -177,11 +181,11 @@ class CachedCompletionAnalysis extends CachedCodeBlockAnalysis implements Comple
 
   getLastParagraph(skipTrailingEmpty = false): CompletionParagraphAnalysis {
     if (skipTrailingEmpty) {
-      this.trailingParagraph ??= new CachedParagraphAnalysis(this.lines, true)
+      this.trailingParagraph ??= new CachedParagraphAnalysis(this.lines, true, this.codeBlockRanges)
       return this.trailingParagraph
     }
 
-    this.defaultParagraph ??= new CachedParagraphAnalysis(this.lines, false)
+    this.defaultParagraph ??= new CachedParagraphAnalysis(this.lines, false, this.codeBlockRanges)
     return this.defaultParagraph
   }
 }

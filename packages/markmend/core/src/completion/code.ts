@@ -1,15 +1,16 @@
+import { getCompletionAnalysis } from './context'
 import {
-  codeBlockPattern,
   trailingBackticksPattern,
   trailingWhitespacePattern,
 } from './pattern'
 import {
+  analyzeCodeFences,
   calculateParagraphOffset,
-  getLastParagraphWithIndex,
   isBacktickPartOfTriple,
   isEscapedCharacter,
   isInsideUnclosedCodeBlock,
   isWithinCodeBlock,
+  removeCodeBlocks,
 } from './utils'
 
 /**
@@ -23,6 +24,17 @@ import {
  * // Returns: '`code`'
  */
 export function completeCode(content: string): string {
+  if (content.includes('~~~')) {
+    const scan = analyzeCodeFences(content)
+    const fence = scan.unclosedFence
+    if (fence?.marker.startsWith('~'))
+      return `${content}${content.endsWith('\n') ? '' : '\n'}${fence.marker}`
+
+    const lastRange = scan.ranges.at(-1)
+    if (lastRange && content[lastRange.start] === '~' && content.slice(lastRange.end).trim() === '')
+      return content
+  }
+
   if (!content.includes('`'))
     return content
 
@@ -105,10 +117,11 @@ function removeTrailingIncompleteBackticks(content: string): string {
   // For single backtick `
   if (backtickSequence.length === 1) {
     // Count backticks in the last paragraph before this one
-    const { lastParagraph } = getLastParagraphWithIndex(beforeBackticks)
+    const paragraph = getCompletionAnalysis(beforeBackticks).getLastParagraph()
+    const lastParagraph = paragraph.content
 
     // Remove code blocks from counting
-    const withoutCodeBlocks = lastParagraph.replace(codeBlockPattern, '')
+    const withoutCodeBlocks = removeCodeBlocks(lastParagraph, paragraph.codeBlockRanges)
 
     // Count backticks
     let count = 0
@@ -175,11 +188,12 @@ function completeCodeBlock(content: string): string {
 function completeInlineCode(content: string): string {
   // Find the last paragraph
   const lines = content.split('\n')
-  const { lastParagraph, startIndex: paragraphStartIndex } = getLastParagraphWithIndex(content)
+  const paragraph = getCompletionAnalysis(content).getLastParagraph()
+  const { content: lastParagraph, startIndex: paragraphStartIndex } = paragraph
 
   // Remove triple backticks (code blocks) and their content to avoid interference
   // We need to remove complete code blocks from counting
-  const withoutCodeBlocks = lastParagraph.replace(codeBlockPattern, '')
+  const withoutCodeBlocks = removeCodeBlocks(lastParagraph, paragraph.codeBlockRanges)
 
   const count = countUnescapedBackticks(withoutCodeBlocks)
 
