@@ -3,6 +3,7 @@ import type { Component } from 'vue'
 import { defineAsyncComponent } from 'vue'
 
 export * from './previewers'
+export * from './renderers'
 
 export const UI = {
   Alert: defineAsyncComponent(() => import('./alert.vue')),

@@ -47,6 +47,40 @@ defineProps<MarkdownComponentProps & { name?: string }>()
 
 This same path handles native HTML and LLM-defined custom tags, so there is no separate HTML representation or renderer API.
 
+## Built-in Renderers
+
+Reuse the built-in renderers inside a custom component to keep the default behavior while adding your own layout:
+
+| Export              | Component mapping                    | Input                                                |
+| ------------------- | ------------------------------------ | ---------------------------------------------------- |
+| `CodeBlockRenderer` | `pre`                                | Comark element                                       |
+| `LinkRenderer`      | `a`                                  | Comark element                                       |
+| `ImageRenderer`     | `img`                                | Comark element                                       |
+| `MathRenderer`      | `math`                               | Comark element (inline or block)                     |
+| `TableRenderer`     | `table`                              | Comark element                                       |
+| `CodeRenderer`      | Code content inside your own wrapper | `CodeBlockNode` (`value`, `lang`, `meta`, `loading`) |
+
+For example, map `pre` to this component:
+
+```vue
+<script setup lang="ts">
+import type { MarkdownRendererProps } from 'vue-stream-markdown'
+import { CodeBlockRenderer } from 'vue-stream-markdown'
+
+const props = defineProps<MarkdownRendererProps>()
+</script>
+
+<template>
+  <section class="custom-code-block">
+    <CodeBlockRenderer v-bind="props" />
+  </section>
+</template>
+```
+
+The Comark renderers accept `node`, `nodeKey`, and optional `loading` through `MarkdownRendererProps`. When used inside `Markdown`, they inherit its options, extensions, and UI components. `LinkRenderer` and `TableRenderer` render their original children by default, including custom component mappings; you can supply a default slot to replace that content.
+
+`CodeRenderer` accepts `CodeRendererProps`: a normalized `CodeBlockNode`, `nodeKey`, and optional `showHeader` (default: `false`). It renders only the highlighted code body by default; set `:show-header="true"` to include the built-in header and wrapper. `CodeBlockRenderer` enables this automatically.
+
 ## Literal Tag Content
 
 Use `literalTagContent` when a custom tag contains a data label rather than Markdown prose. Markdown markers inside configured tags are preserved as text:

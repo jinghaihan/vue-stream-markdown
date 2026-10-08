@@ -1,8 +1,9 @@
 import type { CompletionInfo, Node } from '@markmend/parser'
 import type { PropType } from 'vue'
 import type { MarkdownComponents } from '../../../types'
-import { computed, defineComponent, h, onMounted, onUnmounted, onUpdated } from 'vue'
+import { computed, defineComponent, h, inject, onMounted, onUnmounted, onUpdated, provide } from 'vue'
 import { useContext } from '../../../composables'
+import { MARKDOWN_RENDER_CONTEXT } from './context'
 import { createNodeRenderer } from './node-renderer'
 import { collectImageSources, findLastRenderableIndex } from './node-utils'
 import { createTextAnimationController } from './text-animation'
@@ -16,9 +17,11 @@ export default defineComponent({
     },
     components: {
       type: Object as PropType<MarkdownComponents>,
-      default: () => ({}),
+      default: undefined,
     },
+    hideCaret: Boolean,
     loading: Boolean,
+    nodeKey: String,
     nodes: {
       type: Array as PropType<Node[]>,
       default: () => [],
@@ -26,7 +29,11 @@ export default defineComponent({
   },
   setup(props) {
     const context = useContext()
-    const imageSources = computed(() => collectImageSources(props.nodes))
+    const parent = props.nodeKey ? inject(MARKDOWN_RENDER_CONTEXT, undefined) : undefined
+    const components = computed(() => props.components ?? parent?.components.value ?? {})
+    const completionInfo = computed(() => props.completionInfo ?? parent?.completionInfo.value)
+    const imageSources = computed(() => parent?.imageSources.value ?? collectImageSources(props.nodes))
+    provide(MARKDOWN_RENDER_CONTEXT, { components, completionInfo, imageSources })
     const animatedTextKeys = new Set<string>()
     const textAnimationScheduler = createTextAnimationController(context)
     onUnmounted(textAnimationScheduler.dispose)
@@ -63,7 +70,7 @@ export default defineComponent({
         const renderer = createNodeRenderer({
           animatedTextKeys,
           context,
-          getCompletionInfo: () => props.completionInfo,
+          getCompletionInfo: () => completionInfo.value,
           getComponents: () => blockProps.components,
           getImageSources: () => imageSources.value,
           markTextRendered: key => renderedTextKeys.add(key),
@@ -88,7 +95,7 @@ export default defineComponent({
       const renderedTextKeys = new Set<string>()
       const activePaths = new Set<string>()
       props.nodes.forEach((node, index) => {
-        const path = resolveTopLevelPath(node, index)
+        const path = props.nodeKey ? `${props.nodeKey}-${index}` : resolveTopLevelPath(node, index)
         activePaths.add(path)
         for (const key of renderedTextKeysByPath.get(path) ?? [])
           renderedTextKeys.add(key)
@@ -111,11 +118,12 @@ export default defineComponent({
         animatedTextKeys.clear()
       const lastIndex = findLastRenderableIndex(props.nodes)
       return props.nodes.map((node, index) => {
-        const path = resolveTopLevelPath(node, index)
+        const path = props.nodeKey ? `${props.nodeKey}-${index}` : resolveTopLevelPath(node, index)
         const tag = typeof node === 'string' ? 'text' : node[0] ?? 'comment'
         return h(MarkdownBlock, {
           key: `${path}-${tag}`,
-          components: props.components,
+          components: components.value,
+          hideCaret: props.hideCaret,
           loading: props.loading && index === lastIndex,
           node,
           onRendered: onBlockRendered,

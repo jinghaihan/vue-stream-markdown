@@ -5,6 +5,10 @@ export interface MarkdownControlContext<TNode = MarkdownElement> {
   nodeKey: string
 }
 
+export interface MarkdownRendererProps extends MarkdownControlContext {
+  loading?: boolean
+}
+
 export interface CodeBlockNode {
   value: string
   lang?: string | null
@@ -13,6 +17,10 @@ export interface CodeBlockNode {
 }
 
 export type CodeBlockProps = MarkdownControlContext<CodeBlockNode>
+
+export interface CodeRendererProps extends CodeBlockProps {
+  showHeader?: boolean
+}
 
 export interface MathRenderNode {
   value: string
