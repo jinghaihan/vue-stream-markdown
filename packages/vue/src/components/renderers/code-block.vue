@@ -34,6 +34,6 @@ const codeNode = computed<CodeBlockNode>(() => {
   <CodeRenderer
     :node="codeNode"
     :node-key="nodeKey"
-    :show-header="true"
+    :show-wrapper="true"
   />
 </template>

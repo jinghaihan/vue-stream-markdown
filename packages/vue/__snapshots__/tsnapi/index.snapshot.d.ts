@@ -9,7 +9,7 @@ export interface CodeBlockNode {
   loading?: boolean;
 }
 export interface CodeRendererProps extends CodeBlockProps {
-  showHeader?: boolean;
+  showWrapper?: boolean;
 }
 export interface ExtensionOverrides {
   beautifulMermaid?: Extensions['beautifulMermaid'] | false;
@@ -269,7 +269,7 @@ export declare function useZoom(_?: ZoomOptions): {
 export declare const CODE_PREVIEWERS: Partial<Record<string, Component>> & Record<BuiltinPreviewers$1, Component>;
 export declare const CodeBlockRenderer: import("vue").DefineComponent<MarkdownRendererProps, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").PublicProps, Readonly<MarkdownRendererProps> & Readonly<{}>, {}, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
 export declare const CodeRenderer: import("vue").DefineComponent<CodeRendererProps, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").PublicProps, Readonly<CodeRendererProps> & Readonly<{}>, {
-  showHeader: boolean;
+  showWrapper: boolean;
 }, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
 export declare const currentLocale: import("vue").Ref<SupportedLanguage$1, SupportedLanguage$1>;
 export declare const ImageRenderer: import("vue").DefineComponent<MarkdownRendererProps & {

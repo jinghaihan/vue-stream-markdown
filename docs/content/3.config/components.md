@@ -79,7 +79,7 @@ const props = defineProps<MarkdownRendererProps>()
 
 The Comark renderers accept `node`, `nodeKey`, and optional `loading` through `MarkdownRendererProps`. When used inside `Markdown`, they inherit its options, extensions, and UI components. `LinkRenderer` and `TableRenderer` render their original children by default, including custom component mappings; you can supply a default slot to replace that content.
 
-`CodeRenderer` accepts `CodeRendererProps`: a normalized `CodeBlockNode`, `nodeKey`, and optional `showHeader` (default: `false`). It renders only the highlighted code body by default; set `:show-header="true"` to include the built-in header and wrapper. `CodeBlockRenderer` enables this automatically.
+`CodeRenderer` accepts `CodeRendererProps`: a normalized `CodeBlockNode`, `nodeKey`, and optional `showWrapper` (default: `false`). It renders only the highlighted code body by default; set `:show-wrapper="true"` to include the built-in header and wrapper. `CodeBlockRenderer` enables this automatically.
 
 ## Literal Tag Content
 

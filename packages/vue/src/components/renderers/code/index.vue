@@ -7,7 +7,7 @@ import { useCodeOptions, useContext } from '../../../composables'
 import CodeContent from './content.vue'
 
 const props = withDefaults(defineProps<CodeRendererProps>(), {
-  showHeader: false,
+  showWrapper: false,
 })
 
 const { codeOptions, extensions, isDark, uiComponents: UI } = useContext()
@@ -57,7 +57,7 @@ watch(
 <template>
   <component
     :is="UI.CodeBlock"
-    v-if="showHeader"
+    v-if="showWrapper"
     v-bind="props"
   >
     <CodeContent

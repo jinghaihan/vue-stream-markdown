@@ -3,7 +3,7 @@ import type { Component } from 'vue'
 import { math } from '@stream-markdown/math'
 import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
-import { defineComponent, h, markRaw } from 'vue'
+import { defineComponent, h, markRaw, ref } from 'vue'
 import { CodeBlockRenderer, CodeRenderer, ImageRenderer, LinkRenderer, Markdown, MathRenderer, TableRenderer } from 'vue-stream-markdown'
 
 vi.mock('../../packages/vue/src/utils', async () => ({
@@ -80,8 +80,9 @@ describe('public built-in renderers', () => {
     wrapper.unmount()
   })
 
-  it('renders only the code body by default using the configured highlighting extension', async () => {
+  it('renders only the code body by default and can enable its wrapper', async () => {
     const highlight = vi.fn(async () => ({ tokens: [[{ content: 'short', htmlStyle: { color: 'red' } }]] }))
+    const showWrapper = ref<boolean>()
     const Body = markRaw(defineComponent({
       inheritAttrs: false,
       props: ['node', 'nodeKey'],
@@ -89,6 +90,7 @@ describe('public built-in renderers', () => {
         return () => h(CodeRenderer, {
           node: { value: 'short', lang: 'js' },
           nodeKey: props.nodeKey,
+          showWrapper: showWrapper.value,
         })
       },
     }))
@@ -106,6 +108,13 @@ describe('public built-in renderers', () => {
     expect(wrapper.get('[data-stream-markdown="code-line"]').text()).toBe('short')
     expect(highlight).toHaveBeenCalledWith({ code: 'short', language: 'js', isDark: false })
     expect(wrapper.get('[data-stream-markdown="code-line"] span').attributes('style')).toContain('color: red')
+
+    showWrapper.value = true
+    await flushPromises()
+    await vi.dynamicImportSettled()
+    await flushPromises()
+    expect(wrapper.find('[data-stream-markdown="code-block"]').exists()).toBe(true)
+    expect(wrapper.get('[data-stream-markdown="code-line"]').text()).toBe('short')
     wrapper.unmount()
   })
 })

@@ -351,7 +351,7 @@ async function handleControlClick(key: string, item?: SelectOption) {
     <CodeNode
       v-show="mode === 'source'"
       v-bind="props"
-      :show-header="false"
+      :show-wrapper="false"
     />
   </component>
 </template>

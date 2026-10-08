@@ -19,7 +19,7 @@ export interface CodeBlockNode {
 export type CodeBlockProps = MarkdownControlContext<CodeBlockNode>
 
 export interface CodeRendererProps extends CodeBlockProps {
-  showHeader?: boolean
+  showWrapper?: boolean
 }
 
 export interface MathRenderNode {
