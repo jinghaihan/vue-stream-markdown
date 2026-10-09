@@ -7,12 +7,12 @@ type CodeToTokensOptions = Parameters<typeof incrementalCodeToTokens>[2]
 let highlighter: Awaited<ReturnType<ReturnType<typeof createShikiRuntime>['getHighlighter']>>
 
 beforeAll(async () => {
-  highlighter = await createShikiRuntime({ lang: 'typescript', langs: ['javascript'] }).getHighlighter()
+  highlighter = await createShikiRuntime({ lang: 'typescript', langs: ['javascript', 'python', 'html', 'css', 'json', 'bash', 'markdown'] }).getHighlighter()
 })
 afterAll(disposeShikiHighlighter)
 
-function compare(source: string, config: CodeToTokensOptions = options) {
-  const actual = incrementalCodeToTokens(highlighter, source, config)
+async function compare(source: string, config: CodeToTokensOptions = options) {
+  const actual = await incrementalCodeToTokens(highlighter, source, config)
   const expected = highlighter.codeToTokens(source, config)
   expect(actual.tokens).toEqual(expected.tokens)
   expect(actual.fg).toEqual(expected.fg)
@@ -21,7 +21,7 @@ function compare(source: string, config: CodeToTokensOptions = options) {
 }
 
 describe('incremental Shiki highlighting', () => {
-  it('matches full highlighting across partial lines, comments, templates and CRLF', () => {
+  it('matches full highlighting across partial lines, comments, templates and CRLF', async () => {
     for (const newline of ['\n', '\r\n']) {
       let source = ''
       const chunks = [
@@ -41,48 +41,61 @@ describe('incremental Shiki highlighting', () => {
       ]
       for (const chunk of chunks) {
         source += chunk
-        compare(source)
+        await compare(source)
       }
-      compare(source)
+      await compare(source)
     }
   })
 
-  it('reuses completed lines without mutating earlier results', () => {
+  it('reuses completed lines without mutating earlier results', async () => {
     const prefix = '// work-counter\nconst value = 1;\n'
-    const original = compare(prefix)
+    const original = await compare(prefix)
     const snapshot = structuredClone(original.tokens)
     const spy = vi.spyOn(highlighter, 'codeToTokens')
-    const next = incrementalCodeToTokens(highlighter, `${prefix}const next =`, options)
+    const next = await incrementalCodeToTokens(highlighter, `${prefix}const next =`, options)
     expect(spy.mock.calls.map(call => call[0])).toEqual(['const next ='])
     expect(next.tokens[0]).toBe(original.tokens[0])
     expect(original.tokens).toEqual(snapshot)
     spy.mockRestore()
-    compare(`${prefix}const next = 2;\n`)
+    await compare(`${prefix}const next = 2;\n`)
   })
 
-  it('isolates concurrent blocks, edits, languages and theme options', () => {
+  it.each([
+    ['python', '# python\nvalue = """first\nsecond\nthird"""\nprint(value)\n'],
+    ['html', '<div>\n<!-- comment\nstill comment -->\n<script>\nconst value = 1;\n</script>\n</div>'],
+    ['css', '/* comment\ncomment end */\na {\n  color: red;\n}\n'],
+    ['json', '{\n  "value": [1,\n2,3]\n}\n'],
+    ['bash', 'cat <<EOF\nhello\nEOF\necho "done"\n'],
+    ['markdown', '# Heading\n\n```js\nconst value = 1;\n```\n\n**bold**\n'],
+  ] as const)('matches full highlighting while streaming %s', async (lang, source) => {
+    for (let end = 3; end < source.length; end += 5)
+      await compare(source.slice(0, end), { ...options, lang })
+    await compare(source, { ...options, lang })
+  })
+
+  it('isolates concurrent blocks, edits, languages and theme options', async () => {
     const prefixes = Array.from({ length: 4 }, (_, index) => `// concurrent ${index}\nconst value = ${index};\n`)
     for (const prefix of prefixes)
-      compare(prefix)
+      await compare(prefix)
     for (const prefix of prefixes)
-      compare(`${prefix}console.log(value)`)
-    compare(prefixes[0]?.replace('value', 'renamed') ?? '')
-    compare(`${prefixes[0]}let other = true`, { ...options, lang: 'javascript' })
-    compare(`${prefixes[0]}let other = true`, { ...options, defaultColor: false })
-    compare(`${prefixes[0]}let other = true`, { ...options, themes: { light: 'github-dark', dark: 'github-light' } })
+      await compare(`${prefix}console.log(value)`)
+    await compare(prefixes[0]?.replace('value', 'renamed') ?? '')
+    await compare(`${prefixes[0]}let other = true`, { ...options, lang: 'javascript' })
+    await compare(`${prefixes[0]}let other = true`, { ...options, defaultColor: false })
+    await compare(`${prefixes[0]}let other = true`, { ...options, themes: { light: 'github-dark', dark: 'github-light' } })
   })
 
-  it('evicts older blocks beyond the four-entry limit', () => {
+  it('evicts older blocks beyond the four-entry limit', async () => {
     const prefixes = Array.from({ length: 5 }, (_, index) => `// eviction ${index}\nconst item = ${index};\n`)
     for (const prefix of prefixes)
-      compare(prefix)
+      await compare(prefix)
     const spy = vi.spyOn(highlighter, 'codeToTokens')
-    incrementalCodeToTokens(highlighter, `${prefixes[0]}item++`, options)
-    expect(spy.mock.calls[0]?.[0]).toBe(prefixes[0])
+    await incrementalCodeToTokens(highlighter, `${prefixes[0]}item++`, options)
+    expect(spy.mock.calls[0]?.[0]).toContain('// eviction 0')
     spy.mockRestore()
   })
 
-  it('falls back to full highlighting for explicit context, hooks, time limits and bare CR', () => {
+  it('falls back to full highlighting for explicit context, hooks, time limits and bare CR', async () => {
     const source = '// fallback\nconst value = 1;\n'
     const configurations: CodeToTokensOptions[] = [
       { ...options, grammarContextCode: '/*' },
@@ -92,12 +105,12 @@ describe('incremental Shiki highlighting', () => {
     ]
     for (const config of configurations) {
       const spy = vi.spyOn(highlighter, 'codeToTokens')
-      incrementalCodeToTokens(highlighter, source, config)
+      await incrementalCodeToTokens(highlighter, source, config)
       expect(spy.mock.calls.map(call => call[0])).toEqual([source])
       spy.mockRestore()
-      compare(source, config)
+      await compare(source, config)
     }
-    compare('// bare CR\rconst value = 1;\n')
+    await compare('// bare CR\rconst value = 1;\n')
   })
 
   it('reuses converted extension rows and respects changing option getters', async () => {

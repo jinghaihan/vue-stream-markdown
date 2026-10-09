@@ -1,9 +1,10 @@
-/*!
- * Adapted from Streamdown's incremental highlighting (Vercel, Inc., 2023).
- * Licensed under Apache-2.0; see LICENSE.streamdown.
- * Modified to isolate Shiki configurations and bound the shared cache.
- */
 import type { BundledLanguage, BundledTheme, CodeToTokensOptions, GrammarState, Highlighter, ThemedToken, TokensResult } from 'shiki'
+/*!
+ * Recent-state cache adapted from Streamdown (Vercel, Inc., 2023).
+ * Licensed under Apache-2.0; see LICENSE.streamdown.
+ * Tokenization delegates to the official ShikiStreamTokenizer.
+ */
+import { ShikiStreamTokenizer } from '@shikijs/stream'
 
 type TokenOptions = CodeToTokensOptions<BundledLanguage, BundledTheme>
 
@@ -53,7 +54,7 @@ function shiftOffsets(rows: ThemedToken[][], offset: number) {
   }
 }
 
-export function incrementalCodeToTokens(highlighter: Highlighter, code: string, options: TokenOptions): TokensResult {
+export async function incrementalCodeToTokens(highlighter: Highlighter, code: string, options: TokenOptions): Promise<TokensResult> {
   const key = configurationKey(options)
   const lastNewline = code.lastIndexOf('\n')
   // A bare CR can become CRLF in the next chunk; don't cache that boundary.
@@ -64,31 +65,40 @@ export function incrementalCodeToTokens(highlighter: Highlighter, code: string, 
   const index = pool.findIndex(state => state.key === key && code.startsWith(state.prefix))
   const previous = index < 0 ? undefined : pool.splice(index, 1)[0]
   const prefix = code.slice(0, lastNewline + 1)
-  const start = previous?.prefix.length ?? 0
-  let rows = previous?.rows ?? []
-  let grammarState = previous?.grammarState
-  let completed: TokensResult | undefined
-
-  if (prefix.length > start) {
-    completed = highlighter.codeToTokens(prefix.slice(start), { ...options, grammarState })
-    const newRows = completed.tokens.slice(0, -1)
-    shiftOffsets(newRows, start)
-    rows = rows.concat(newRows)
-    grammarState = completed.grammarState
-  }
-
+  // Bootstrap an existing block in one Shiki call; stream only subsequent lines.
+  const initial = previous ? undefined : highlighter.codeToTokens(prefix, options)
+  const completedRows = previous?.rows ?? initial?.tokens.slice(0, -1) ?? []
+  const grammarState = previous?.grammarState ?? initial?.grammarState
   if (!grammarState)
     return highlighter.codeToTokens(code, options)
-
-  pool.unshift({ key, prefix, rows, grammarState })
+  const start = previous?.prefix.length ?? prefix.length
+  const newRows: ThemedToken[][] = []
+  let offset = start
+  let result: TokensResult | undefined
+  const tokenizer = new ShikiStreamTokenizer({
+    ...options,
+    highlighter: {
+      ...highlighter,
+      codeToTokens(line: string, config: CodeToTokensOptions<string, string>) {
+        const normalized = line.endsWith('\r') ? line.slice(0, -1) : line
+        result = highlighter.codeToTokens(normalized, config as TokenOptions)
+        shiftOffsets(result.tokens, offset)
+        // The official tokenizer consumes only the first row, then appends a newline token.
+        // Copy the row array so its synthetic newline doesn't change our row output.
+        newRows.push(result.tokens[0]?.slice() ?? [])
+        offset += line.length + 1
+        return result
+      },
+    },
+  })
+  tokenizer.lastStableGrammarState = grammarState
+  await tokenizer.enqueue(code.slice(start))
+  const tail = newRows.pop() ?? []
+  const rows = completedRows.concat(newRows)
+  if (!result || !tokenizer.lastStableGrammarState)
+    return highlighter.codeToTokens(code, options)
+  pool.unshift({ key, prefix, rows, grammarState: tokenizer.lastStableGrammarState })
   pool.length = Math.min(pool.length, MAX_STATES)
   states.set(highlighter, pool)
-
-  const tail = code.slice(prefix.length)
-  // A completed block already includes the final empty row.
-  const result = !tail && completed
-    ? { ...completed, tokens: completed.tokens.slice(-1) }
-    : highlighter.codeToTokens(tail, { ...options, grammarState })
-  shiftOffsets(result.tokens, !tail && completed ? start : prefix.length)
-  return { ...result, tokens: rows.concat(result.tokens) }
+  return { ...result, tokens: rows.concat([tail]) }
 }

@@ -33,6 +33,7 @@
     "prepublishOnly": "pnpm build"
   },
   "dependencies": {
+    "@shikijs/stream": "^4.4.3",
     "@stream-markdown/core": "workspace:*",
     "shiki": "^4.0.2"
   },

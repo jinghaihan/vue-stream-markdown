@@ -129,6 +129,8 @@ describe('virtual code blocks', () => {
     expect(wrapper.findAll(rows).length).toBeLessThan(40)
     const width = wrapper.get('pre').element.style.minWidth
     expect(width).toContain('2000px')
+    expect(width).toContain('var(--stream-markdown-line-number-width)')
+    expect(wrapper.get('pre').element.style.getPropertyValue('--stream-markdown-line-number-width')).toBe('4ch')
     expect(highlight).toHaveBeenCalledWith({ code: wideSource, language: 'js', isDark: false })
     expect(wrapper.get(`${rows} span`).attributes('style')).toContain('color: red')
 

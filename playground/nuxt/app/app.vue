@@ -202,8 +202,6 @@ async function changePresetContent(item: SelectOption) {
     userConfig.value.codeMaxHeight = 300
     userConfig.value.codeVirtualScroll = true
     userConfig.value.staticMode = true
-    userConfig.value.typedStepMin = 256
-    userConfig.value.typedStepMax = 256
   }
 
   const data = await getPresetContent(String(item.value))

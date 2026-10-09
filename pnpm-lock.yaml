@@ -511,6 +511,9 @@ importers:
 
   packages/extensions/code:
     dependencies:
+      '@shikijs/stream':
+        specifier: ^4.4.3
+        version: 4.4.3(react@19.3.0)(vue@3.5.43(typescript@6.0.3))
       '@stream-markdown/core':
         specifier: workspace:*
         version: link:../../core
@@ -3683,6 +3686,24 @@ packages:
   '@shikijs/primitive@4.4.3':
     resolution: {integrity: sha512-m0wBeLDQDeIxRdUmrCPdQqfuUamDwRL5isCfYbguKD6NiaKpVbsv+3J81DyIKgNW5h4WAIIr8T4EkgQrBBxvaQ==}
     engines: {node: '>=20'}
+
+  '@shikijs/stream@4.4.3':
+    resolution: {integrity: sha512-nG30byPDdyua1R9danJjQjv60PlNHTi1q2O0tzW+ocAFqb63Y/5DK5URpbuGt0jEidpRNx3+OgJ+aEMUBWqRNA==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      react: ^19.0.0
+      solid-js: ^1.9.0
+      svelte: ^5.0.0-0
+      vue: ^3.5.43
+    peerDependenciesMeta:
+      react:
+        optional: true
+      solid-js:
+        optional: true
+      svelte:
+        optional: true
+      vue:
+        optional: true
 
   '@shikijs/themes@3.23.0':
     resolution: {integrity: sha512-5qySYa1ZgAT18HR/ypENL9cUSGOeI2x+4IvYJu4JgVJdizn6kG4ia5Q1jDEOi7gTbN4RbuYtmHh0W3eccOrjMA==}
@@ -14827,6 +14848,13 @@ snapshots:
       '@shikijs/types': 4.4.3
       '@shikijs/vscode-textmate': 10.0.2
       '@types/hast': 3.0.5
+
+  '@shikijs/stream@4.4.3(react@19.3.0)(vue@3.5.43(typescript@6.0.3))':
+    dependencies:
+      '@shikijs/core': 4.4.3
+    optionalDependencies:
+      react: 19.3.0
+      vue: 3.5.43(typescript@6.0.3)
 
   '@shikijs/themes@3.23.0':
     dependencies:
