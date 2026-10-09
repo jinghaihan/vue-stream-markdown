@@ -3,6 +3,7 @@ import type { MarkdownElement } from 'vue-stream-markdown'
 import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, markRaw, onMounted, onUnmounted } from 'vue'
+import { useContext } from 'vue-stream-markdown'
 import MinimalVariant from '../../packages/vue/src/components/code-block/variants/minimal.vue'
 import Markdown from '../../packages/vue/src/index.vue'
 import footnoteContent from '../../playground/nuxt/app/markdown/footnote.md?raw'
@@ -18,7 +19,7 @@ interface MarkdownTestVm {
 }
 
 interface MarkdownTestWrapper {
-  setProps: (props: { content?: string, enableAnimate?: boolean, mode?: 'static' | 'streaming' }) => Promise<void>
+  setProps: (props: { content?: string, enableAnimate?: boolean, mode?: 'static' | 'streaming', caret?: 'block' | 'circle' }) => Promise<void>
 }
 
 describe('stream markdown', () => {
@@ -407,6 +408,46 @@ describe('stream markdown', () => {
     await flushPromises()
 
     expect(wrapper.text()).toContain('Definition')
+    wrapper.unmount()
+  })
+
+  it.each([false, true])('uses the custom caret only in the active text tail with animation=%s', async (enableAnimate) => {
+    const Caret = markRaw(defineComponent({
+      setup() {
+        const { caret } = useContext()
+        return () => h('span', { 'data-custom-caret': '' }, `Custom ${caret.value?.trim()}`)
+      },
+    }))
+    const wrapper = mount(Markdown, {
+      props: {
+        content: 'Stable paragraph\n\nTail **bold**',
+        mode: 'streaming',
+        caret: 'block',
+        enableAnimate,
+        uiComponents: { Caret },
+      },
+    })
+    const update = wrapper as unknown as MarkdownTestWrapper
+    await flushPromises()
+    expect(wrapper.findAll('[data-custom-caret]')).toHaveLength(1)
+    expect(wrapper.get('p:last-child strong [data-custom-caret]').text()).toBe('Custom ▋')
+
+    await update.setProps({ caret: 'circle' })
+    await flushPromises()
+    expect(wrapper.get('[data-custom-caret]').text()).toBe('Custom ●')
+
+    await update.setProps({ mode: 'static' })
+    await flushPromises()
+    expect(wrapper.find('[data-custom-caret]').exists()).toBe(false)
+
+    await update.setProps({ mode: 'streaming', caret: undefined })
+    await flushPromises()
+    expect(wrapper.find('[data-custom-caret]').exists()).toBe(false)
+
+    await update.setProps({ caret: 'block', content: '| Name |\n| --- |\n| Alice |' })
+    await vi.dynamicImportSettled()
+    await flushPromises()
+    expect(wrapper.find('[data-custom-caret]').exists()).toBe(false)
     wrapper.unmount()
   })
 

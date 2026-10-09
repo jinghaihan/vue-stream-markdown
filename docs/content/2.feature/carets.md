@@ -45,6 +45,23 @@ Set `isStreaming` to `false` when generation ends. Complete Markdown syntax alon
 ::stream-markdown{example="feature-carets.circleCaret" caret="circle" mode="streaming"}
 ::
 
+## Custom Caret
+
+Replace the indicator through `uiComponents.Caret`:
+
+```vue
+<script setup lang="ts">
+import { Markdown } from 'vue-stream-markdown'
+import CustomCaret from './custom-caret.vue'
+</script>
+
+<template>
+  <Markdown :content="content" caret="block" :ui-components="{ Caret: CustomCaret }" />
+</template>
+```
+
+The custom component needs no props. Use `useContext().caret` to read the current caret character. The `caret` prop and streaming mode still control when it is shown.
+
 ## Streaming Completion
 
 The caret appears in the active text tail when `caret` is set and `mode="streaming"` (the default). It is hidden in static mode. This example switches to static mode when playback finishes:
