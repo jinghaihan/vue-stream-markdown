@@ -108,6 +108,7 @@ export default defineComponent({
         if (!renderedTextKeys.has(key))
           animatedTextKeys.delete(key)
       }
+      textAnimationScheduler.retainTextKeys(renderedTextKeys)
     }
 
     onMounted(reconcileRenderedTextKeys)
