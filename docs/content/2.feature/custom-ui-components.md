@@ -53,4 +53,4 @@ import MyButton from './button.vue'
 | Tooltip        | `UITooltipProps`        | Tooltip component      |
 | ZoomContainer  | `UIZoomContainerProps`  | Zoom wrapper           |
 
-`CodeBlock` and `Table` are separate named exports for direct composition. They are not keys in `uiComponents` or the `UI` registry. `CodeBlock` accepts `CodeBlockProps` and a default body slot; `Table` accepts `UITableProps` and cell slots. Use `CodeRenderer` for a highlighted code body and `TableRenderer` for the complete Markdown table rendering behavior.
+Use `CodeBlockRenderer` and `TableRenderer` to reuse the complete built-in rendering inside content overrides. `CodeRenderer` renders only the highlighted code body by default.

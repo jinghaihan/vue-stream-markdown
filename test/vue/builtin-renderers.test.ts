@@ -1,11 +1,11 @@
 // @vitest-environment happy-dom
 import type { Component } from 'vue'
-import type { CodeBlockNode, MarkdownElement, UIComponents } from 'vue-stream-markdown'
+import type { CodeBlockNode, UIComponents } from 'vue-stream-markdown'
 import { math } from '@stream-markdown/math'
 import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, expectTypeOf, it, vi } from 'vitest'
 import { defineComponent, h, markRaw, ref } from 'vue'
-import { CodeBlock, CodeBlockRenderer, CodeRenderer, ImageRenderer, LinkRenderer, Markdown, MathRenderer, TableRenderer } from 'vue-stream-markdown'
+import { CodeBlockRenderer, CodeRenderer, ImageRenderer, LinkRenderer, Markdown, MathRenderer, TableRenderer } from 'vue-stream-markdown'
 
 vi.mock('../../packages/vue/src/utils', async () => ({
   ...await vi.importActual<typeof import('../../packages/vue/src/utils')>('../../packages/vue/src/utils'),
@@ -36,21 +36,12 @@ describe('public built-in renderers', () => {
       inheritAttrs: false,
       props: ['node', 'nodeKey', 'loading'],
       setup(props) {
-        return () => {
-          const [, attributes, ...children] = props.node as MarkdownElement
-          const code = children.find(child => Array.isArray(child) && child[0] === 'code') as MarkdownElement
-          const node: CodeBlockNode = {
-            value: code.slice(2).filter(child => typeof child === 'string').join('').replace(/\n$/, ''),
-            lang: String(attributes.language ?? ''),
-            loading: props.loading,
-          }
-          return h(CodeBlock, { node, nodeKey: props.nodeKey }, {
-            default: () => [
-              h(CodeRenderer, { node: { ...node, value: node.value.slice(0, 4) }, nodeKey: props.nodeKey }),
-              h('p', { 'data-display-notice': '' }, `${node.value.length} characters total`),
-            ],
-          })
-        }
+        return () => h(CodeBlockRenderer, props, {
+          default: ({ node }: { node: CodeBlockNode }) => [
+            h(CodeRenderer, { node: { ...node, value: node.value.slice(0, 4) }, nodeKey: props.nodeKey }),
+            h('p', { 'data-display-notice': '' }, `${node.value.length} characters total`),
+          ],
+        })
       },
     }))
     const wrapper = mount(Markdown, {

@@ -7,9 +7,6 @@ export * from './renderers'
 
 export { default as MarkdownNodes } from './renderers/markdown'
 
-export const CodeBlock = defineAsyncComponent(() => import('./code-block/index.vue'))
-export const Table = defineAsyncComponent(() => import('./table.vue'))
-
 export const UI = {
   Alert: defineAsyncComponent(() => import('./alert.vue')),
   Button: defineAsyncComponent(() => import('./button.vue')),

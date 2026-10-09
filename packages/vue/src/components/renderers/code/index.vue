@@ -3,8 +3,8 @@ import type { CodeHighlightResult } from '@stream-markdown/core'
 import type { CodeRendererProps } from '../../../types'
 import { createCodeRendererModel } from '@stream-markdown/core'
 import { computed, shallowRef, watch } from 'vue'
-import { CodeBlock } from '../..'
 import { useCodeOptions, useContext } from '../../../composables'
+import CodeBlock from '../../code-block/index.vue'
 import CodeContent from './content.vue'
 
 const props = withDefaults(defineProps<CodeRendererProps>(), {

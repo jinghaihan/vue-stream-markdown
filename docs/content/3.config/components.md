@@ -79,9 +79,25 @@ const props = defineProps<MarkdownRendererProps>()
 
 The Comark renderers accept `node`, `nodeKey`, and optional `loading` through `MarkdownRendererProps`. When used inside `Markdown`, they inherit its options, extensions, and UI components. `LinkRenderer` and `TableRenderer` render their original children by default, including custom component mappings; you can supply a default slot to replace that content.
 
-`CodeRenderer` accepts `CodeRendererProps`: a normalized `CodeBlockNode`, `nodeKey`, and optional `showWrapper` (default: `false`). It renders only the highlighted code body by default; set `:show-wrapper="true"` to include the built-in header and wrapper. `CodeBlockRenderer` enables this automatically.
+`CodeRenderer` accepts `CodeRendererProps`: a normalized `CodeBlockNode`, `nodeKey`, and optional `showWrapper` (default: `false`). It renders only the highlighted code body by default; set `:show-wrapper="true"` to include the built-in header and wrapper. `CodeBlockRenderer` always includes the complete wrapper and controls.
 
-To customize a code block's body inside the official wrapper, import `CodeBlock` and compose its default slot with `CodeRenderer`. Pass the complete `CodeBlockNode` to `CodeBlock` so copying, downloading, previews, and fullscreen retain the full source. Content overrides use `components.pre` or `components.table`; `uiComponents` only replaces shared controls such as Button and Modal.
+To customize the body, use `CodeBlockRenderer`'s default slot. It exposes the normalized code `node`; copying, downloading, previews, and fullscreen still use the complete source from the original `pre` node:
+
+```vue
+<script setup lang="ts">
+import type { MarkdownRendererProps } from 'vue-stream-markdown'
+import { CodeBlockRenderer, CodeRenderer } from 'vue-stream-markdown'
+
+const props = defineProps<MarkdownRendererProps>()
+</script>
+
+<template>
+  <CodeBlockRenderer v-bind="props" v-slot="{ node }">
+    <CodeRenderer :node="{ ...node, value: node.value.slice(0, 1000) }" :node-key="nodeKey" />
+    <p v-if="node.value.length > 1000">Showing the first 1,000 characters.</p>
+  </CodeBlockRenderer>
+</template>
+```
 
 ## Rendering Node Lists
 

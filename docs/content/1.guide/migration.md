@@ -176,7 +176,7 @@ For shared controls such as Button, move UI replacements from the 1.x `component
 <Markdown :ui-components="{ Button: CustomButton }" />
 ```
 
-Code block and table overrides use `components.pre` and `components.table`. `uiComponents.CodeBlock` and `uiComponents.Table` are no longer supported. To reuse the original components directly, replace `UI.CodeBlock` and `UI.Table` with the named exports `CodeBlock` and `Table`. `CodeBlock` continues to use the configured shared controls.
+Code block and table overrides use `components.pre` and `components.table`. `uiComponents.CodeBlock`, `uiComponents.Table`, `UI.CodeBlock`, and `UI.Table` are no longer supported. Reuse `CodeBlockRenderer` or `TableRenderer` inside those overrides; both continue to use the configured shared controls. `CodeBlockRenderer` exposes the normalized code `node` through its default slot for custom bodies.
 
 ## Share configuration across messages
 
