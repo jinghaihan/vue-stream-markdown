@@ -2,10 +2,10 @@
 title: Custom UI Components
 navigation:
   icon: i-lucide-blocks
-description: Replace built-in UI components with your own implementations
+description: Replace shared UI controls with your own components.
 ---
 
-Use `uiComponents` to replace shared controls such as Button, Modal, and Tooltip. Replace content nodes through `components`, using `pre` for code blocks and `table` for tables. See [Components](/config/components).
+Use `uiComponents` to replace shared controls such as Button, Modal, and Tooltip. To customize content rendering, use [Components](/config/components).
 
 ## Example
 
@@ -52,5 +52,3 @@ import MyButton from './button.vue'
 | Spin           | -                       | Loading spinner        |
 | Tooltip        | `UITooltipProps`        | Tooltip component      |
 | ZoomContainer  | `UIZoomContainerProps`  | Zoom wrapper           |
-
-Use `CodeBlockRenderer` and `TableRenderer` to reuse the complete built-in rendering inside content overrides. `CodeRenderer` renders only the highlighted code body by default.

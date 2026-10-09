@@ -166,17 +166,21 @@ const components = {
 
 The same mapping handles native Markdown elements and custom HTML-like tags.
 
-To reuse a built-in renderer previously accessed through `NODE_RENDERERS`, import a named renderer such as `CodeBlockRenderer` or `LinkRenderer`. These accept Comark elements through `MarkdownRendererProps`; `CodeRenderer` also exposes the highlighted code body. See [Built-in Renderers](/config/components#built-in-renderers) for the exports and a wrapper example.
-
-Replace the 1.x `NodeList` with `MarkdownNodes`, which renders Comark nodes through `MarkdownNodesProps`. Replace mdast children with Comark tuple children and forward `nodeKey` and `loading`; the old `deep`, `blocks`, and `nodeRenderers` props are no longer used. See [Rendering Node Lists](/config/components#rendering-node-lists).
-
 For shared controls such as Button, move UI replacements from the 1.x `components` prop to `uiComponents`:
 
 ```vue
 <Markdown :ui-components="{ Button: CustomButton }" />
 ```
 
-Code block and table overrides use `components.pre` and `components.table`. `uiComponents.CodeBlock`, `uiComponents.Table`, `UI.CodeBlock`, and `UI.Table` are no longer supported. Reuse `CodeBlockRenderer` or `TableRenderer` inside those overrides; both continue to use the configured shared controls. `CodeBlockRenderer` exposes the normalized code `node` through its default slot for custom bodies.
+For direct renderer reuse:
+
+| 1.x                         | 2.0                                                                                                       |
+| --------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `NODE_RENDERERS`            | [Named renderers](/config/components#built-in-renderers), such as `CodeBlockRenderer` and `LinkRenderer`. |
+| `UI.CodeBlock` / `UI.Table` | Content overrides through `components`, with `CodeBlockRenderer` / `TableRenderer` for built-in behavior. |
+| `NodeList`                  | [MarkdownNodes](/config/components#rendering-node-lists), with Comark nodes instead of mdast nodes.       |
+
+Custom renderers now receive a Comark element tuple as `node`, plus `nodeKey` and `loading`. Forward these props when reusing a built-in renderer. `MarkdownNodes` uses `nodes` for its child list; the old `deep`, `blocks`, and `nodeRenderers` props are removed. See [Components](/config/components) for props and examples.
 
 ## Share configuration across messages
 
@@ -199,8 +203,7 @@ An individual `Markdown` can override a provider value when one message needs di
 - Install only the rich-renderer packages your application uses.
 - Move Shiki, KaTeX, Mermaid, and CDN options into extension factories.
 - Replace `mdastOptions` with `parserOptions` or `completion`.
-- Replace `nodeRenderers` with tag-based `components`.
-- Move shared-control replacements to `uiComponents`, and code/table overrides to `components.pre` / `components.table`.
+- Move content overrides to tag-based `components` and shared-control replacements to `uiComponents`.
 - Replace parsed-node access with `getDocument()`.
 - Remove `@stream-markdown/html` and any mdast compatibility code.
 - Import `katex/dist/katex.min.css` when loading KaTeX locally.

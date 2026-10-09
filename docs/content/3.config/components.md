@@ -5,7 +5,7 @@ navigation:
 description: Map Markdown and custom HTML-like tags to Vue components.
 ---
 
-Use the `components` prop to replace a native tag or render a custom HTML-like tag. Keys use the lower-case tag name emitted by [Comark](https://github.com/comarkdown/comark).
+Use `components` to customize content rendering by the tag name emitted by [Comark](https://github.com/comarkdown/comark). The same mapping handles Markdown, HTML, and custom tags. To replace shared controls, use [UI Components](/feature/custom-ui-components).
 
 ```vue
 <script setup lang="ts">
@@ -23,12 +23,15 @@ const components = {
 </template>
 ```
 
-A component receives the Comark element tuple as `node`, the element attributes as props, and rendered child nodes through its default slot:
+A custom component receives `MarkdownComponentProps`, the element attributes as props, and rendered children through its default slot:
 
-- `loading`: whether this node is in the active streaming tail. Completed preceding nodes and all nodes in static mode receive `false`.
-- `nodeKey`: the renderer's key for this node. It stays the same while the node remains at the same position and its content grows; it is not a persistent document ID.
+| Prop      | Description                                                                                                      |
+| --------- | ---------------------------------------------------------------------------------------------------------------- |
+| `node`    | Comark element tuple: `[tag, attributes, ...children]`.                                                          |
+| `loading` | `true` on the last renderable branch in streaming mode; `false` on preceding branches and in static mode.        |
+| `nodeKey` | Renderer key derived from the node's position and tag, such as `root-0-pre`. It is not a persistent document ID. |
 
-These renderer props take precedence over HTML attributes with the same names.
+`loading` describes the active streaming branch, not whether its syntax is incomplete. These props take precedence over HTML attributes with the same names.
 
 ```vue
 <script setup lang="ts">
@@ -45,43 +48,27 @@ defineProps<MarkdownComponentProps & { name?: string }>()
 </template>
 ```
 
-This same path handles native HTML and LLM-defined custom tags, so there is no separate HTML representation or renderer API.
-
 ## Built-in Renderers
 
-Reuse the built-in renderers inside a custom component to keep the default behavior while adding your own layout:
+Reuse these renderers inside custom components:
 
-| Export              | Component mapping                    | Input                                                |
-| ------------------- | ------------------------------------ | ---------------------------------------------------- |
-| `CodeBlockRenderer` | `pre`                                | Comark element                                       |
-| `LinkRenderer`      | `a`                                  | Comark element                                       |
-| `ImageRenderer`     | `img`                                | Comark element                                       |
-| `MathRenderer`      | `math`                               | Comark element (inline or block)                     |
-| `TableRenderer`     | `table`                              | Comark element                                       |
-| `CodeRenderer`      | Code content inside your own wrapper | `CodeBlockNode` (`value`, `lang`, `meta`, `loading`) |
+| Renderer            | Tag     | Behavior                                           |
+| ------------------- | ------- | -------------------------------------------------- |
+| `CodeBlockRenderer` | `pre`   | Complete code block with its wrapper and controls. |
+| `LinkRenderer`      | `a`     | Link with destination feedback and favicon.        |
+| `ImageRenderer`     | `img`   | Image with caption and preview.                    |
+| `MathRenderer`      | `math`  | Inline or block math.                              |
+| `TableRenderer`     | `table` | Table with its wrapper and controls.               |
 
-For example, map `pre` to this component:
+These accept `MarkdownRendererProps`: `node` (a Comark element), `nodeKey`, and optional `loading`. Inside `Markdown`, they inherit its options, extensions, and UI components. Forward the received props when reusing them.
 
-```vue
-<script setup lang="ts">
-import type { MarkdownRendererProps } from 'vue-stream-markdown'
-import { CodeBlockRenderer } from 'vue-stream-markdown'
+`LinkRenderer` and `TableRenderer` render their original children by default. Their default slots can replace that content.
 
-const props = defineProps<MarkdownRendererProps>()
-</script>
+### Custom Code Bodies
 
-<template>
-  <section class="custom-code-block">
-    <CodeBlockRenderer v-bind="props" />
-  </section>
-</template>
-```
+`CodeRenderer` renders the highlighted code body. It accepts `CodeRendererProps`: `node` as a `CodeBlockNode` (`value`, `lang`, `meta`, `loading`), `nodeKey`, and optional `showWrapper` (default: `false`). Set `:show-wrapper="true"` to include the wrapper and controls.
 
-The Comark renderers accept `node`, `nodeKey`, and optional `loading` through `MarkdownRendererProps`. When used inside `Markdown`, they inherit its options, extensions, and UI components. `LinkRenderer` and `TableRenderer` render their original children by default, including custom component mappings; you can supply a default slot to replace that content.
-
-`CodeRenderer` accepts `CodeRendererProps`: a normalized `CodeBlockNode`, `nodeKey`, and optional `showWrapper` (default: `false`). It renders only the highlighted code body by default; set `:show-wrapper="true"` to include the built-in header and wrapper. `CodeBlockRenderer` always includes the complete wrapper and controls.
-
-To customize the body, use `CodeBlockRenderer`'s default slot. It exposes the normalized code `node`; copying, downloading, previews, and fullscreen still use the complete source from the original `pre` node:
+For a custom body inside the complete code block, map `pre` to a component like this. `CodeBlockRenderer` exposes the normalized `node` through its default slot. Copying, downloading, previews, and fullscreen retain the full source:
 
 ```vue
 <script setup lang="ts">
@@ -93,7 +80,7 @@ const props = defineProps<MarkdownRendererProps>()
 
 <template>
   <CodeBlockRenderer v-bind="props" v-slot="{ node }">
-    <CodeRenderer :node="{ ...node, value: node.value.slice(0, 1000) }" :node-key="nodeKey" />
+    <CodeRenderer :node="{ ...node, value: node.value.slice(0, 1000) }" :node-key="props.nodeKey" />
     <p v-if="node.value.length > 1000">Showing the first 1,000 characters.</p>
   </CodeBlockRenderer>
 </template>
@@ -101,7 +88,7 @@ const props = defineProps<MarkdownRendererProps>()
 
 ## Rendering Node Lists
 
-Use `MarkdownNodes` to render existing Comark nodes after selecting or modifying them. This is the same renderer used internally by `Markdown`. For example, this custom heading appends a generated node to the original children:
+Use the default slot for a custom component's original children. Use `MarkdownNodes` when you need to render a selected or modified list of Comark nodes, without parsing Markdown again. For example, this heading appends an emphasized label:
 
 ```vue
 <script setup lang="ts">
@@ -117,22 +104,24 @@ const nodes = computed<MarkdownNode[]>(() => {
 </script>
 
 <template>
-  <component :is="node[0]">
-    <MarkdownNodes :nodes="nodes" :node-key="nodeKey" :loading="loading" />
+  <component :is="props.node[0]">
+    <MarkdownNodes :nodes="nodes" :node-key="props.nodeKey" :loading="props.loading" />
   </component>
 </template>
 ```
 
 `MarkdownNodes` accepts `MarkdownNodesProps`:
 
-- `nodes`: Comark nodes to render; defaults to an empty list. String nodes render as text; `MarkdownNodes` does not parse or complete Markdown.
-- `nodeKey`: optional parent key used to build child keys. Forward the custom component's `nodeKey` to inherit its component mappings and completion metadata. Use separate key prefixes when rendering multiple lists. Without a parent key, nodes render as a document root.
-- `loading`: whether the list has an active streaming tail; defaults to `false`. Only the last renderable node receives the active state.
-- `hideCaret`: suppress the tail caret; defaults to `false`.
-- `components`: optional tag-to-component mapping, replacing the inherited mapping.
-- `completionInfo`: optional parser completion metadata, replacing inherited metadata for streaming links.
+| Prop             | Default   | Description                                                                                                                            |
+| ---------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `nodes`          | `[]`      | Comark nodes to render; strings render as text.                                                                                        |
+| `nodeKey`        | —         | Parent key for child keys. Forward it to inherit component mappings and completion metadata; omit it for an independent document root. |
+| `loading`        | `false`   | Marks the last renderable branch as active.                                                                                            |
+| `hideCaret`      | `false`   | Hides the tail caret.                                                                                                                  |
+| `components`     | Inherited | Tag-to-component mapping, replacing the inherited mapping when supplied.                                                               |
+| `completionInfo` | Inherited | Completion metadata used by streaming links.                                                                                           |
 
-Inside a custom `Markdown` component, lists inherit renderer options, extensions, and UI components. Forward `nodeKey` to also inherit component mappings and completion metadata. For an unchanged set of children, use the default slot.
+Renderer options, extensions, and UI components are inherited from the surrounding context. Use distinct `nodeKey` prefixes when rendering multiple lists in one component.
 
 ## Literal Tag Content
 
