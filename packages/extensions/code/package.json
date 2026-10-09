@@ -25,6 +25,7 @@
   },
   "types": "./dist/index.d.mts",
   "files": [
+    "LICENSE.streamdown",
     "dist"
   ],
   "scripts": {

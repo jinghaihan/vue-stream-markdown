@@ -20,6 +20,7 @@
     "dev": "pnpm playground:dev",
     "build": "turbo run build \"--filter=./packages/*\" \"--filter=./packages/extensions/*\" \"--filter=./packages/markmend/*\"",
     "bench:code": "pnpm -F benchmark bench:code",
+    "bench:code-highlight": "pnpm -F benchmark bench:code-highlight",
     "bench:completion": "pnpm -F benchmark bench:completion",
     "bench:parser": "pnpm -F benchmark bench:parser",
     "bench:render": "pnpm -F benchmark bench:render",

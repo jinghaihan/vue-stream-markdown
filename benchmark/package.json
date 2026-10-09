@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "bench:code": "vitest bench --run code.bench.ts",
+    "bench:code-highlight": "vitest bench --run code-highlight.bench.ts --reporter=verbose",
     "bench:completion": "vitest bench --run completion.bench.ts",
     "bench:parser": "vitest bench --run parser.bench.ts",
     "bench:render": "vitest bench --run render.bench.ts",
