@@ -39,10 +39,11 @@ export function useMermaid(options: UseMermaidOptions = {}) {
       }
     }
 
-    const theme = await extensions.value?.code?.getTheme?.(isDark.value)
+    const currentIsDark = isDark.value
+    const theme = await extensions.value?.code?.getTheme?.(currentIsDark)
     return await extension.render({
       code,
-      isDark: isDark.value,
+      isDark: currentIsDark,
       theme,
     })
   }

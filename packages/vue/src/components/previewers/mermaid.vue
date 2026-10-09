@@ -1,17 +1,16 @@
 <script setup lang="ts">
+import type { MermaidRenderResult } from '@stream-markdown/core'
 import type { CodeBlockProps, Control } from '../../types'
-import { throttle } from '@antfu/utils'
 import {
   applyMermaidRenderResult,
   createMermaidPreviewControllerState,
   createMermaidPreviewModel,
   measureSvgContainerHeight,
   setMermaidMeasuredHeight,
-  shouldEagerRenderMermaidAfterLoading,
   startMermaidRenderAttempt,
 } from '@stream-markdown/core'
 import { useResizeObserver } from '@vueuse/core'
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, onScopeDispose, ref, watch } from 'vue'
 import { useContext, useControls, useDeferredRender, useMermaid } from '../../composables'
 
 const props = withDefaults(defineProps<CodeBlockProps & {
@@ -74,7 +73,7 @@ const { renderMermaid, resolveExtension } = useMermaid({
   isDark,
 })
 
-const Error = computed(() => resolveExtension(code.value)?.errorComponent ?? UI.value.ErrorComponent)
+const ErrorComponent = computed(() => resolveExtension(code.value)?.errorComponent ?? UI.value.ErrorComponent)
 
 function updateHeight() {
   if (props.containerHeight)
@@ -88,64 +87,103 @@ function updateHeight() {
     previewState.value = setMermaidMeasuredHeight(previewState.value, height)
 }
 
-const render = throttle(
-  props.throttle,
-  async () => {
+const renderContext = computed(() => [
+  props.nodeKey,
+  isDark.value,
+  extensions.value?.beautifulMermaid,
+  extensions.value?.mermaid,
+  extensions.value?.code,
+] as const)
+interface RenderRequest {
+  code: string
+  context: typeof renderContext.value
+}
+let latestRequest: RenderRequest | undefined
+let inFlight = false
+let disposed = false
+let wake: (() => void) | undefined
+
+async function pauseWhileStreaming(duration: number) {
+  if (!nodeLoading.value)
+    return
+
+  await new Promise<void>((resolve) => {
+    const timer = setTimeout(resolve, duration)
+    wake = () => {
+      clearTimeout(timer)
+      resolve()
+    }
+  })
+  wake = undefined
+}
+
+async function renderLatest() {
+  inFlight = true
+  try {
+    let request = latestRequest
+    while (request) {
+      const startedAt = performance.now()
+      previewState.value = startMermaidRenderAttempt(previewState.value)
+      let result: MermaidRenderResult
+      try {
+        result = await renderMermaid(request.code)
+      }
+      catch (error) {
+        result = { valid: false, error: error instanceof Error ? error.message : String(error) }
+      }
+
+      if (disposed)
+        return
+
+      if (request.context === renderContext.value) {
+        // Successful intermediate diagrams remain visible even while more code arrives.
+        if (result.valid || request === latestRequest)
+          previewState.value = applyMermaidRenderResult(previewState.value, result)
+
+        if (result.valid) {
+          void nextTick(updateHeight)
+          await pauseWhileStreaming(Math.max(props.throttle, performance.now() - startedAt))
+        }
+      }
+
+      if (disposed || request === latestRequest)
+        return
+      request = latestRequest
+    }
+  }
+  finally {
+    inFlight = false
+  }
+}
+
+watch(
+  () => [code.value, renderContext.value, shouldRender.value] as const,
+  () => {
     if (!shouldRender.value)
       return
 
-    const result = await renderMermaid(code.value)
-    previewState.value = applyMermaidRenderResult(previewState.value, result)
-    if (result.valid) {
-      nextTick(() => {
-        updateHeight()
-      })
-    }
+    const previousContext = latestRequest?.context
+    latestRequest = { code: code.value, context: renderContext.value }
+    if (previousContext !== latestRequest.context)
+      wake?.()
+    if (!inFlight)
+      void renderLatest()
   },
+  { immediate: true },
 )
 
-function eagerRender() {
-  previewState.value = startMermaidRenderAttempt(previewState.value)
-  render()
-}
+watch(nodeLoading, (streaming) => {
+  if (!streaming)
+    wake?.()
+})
+
+onScopeDispose(() => {
+  disposed = true
+  wake?.()
+})
 
 const mermaidControls = computed(
   (): Control[] => resolveControls<CodeBlockProps>('mermaid', [], props),
-)
-
-watch(
-  () => [
-    code.value,
-    extensions.value?.beautifulMermaid,
-    extensions.value?.mermaid,
-    extensions.value?.code,
-    isDark.value,
-    nodeLoading.value,
-  ],
-  render,
-  { immediate: true },
-)
-
-watch(
-  loading,
-  (curr, prev) => {
-    if (shouldEagerRenderMermaidAfterLoading(
-      previewState.value,
-      curr,
-      prev,
-    )) {
-      eagerRender()
-    }
-  },
-  { immediate: true },
-)
-
-watch(
-  shouldRender,
-  (curr, prev) => {
-    if (curr && !prev)
-      eagerRender()
-  },
 )
 
 if (!props.containerHeight) {
@@ -168,7 +206,7 @@ if (!props.containerHeight) {
     <template v-if="!svg">
       <component :is="UI.Spin" v-if="loading" size="large" />
       <component
-        :is="Error"
+        :is="ErrorComponent"
         v-else
         class="p-4"
         variant="mermaid"
