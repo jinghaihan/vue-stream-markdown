@@ -2,25 +2,12 @@
 title: Carets
 navigation:
   icon: i-lucide-text-cursor-input
-description: Built-in caret (cursor) indicators that display at the end of streaming content to show active generation.
+description: Show a caret at the active text tail during streaming.
 ---
 
-vue-stream-markdown includes built-in caret (cursor) indicators that display at the end of streaming content. Carets provide a visual cue to users that content is actively being generated, similar to a blinking cursor in a text editor.
-
-## Overview
-
-The `caret` prop adds a visual indicator at the end of your streaming markdown content. This feature enhances the user experience by making it clear when content is actively being generated versus when generation is complete.
-
-Key features:
-
-- **Two built-in styles** - Choose between block (`▋`) and circle (`●`) carets
-- **Automatic positioning** - Carets automatically appear at the last text node that is still loading
-- **Streaming-aware** - Only displays when `mode="streaming"` (default) and `caret` prop is set
-- **Efficient rendering** - Uses inline span elements for optimal performance
+Set `caret` to `"block"` (`▋`) or `"circle"` (`●`) to mark the active text tail in streaming mode.
 
 ## Usage
-
-To enable carets, pass the `caret` prop with either `"block"` or `"circle"`:
 
 ```vue
 <script setup lang="ts">
@@ -28,58 +15,46 @@ import { ref } from 'vue'
 import { Markdown } from 'vue-stream-markdown'
 
 const content = ref('')
+const isStreaming = ref(true)
 </script>
 
 <template>
-  <Markdown :content="content" caret="block" />
+  <Markdown :content="content" caret="block" :mode="isStreaming ? 'streaming' : 'static'" />
 </template>
 ```
+
+Set `isStreaming` to `false` when generation ends. Complete Markdown syntax alone does not hide the caret while `mode` remains `"streaming"`. You can also disable it by setting `caret` to `undefined`.
 
 ## Caret Styles
 
-vue-stream-markdown provides two built-in caret styles:
-
 ### Block Caret
 
-The block caret displays a vertical bar (`▋`) similar to a terminal cursor:
-
 ```vue
-<template>
-  <Markdown content="Streaming content..." caret="block" />
-</template>
+<Markdown content="Streaming content..." caret="block" />
 ```
 
-::stream-markdown{example="feature-carets.blockCaret" caret="block"}
+::stream-markdown{example="feature-carets.blockCaret" caret="block" mode="streaming"}
 ::
 
 ### Circle Caret
 
-The circle caret displays a filled circle (`●`) for a subtler indicator:
-
 ```vue
-<template>
-  <Markdown content="Streaming content..." caret="circle" />
-</template>
+<Markdown content="Streaming content..." caret="circle" />
 ```
 
-::stream-markdown{example="feature-carets.circleCaret" caret="circle"}
+::stream-markdown{example="feature-carets.circleCaret" caret="circle" mode="streaming"}
 ::
 
-## Behavior
+## Streaming Completion
 
-The caret visibility is controlled by two conditions:
+The caret appears in the active text tail when `caret` is set and `mode="streaming"` (the default). It is hidden in static mode. This example switches to static mode when playback finishes:
 
-1. **`caret` prop is set** - You must specify either `"block"` or `"circle"`
-2. **`mode="streaming"`** (default) - Carets only work in streaming mode
-
-The caret automatically appears on the last text node that is still in a loading state. When the content finishes streaming and all nodes are fully parsed, the caret disappears:
-
-::stream-markdown{example="feature-carets.streamingComplete" caret="'block'"}
+::stream-markdown{example="feature-carets.streamingComplete" caret="block"}
 ::
 
-## Conditional Display
+## Message Lists
 
-vue-stream-markdown doesn't know about roles or message ordering, so you should conditionally show carets for specific messages, such as only displaying them for the last message in a chat and only displaying them from assistant messages:
+For a chat, select the active message in your application:
 
 ```vue
 <template>
@@ -96,14 +71,3 @@ vue-stream-markdown doesn't know about roles or message ordering, so you should 
   />
 </template>
 ```
-
-## Technical Details
-
-Carets are implemented using inline span elements:
-
-- The caret is rendered as a `<span>` element with `data-stream-markdown="caret"` attribute
-- The span is appended to the last text node that has `loading: true`
-- The caret character is displayed inline within the span
-- When text node loading completes or `caret` prop is `undefined`, the span is removed from the DOM
-
-This approach ensures the caret always appears at the correct position within the text content.

@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import type { ElementNode } from '@markmend/parser'
+import type { VNode } from 'vue'
 import type { CodeBlockNode, MarkdownRendererProps } from '../../types'
 import { computed } from 'vue'
+import CodeBlock from '../code-block/index.vue'
 import CodeRenderer from './code/index.vue'
 
 const props = defineProps<MarkdownRendererProps>()
+
+defineSlots<{
+  default?: (props: { node: CodeBlockNode }) => VNode[]
+}>()
 
 const codeNode = computed<CodeBlockNode>(() => {
   const [, attrs, ...children] = props.node
@@ -31,9 +37,12 @@ const codeNode = computed<CodeBlockNode>(() => {
 </script>
 
 <template>
-  <CodeRenderer
+  <CodeBlock
     :node="codeNode"
     :node-key="nodeKey"
-    :show-wrapper="true"
-  />
+  >
+    <slot :node="codeNode">
+      <CodeRenderer :node="codeNode" :node-key="nodeKey" />
+    </slot>
+  </CodeBlock>
 </template>

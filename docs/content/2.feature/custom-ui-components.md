@@ -2,10 +2,10 @@
 title: Custom UI Components
 navigation:
   icon: i-lucide-blocks
-description: Replace built-in UI components with your own implementations
+description: Replace shared UI controls with your own components.
 ---
 
-Sometimes you want to customize UI elements to maintain consistency with your application's design system. `vue-stream-markdown` provides the ability to replace any built-in UI component with your own implementation, giving you full control over the look and feel of your markdown content.
+Use `uiComponents` to replace shared controls such as Button, Modal, and Tooltip. To customize content rendering, use [Components](/config/components).
 
 ## Example
 
@@ -43,7 +43,6 @@ import MyButton from './button.vue'
 | Alert          | `UIAlertProps`          | Alert modal component  |
 | Button         | `UIButtonProps`         | Button component       |
 | Caret          | -                       | Cursor/caret indicator |
-| CodeBlock      | `CodeBlockProps`        | Code block wrapper     |
 | Dropdown       | `UIDropdownProps`       | Dropdown menu          |
 | ErrorComponent | `UIErrorComponentProps` | Error display          |
 | Icon           | `UIIconProps`           | Icon component         |
@@ -51,6 +50,5 @@ import MyButton from './button.vue'
 | Modal          | `UIModalProps`          | Modal dialog           |
 | Segmented      | `UISegmentedProps`      | Segmented control      |
 | Spin           | -                       | Loading spinner        |
-| Table          | `UITableProps`          | Table component        |
 | Tooltip        | `UITooltipProps`        | Tooltip component      |
 | ZoomContainer  | `UIZoomContainerProps`  | Zoom wrapper           |

@@ -275,7 +275,25 @@ export declare function useZoom(_?: ZoomOptions): {
 
 // #region Variables
 export declare const CODE_PREVIEWERS: Partial<Record<string, Component>> & Record<BuiltinPreviewers$1, Component>;
-export declare const CodeBlockRenderer: import("vue").DefineComponent<MarkdownRendererProps, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").PublicProps, Readonly<MarkdownRendererProps> & Readonly<{}>, {}, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
+export declare const CodeBlockRenderer: {
+  new (...args: any[]): import("vue").CreateComponentPublicInstanceWithMixins<Readonly<MarkdownRendererProps> & Readonly<{}>, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, import("vue").PublicProps, {}, false, {}, {}, import("vue").GlobalComponents, import("vue").GlobalDirectives, string, {}, any, import("vue").ComponentProvideOptions, {
+    P: {};
+    B: {};
+    D: {};
+    C: {};
+    M: {};
+    Defaults: {};
+  }, Readonly<MarkdownRendererProps> & Readonly<{}>, {}, {}, {}, {}, {}>;
+  __isFragment?: never;
+  __isTeleport?: never;
+  __isSuspense?: never;
+} & import("vue").ComponentOptionsBase<Readonly<MarkdownRendererProps> & Readonly<{}>, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, {}, {}, string, {}, import("vue").GlobalComponents, import("vue").GlobalDirectives, string, import("vue").ComponentProvideOptions> & import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps & (new () => {
+  $slots: {
+    default?: (props: {
+      node: CodeBlockNode;
+    }) => import("vue").VNode[];
+  };
+});
 export declare const CodeRenderer: import("vue").DefineComponent<CodeRendererProps, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").PublicProps, Readonly<CodeRendererProps> & Readonly<{}>, {
   showWrapper: boolean;
 }, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
@@ -440,29 +458,6 @@ export declare const UI: {
     options: import("@stream-markdown/core").SelectOption[];
   }, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
   readonly Caret: import("vue").DefineComponent<{}, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").PublicProps, Readonly<{}> & Readonly<{}>, {}, {}, {}, {}, string, import("vue").ComponentProvideOptions, true, {}, any>;
-  readonly CodeBlock: {
-    new (...args: any[]): import("vue").CreateComponentPublicInstanceWithMixins<Readonly<CodeBlockProps> & Readonly<{}>, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, import("vue").PublicProps, {}, false, {}, {}, import("vue").GlobalComponents, import("vue").GlobalDirectives, string, {}, any, import("vue").ComponentProvideOptions, {
-      P: {};
-      B: {};
-      D: {};
-      C: {};
-      M: {};
-      Defaults: {};
-    }, Readonly<CodeBlockProps> & Readonly<{}>, {}, {}, {}, {}, {}>;
-    __isFragment?: never;
-    __isTeleport?: never;
-    __isSuspense?: never;
-  } & import("vue").ComponentOptionsBase<Readonly<CodeBlockProps> & Readonly<{}>, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, {}, {}, string, {}, import("vue").GlobalComponents, import("vue").GlobalDirectives, string, import("vue").ComponentProvideOptions> & import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps & (new () => {
-    $slots: {
-      title?: (props: {}) => any;
-    } & {
-      'header-center'?: (props: {}) => any;
-    } & {
-      actions?: (props: {}) => any;
-    } & {
-      default?: (props: {}) => any;
-    };
-  });
   readonly Dropdown: {
     new (...args: any[]): import("vue").CreateComponentPublicInstanceWithMixins<Readonly<import("@stream-markdown/core").UIDropdownProps> & Readonly<{
       onClick?: ((event: MouseEvent, item: import("@stream-markdown/core").SelectOption) => any) | undefined;
@@ -600,32 +595,6 @@ export declare const UI: {
     buttonStyle: import("vue").CSSProperties;
   }, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
   readonly Spin: import("vue").DefineComponent<{}, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").PublicProps, Readonly<{}> & Readonly<{}>, {}, {}, {}, {}, string, import("vue").ComponentProvideOptions, true, {}, any>;
-  readonly Table: {
-    new (...args: any[]): import("vue").CreateComponentPublicInstanceWithMixins<Readonly<import("@stream-markdown/core").UITableProps> & Readonly<{}>, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, import("vue").PublicProps, {}, false, {}, {}, import("vue").GlobalComponents, import("vue").GlobalDirectives, string, {}, any, import("vue").ComponentProvideOptions, {
-      P: {};
-      B: {};
-      D: {};
-      C: {};
-      M: {};
-      Defaults: {};
-    }, Readonly<import("@stream-markdown/core").UITableProps> & Readonly<{}>, {}, {}, {}, {}, {}>;
-    __isFragment?: never;
-    __isTeleport?: never;
-    __isSuspense?: never;
-  } & import("vue").ComponentOptionsBase<Readonly<import("@stream-markdown/core").UITableProps> & Readonly<{}>, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, {}, {}, string, {}, import("vue").GlobalComponents, import("vue").GlobalDirectives, string, import("vue").ComponentProvideOptions> & import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps & (new () => {
-    $slots: {
-      'header-cell'?: (props: {
-        cell: unknown;
-        cellIndex: number;
-      }) => any;
-    } & {
-      'body-cell'?: (props: {
-        cell: unknown;
-        rowIndex: number;
-        cellIndex: number;
-      }) => any;
-    };
-  });
   readonly Tooltip: {
     new (...args: any[]): import("vue").CreateComponentPublicInstanceWithMixins<Readonly<import("@stream-markdown/core").UITooltipProps> & Readonly<{}>, {
       show: () => void;

@@ -4,13 +4,14 @@ import type { CodeRendererProps } from '../../../types'
 import { createCodeRendererModel } from '@stream-markdown/core'
 import { computed, shallowRef, watch } from 'vue'
 import { useCodeOptions, useContext } from '../../../composables'
+import CodeBlock from '../../code-block/index.vue'
 import CodeContent from './content.vue'
 
 const props = withDefaults(defineProps<CodeRendererProps>(), {
   showWrapper: false,
 })
 
-const { codeOptions, extensions, isDark, uiComponents: UI } = useContext()
+const { codeOptions, extensions, isDark } = useContext()
 
 const model = computed(() => createCodeRendererModel(props.node))
 const code = computed(() => model.value.code)
@@ -55,8 +56,7 @@ watch(
 </script>
 
 <template>
-  <component
-    :is="UI.CodeBlock"
+  <CodeBlock
     v-if="showWrapper"
     v-bind="props"
   >
@@ -68,7 +68,7 @@ watch(
       :show-line-numbers="showLineNumbers"
       :start-line="startLine"
     />
-  </component>
+  </CodeBlock>
 
   <CodeContent
     v-else

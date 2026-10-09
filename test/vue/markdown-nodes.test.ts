@@ -70,9 +70,10 @@ describe('public MarkdownNodes', () => {
         return () => h('strong', { 'data-custom-strong': '' }, slots.default?.())
       },
     }))
-    const CodeBlock = markRaw(defineComponent({
-      setup(_props, { slots }) {
-        return () => h('section', { 'data-custom-code-block': '' }, slots.default?.())
+    const Button = markRaw(defineComponent({
+      props: ['name'],
+      setup(props) {
+        return () => h('button', { 'data-custom-button': '' }, props.name)
       },
     }))
     const Quote = markRaw(defineComponent({
@@ -96,7 +97,7 @@ describe('public MarkdownNodes', () => {
         enableAnimate: false,
         isDark: true,
         components: { blockquote: Quote, strong: Strong },
-        uiComponents: { CodeBlock },
+        uiComponents: { Button },
         codeOptions: { lineNumbers: false },
         extensions: { code: { preload: async () => {}, dispose: () => {}, highlight } },
       },
@@ -104,7 +105,8 @@ describe('public MarkdownNodes', () => {
     await vi.dynamicImportSettled()
     await flushPromises()
     expect(wrapper.get('[data-custom-strong]').text()).toBe('Original')
-    expect(wrapper.get('[data-custom-code-block]').text()).toBe('generated')
+    expect(wrapper.find('[data-custom-button]').exists()).toBe(true)
+    expect(wrapper.get('[data-stream-markdown="code-line"]').text()).toBe('generated')
     expect(highlight).toHaveBeenCalledWith({ code: 'generated', language: 'js', isDark: true })
     expect(wrapper.get('[data-stream-markdown="code-line"] span').attributes('style')).toContain('color: red')
     wrapper.unmount()
