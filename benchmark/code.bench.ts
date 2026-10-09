@@ -2,6 +2,7 @@
 
 import type { Root } from 'react-dom/client'
 import type { BenchRunOptions } from 'vitest'
+import { code as createCodeExtension } from '@stream-markdown/code'
 import { code } from '@streamdown/code'
 import { createElement } from 'react'
 import { flushSync } from 'react-dom'
@@ -12,6 +13,7 @@ import { h, nextTick, render } from 'vue'
 import { Markdown as VueStreamMarkdown } from 'vue-stream-markdown'
 
 const APPEND_COUNT = 20
+const vueExtensions = { code: createCodeExtension() }
 const benchmarkOptions: BenchRunOptions = {
   time: 1000,
   warmupTime: 300,
@@ -36,7 +38,7 @@ function createGrowingCodeInputs(baseLineCount: number, id: number): string[] {
     { length: baseLineCount },
     (_, index) => `const stable${index} = ${index};`,
   )
-  lines.unshift(`// benchmark-session-${id}`)
+  lines.unshift(`// benchmark-session-${String(id).padStart(8, '0')}`)
 
   const inputs: string[] = []
   for (let step = 0; step <= APPEND_COUNT; step += 1) {
@@ -52,6 +54,7 @@ function renderVue(host: HTMLElement, content: string): void {
     content,
     controls: false,
     enableAnimate: false,
+    extensions: vueExtensions,
     isDark: false,
     mode: 'streaming',
     previewers: false,
@@ -140,18 +143,18 @@ beforeAll(warmHighlighters, 30_000)
 
 function benchmarkGrowingCode(name: string, baseLineCount: number): void {
   describe(`${name} with ${APPEND_COUNT} streaming appends`, () => {
-    it('vue-stream-markdown', async ({ bench }) => {
-      await bench('vue-stream-markdown', async () => {
-        const inputs = createGrowingCodeInputs(baseLineCount, sessionId += 1)
-        benchmarkResult = await runVueSession(inputs)
-      }).run(benchmarkOptions)
-    })
-
-    it('streamdown', async ({ bench }) => {
-      await bench('streamdown', async () => {
-        const inputs = createGrowingCodeInputs(baseLineCount, sessionId += 1)
-        benchmarkResult = await runReactSession(inputs)
-      }).run(benchmarkOptions)
+    it('compare renderers', async ({ bench: runBenchmark }) => {
+      await runBenchmark.compare(
+        runBenchmark('vue-stream-markdown', async () => {
+          const inputs = createGrowingCodeInputs(baseLineCount, sessionId += 1)
+          benchmarkResult = await runVueSession(inputs)
+        }),
+        runBenchmark('streamdown', async () => {
+          const inputs = createGrowingCodeInputs(baseLineCount, sessionId += 1)
+          benchmarkResult = await runReactSession(inputs)
+        }),
+        benchmarkOptions,
+      )
     })
   })
 }

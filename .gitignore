@@ -27,6 +27,7 @@ dev-dist
 
 # vitest
 coverage
+benchmark/results/*.raw.json
 
 # vitepress
 cache

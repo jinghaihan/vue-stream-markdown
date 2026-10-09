@@ -19,6 +19,7 @@
   "scripts": {
     "dev": "pnpm playground:dev",
     "build": "turbo run build \"--filter=./packages/*\" \"--filter=./packages/extensions/*\" \"--filter=./packages/markmend/*\"",
+    "bench:compare": "pnpm build && pnpm -F benchmark bench:compare",
     "bench:code": "pnpm -F benchmark bench:code",
     "bench:code-highlight": "pnpm -F benchmark bench:code-highlight",
     "bench:completion": "pnpm -F benchmark bench:completion",

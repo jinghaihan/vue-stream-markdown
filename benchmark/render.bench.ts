@@ -337,28 +337,30 @@ beforeAll(async () => {
 
 for (const [name, document] of scenarios) {
   describe(`${name} initial render`, () => {
-    it('vue-stream-markdown', async ({ bench }) => {
-      await bench('vue-stream-markdown', async () => {
-        benchmarkResult = await runVueSession(document, 0)
-      }).run(benchmarkOptions)
-    })
-    it('streamdown', async ({ bench }) => {
-      await bench('streamdown', async () => {
-        benchmarkResult = await runReactSession(document, 0)
-      }).run(benchmarkOptions)
+    it('compare renderers', async ({ bench: runBenchmark }) => {
+      await runBenchmark.compare(
+        runBenchmark('vue-stream-markdown', async () => {
+          benchmarkResult = await runVueSession(document, 0)
+        }),
+        runBenchmark('streamdown', async () => {
+          benchmarkResult = await runReactSession(document, 0)
+        }),
+        benchmarkOptions,
+      )
     })
   })
 
   describe(`${name} with 20 streaming appends`, () => {
-    it('vue-stream-markdown', async ({ bench }) => {
-      await bench('vue-stream-markdown', async () => {
-        benchmarkResult = await runVueSession(document, 20)
-      }).run(benchmarkOptions)
-    })
-    it('streamdown', async ({ bench }) => {
-      await bench('streamdown', async () => {
-        benchmarkResult = await runReactSession(document, 20)
-      }).run(benchmarkOptions)
+    it('compare renderers', async ({ bench: runBenchmark }) => {
+      await runBenchmark.compare(
+        runBenchmark('vue-stream-markdown', async () => {
+          benchmarkResult = await runVueSession(document, 20)
+        }),
+        runBenchmark('streamdown', async () => {
+          benchmarkResult = await runReactSession(document, 20)
+        }),
+        benchmarkOptions,
+      )
     })
   })
 }

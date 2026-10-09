@@ -1,8 +1,8 @@
 import type { BenchRunOptions } from 'vitest'
+import { completeMarkdown } from '@markmend/core'
 import { autoCloseMarkdown } from 'comark'
 import remend from 'remend'
 import { afterAll, describe, it } from 'vitest'
-import { completeMarkdown } from '../packages/markmend/core/src/completion'
 
 type CompleteMarkdown = (content: string) => string
 const implementations: Array<{

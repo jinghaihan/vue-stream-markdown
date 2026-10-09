@@ -16,8 +16,8 @@ interface Implementation {
   stream: (inputs: readonly string[]) => MaybePromise<number>
 }
 
-const standardOptions: BenchRunOptions = { iterations: 50 }
-const largeOptions: BenchRunOptions = { iterations: 10 }
+const standardOptions: BenchRunOptions = { iterations: 50, warmupTime: 500 }
+const largeOptions: BenchRunOptions = { iterations: 10, warmupTime: 500 }
 let benchmarkResult: unknown
 
 afterAll(() => {
@@ -99,13 +99,14 @@ const implementations: Implementation[] = [
 
 function benchmarkCold(name: string, input: string, options = standardOptions): void {
   describe(`cold parse > ${name}`, () => {
-    for (const implementation of implementations) {
-      it(implementation.name, async ({ bench }) => {
-        await bench(implementation.name, async () => {
+    it('compare parsers', async ({ bench: runBenchmark }) => {
+      await runBenchmark.compare(
+        ...implementations.map(implementation => runBenchmark(implementation.name, async () => {
           benchmarkResult = await implementation.coldParse(input)
-        }).run(options)
-      })
-    }
+        })),
+        options,
+      )
+    })
   })
 }
 
@@ -115,13 +116,14 @@ function benchmarkStream(
   options = standardOptions,
 ): void {
   describe(`streaming > ${name} (${inputs.length} ticks)`, () => {
-    for (const implementation of implementations) {
-      it(implementation.name, async ({ bench }) => {
-        await bench(implementation.name, async () => {
+    it('compare parsers', async ({ bench: runBenchmark }) => {
+      await runBenchmark.compare(
+        ...implementations.map(implementation => runBenchmark(implementation.name, async () => {
           benchmarkResult = await implementation.stream(inputs)
-        }).run(options)
-      })
-    }
+        })),
+        options,
+      )
+    })
   })
 }
 
