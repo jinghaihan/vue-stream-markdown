@@ -30,10 +30,10 @@ export function renderTextNode(
     animatedTextKeys.add(textKey)
 
   const caret = loading && context.enableCaret.value
-    ? h('span', {
+    ? h(context.uiComponents.value.Caret, {
         'key': `${textKey}-caret`,
         'data-stream-markdown': 'caret',
-      }, context.caret.value)
+      })
     : undefined
 
   if (!animatedTextKeys.has(textKey)) {
