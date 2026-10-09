@@ -1,4 +1,5 @@
 import type { SelectOption } from 'vue-stream-markdown'
+import { virtualCode } from './virtual-code'
 
 export const markdownGlob = import.meta.glob('./*.md', {
   import: 'default',
@@ -6,6 +7,7 @@ export const markdownGlob = import.meta.glob('./*.md', {
 })
 
 export const DEFAULT_MARKDOWN_PATH = './landing-page.md'
+export const VIRTUAL_CODE_PATH = './virtual-code'
 
 /** / keep-sorted */
 export const MARKDOWN_NAME: Record<string, string> = {
@@ -18,6 +20,7 @@ export const MARKDOWN_NAME: Record<string, string> = {
   'Mathematics': './mathematics.md',
   'Mermaid Diagrams': './mermaid.md',
   'Typography': './typography.md',
+  'Virtual Code Scrolling': VIRTUAL_CODE_PATH,
 }
 
 export function getPresetOptions(): SelectOption[] {
@@ -31,6 +34,8 @@ export function getPresetOptions(): SelectOption[] {
 }
 
 export async function getPresetContent(path: string): Promise<string> {
+  if (path === VIRTUAL_CODE_PATH)
+    return virtualCode
   if (!markdownGlob[path])
     return ''
   return markdownGlob[path]()

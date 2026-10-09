@@ -21,6 +21,7 @@ import PreviewToggle from './preview-toggle.vue'
 import ClassicVariant from './variants/classic.vue'
 import MinimalVariant from './variants/minimal.vue'
 import ModernVariant from './variants/modern.vue'
+import CodeViewport from './viewport.vue'
 
 defineOptions({
   inheritAttrs: false,
@@ -66,6 +67,7 @@ const fullscreen = ref<boolean>(false)
 const modalMounted = ref<boolean>(false)
 const mode = ref<'preview' | 'source'>('source')
 const scrollRef = ref<HTMLElement>()
+const fullscreenScrollRef = ref<HTMLElement>()
 
 const codeBlockModel = computed(() => createCodeBlockModel<Component>({
   node: props.node,
@@ -142,6 +144,13 @@ usePinnedScroll({
   target: scrollRef,
   active: () => !!props.node.loading && mode.value === 'source',
   enabled: () => !!maxHeight.value && mode.value === 'source',
+  contentKey: () => props.node.value,
+})
+
+usePinnedScroll({
+  target: fullscreenScrollRef,
+  active: () => !!props.node.loading && fullscreen.value && mode.value === 'source',
+  enabled: () => fullscreen.value && mode.value === 'source' && codeBlockModel.value.languageCodeOptions.virtualScroll === true,
   contentKey: () => props.node.value,
 })
 
@@ -296,7 +305,9 @@ async function handleControlClick(key: string, item?: SelectOption) {
         :min-height="minimalPreviewMinHeight"
       />
       <main v-show="mode === 'source'">
-        <slot />
+        <CodeViewport :element="scrollRef" :bounded="!!maxHeight">
+          <slot />
+        </CodeViewport>
       </main>
     </template>
   </component>
@@ -348,10 +359,15 @@ async function handleControlClick(key: string, item?: SelectOption) {
       container-height="100%"
       :min-height="minimalPreviewMinHeight"
     />
-    <CodeNode
+    <main
       v-show="mode === 'source'"
-      v-bind="props"
-      :show-wrapper="false"
-    />
+      ref="fullscreenScrollRef"
+      data-stream-markdown="code-fullscreen"
+      class="h-full overflow-auto"
+    >
+      <CodeViewport :element="fullscreenScrollRef" bounded>
+        <CodeNode v-bind="props" :show-wrapper="false" />
+      </CodeViewport>
+    </main>
   </component>
 </template>

@@ -18,7 +18,7 @@ import { hydrateOnVisible } from 'vue'
 import { Markdown, SUPPORT_LANGUAGES, useTailwindV3Theme } from 'vue-stream-markdown'
 import { provideI18n } from './composables/use-i18n'
 import { ChartPie } from './icons'
-import { DEFAULT_MARKDOWN_PATH, getPresetContent } from './markdown'
+import { DEFAULT_MARKDOWN_PATH, getPresetContent, VIRTUAL_CODE_PATH } from './markdown'
 import { getContentFromUrl } from './utils'
 
 const githubComponent = defineAsyncComponent({
@@ -97,6 +97,8 @@ const copyContent = computed(() => {
 const codeOptions = computed((): CodeOptions => {
   const options: CodeOptions = {
     variant: userConfig.value.codeBlockVariant,
+    maxHeight: userConfig.value.codeMaxHeight > 0 ? userConfig.value.codeMaxHeight : undefined,
+    virtualScroll: userConfig.value.codeVirtualScroll,
     languageIcon: !isMobile.value,
     languageName: !isMobile.value,
   }
@@ -196,6 +198,14 @@ function onEditorChange(data: string) {
 async function changePresetContent(item: SelectOption) {
   terminateTypeWriting()
 
+  if (item.value === VIRTUAL_CODE_PATH) {
+    userConfig.value.codeMaxHeight = 300
+    userConfig.value.codeVirtualScroll = true
+    userConfig.value.staticMode = true
+    userConfig.value.typedStepMin = 256
+    userConfig.value.typedStepMax = 256
+  }
+
   const data = await getPresetContent(String(item.value))
   content.value = data
   monacoRef.value?.setValue(data)
@@ -288,6 +298,8 @@ onMounted(() => {
         v-model:animation-duration="userConfig.animationDuration"
         v-model:animation-stagger="userConfig.animationStagger"
         v-model:code-block-variant="userConfig.codeBlockVariant"
+        v-model:code-max-height="userConfig.codeMaxHeight"
+        v-model:code-virtual-scroll="userConfig.codeVirtualScroll"
         :content="content"
         :prev-step="prevStep"
         :next-step="nextStep"

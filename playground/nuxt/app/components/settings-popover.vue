@@ -33,7 +33,17 @@ const animationSplit = defineModel<NonNullable<StreamMarkdownProps['animationSpl
 const animationDuration = defineModel<number>('animationDuration', { required: false, default: 180 })
 const animationStagger = defineModel<number>('animationStagger', { required: false, default: 40 })
 const codeBlockVariant = defineModel<CodeBlockVariant>('codeBlockVariant', { required: false, default: 'modern' })
+const codeMaxHeight = defineModel<number>('codeMaxHeight', { default: 0 })
+const codeVirtualScroll = defineModel<boolean>('codeVirtualScroll', { default: false })
 const { t } = useI18n()
+
+const codeMaxHeightInput = computed({
+  get: () => codeMaxHeight.value,
+  set: (value: number | string) => {
+    const height = Number(value)
+    codeMaxHeight.value = Number.isFinite(height) ? Math.max(0, height) : 0
+  },
+})
 
 const animationDurationInput = computed({
   get: () => animationDuration.value,
@@ -243,6 +253,16 @@ watch(() => staticMode.value, () => {
             :class="CONTROL_CLASSES"
             :options="CODE_BLOCK_VARIANT_OPTIONS"
           />
+        </div>
+
+        <div :class="BLOCK_CLASSES">
+          <Label :class="LABEL_CLASSES">{{ t('settings.labels.codeMaxHeight') }}</Label>
+          <Input v-model:value="codeMaxHeightInput" :class="CONTROL_CLASSES" type="number" min="0" step="100" />
+        </div>
+
+        <div :class="BLOCK_CLASSES">
+          <Label :class="LABEL_CLASSES">{{ t('settings.labels.codeVirtualScroll') }}</Label>
+          <Switch v-model:value="codeVirtualScroll" />
         </div>
 
         <hr :class="DIVIDER_CLASSES">

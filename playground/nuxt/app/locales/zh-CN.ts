@@ -42,6 +42,8 @@ const locale: PlaygroundLocale = {
       stepMax: '最大步长',
       typedDelay: '播放延迟',
       variant: '样式',
+      codeMaxHeight: '最大高度 (px)\n0 = 不限制',
+      codeVirtualScroll: '虚拟滚动',
       lightTheme: '浅色主题',
       darkTheme: '深色主题',
       renderer: '渲染器',

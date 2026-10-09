@@ -10,7 +10,7 @@ The display options configuration allows you to customize the visual presentatio
 ## codeOptions
 
 - **Type:** `CodeOptions | undefined`
-- **Default:** `undefined` (all options enabled by default)
+- **Default:** `undefined` (display elements visible, virtual scrolling disabled)
 
 Configuration for code block display options, including language indicators and line numbers.
 
@@ -24,6 +24,7 @@ interface CodeOptions {
   languageName?: boolean
   lineNumbers?: boolean
   maxHeight?: number | string
+  virtualScroll?: boolean
   /**
    * Language specific code options
    * Allows you to override display options for specific programming languages
@@ -40,7 +41,7 @@ interface CodeOptionsLanguage extends Omit<CodeOptions, 'languageIcon'> {
 }
 ```
 
-All options default to `true` (visible). Set any option to `false` to hide the corresponding element.
+`languageIcon`, `languageName`, and `lineNumbers` default to `true` (visible). Set these options to `false` to hide the corresponding element.
 
 ### variant
 
@@ -141,7 +142,25 @@ const codeOptions: CodeOptions = {
 </template>
 ```
 
-### All Options Enabled (Default)
+### virtualScroll
+
+- **Type:** `boolean`
+- **Default:** `false`
+
+Render only visible code lines and a small buffer. Enable it together with `maxHeight` for an internally scrollable source view:
+
+```ts
+const codeOptions: CodeOptions = {
+  maxHeight: 300,
+  virtualScroll: true,
+}
+```
+
+Fullscreen source views also use virtual scrolling when enabled. Source views without a height limit, or with custom CSS that wraps lines, render all lines. Language-specific overrides are supported through `language`.
+
+Line numbers and highlighting are preserved. During streaming, scrolling up pauses bottom following; returning to the bottom resumes it. Copy, download, and fullscreen use the complete source. Virtual scrolling reduces mounted DOM nodes; parsing and highlighting still process the complete source, and native text selection and browser find only see mounted lines.
+
+### Display Elements Enabled (Default)
 
 ::stream-markdown{example="config-display-options.codeExample" code-options-example="config-display-options.allEnabled"}
 ::

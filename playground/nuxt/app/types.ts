@@ -28,6 +28,8 @@ export interface UserConfig {
   animationDuration: number
   animationStagger: number
   codeBlockVariant: CodeBlockVariant
+  codeMaxHeight: number
+  codeVirtualScroll: boolean
 }
 
 export interface IconButtonProps {

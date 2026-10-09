@@ -69,6 +69,8 @@ const animationSplit = defineModel<NonNullable<StreamMarkdownProps['animationSpl
 const animationDuration = defineModel<number>('animationDuration', { required: false, default: 180 })
 const animationStagger = defineModel<number>('animationStagger', { required: false, default: 40 })
 const codeBlockVariant = defineModel<CodeBlockVariant>('codeBlockVariant', { required: false, default: 'modern' })
+const codeMaxHeight = defineModel<number>('codeMaxHeight', { default: 0 })
+const codeVirtualScroll = defineModel<boolean>('codeVirtualScroll', { default: false })
 
 function wrapAction(action: Omit<Action, 'key'>): Action | null {
   if (action.visible && !action.visible?.())
@@ -187,6 +189,8 @@ const actions = computed((): Action[] => {
       v-model:animation-duration="animationDuration"
       v-model:animation-stagger="animationStagger"
       v-model:code-block-variant="codeBlockVariant"
+      v-model:code-max-height="codeMaxHeight"
+      v-model:code-virtual-scroll="codeVirtualScroll"
       v-model:typing-index="typingIndex"
       v-model:typed-step-min="typedStepMin"
       v-model:typed-step-max="typedStepMax"

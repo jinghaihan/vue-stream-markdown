@@ -42,6 +42,8 @@ const locale: PlaygroundLocale = {
       stepMax: 'Step Max',
       typedDelay: 'Typed Delay',
       variant: 'Variant',
+      codeMaxHeight: 'Max Height (px)\n0 = unlimited',
+      codeVirtualScroll: 'Virtual Scroll',
       lightTheme: 'Light Theme',
       darkTheme: 'Dark Theme',
       renderer: 'Renderer',
