@@ -452,12 +452,12 @@ export declare const UI: {
   }, string, import("vue").PublicProps, Readonly<UIButtonProps> & Readonly<{
     onClick?: ((event: MouseEvent, item?: import("@stream-markdown/core").SelectOption | undefined) => any) | undefined;
   }>, {
-    variant: "icon" | "text";
     buttonStyle: import("vue").CSSProperties;
-    iconWidth: number;
     iconHeight: number;
     iconStyle: import("vue").CSSProperties;
+    iconWidth: number;
     options: import("@stream-markdown/core").SelectOption[];
+    variant: "icon" | "text";
   }, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
   readonly Caret: import("vue").DefineComponent<{}, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").PublicProps, Readonly<{}> & Readonly<{}>, {}, {}, {}, {}, string, import("vue").ComponentProvideOptions, true, {}, any>;
   readonly Dropdown: {
@@ -495,8 +495,8 @@ export declare const UI: {
   });
   readonly ErrorComponent: {
     new (...args: any[]): import("vue").CreateComponentPublicInstanceWithMixins<Readonly<UIErrorComponentProps> & Readonly<{}>, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, import("vue").PublicProps, {
-      variant: import("@stream-markdown/core").UIErrorVariant;
       showIcon: boolean;
+      variant: import("@stream-markdown/core").UIErrorVariant;
     }, false, {}, {}, import("vue").GlobalComponents, import("vue").GlobalDirectives, string, {}, any, import("vue").ComponentProvideOptions, {
       P: {};
       B: {};
@@ -505,23 +505,23 @@ export declare const UI: {
       M: {};
       Defaults: {};
     }, Readonly<UIErrorComponentProps> & Readonly<{}>, {}, {}, {}, {}, {
-      variant: import("@stream-markdown/core").UIErrorVariant;
       showIcon: boolean;
+      variant: import("@stream-markdown/core").UIErrorVariant;
     }>;
     __isFragment?: never;
     __isTeleport?: never;
     __isSuspense?: never;
   } & import("vue").ComponentOptionsBase<Readonly<UIErrorComponentProps> & Readonly<{}>, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, {
-    variant: import("@stream-markdown/core").UIErrorVariant;
     showIcon: boolean;
+    variant: import("@stream-markdown/core").UIErrorVariant;
   }, {}, string, {}, import("vue").GlobalComponents, import("vue").GlobalDirectives, string, import("vue").ComponentProvideOptions> & import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps & (new () => {
     $slots: {
       default?: (props: {}) => any;
     };
   });
   readonly Icon: import("vue").DefineComponent<UIIconProps, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").PublicProps, Readonly<UIIconProps> & Readonly<{}>, {
-    width: number;
     height: number;
+    width: number;
   }, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
   readonly Image: import("vue").DefineComponent<UIImageProps, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {} & {
     error: (event: Event) => any;
@@ -530,8 +530,8 @@ export declare const UI: {
     onError?: ((event: Event) => any) | undefined;
     onLoad?: ((event: Event) => any) | undefined;
   }>, {
-    preview: boolean;
     margin: number;
+    preview: boolean;
   }, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
   readonly Modal: {
     new (...args: any[]): import("vue").CreateComponentPublicInstanceWithMixins<Readonly<UIModalProps & {
@@ -541,8 +541,8 @@ export declare const UI: {
     }>, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {
       "update:open": (value: boolean) => any;
     }, import("vue").PublicProps, {
-      zIndex: number;
       transition: string;
+      zIndex: number;
     }, false, {}, {}, import("vue").GlobalComponents, import("vue").GlobalDirectives, string, {}, any, import("vue").ComponentProvideOptions, {
       P: {};
       B: {};
@@ -555,8 +555,8 @@ export declare const UI: {
     }> & Readonly<{
       "onUpdate:open"?: ((value: boolean) => any) | undefined;
     }>, {}, {}, {}, {}, {
-      zIndex: number;
       transition: string;
+      zIndex: number;
     }>;
     __isFragment?: never;
     __isTeleport?: never;
@@ -568,8 +568,8 @@ export declare const UI: {
   }>, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {
     "update:open": (value: boolean) => any;
   }, string, {
-    zIndex: number;
     transition: string;
+    zIndex: number;
   }, {}, string, {}, import("vue").GlobalComponents, import("vue").GlobalDirectives, string, import("vue").ComponentProvideOptions> & import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps & (new () => {
     $slots: {
       title?: (props: {}) => any;
@@ -593,8 +593,8 @@ export declare const UI: {
     onChange?: ((value: string) => any) | undefined;
     "onUpdate:value"?: ((value: string) => any) | undefined;
   }>, {
-    options: import("@stream-markdown/core").SelectOption[];
     buttonStyle: import("vue").CSSProperties;
+    options: import("@stream-markdown/core").SelectOption[];
   }, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
   readonly Spin: import("vue").DefineComponent<{}, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").PublicProps, Readonly<{}> & Readonly<{}>, {}, {}, {}, {}, string, import("vue").ComponentProvideOptions, true, {}, any>;
   readonly Tooltip: {
@@ -602,9 +602,9 @@ export declare const UI: {
       show: () => void;
       hide: () => void;
     }, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, import("vue").PublicProps, {
-      trigger: "hover" | "click";
-      placement: "top" | "bottom" | "left" | "right" | "top-start" | "top-end" | "bottom-start" | "bottom-end" | "left-start" | "left-end" | "right-start" | "right-end";
       delay: number | [number, number];
+      placement: "bottom" | "bottom-end" | "bottom-start" | "left" | "left-end" | "left-start" | "right" | "right-end" | "right-start" | "top" | "top-end" | "top-start";
+      trigger: "click" | "hover";
     }, false, {}, {}, import("vue").GlobalComponents, import("vue").GlobalDirectives, string, {}, any, import("vue").ComponentProvideOptions, {
       P: {};
       B: {};
@@ -616,9 +616,9 @@ export declare const UI: {
       show: () => void;
       hide: () => void;
     }, {}, {}, {}, {
-      trigger: "hover" | "click";
-      placement: "top" | "bottom" | "left" | "right" | "top-start" | "top-end" | "bottom-start" | "bottom-end" | "left-start" | "left-end" | "right-start" | "right-end";
       delay: number | [number, number];
+      placement: "bottom" | "bottom-end" | "bottom-start" | "left" | "left-end" | "left-start" | "right" | "right-end" | "right-start" | "top" | "top-end" | "top-start";
+      trigger: "click" | "hover";
     }>;
     __isFragment?: never;
     __isTeleport?: never;
@@ -627,9 +627,9 @@ export declare const UI: {
     show: () => void;
     hide: () => void;
   }, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, {
-    trigger: "hover" | "click";
-    placement: "top" | "bottom" | "left" | "right" | "top-start" | "top-end" | "bottom-start" | "bottom-end" | "left-start" | "left-end" | "right-start" | "right-end";
     delay: number | [number, number];
+    placement: "bottom" | "bottom-end" | "bottom-start" | "left" | "left-end" | "left-start" | "right" | "right-end" | "right-start" | "top" | "top-end" | "top-start";
+    trigger: "click" | "hover";
   }, {}, string, {}, import("vue").GlobalComponents, import("vue").GlobalDirectives, string, import("vue").ComponentProvideOptions> & import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps & (new () => {
     $slots: {
       default?: (props: {}) => any;
@@ -639,11 +639,11 @@ export declare const UI: {
   });
   readonly ZoomContainer: {
     new (...args: any[]): import("vue").CreateComponentPublicInstanceWithMixins<Readonly<UIZoomContainerProps> & Readonly<{}>, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, import("vue").PublicProps, {
-      interactive: boolean;
-      showControl: boolean;
-      controlSize: "vanilla" | "large";
-      position: import("@stream-markdown/core").ZoomControlPosition;
       containerStyle: import("vue").CSSProperties;
+      controlSize: "large" | "vanilla";
+      interactive: boolean;
+      position: import("@stream-markdown/core").ZoomControlPosition;
+      showControl: boolean;
     }, false, {}, {}, import("vue").GlobalComponents, import("vue").GlobalDirectives, string, {}, any, import("vue").ComponentProvideOptions, {
       P: {};
       B: {};
@@ -652,21 +652,21 @@ export declare const UI: {
       M: {};
       Defaults: {};
     }, Readonly<UIZoomContainerProps> & Readonly<{}>, {}, {}, {}, {}, {
-      interactive: boolean;
-      showControl: boolean;
-      controlSize: "vanilla" | "large";
-      position: import("@stream-markdown/core").ZoomControlPosition;
       containerStyle: import("vue").CSSProperties;
+      controlSize: "large" | "vanilla";
+      interactive: boolean;
+      position: import("@stream-markdown/core").ZoomControlPosition;
+      showControl: boolean;
     }>;
     __isFragment?: never;
     __isTeleport?: never;
     __isSuspense?: never;
   } & import("vue").ComponentOptionsBase<Readonly<UIZoomContainerProps> & Readonly<{}>, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, {
-    interactive: boolean;
-    showControl: boolean;
-    controlSize: "vanilla" | "large";
-    position: import("@stream-markdown/core").ZoomControlPosition;
     containerStyle: import("vue").CSSProperties;
+    controlSize: "large" | "vanilla";
+    interactive: boolean;
+    position: import("@stream-markdown/core").ZoomControlPosition;
+    showControl: boolean;
   }, {}, string, {}, import("vue").GlobalComponents, import("vue").GlobalDirectives, string, import("vue").ComponentProvideOptions> & import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps & (new () => {
     $slots: {
       controls?: (props: {

@@ -34,10 +34,11 @@ const tokens = computed(() => highlighted.value)
 watch(
   () => [
     code.value,
+    lang.value,
     extensions.value?.code,
     isDark.value,
   ] as const,
-  async ([currentCode, extension, currentIsDark]) => {
+  async ([currentCode, currentLanguage, extension, currentIsDark]) => {
     const request = ++highlightRequest
     if (!extension) {
       highlighted.value = undefined
@@ -47,7 +48,7 @@ watch(
     const result = await extension.highlight({
       code: currentCode,
       isDark: currentIsDark,
-      language: lang.value,
+      language: currentLanguage,
     })
     if (request === highlightRequest)
       highlighted.value = result

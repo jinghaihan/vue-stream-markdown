@@ -1,3 +1,4 @@
+import { mergeConfig } from 'vite'
 import { description } from 'vue-stream-markdown/package.json'
 import { alias } from '../../shared'
 
@@ -33,17 +34,6 @@ export default defineNuxtConfig({
   alias,
   future: { compatibilityVersion: 4 },
   compatibilityDate: 'latest',
-  vite: {
-    $client: {
-      build: {
-        rolldownOptions: {
-          output: {
-            codeSplitting: false,
-          },
-        },
-      },
-    },
-  },
   typescript: {
     tsConfig: {
       compilerOptions: {
@@ -56,6 +46,19 @@ export default defineNuxtConfig({
       include: [
         '../../../shims.d.ts',
       ],
+    },
+  },
+  hooks: {
+    'vite:extendConfig': (config, { isClient }) => {
+      if (isClient) {
+        Object.assign(config, mergeConfig(config, {
+          build: {
+            rolldownOptions: {
+              output: { codeSplitting: false },
+            },
+          },
+        }))
+      }
     },
   },
   eslint: {

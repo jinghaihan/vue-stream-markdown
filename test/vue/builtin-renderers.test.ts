@@ -1,3 +1,4 @@
+import type { CodeHighlightInput, CodeHighlightResult } from '@stream-markdown/core'
 // @vitest-environment happy-dom
 import type { Component } from 'vue'
 import type { CodeBlockNode, UIComponents } from 'vue-stream-markdown'
@@ -6,6 +7,7 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, expectTypeOf, it, vi } from 'vitest'
 import { defineComponent, h, markRaw, ref } from 'vue'
 import { CodeBlockRenderer, CodeRenderer, ImageRenderer, LinkRenderer, Markdown, MathRenderer, TableRenderer } from 'vue-stream-markdown'
+import { useContext } from '../../packages/vue/src/composables'
 
 vi.mock('../../packages/vue/src/utils', async () => ({
   ...await vi.importActual<typeof import('../../packages/vue/src/utils')>('../../packages/vue/src/utils'),
@@ -23,6 +25,37 @@ function wrapRenderer(renderer: Component) {
 }
 
 describe('public built-in renderers', () => {
+  it('rehighlights unchanged code when its language changes and ignores stale results', async () => {
+    const pending: Array<(result: CodeHighlightResult) => void> = []
+    const highlight = vi.fn((_input: CodeHighlightInput) => new Promise<CodeHighlightResult>((resolve) => {
+      pending.push(resolve)
+    }))
+    const node = ref<CodeBlockNode>({ value: 'select 1', lang: 'javascript' })
+    const App = defineComponent(() => {
+      useContext().provideContext({ extensions: { code: { highlight, preload: async () => {}, dispose: () => {} } } })
+      return () => h(CodeRenderer, { node: node.value, nodeKey: 'same-block' })
+    })
+    const wrapper = mount(App)
+    await vi.dynamicImportSettled()
+    await flushPromises()
+    expect(highlight).toHaveBeenLastCalledWith({ code: 'select 1', language: 'javascript', isDark: false })
+
+    node.value.lang = 'sql'
+    await flushPromises()
+    expect(highlight).toHaveBeenCalledTimes(2)
+    expect(highlight).toHaveBeenLastCalledWith({ code: 'select 1', language: 'sql', isDark: false })
+    pending[1]!({ grammarState: { lang: 'sql' }, tokens: [[{ content: 'select 1', htmlStyle: { color: 'blue' } }]] })
+    await flushPromises()
+    expect(wrapper.get('pre').attributes('data-language')).toBe('sql')
+    expect(wrapper.get('[data-stream-markdown="code-line"] span').attributes('style')).toContain('color: blue')
+
+    pending[0]!({ grammarState: { lang: 'javascript' }, tokens: [[{ content: 'select 1', htmlStyle: { color: 'red' } }]] })
+    await flushPromises()
+    expect(wrapper.get('pre').attributes('data-language')).toBe('sql')
+    expect(wrapper.get('[data-stream-markdown="code-line"] span').attributes('style')).toContain('color: blue')
+    wrapper.unmount()
+  })
+
   it('composes a custom code body through pre while retaining the full source for fullscreen', async () => {
     expectTypeOf<Extract<keyof UIComponents, 'CodeBlock' | 'Table'>>().toEqualTypeOf<never>()
     const Button = markRaw(defineComponent({
