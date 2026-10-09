@@ -18,7 +18,7 @@ import { hydrateOnVisible } from 'vue'
 import { Markdown, SUPPORT_LANGUAGES, useTailwindV3Theme } from 'vue-stream-markdown'
 import { provideI18n } from './composables/use-i18n'
 import { ChartPie } from './icons'
-import { DEFAULT_MARKDOWN_PATH, getPresetContent, VIRTUAL_CODE_PATH } from './markdown'
+import { DEFAULT_MARKDOWN_PATH, getPresetContent } from './markdown'
 import { getContentFromUrl } from './utils'
 
 const githubComponent = defineAsyncComponent({
@@ -198,7 +198,7 @@ function onEditorChange(data: string) {
 async function changePresetContent(item: SelectOption) {
   terminateTypeWriting()
 
-  if (item.value === VIRTUAL_CODE_PATH) {
+  if (item.value === './code-blocks.md') {
     userConfig.value.codeMaxHeight = 300
     userConfig.value.codeVirtualScroll = true
     userConfig.value.staticMode = true

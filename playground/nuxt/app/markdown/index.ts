@@ -1,5 +1,4 @@
 import type { SelectOption } from 'vue-stream-markdown'
-import { virtualCode } from './virtual-code'
 
 export const markdownGlob = import.meta.glob('./*.md', {
   import: 'default',
@@ -7,7 +6,6 @@ export const markdownGlob = import.meta.glob('./*.md', {
 })
 
 export const DEFAULT_MARKDOWN_PATH = './landing-page.md'
-export const VIRTUAL_CODE_PATH = './virtual-code'
 
 /** / keep-sorted */
 export const MARKDOWN_NAME: Record<string, string> = {
@@ -20,7 +18,6 @@ export const MARKDOWN_NAME: Record<string, string> = {
   'Mathematics': './mathematics.md',
   'Mermaid Diagrams': './mermaid.md',
   'Typography': './typography.md',
-  'Virtual Code Scrolling': VIRTUAL_CODE_PATH,
 }
 
 export function getPresetOptions(): SelectOption[] {
@@ -34,9 +31,17 @@ export function getPresetOptions(): SelectOption[] {
 }
 
 export async function getPresetContent(path: string): Promise<string> {
-  if (path === VIRTUAL_CODE_PATH)
-    return virtualCode
   if (!markdownGlob[path])
     return ''
-  return markdownGlob[path]()
+  const content = await markdownGlob[path]() as string
+  if (path !== './code-blocks.md')
+    return content
+
+  const javascript = Array.from({ length: 2000 }, (_, index) => index === 1000
+    ? `const longLine = "${'horizontal-scroll-'.repeat(40)}"`
+    : `console.log("Row ${index + 1}", ${index + 1})`).join('\n')
+  const python = Array.from({ length: 500 }, (_, index) => `print("Row ${index + 1}")`).join('\n')
+  return content
+    .replace('<!-- long-javascript -->', javascript)
+    .replaceAll('<!-- long-python -->', python)
 }

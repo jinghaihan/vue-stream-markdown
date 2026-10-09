@@ -100,3 +100,29 @@ function example() {
 ```
 
 The unterminated block parser ensures the code block renders properly even without the closing backticks.
+
+## Virtual Scrolling
+
+This example enables virtual scrolling with a 300px height limit. Use **Settings → Code Block** to toggle virtual scrolling, change the height (0 = unlimited), or switch Modern / Classic / Minimal.
+
+Scroll vertically to check line numbers and highlighting, and horizontally near row 1001 to check the long line. Copy, download, and fullscreen retain the complete source. Press Play to check streaming: scrolling up pauses bottom following; returning to the bottom resumes it.
+
+### 2000-line JavaScript
+
+```javascript
+<!-- long-javascript -->
+```
+
+### Custom Starting Line
+
+This block contains 500 lines, starting at line 42.
+
+```python startLine=42
+<!-- long-python -->
+```
+
+### Hidden Line Numbers
+
+```python noLineNumbers
+<!-- long-python -->
+```
