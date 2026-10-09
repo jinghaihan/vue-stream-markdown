@@ -112,17 +112,3 @@ Scroll vertically to check line numbers and highlighting, and horizontally near 
 ```javascript
 <!-- long-javascript -->
 ```
-
-### Custom Starting Line
-
-This block contains 500 lines, starting at line 42.
-
-```python startLine=42
-<!-- long-python -->
-```
-
-### Hidden Line Numbers
-
-```python noLineNumbers
-<!-- long-python -->
-```

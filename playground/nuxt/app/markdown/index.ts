@@ -40,8 +40,5 @@ export async function getPresetContent(path: string): Promise<string> {
   const javascript = Array.from({ length: 2000 }, (_, index) => index === 1000
     ? `const longLine = "${'horizontal-scroll-'.repeat(40)}"`
     : `console.log("Row ${index + 1}", ${index + 1})`).join('\n')
-  const python = Array.from({ length: 500 }, (_, index) => `print("Row ${index + 1}")`).join('\n')
-  return content
-    .replace('<!-- long-javascript -->', javascript)
-    .replaceAll('<!-- long-python -->', python)
+  return content.replace('<!-- long-javascript -->', javascript)
 }
