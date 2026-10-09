@@ -1,10 +1,11 @@
 // @vitest-environment happy-dom
 import type { Component } from 'vue'
+import type { CodeBlockNode, MarkdownElement, UIComponents } from 'vue-stream-markdown'
 import { math } from '@stream-markdown/math'
 import { flushPromises, mount } from '@vue/test-utils'
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, expectTypeOf, it, vi } from 'vitest'
 import { defineComponent, h, markRaw, ref } from 'vue'
-import { CodeBlockRenderer, CodeRenderer, ImageRenderer, LinkRenderer, Markdown, MathRenderer, TableRenderer } from 'vue-stream-markdown'
+import { CodeBlock, CodeBlockRenderer, CodeRenderer, ImageRenderer, LinkRenderer, Markdown, MathRenderer, TableRenderer } from 'vue-stream-markdown'
 
 vi.mock('../../packages/vue/src/utils', async () => ({
   ...await vi.importActual<typeof import('../../packages/vue/src/utils')>('../../packages/vue/src/utils'),
@@ -22,6 +23,60 @@ function wrapRenderer(renderer: Component) {
 }
 
 describe('public built-in renderers', () => {
+  it('composes a custom code body through pre while retaining the full source for fullscreen', async () => {
+    expectTypeOf<Extract<keyof UIComponents, 'CodeBlock' | 'Table'>>().toEqualTypeOf<never>()
+    const Button = markRaw(defineComponent({
+      inheritAttrs: false,
+      props: ['name'],
+      setup(props, { attrs }) {
+        return () => h('button', { ...attrs, 'data-custom-button': '' }, props.name)
+      },
+    }))
+    const CustomCode = markRaw(defineComponent({
+      inheritAttrs: false,
+      props: ['node', 'nodeKey', 'loading'],
+      setup(props) {
+        return () => {
+          const [, attributes, ...children] = props.node as MarkdownElement
+          const code = children.find(child => Array.isArray(child) && child[0] === 'code') as MarkdownElement
+          const node: CodeBlockNode = {
+            value: code.slice(2).filter(child => typeof child === 'string').join('').replace(/\n$/, ''),
+            lang: String(attributes.language ?? ''),
+            loading: props.loading,
+          }
+          return h(CodeBlock, { node, nodeKey: props.nodeKey }, {
+            default: () => [
+              h(CodeRenderer, { node: { ...node, value: node.value.slice(0, 4) }, nodeKey: props.nodeKey }),
+              h('p', { 'data-display-notice': '' }, `${node.value.length} characters total`),
+            ],
+          })
+        }
+      },
+    }))
+    const wrapper = mount(Markdown, {
+      props: {
+        content: '```js\nfull source\n```',
+        mode: 'static',
+        enableAnimate: false,
+        components: { pre: CustomCode },
+        uiComponents: { Button },
+        controls: { code: { collapse: false, copy: false, download: false, fullscreen: true } },
+      },
+    })
+    await vi.dynamicImportSettled()
+    await flushPromises()
+    expect(wrapper.get('[data-stream-markdown="code-line"]').text()).toBe('full')
+    expect(wrapper.get('[data-display-notice]').text()).toBe('11 characters total')
+
+    await wrapper.get('[data-custom-button]').trigger('click')
+    await vi.dynamicImportSettled()
+    await flushPromises()
+    const fullscreen = document.querySelector('[data-stream-markdown="modal-body"]')
+    expect(fullscreen?.textContent).toContain('full source')
+    expect(fullscreen?.querySelector('[data-display-notice]')).toBeNull()
+    wrapper.unmount()
+  })
+
   it.each([
     ['pre', CodeBlockRenderer, '```js\nconst value = 1\n```', '[data-stream-markdown="code-block"]'],
     ['a', LinkRenderer, '[**Example**](https://example.com)', '[data-stream-markdown="link"]'],

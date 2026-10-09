@@ -93,7 +93,7 @@ When both diagram extensions are configured, supported diagrams use Beautiful Me
 | `mdastOptions`                           | `parserOptions`                       |
 | Markmend preprocessing hooks             | `completion` / `completionSteps`      |
 | `nodeRenderers` keyed by mdast node type | `components` keyed by HTML/Comark tag |
-| `components` for built-in UI             | `uiComponents`                        |
+| `components` for shared UI controls      | `uiComponents`                        |
 | `getMarkdownParser()`                    | Removed                               |
 | `getParsedNodes()`                       | `getDocument()`                       |
 | `getProcessedContent()`                  | Removed                               |
@@ -170,11 +170,13 @@ To reuse a built-in renderer previously accessed through `NODE_RENDERERS`, impor
 
 Replace the 1.x `NodeList` with `MarkdownNodes`, which renders Comark nodes through `MarkdownNodesProps`. Replace mdast children with Comark tuple children and forward `nodeKey` and `loading`; the old `deep`, `blocks`, and `nodeRenderers` props are no longer used. See [Rendering Node Lists](/config/components#rendering-node-lists).
 
-If you previously passed built-in UI replacements through `components`, rename that prop:
+For shared controls such as Button, move UI replacements from the 1.x `components` prop to `uiComponents`:
 
 ```vue
 <Markdown :ui-components="{ Button: CustomButton }" />
 ```
+
+Code block and table overrides use `components.pre` and `components.table`. `uiComponents.CodeBlock` and `uiComponents.Table` are no longer supported. To reuse the original components directly, replace `UI.CodeBlock` and `UI.Table` with the named exports `CodeBlock` and `Table`. `CodeBlock` continues to use the configured shared controls.
 
 ## Share configuration across messages
 
@@ -198,7 +200,7 @@ An individual `Markdown` can override a provider value when one message needs di
 - Move Shiki, KaTeX, Mermaid, and CDN options into extension factories.
 - Replace `mdastOptions` with `parserOptions` or `completion`.
 - Replace `nodeRenderers` with tag-based `components`.
-- Rename UI replacement `components` to `uiComponents`.
+- Move shared-control replacements to `uiComponents`, and code/table overrides to `components.pre` / `components.table`.
 - Replace parsed-node access with `getDocument()`.
 - Remove `@stream-markdown/html` and any mdast compatibility code.
 - Import `katex/dist/katex.min.css` when loading KaTeX locally.

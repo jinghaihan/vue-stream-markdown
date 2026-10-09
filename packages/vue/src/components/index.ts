@@ -7,11 +7,13 @@ export * from './renderers'
 
 export { default as MarkdownNodes } from './renderers/markdown'
 
+export const CodeBlock = defineAsyncComponent(() => import('./code-block/index.vue'))
+export const Table = defineAsyncComponent(() => import('./table.vue'))
+
 export const UI = {
   Alert: defineAsyncComponent(() => import('./alert.vue')),
   Button: defineAsyncComponent(() => import('./button.vue')),
   Caret: defineAsyncComponent(() => import('./caret.vue')),
-  CodeBlock: defineAsyncComponent(() => import('./code-block/index.vue')),
   Dropdown: defineAsyncComponent(() => import('./dropdown.vue')),
   ErrorComponent: defineAsyncComponent(() => import('./error-component.vue')),
   Icon: defineAsyncComponent(() => import('./icon.vue')),
@@ -19,7 +21,6 @@ export const UI = {
   Modal: defineAsyncComponent(() => import('./modal.vue')),
   Segmented: defineAsyncComponent(() => import('./segmented.vue')),
   Spin: defineAsyncComponent(() => import('./spin.vue')),
-  Table: defineAsyncComponent(() => import('./table.vue')),
   Tooltip: defineAsyncComponent(() => import('./tooltip.vue')),
   ZoomContainer: defineAsyncComponent(() => import('./zoom-container.vue')),
 } as const satisfies Record<BuiltinUIComponents, Component>

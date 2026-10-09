@@ -81,6 +81,8 @@ The Comark renderers accept `node`, `nodeKey`, and optional `loading` through `M
 
 `CodeRenderer` accepts `CodeRendererProps`: a normalized `CodeBlockNode`, `nodeKey`, and optional `showWrapper` (default: `false`). It renders only the highlighted code body by default; set `:show-wrapper="true"` to include the built-in header and wrapper. `CodeBlockRenderer` enables this automatically.
 
+To customize a code block's body inside the official wrapper, import `CodeBlock` and compose its default slot with `CodeRenderer`. Pass the complete `CodeBlockNode` to `CodeBlock` so copying, downloading, previews, and fullscreen retain the full source. Content overrides use `components.pre` or `components.table`; `uiComponents` only replaces shared controls such as Button and Modal.
+
 ## Rendering Node Lists
 
 Use `MarkdownNodes` to render existing Comark nodes after selecting or modifying them. This is the same renderer used internally by `Markdown`. For example, this custom heading appends a generated node to the original children:

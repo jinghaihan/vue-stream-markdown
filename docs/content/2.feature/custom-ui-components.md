@@ -5,7 +5,7 @@ navigation:
 description: Replace built-in UI components with your own implementations
 ---
 
-Sometimes you want to customize UI elements to maintain consistency with your application's design system. `vue-stream-markdown` provides the ability to replace any built-in UI component with your own implementation, giving you full control over the look and feel of your markdown content.
+Use `uiComponents` to replace shared controls such as Button, Modal, and Tooltip. Replace content nodes through `components`, using `pre` for code blocks and `table` for tables. See [Components](/config/components).
 
 ## Example
 
@@ -43,7 +43,6 @@ import MyButton from './button.vue'
 | Alert          | `UIAlertProps`          | Alert modal component  |
 | Button         | `UIButtonProps`         | Button component       |
 | Caret          | -                       | Cursor/caret indicator |
-| CodeBlock      | `CodeBlockProps`        | Code block wrapper     |
 | Dropdown       | `UIDropdownProps`       | Dropdown menu          |
 | ErrorComponent | `UIErrorComponentProps` | Error display          |
 | Icon           | `UIIconProps`           | Icon component         |
@@ -51,6 +50,7 @@ import MyButton from './button.vue'
 | Modal          | `UIModalProps`          | Modal dialog           |
 | Segmented      | `UISegmentedProps`      | Segmented control      |
 | Spin           | -                       | Loading spinner        |
-| Table          | `UITableProps`          | Table component        |
 | Tooltip        | `UITooltipProps`        | Tooltip component      |
 | ZoomContainer  | `UIZoomContainerProps`  | Zoom wrapper           |
+
+`CodeBlock` and `Table` are separate named exports for direct composition. They are not keys in `uiComponents` or the `UI` registry. `CodeBlock` accepts `CodeBlockProps` and a default body slot; `Table` accepts `UITableProps` and cell slots. Use `CodeRenderer` for a highlighted code body and `TableRenderer` for the complete Markdown table rendering behavior.

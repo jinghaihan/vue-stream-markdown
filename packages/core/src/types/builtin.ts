@@ -6,7 +6,6 @@ export type BuiltinUIComponents
   = | 'Alert'
     | 'Button'
     | 'Caret'
-    | 'CodeBlock'
     | 'Dropdown'
     | 'ErrorComponent'
     | 'Icon'
@@ -14,7 +13,6 @@ export type BuiltinUIComponents
     | 'Modal'
     | 'Segmented'
     | 'Spin'
-    | 'Table'
     | 'Tooltip'
     | 'ZoomContainer'
 

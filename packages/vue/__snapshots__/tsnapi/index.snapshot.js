@@ -29,6 +29,7 @@ export function useZoom(_) {}
 
 // #region Variables
 export var CODE_PREVIEWERS /* const */
+export var CodeBlock /* const */
 export var CodeBlockRenderer /* const */
 export var CodeRenderer /* const */
 export var currentLocale /* const */
@@ -39,6 +40,7 @@ export var Markdown
 export var MarkdownNodes
 export var MarkdownProvider
 export var MathRenderer /* const */
+export var Table /* const */
 export var TableRenderer /* const */
 export var UI /* const */
 // #endregion
