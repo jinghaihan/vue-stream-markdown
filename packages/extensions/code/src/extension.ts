@@ -3,7 +3,7 @@ import type {
   CodeHighlightResult,
   CodeToken,
 } from '@stream-markdown/core'
-import type { ThemeRegistrationResolved } from 'shiki'
+import type { ThemedToken, ThemeRegistrationResolved } from 'shiki'
 import type { CodeRuntimeOptions } from './types'
 import { resolveGetter } from '@stream-markdown/core'
 import { DEFAULT_SHIKI_DARK_THEME, DEFAULT_SHIKI_LIGHT_THEME } from './constants'
@@ -12,6 +12,7 @@ import { createShikiRuntime } from './runtime'
 export type CodeExtensionOptions = Omit<CodeRuntimeOptions, 'isDark' | 'lang'>
 
 export function code(options: CodeExtensionOptions = {}): CodeExtension {
+  const convertedRows = new WeakMap<ThemedToken[], CodeToken[]>()
   const preloadRuntime = createShikiRuntime({
     ...options,
     lang: 'plaintext',
@@ -33,11 +34,18 @@ export function code(options: CodeExtensionOptions = {}): CodeExtension {
 
       return {
         ...result,
-        tokens: result.tokens.map(line => line.map((token): CodeToken => ({
-          content: token.content,
-          htmlStyle: token.htmlStyle
-            ?? shiki.getTokenStyleObject(token) as CodeToken['htmlStyle'],
-        }))),
+        tokens: result.tokens.map((line) => {
+          let converted = convertedRows.get(line)
+          if (!converted) {
+            converted = line.map((token): CodeToken => ({
+              content: token.content,
+              htmlStyle: token.htmlStyle
+                ?? shiki.getTokenStyleObject(token) as CodeToken['htmlStyle'],
+            }))
+            convertedRows.set(line, converted)
+          }
+          return converted
+        }),
       } satisfies CodeHighlightResult
     },
     async getTheme(isDark) {

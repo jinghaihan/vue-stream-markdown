@@ -11,6 +11,7 @@ import { resolveGetter } from '@stream-markdown/core'
 import { createJavaScriptRegexEngine } from 'shiki'
 import { createShikiCdnLoader } from './cdn'
 import { DEFAULT_SHIKI_DARK_THEME, DEFAULT_SHIKI_LIGHT_THEME, LANGUAGE_ALIAS } from './constants'
+import { incrementalCodeToTokens } from './incremental'
 
 let highlighter: Highlighter | null = null
 let createHighlighterPromise: Promise<Highlighter> | null = null
@@ -191,7 +192,7 @@ export function createShikiRuntime(options: CodeRuntimeOptions = {}): ShikiRunti
 
   async function codeToTokens(code: string): Promise<TokensResult> {
     const targetHighlighter = await getHighlighter()
-    return targetHighlighter.codeToTokens(code, {
+    return incrementalCodeToTokens(targetHighlighter, code, {
       themes: await getDualTheme(),
       lang: await getLanguage(),
       ...getCodeToTokenOptions(),
