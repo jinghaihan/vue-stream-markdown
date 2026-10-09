@@ -1,6 +1,6 @@
 import type { MaybeRefOrGetter } from 'vue'
 import { useEventListener, useResizeObserver } from '@vueuse/core'
-import { nextTick, ref, toValue, watch } from 'vue'
+import { onScopeDispose, ref, toValue, watch } from 'vue'
 
 interface ScrollMetrics {
   clientHeight: number
@@ -27,17 +27,29 @@ export function isScrollAtBottom(
 export function usePinnedScroll(options: UsePinnedScrollOptions) {
   const pinned = ref(true)
   let programmaticScrollTop: number | undefined
+  let scrollFrame: number | undefined
 
-  async function followBottom() {
-    await nextTick()
-
-    const element = toValue(options.target)
-    if (!element || !toValue(options.enabled) || !toValue(options.active) || !pinned.value)
+  function followBottom() {
+    if (typeof window === 'undefined' || scrollFrame !== undefined
+      || !toValue(options.target) || !toValue(options.enabled) || !toValue(options.active) || !pinned.value) {
       return
+    }
 
-    element.scrollTop = element.scrollHeight
-    programmaticScrollTop = element.scrollTop
+    scrollFrame = window.requestAnimationFrame(() => {
+      scrollFrame = undefined
+      const element = toValue(options.target)
+      if (!element || !toValue(options.enabled) || !toValue(options.active) || !pinned.value)
+        return
+
+      element.scrollTop = element.scrollHeight
+      programmaticScrollTop = element.scrollTop
+    })
   }
+
+  onScopeDispose(() => {
+    if (scrollFrame !== undefined)
+      window.cancelAnimationFrame(scrollFrame)
+  })
 
   useEventListener(
     () => toValue(options.target),

@@ -59,6 +59,8 @@ const rows = '[data-stream-markdown="code-line"]'
 async function settle() {
   await vi.dynamicImportSettled()
   await flushPromises()
+  await new Promise<void>(resolve => window.requestAnimationFrame(() => resolve()))
+  await flushPromises()
 }
 
 describe('virtual code blocks', () => {
