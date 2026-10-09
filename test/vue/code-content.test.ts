@@ -52,4 +52,26 @@ describe('code content', () => {
     expect(wrapper.get('[data-stream-markdown="code-line"]').element).toBe(line)
     expect(wrapper.attributes('data-stream-markdown')).toBe('shiki')
   })
+
+  it.each<[number, string, string]>([
+    [98, '2ch', '3ch'],
+    [998, '3ch', '4ch'],
+    [9998, '4ch', '5ch'],
+  ])('widens the line number gutter when code starting at %i crosses a digit boundary', async (startLine, before, after) => {
+    const wrapper = mount(CodeContent, {
+      props: {
+        code: 'first\nsecond',
+        lang: 'typescript',
+        languageClass: 'language-typescript',
+        startLine,
+      },
+    })
+    const pre = wrapper.get('pre').element
+    expect(pre.style.getPropertyValue('--stream-markdown-line-number-width')).toBe(before)
+    await wrapper.setProps({ code: 'first\nsecond\nthird' } as never)
+    expect(pre.style.getPropertyValue('--stream-markdown-line-number-width')).toBe(after)
+    await wrapper.setProps({ showLineNumbers: false } as never)
+    expect(pre.style.getPropertyValue('--stream-markdown-line-number-width')).toBe('')
+    wrapper.unmount()
+  })
 })

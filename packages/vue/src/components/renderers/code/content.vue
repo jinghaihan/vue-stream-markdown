@@ -38,6 +38,7 @@ export default defineComponent({
     const lines = computed<CodeToken[][]>(() => props.tokens?.tokens ?? props.code
       .split('\n')
       .map(content => [{ content, htmlStyle: {} }]))
+    const lineNumberWidth = computed(() => `${Math.max(2, String(props.startLine + lines.value.length - 1).length)}ch`)
     const pre = ref<HTMLElement>()
     const widthMeasure = ref<HTMLElement>()
     const width = ref(0)
@@ -78,7 +79,7 @@ export default defineComponent({
           'data-stream-markdown': 'code-line',
           'data-line-number': props.startLine + index,
           'class': props.showLineNumbers
-            ? 'relative block min-h-4 text-sm before:inline-block before:mr-4 before:w-4 before:select-none before:text-right before:font-mono before:text-[13px] before:text-muted-foreground/50 before:content-[counter(line)] before:[counter-increment:line]'
+            ? 'relative block min-h-4 text-sm before:inline-block before:mr-4 before:w-[var(--stream-markdown-line-number-width)] before:select-none before:text-right before:font-mono before:text-[13px] before:text-muted-foreground/50 before:content-[counter(line)] before:[counter-increment:line]'
             : 'relative block min-h-4 text-sm',
           'style': enabled.value ? { height: `${rowHeight.value}px` } : undefined,
           'key': index,
@@ -115,9 +116,10 @@ export default defineComponent({
             'p-4 font-mono text-sm',
           ],
           'style': {
-            counterReset: `line ${props.startLine + (enabled.value ? firstIndex.value : 0) - 1}`,
-            color: props.tokens?.fg ?? 'inherit',
-            minWidth: enabled.value && width.value ? `calc(${width.value}px + ${props.showLineNumbers ? '4rem' : '2rem'})` : undefined,
+            '--stream-markdown-line-number-width': props.showLineNumbers ? lineNumberWidth.value : undefined,
+            'counterReset': `line ${props.startLine + (enabled.value ? firstIndex.value : 0) - 1}`,
+            'color': props.tokens?.fg ?? 'inherit',
+            'minWidth': enabled.value && width.value ? `calc(${width.value}px + ${props.showLineNumbers ? '3rem + var(--stream-markdown-line-number-width)' : '2rem'})` : undefined,
           },
         },
         h(
