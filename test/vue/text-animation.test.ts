@@ -4,6 +4,8 @@ import type { StreamMarkdownProps } from '../../packages/vue/src/types'
 import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { defineComponent, h } from 'vue'
+import { createTextAnimationController } from '../../packages/vue/src/components/renderers/markdown/text-animation'
+import { useContext } from '../../packages/vue/src/composables'
 import Markdown from '../../packages/vue/src/index.vue'
 
 vi.mock('../../packages/vue/src/utils', async () => ({
@@ -239,18 +241,56 @@ describe('text animation compaction', () => {
     wrapper.unmount()
   }, 20000)
 
-  it('compacts a completed prefix of the growing 10000-character issue scenario', async () => {
-    const wrapper = mount(Markdown, { props: { content: '甲'.repeat(10000) } })
+  it('compacts a completed prefix of a growing single paragraph', async () => {
+    const content = '甲'.repeat(1000)
+    const wrapper = mount(Markdown, { props: { content } })
     await flushPromises()
-    expect(wrapper.findAll(FRAGMENTS)).toHaveLength(10000)
-    await finishFragments(wrapper, 9990)
+    expect(wrapper.findAll(FRAGMENTS)).toHaveLength(1000)
+    await finishFragments(wrapper, 990)
     expect(wrapper.findAll(FRAGMENTS)).toHaveLength(10)
-    await updateMarkdown(wrapper, { content: `${'甲'.repeat(10000)}乙丙` })
+    await updateMarkdown(wrapper, { content: `${content}乙丙` })
     await flushPromises()
     expect(wrapper.findAll(FRAGMENTS)).toHaveLength(12)
     await finishFragments(wrapper)
     expect(wrapper.findAll(FRAGMENTS)).toHaveLength(0)
-    expect(wrapper.text()).toBe(`${'甲'.repeat(10000)}乙丙`)
+    expect(wrapper.text()).toBe(`${content}乙丙`)
     wrapper.unmount()
-  }, 20000)
+  })
+
+  it('retains only the active tail in the 10000-character issue scenario', () => {
+    let controller!: ReturnType<typeof createTextAnimationController>
+    const host = mount(defineComponent({
+      setup() {
+        controller = createTextAnimationController(useContext())
+        return () => null
+      },
+    }))
+    const content = '甲'.repeat(10000)
+    const initial = controller.compactParts('text', content, 'char')
+    expect(initial.parts).toHaveLength(10000)
+    // Detached elements keep this scale check independent of DOM sibling traversal.
+    initial.parts.forEach((part, index) => {
+      const element = document.createElement('span')
+      controller.mount(part.key, element)
+      if (index < 9990)
+        controller.finish(part.key, element)
+    })
+    const tail = controller.compactParts('text', content, 'char')
+    expect(tail.prefix).toBe('甲'.repeat(9990))
+    expect(tail.parts).toHaveLength(10)
+    const appended = controller.compactParts('text', `${content}乙丙`, 'char')
+    expect(appended.parts).toHaveLength(12)
+    expect(appended.parts.slice(0, 10)).toEqual(tail.parts)
+    for (const part of appended.parts) {
+      const element = document.createElement('span')
+      controller.mount(part.key, element)
+      controller.finish(part.key, element)
+    }
+    expect(controller.compactParts('text', `${content}乙丙`, 'char')).toEqual({
+      prefix: `${content}乙丙`,
+      parts: [],
+    })
+    controller.dispose()
+    host.unmount()
+  })
 })
