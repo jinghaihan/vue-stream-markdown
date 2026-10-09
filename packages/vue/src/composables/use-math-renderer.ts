@@ -35,7 +35,7 @@ export function useMathRenderer(options: UseMathRendererOptions) {
   const html = computed(() => state.value.html)
   const errorMessage = computed(() => state.value.errorMessage)
 
-  const render = throttle(throttleTime, async () => {
+  const render = throttle(throttleTime.value, async () => {
     if (!extension.value)
       return
 
