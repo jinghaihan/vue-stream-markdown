@@ -1,7 +1,7 @@
 {
   "name": "@markmend/parser",
   "type": "module",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Streaming Markdown parsing powered by Markmend and Comark.",
   "author": "jinghaihan",
   "license": "MIT",
