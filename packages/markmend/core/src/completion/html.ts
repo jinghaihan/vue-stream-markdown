@@ -11,6 +11,7 @@ import {
 } from './pattern'
 import {
   isPositionInRanges,
+  isWithinMathBlock,
 } from './utils'
 
 /**
@@ -53,6 +54,9 @@ export function completeHtml(content: string, context?: CompletionContext): stri
     return content
 
   if (isPositionInRanges(fragmentStart, analysis.inlineCodeRanges))
+    return content
+
+  if (content.includes('$') && isWithinMathBlock(content, fragmentStart, context))
     return content
 
   const beforeFragment = content.slice(0, fragmentStart).replace(trailingLineWhitespacePattern, '')

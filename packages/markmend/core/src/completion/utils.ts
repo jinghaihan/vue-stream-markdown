@@ -698,9 +698,14 @@ export function isWithinMathBlock(
   let inInlineMath = false
   const singleDollarEnabled = options?.singleDollarTextMath === true
   const codeBlockRanges = findClosedCodeBlockRanges(text)
+  const inlineCodeRanges = findInlineCodeRanges(text, codeBlockRanges)
+  const end = Math.min(text.length, position)
 
-  for (let i = 0; i < text.length && i < position; i += 1) {
+  for (let i = 0; i < end; i += 1) {
     if (isPositionInRanges(i, codeBlockRanges))
+      continue
+
+    if (!inBlockMath && !inInlineMath && isPositionInRanges(i, inlineCodeRanges))
       continue
 
     // Skip escaped dollar signs
