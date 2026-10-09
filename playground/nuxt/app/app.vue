@@ -198,12 +198,6 @@ function onEditorChange(data: string) {
 async function changePresetContent(item: SelectOption) {
   terminateTypeWriting()
 
-  if (item.value === './code-blocks.md') {
-    userConfig.value.codeMaxHeight = 300
-    userConfig.value.codeVirtualScroll = true
-    userConfig.value.staticMode = true
-  }
-
   const data = await getPresetContent(String(item.value))
   content.value = data
   monacoRef.value?.setValue(data)

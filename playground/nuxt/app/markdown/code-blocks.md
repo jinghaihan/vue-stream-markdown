@@ -103,7 +103,7 @@ The unterminated block parser ensures the code block renders properly even witho
 
 ## Virtual Scrolling
 
-This example enables virtual scrolling with a 300px height limit. Use **Settings → Code Block** to toggle virtual scrolling, change the height (0 = unlimited), or switch Modern / Classic / Minimal.
+The playground enables virtual scrolling with a 400px height limit by default. Use **Settings → Code Block** to toggle virtual scrolling, change the height (0 = unlimited), or switch Modern / Classic / Minimal.
 
 Scroll vertically to check line numbers and highlighting, and horizontally near row 1001 to check the long line. Copy, download, and fullscreen retain the complete source. Press Play to check streaming: scrolling up pauses bottom following; returning to the bottom resumes it.
 

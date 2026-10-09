@@ -25,8 +25,8 @@ const DEFAULT_USER_CONFIG: UserConfig = {
   animationDuration: 180,
   animationStagger: 40,
   codeBlockVariant: 'modern',
-  codeMaxHeight: 0,
-  codeVirtualScroll: false,
+  codeMaxHeight: 400,
+  codeVirtualScroll: true,
 }
 
 export function useUserConfig() {
