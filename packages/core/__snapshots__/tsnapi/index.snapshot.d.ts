@@ -122,6 +122,7 @@ export interface CodeOptions<TComponent = unknown> {
   languageName?: boolean;
   lineNumbers?: boolean;
   maxHeight?: number | string;
+  virtualScroll?: boolean;
   language?: Record<string, CodeOptionsLanguage<TComponent>>;
 }
 export interface CodeOptionsLanguage<TComponent = unknown> extends Omit<CodeOptions<TComponent>, 'languageIcon'> {

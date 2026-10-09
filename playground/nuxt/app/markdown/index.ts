@@ -33,5 +33,12 @@ export function getPresetOptions(): SelectOption[] {
 export async function getPresetContent(path: string): Promise<string> {
   if (!markdownGlob[path])
     return ''
-  return markdownGlob[path]()
+  const content = await markdownGlob[path]() as string
+  if (path !== './code-blocks.md')
+    return content
+
+  const javascript = Array.from({ length: 2000 }, (_, index) => index === 1000
+    ? `const longLine = "${'horizontal-scroll-'.repeat(40)}"`
+    : `console.log("Row ${index + 1}", ${index + 1})`).join('\n')
+  return content.replace('<!-- long-javascript -->', javascript)
 }

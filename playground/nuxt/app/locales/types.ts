@@ -42,6 +42,8 @@ export interface PlaygroundLocale {
       stepMax: string
       typedDelay: string
       variant: string
+      codeMaxHeight: string
+      codeVirtualScroll: string
       lightTheme: string
       darkTheme: string
       renderer: string

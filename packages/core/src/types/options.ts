@@ -43,6 +43,7 @@ export interface CodeOptions<TComponent = unknown> {
   languageName?: boolean
   lineNumbers?: boolean
   maxHeight?: number | string
+  virtualScroll?: boolean
   language?: Record<string, CodeOptionsLanguage<TComponent>>
 }
 

@@ -19,11 +19,12 @@ const lang = computed(() => model.value.lang)
 const languageClass = computed(() => model.value.languageClass)
 const startLine = computed(() => model.value.startLine)
 
-const { showLineNumbers: showConfiguredLineNumbers } = useCodeOptions({
+const { languageCodeOptions, showLineNumbers: showConfiguredLineNumbers } = useCodeOptions({
   codeOptions,
   language: lang,
 })
 const showLineNumbers = computed(() => showConfiguredLineNumbers.value && !model.value.noLineNumbers)
+const virtualScroll = computed(() => languageCodeOptions.value?.virtualScroll ?? codeOptions.value?.virtualScroll ?? false)
 
 const highlighted = shallowRef<CodeHighlightResult>()
 let highlightRequest = 0
@@ -67,6 +68,7 @@ watch(
       :tokens="tokens"
       :show-line-numbers="showLineNumbers"
       :start-line="startLine"
+      :virtual-scroll="virtualScroll"
     />
   </CodeBlock>
 
@@ -78,5 +80,6 @@ watch(
     :tokens="tokens"
     :show-line-numbers="showLineNumbers"
     :start-line="startLine"
+    :virtual-scroll="virtualScroll"
   />
 </template>
