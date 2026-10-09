@@ -49,6 +49,7 @@ beforeEach(() => {
 afterEach(() => {
   stylesheet.remove()
   vi.restoreAllMocks()
+  vi.unstubAllGlobals()
 })
 
 const source = Array.from({ length: 1000 }, (_, index) => `line ${index}`).join('\n')
@@ -184,6 +185,64 @@ describe('virtual code blocks', () => {
     await update.setProps({ content: markdown(`${source}\nnew tail\nmore tail\nlast tail`) })
     await settle()
     expect(wrapper.findAll(rows).at(-1)?.text()).toBe('last tail')
+    wrapper.unmount()
+  })
+
+  it('keeps following when asynchronous highlighting updates the rendered height later', async () => {
+    const observers: { callback: ResizeObserverCallback, targets: Set<Element> }[] = []
+    vi.stubGlobal('ResizeObserver', class {
+      entry: typeof observers[number]
+      constructor(callback: ResizeObserverCallback) {
+        this.entry = { callback, targets: new Set() }
+        observers.push(this.entry)
+      }
+
+      observe(target: Element) { this.entry.targets.add(target) }
+      unobserve(target: Element) { this.entry.targets.delete(target) }
+      disconnect() { this.entry.targets.clear() }
+    })
+    const pending: (() => void)[] = []
+    const highlight = vi.fn(({ code }: { code: string }) => new Promise<{ tokens: { content: string }[][] }>((resolve) => {
+      pending.push(() => resolve({ tokens: code.split('\n').map(content => [{ content }]) }))
+    }))
+    const wrapper = mount(Markdown, { props: {
+      content: markdown(source),
+      codeOptions: { maxHeight: 200, virtualScroll: true },
+      extensions: { code: { preload: async () => {}, dispose: () => {}, highlight } },
+    } })
+    await settle()
+    pending.shift()!()
+    await settle()
+    const viewport = wrapper.get('[data-stream-markdown="code-block-content"]').element
+    const resizeBody = async () => {
+      for (const observer of observers) {
+        if (observer.targets.has(viewport.firstElementChild!))
+          observer.callback([], {} as ResizeObserver)
+      }
+      await settle()
+    }
+    const update = wrapper as unknown as { setProps: (props: { content: string }) => Promise<void> }
+    const addition = Array.from({ length: 50 }, (_, index) => `new line ${index}`).join('\n')
+    await update.setProps({ content: markdown(`${source}\n${addition}`) })
+    await settle()
+    const previousBottom = viewport.scrollTop
+    pending.shift()!()
+    await settle()
+    expect(viewport.scrollHeight - viewport.clientHeight).toBeGreaterThan(previousBottom)
+    // Browsers may deliver the earlier programmatic scroll event after layout changes.
+    viewport.dispatchEvent(new Event('scroll'))
+    await resizeBody()
+    expect(viewport.scrollTop).toBe(viewport.scrollHeight - viewport.clientHeight)
+    expect(wrapper.findAll(rows).at(-1)?.text()).toBe('new line 49')
+
+    viewport.scrollTop = 2000
+    await settle()
+    await update.setProps({ content: markdown(`${source}\n${addition}\nlast tail`) })
+    await settle()
+    pending.shift()!()
+    await settle()
+    await resizeBody()
+    expect(viewport.scrollTop).toBe(2000)
     wrapper.unmount()
   })
 
