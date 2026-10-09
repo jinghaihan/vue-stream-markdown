@@ -1,0 +1,35 @@
+name: Netlify
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions: {}
+
+jobs:
+  deploy:
+    name: Deploy ${{ matrix.site }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - site: docs
+            hook: NETLIFY_DOCS_BUILD_HOOK
+          - site: playground
+            hook: NETLIFY_PLAYGROUND_BUILD_HOOK
+    steps:
+      - name: Trigger Netlify build
+        env:
+          NETLIFY_BUILD_HOOK: ${{ secrets[matrix.hook] }}
+        run: |
+          if [ -z "$NETLIFY_BUILD_HOOK" ]; then
+            echo "Missing Netlify build hook secret."
+            exit 1
+          fi
+          curl --fail --silent --show-error \
+            --request POST \
+            --data '{}' \
+            --output /dev/null \
+            "$NETLIFY_BUILD_HOOK"

@@ -1,0 +1,3 @@
+[build]
+# Git pushes are skipped; release build hooks bypass this check.
+ignore = "exit 0"
