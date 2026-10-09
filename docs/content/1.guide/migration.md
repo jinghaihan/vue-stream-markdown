@@ -168,6 +168,8 @@ The same mapping handles native Markdown elements and custom HTML-like tags.
 
 To reuse a built-in renderer previously accessed through `NODE_RENDERERS`, import a named renderer such as `CodeBlockRenderer` or `LinkRenderer`. These accept Comark elements through `MarkdownRendererProps`; `CodeRenderer` also exposes the highlighted code body. See [Built-in Renderers](/config/components#built-in-renderers) for the exports and a wrapper example.
 
+Replace the 1.x `NodeList` with `MarkdownNodes`, which renders Comark nodes through `MarkdownNodesProps`. Replace mdast children with Comark tuple children and forward `nodeKey` and `loading`; the old `deep`, `blocks`, and `nodeRenderers` props are no longer used. See [Rendering Node Lists](/config/components#rendering-node-lists).
+
 If you previously passed built-in UI replacements through `components`, rename that prop:
 
 ```vue

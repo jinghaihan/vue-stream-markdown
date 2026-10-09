@@ -1,6 +1,6 @@
-import type { CompletionInfo, Node } from '@markmend/parser'
+import type { Node } from '@markmend/parser'
 import type { PropType } from 'vue'
-import type { MarkdownComponents } from '../../../types'
+import type { MarkdownComponents, MarkdownNodesProps } from '../../../types'
 import { computed, defineComponent, h, inject, onMounted, onUnmounted, onUpdated, provide } from 'vue'
 import { useContext } from '../../../composables'
 import { MARKDOWN_RENDER_CONTEXT } from './context'
@@ -12,18 +12,18 @@ export default defineComponent({
   name: 'MarkdownNodes',
   props: {
     completionInfo: {
-      type: Object as PropType<CompletionInfo>,
+      type: Object as PropType<NonNullable<MarkdownNodesProps['completionInfo']>>,
       default: undefined,
     },
     components: {
-      type: Object as PropType<MarkdownComponents>,
+      type: Object as PropType<NonNullable<MarkdownNodesProps['components']>>,
       default: undefined,
     },
     hideCaret: Boolean,
     loading: Boolean,
     nodeKey: String,
     nodes: {
-      type: Array as PropType<Node[]>,
+      type: Array as PropType<NonNullable<MarkdownNodesProps['nodes']>>,
       default: () => [],
     },
   },

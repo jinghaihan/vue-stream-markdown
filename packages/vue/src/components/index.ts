@@ -5,6 +5,8 @@ import { defineAsyncComponent } from 'vue'
 export * from './previewers'
 export * from './renderers'
 
+export { default as MarkdownNodes } from './renderers/markdown'
+
 export const UI = {
   Alert: defineAsyncComponent(() => import('./alert.vue')),
   Button: defineAsyncComponent(() => import('./button.vue')),

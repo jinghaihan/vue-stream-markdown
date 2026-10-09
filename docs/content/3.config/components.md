@@ -81,6 +81,41 @@ The Comark renderers accept `node`, `nodeKey`, and optional `loading` through `M
 
 `CodeRenderer` accepts `CodeRendererProps`: a normalized `CodeBlockNode`, `nodeKey`, and optional `showWrapper` (default: `false`). It renders only the highlighted code body by default; set `:show-wrapper="true"` to include the built-in header and wrapper. `CodeBlockRenderer` enables this automatically.
 
+## Rendering Node Lists
+
+Use `MarkdownNodes` to render existing Comark nodes after selecting or modifying them. This is the same renderer used internally by `Markdown`. For example, this custom heading appends a generated node to the original children:
+
+```vue
+<script setup lang="ts">
+import type { MarkdownComponentProps, MarkdownNode } from 'vue-stream-markdown'
+import { computed } from 'vue'
+import { MarkdownNodes } from 'vue-stream-markdown'
+
+const props = defineProps<MarkdownComponentProps>()
+const nodes = computed<MarkdownNode[]>(() => {
+  const [, , ...children] = props.node
+  return [...children, ['em', {}, ' (updated)']]
+})
+</script>
+
+<template>
+  <component :is="node[0]">
+    <MarkdownNodes :nodes="nodes" :node-key="nodeKey" :loading="loading" />
+  </component>
+</template>
+```
+
+`MarkdownNodes` accepts `MarkdownNodesProps`:
+
+- `nodes`: Comark nodes to render; defaults to an empty list. String nodes render as text; `MarkdownNodes` does not parse or complete Markdown.
+- `nodeKey`: optional parent key used to build child keys. Forward the custom component's `nodeKey` to inherit its component mappings and completion metadata. Use separate key prefixes when rendering multiple lists. Without a parent key, nodes render as a document root.
+- `loading`: whether the list has an active streaming tail; defaults to `false`. Only the last renderable node receives the active state.
+- `hideCaret`: suppress the tail caret; defaults to `false`.
+- `components`: optional tag-to-component mapping, replacing the inherited mapping.
+- `completionInfo`: optional parser completion metadata, replacing inherited metadata for streaming links.
+
+Inside a custom `Markdown` component, lists inherit renderer options, extensions, and UI components. Forward `nodeKey` to also inherit component mappings and completion metadata. For an unchanged set of children, use the default slot.
+
 ## Literal Tag Content
 
 Use `literalTagContent` when a custom tag contains a data label rather than Markdown prose. Markdown markers inside configured tags are preserved as text:
