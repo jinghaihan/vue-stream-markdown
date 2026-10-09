@@ -150,7 +150,7 @@ onBeforeUnmount(stopTyping)
 <template>
   <div
     ref="container"
-    class="group mt-4 min-h-4 relative"
+    class="group my-4 min-h-4 relative"
     :style="{ minHeight: minHeight ? `${minHeight}px` : undefined }"
   >
     <Markdown
