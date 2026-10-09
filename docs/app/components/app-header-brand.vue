@@ -6,7 +6,7 @@ const content = useDocsContent()
 <template>
   <div class="flex shrink-0 gap-2.5 items-center">
     <NuxtLink
-      :to="prefixLink(header?.to || '/', content.base)"
+      :to="prefixLink(header?.to || '/', content.routeBase)"
       :aria-label="header?.logo?.alt || header?.title"
       class="text-highlighted! flex items-center lg:mr-3"
     >

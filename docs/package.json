@@ -12,14 +12,14 @@
   },
   "dependencies": {
     "@vueuse/core": "catalog:frontend",
-    "nuxt": "catalog:playground",
     "ufo": "catalog:playground",
     "@stream-markdown/beautiful-mermaid": "workspace:*",
     "@stream-markdown/code": "workspace:*",
     "@stream-markdown/math": "workspace:*",
     "@stream-markdown/mermaid": "workspace:*",
-    "comark-docs": "github:comarkdown/comark-docs#fad7fbfd4e05cfaabc6ace410bee4c068665f37f",
+    "comark-docs": "github:comarkdown/comark-docs#ba0231ac04edc895d06a68a5eee90fb0cd007091",
     "katex": "^0.16.38",
+    "nuxt": "^4.6.0",
     "vue-stream-markdown": "workspace:*"
   }
 }

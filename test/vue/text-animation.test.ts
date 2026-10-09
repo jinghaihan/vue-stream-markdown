@@ -211,34 +211,35 @@ describe('text animation compaction', () => {
     }
   })
 
-  it('matches the issue scenarios while previous animation windows have completed', async () => {
-    const chinese = Array.from({ length: 120 }, () => '甲'.repeat(100)).join('\n\n')
-    const english = Array.from({ length: 40 }, () => Array.from({ length: 50 }, (_, index) => `word${index}`).join(' ')).join('\n\n')
-    for (const [content, baseline, active] of [[chinese, 12000, 100], [english, 3960, 50]] as const) {
-      const old = mount(Markdown, { props: { content, compactTextAnimations: false } })
-      await flushPromises()
-      expect(old.findAll(FRAGMENTS)).toHaveLength(baseline)
-      old.unmount()
+  it.each([
+    ['Chinese', Array.from({ length: 120 }, () => '甲'.repeat(100)).join('\n\n'), 12000, 100],
+    ['English', Array.from({ length: 40 }, () => Array.from({ length: 50 }, (_, index) => `word${index}`).join(' ')).join('\n\n'), 3960, 50],
+  ] as const)('compacts completed paragraphs in the %s issue scenario', async (_name, content, baseline, active) => {
+    const old = mount(Markdown, { props: { content, compactTextAnimations: false } })
+    await flushPromises()
+    expect(old.findAll(FRAGMENTS)).toHaveLength(baseline)
+    old.unmount()
 
-      const wrapper = mount(Markdown, { props: { content } })
-      await flushPromises()
-      const paragraphs = wrapper.findAll('p').map(node => node.element)
-      await finishFragments(wrapper, wrapper.findAll(FRAGMENTS).length - active)
-      expect(wrapper.findAll(FRAGMENTS)).toHaveLength(active)
-      expect(wrapper.findAll('p').map(node => node.element)).toEqual(paragraphs)
-      expect(wrapper.element.textContent).toBe(content.replaceAll('\n\n', ''))
-      await updateMarkdown(wrapper, { content: `${content}\n\n新尾` })
-      await flushPromises()
-      // A new paragraph never cuts off the previous paragraph's running animation.
-      expect(wrapper.findAll(FRAGMENTS)).toHaveLength(active + 2)
-      await finishFragments(wrapper, active)
-      expect(wrapper.findAll(FRAGMENTS)).toHaveLength(2)
-      await updateMarkdown(wrapper, { mode: 'static' })
-      await flushPromises()
-      expect(wrapper.findAll(FRAGMENTS)).toHaveLength(0)
-      wrapper.unmount()
-    }
+    const wrapper = mount(Markdown, { props: { content } })
+    await flushPromises()
+    const paragraphs = wrapper.findAll('p').map(node => node.element)
+    await finishFragments(wrapper, wrapper.findAll(FRAGMENTS).length - active)
+    expect(wrapper.findAll(FRAGMENTS)).toHaveLength(active)
+    expect(wrapper.findAll('p').map(node => node.element)).toEqual(paragraphs)
+    expect(wrapper.element.textContent).toBe(content.replaceAll('\n\n', ''))
+    await updateMarkdown(wrapper, { content: `${content}\n\n新尾` })
+    await flushPromises()
+    // A new paragraph never cuts off the previous paragraph's running animation.
+    expect(wrapper.findAll(FRAGMENTS)).toHaveLength(active + 2)
+    await finishFragments(wrapper, active)
+    expect(wrapper.findAll(FRAGMENTS)).toHaveLength(2)
+    await updateMarkdown(wrapper, { mode: 'static' })
+    await flushPromises()
+    expect(wrapper.findAll(FRAGMENTS)).toHaveLength(0)
+    wrapper.unmount()
+  }, 20000)
 
+  it('compacts a completed prefix of the growing 10000-character issue scenario', async () => {
     const wrapper = mount(Markdown, { props: { content: '甲'.repeat(10000) } })
     await flushPromises()
     expect(wrapper.findAll(FRAGMENTS)).toHaveLength(10000)

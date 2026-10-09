@@ -28,6 +28,9 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    public: {
+      staticDocs: true,
+    },
     docs: {
       github: {
         owner: 'jinghaihan',
@@ -53,7 +56,8 @@ export default defineNuxtConfig({
         '/guide',
         '/logos',
         '/api/content/navigation',
-        '/api/content/search-sections',
+        '/api/content/manifest.json',
+        '/api/content/snapshot/default.json',
       ],
     },
   },

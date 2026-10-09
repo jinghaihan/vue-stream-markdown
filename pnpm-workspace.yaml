@@ -10,7 +10,6 @@ packages:
   - docs
 
 overrides:
-  comark-content: 0.3.0
   typescript: catalog:dev
   vue: catalog:frontend
 

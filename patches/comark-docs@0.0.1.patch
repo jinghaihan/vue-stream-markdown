@@ -1,28 +1,51 @@
-diff --git a/server/utils/content.ts b/server/utils/content.ts
-index 9ac948d4b37ae5b9336a456b896f058befaae78e..53ae3ec831ecb950f6af375fdde0e41f9bff1d08 100644
---- a/server/utils/content.ts
-+++ b/server/utils/content.ts
-@@ -1,15 +1,14 @@
- import { defineContentPlugin, type ComarkContent, type CacheOptions, comarkContent  } from 'comark-content';
- import fs from 'comark-content/sources/fs'
- import github from 'comark-content/sources/github'
+diff --git a/app/app.vue b/app/app.vue
+--- a/app/app.vue
++++ b/app/app.vue
+@@ -14,8 +14,9 @@
+ // Client-only: an SSR value gets baked into the page's ISR entry and would pin search to a stale commit.
+ const { data: sha } = useAsyncData(
+   () => `content-head:${content.value.apiBase}`,
+-  () =>
+-    $fetch<{ sha: string | null }>(`${content.value.apiBase}/head`)
++  () => useRuntimeConfig().public.staticDocs
++    ? Promise.resolve(null)
++    : $fetch<{ sha: string | null }>(`${content.value.apiBase}/head`)
+       .then(({ sha }) => sha)
+       .catch((error) => {
+         console.error('[search] could not resolve the content head', error)
+@@ -39,7 +40,7 @@
+ useHead({
+   meta: [{ name: 'viewport', content: 'width=device-width, initial-scale=1' }],
+   link: [
+-    { rel: 'icon', href: '/favicon.ico' },
++    { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
+     {
+       rel: 'alternate',
+       type: 'application/rss+xml',
+diff --git a/utils/factory.ts b/utils/factory.ts
+--- a/utils/factory.ts
++++ b/utils/factory.ts
+@@ -1,23 +1,21 @@
+-import type { Tracer } from '@opentelemetry/api'
+ import { type ContentOptions, comarkContent } from 'comark-content'
+ import markdown from 'comark-content/plugins/markdown'
+ import yaml from 'comark-content/plugins/yaml'
+-import tracingOtel from 'comark-content/plugins/tracing/otel'
 -import rangi from 'comark/plugins/rangi'
 +import shiki from 'comark/plugins/shiki'
  import security from 'comark/plugins/security'
  import emoji from 'comark/plugins/emoji'
  import toc from 'comark/plugins/toc'
  import mermaid from 'comark/plugins/mermaid'
- import yaml from 'comark-content/plugins/yaml'
--import tracingOtel from 'comark-content/plugins/tracing/otel'
--import { contentTracer } from './tracer.ts'
--import { geistTheme } from '../../utils/geist-theme.ts'
+-import { geistTheme } from './geist.ts'
+-import { contentTracer } from '../server/utils/tracer.ts'
 +import githubDark from '@shikijs/themes/github-dark'
 +import githubLight from '@shikijs/themes/github-light'
  
- // Rebuilt only when the head advances (see `getProdContent`). Holds the *promise*, not the instance: the
- // assignment lands after the await, so two requests on a cold instance would each build a CMS.
-@@ -18,7 +17,7 @@ let content: Promise<ComarkContent> | undefined
- // Bump CONTENT_PARSER_VERSION in `cache.ts` when these plugins or their options change cached output.
+ /** Frontmatter kept in the manifest, so `list()` and `navigation()` render without reading bodies. */
+ const LISTING_FIELDS = ['title', 'description', 'navigation', 'icon', 'layout']
+ 
+ // Bump CONTENT_PARSER_VERSION in `server/utils/cache.ts` when these plugins or their options change cached output.
  const comarkPlugins = [
 -  mermaid({ theme: 'zinc-light', themeDark: 'zinc-dark' }),
 -  rangi({ theme: geistTheme }),
@@ -31,25 +54,76 @@ index 9ac948d4b37ae5b9336a456b896f058befaae78e..53ae3ec831ecb950f6af375fdde0e41f
    toc({ depth: 3 }),
    emoji(),
    security({
-@@ -43,10 +42,6 @@ export async function createSourceContent(
-   ref: string,
-   opts: { remote?: boolean; cache?: CacheOptions; basePath?: string; watch?: boolean } = {}
- ) {
--  // A no-op unless the consumer shadows it from their own `server/utils/`. Re-typed as the layer's own
--  // options: a consumer's hook is declared against the wide `ContentOptions`, and letting that widen the
--  // argument would erase the source and plugin types `comarkContent` infers from the literal.
--  const tracer = contentTracer()
-   const instance = comarkContent({
-     markdown: {
-       plugins: comarkPlugins,
-@@ -57,7 +52,6 @@ export async function createSourceContent(
+@@ -31,7 +29,7 @@
+  * - The build-time snapshot
+  * - The runtime instance
+  */
+-function create(options: Pick<ContentOptions, 'source' | 'cache' | 'basePath'>, tracer?: Tracer) {
++function create(options: Pick<ContentOptions, 'source' | 'cache' | 'basePath'>) {
+   return comarkContent({
+     source: options.source,
      plugins: [
-       yaml(), // enable .navigation.yml to be detected
-       searchSectionsPlugin,
+@@ -40,16 +38,15 @@
+         listingFields: LISTING_FIELDS,
+       }),
+       yaml({ listingFields: LISTING_FIELDS }),
 -      tracer && tracingOtel({ tracer }),
      ],
-     cache: opts.cache,
-     basePath: opts.basePath,
-@@ -138 +132 @@ function contentSource(ref: string, opts: { remote?: boolean } = {}) {
+     cache: options.cache,
+     basePath: options.basePath,
+   })
+ }
+ 
+-/** An instance serving requests: traced, and cached per content SHA. */
++/** An instance serving requests, cached per content SHA. */
+ export function createRuntimeContentInstance(options: Pick<ContentOptions, 'source' | 'cache' | 'basePath'>) {
+-  return create(options, contentTracer())
++  return create(options)
+ }
+ 
+ /**
+diff --git a/server/utils/content.ts b/server/utils/content.ts
+--- a/server/utils/content.ts
++++ b/server/utils/content.ts
+@@ -103,7 +103,9 @@
+ 
+   if (!prod) {
+     prod = (async () => {
+-      const instance = import.meta.dev ? await watchedDevContent() : contentAt(getHeadRef())
++      const instance = import.meta.dev
++        ? await watchedDevContent()
++        : import.meta.prerender ? getBaseContent() : contentAt(getHeadRef())
+       const startedAt = performance.now()
+       await instance.init()
+       recordDuration('content.init.ms', startedAt)
+@@ -144,7 +146,7 @@
+ function contentSource(): ContentSource {
+   const { docs } = useRuntimeConfig()
+ 
 -  if (import.meta.dev) {
 +  if (import.meta.dev || import.meta.prerender) {
+     return {
+       ...fs(docs.contentPath),
+       withRef: (ref) => gitLocalSource(ref, docs.contentDir),
+diff --git a/app/composables/useSearch.ts b/app/composables/useSearch.ts
+--- a/app/composables/useSearch.ts
++++ b/app/composables/useSearch.ts
+@@ -18,11 +18,18 @@
+  */
+ export function useSearch() {
+   const content = useDocsContent()
++  const { staticDocs } = useRuntimeConfig().public
+   const sha = inject<Ref<string | null | undefined>>('sha', ref(null))
+ 
+   /** What to hydrate from, or `null` when this route has nothing searchable (yet). */
+   const target = computed(() => {
+     const isPreview = content.value.mode !== 'prod'
++    if (!isPreview && staticDocs) return {
++      sha: null,
++      isPreview,
++      apiBase: '/api/content'
++    }
++
+     if (sha.value) return {
+       sha: sha.value,
+       isPreview,

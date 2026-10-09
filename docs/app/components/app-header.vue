@@ -6,7 +6,7 @@ const navigation = useMainNavigation()
 </script>
 
 <template>
-  <UHeader :to="prefixLink(header?.to || '/', content.base)">
+  <UHeader :to="prefixLink(header?.to || '/', content.routeBase)">
     <template #left>
       <AppHeaderBrand />
     </template>
