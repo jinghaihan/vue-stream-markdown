@@ -47,6 +47,7 @@ const props = withDefaults(defineProps<StreamMarkdownProps>(), {
   animation: DEFAULT_ANIMATION,
   animationSplit: DEFAULT_ANIMATION_SPLIT,
   animationStagger: DEFAULT_ANIMATION_STAGGER,
+  compactTextAnimations: true,
   isDark: undefined,
 })
 
@@ -73,6 +74,7 @@ const {
   animation,
   animationSplit,
   animationStagger,
+  compactTextAnimations,
   caret,
 } = toRefs(props)
 
@@ -221,6 +223,7 @@ provideContext({
   animation,
   animationSplit,
   animationStagger,
+  compactTextAnimations,
   enableCaret,
   caret,
   documentNodes: computed(() => document.value.nodes),

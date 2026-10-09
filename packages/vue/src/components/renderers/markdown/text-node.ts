@@ -45,10 +45,16 @@ export function renderTextNode(
   }
 
   const useCssAnimation = CSS_TEXT_ANIMATIONS.has(context.animation.value)
-  const parts = createTextParts(text, textKey, context.animationSplit.value)
+  const compact = useCssAnimation && context.compactTextAnimations.value
+  const { prefix, parts } = compact
+    ? textAnimationScheduler.compactParts(textKey, text, context.animationSplit.value)
+    : { prefix: '', parts: createTextParts(text, textKey, context.animationSplit.value) }
   textAnimationScheduler.schedule(parts)
   const children = () => [
+    ...compact ? [prefix] : [],
     ...parts.map((part) => {
+      if (compact && part.whitespace)
+        return part.value
       return h('span', {
         'key': part.key,
         'data-stream-markdown': part.whitespace ? 'text-space' : `text-${part.animationSplit}`,
@@ -59,6 +65,12 @@ export function renderTextNode(
         ],
         'onVnodeMounted': vnode => textAnimationScheduler.mount(part.key, vnode.el as HTMLElement),
         'onVnodeBeforeUnmount': vnode => textAnimationScheduler.unmount(part.key, vnode.el as HTMLElement),
+        'onAnimationend': compact
+          ? (event: AnimationEvent) => {
+              if (event.target === event.currentTarget)
+                textAnimationScheduler.finish(part.key, event.currentTarget as HTMLElement)
+            }
+          : undefined,
       }, part.value)
     }),
     caret,

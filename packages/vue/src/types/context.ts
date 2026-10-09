@@ -81,6 +81,7 @@ export interface StreamMarkdownProvideContext {
   animation?: MaybeRefOrGetter<StreamMarkdownProps['animation']>
   animationSplit?: MaybeRefOrGetter<StreamMarkdownProps['animationSplit']>
   animationStagger?: MaybeRefOrGetter<StreamMarkdownProps['animationStagger']>
+  compactTextAnimations?: MaybeRefOrGetter<boolean>
   enableCaret?: MaybeRefOrGetter<boolean>
   caret?: MaybeRefOrGetter<StreamMarkdownProps['caret']>
   documentNodes?: MaybeRefOrGetter<MarkdownNode[]>
@@ -112,6 +113,7 @@ export interface StreamMarkdownResolvedContext {
   animation: ComputedRef<NonNullable<StreamMarkdownProps['animation']>>
   animationSplit: ComputedRef<NonNullable<StreamMarkdownProps['animationSplit']>>
   animationStagger: ComputedRef<number>
+  compactTextAnimations: ComputedRef<boolean>
   enableCaret: ComputedRef<boolean | undefined>
   caret: ComputedRef<string | undefined>
   documentNodes: ComputedRef<MarkdownNode[]>

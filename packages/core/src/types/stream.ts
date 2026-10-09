@@ -49,6 +49,8 @@ export interface StreamMarkdownViewProps<
   animationSplit?: AnimationSplit
   animationDuration?: number | string
   animationStagger?: number
+  /** Compact finished built-in text animations into plain text. Defaults to true. */
+  compactTextAnimations?: boolean
   caret?: TCaret
   themeElement?: () => HTMLElement | undefined
 }

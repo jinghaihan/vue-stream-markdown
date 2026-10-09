@@ -425,6 +425,7 @@ export interface StreamMarkdownViewProps<TMarkdownComponents = unknown, TIcons =
   animationSplit?: AnimationSplit;
   animationDuration?: number | string;
   animationStagger?: number;
+  compactTextAnimations?: boolean;
   caret?: TCaret;
   themeElement?: () => HTMLElement | undefined;
 }

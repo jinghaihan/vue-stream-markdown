@@ -54,6 +54,7 @@ function resolveContext(context: StreamMarkdownProvideContext): StreamMarkdownRe
   const animation = computed(() => resolveAnimation(toValue(context.animation)))
   const animationSplit = computed(() => resolveAnimationSplit(toValue(context.animationSplit)))
   const animationStagger = computed(() => resolveAnimationStagger(toValue(context.animationStagger)))
+  const compactTextAnimations = computed(() => toValue(context.compactTextAnimations) ?? true)
 
   const enableCaret = computed(() => toValue(context.enableCaret))
   const caret = computed(() => resolveCaret(toValue(context.caret)))
@@ -89,6 +90,7 @@ function resolveContext(context: StreamMarkdownProvideContext): StreamMarkdownRe
     animation,
     animationSplit,
     animationStagger,
+    compactTextAnimations,
     enableCaret,
     caret,
     documentNodes,
