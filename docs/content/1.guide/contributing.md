@@ -7,6 +7,12 @@ description: Guidelines for reporting issues and contributing to the vue-stream-
 
 Thank you for your interest in contributing to **vue-stream-markdown**! This guide will help you report issues effectively and contribute to the project.
 
+## Reporting Security Vulnerabilities
+
+If you discover a security vulnerability, contact me privately on Discord or [Telegram](https://t.me/octohash). You can also find my contact details on my [GitHub profile](https://github.com/jinghaihan).
+
+Do not open a public issue or post vulnerability details or reproduction payloads publicly. Include the affected package versions, reproduction steps, and potential impact in your private report.
+
 ## Reporting Issues
 
 When reporting bugs or issues, providing detailed information helps diagnose and fix problems more efficiently. The playground provides tools to help gather this information.
