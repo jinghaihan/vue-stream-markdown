@@ -1,9 +1,9 @@
 import { dynamicImport } from '@stream-markdown/core'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { beautifulMermaid } from './beautiful-mermaid/src/extension'
-import { createShikiRuntime } from './code/src/runtime'
-import { createKatexRuntime } from './math/src/runtime'
-import { createMermaidRuntime } from './mermaid/src/runtime'
+import { beautifulMermaid } from '../packages/extensions/beautiful-mermaid/src/extension'
+import { createShikiRuntime } from '../packages/extensions/code/src/runtime'
+import { createKatexRuntime } from '../packages/extensions/math/src/runtime'
+import { createMermaidRuntime } from '../packages/extensions/mermaid/src/runtime'
 
 vi.mock('@stream-markdown/core', async importOriginal => ({
   ...await importOriginal<typeof import('@stream-markdown/core')>(),
