@@ -3,6 +3,7 @@ export interface LocaleConfig {
     zoomIn: string
     zoomOut: string
     resetZoom: string
+    fitToContainer?: string
     preview: string
     source: string
     collapse: string

@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import type { MermaidRenderResult } from '@stream-markdown/core'
+import type { MermaidRenderResult, SvgIntrinsicSize } from '@stream-markdown/core'
 import type { CodeBlockProps, Control } from '../../types'
 import {
   applyMermaidRenderResult,
   createMermaidPreviewControllerState,
   createMermaidPreviewModel,
+  getSvgIntrinsicSize,
   measureSvgContainerHeight,
   setMermaidMeasuredHeight,
   startMermaidRenderAttempt,
@@ -39,6 +40,7 @@ const { resolveControls } = useControls({
 
 const previewState = ref(createMermaidPreviewControllerState())
 const containerRef = ref<HTMLDivElement>()
+const contentSize = ref<SvgIntrinsicSize>()
 
 const nodeLoading = computed(() => !!props.node.loading)
 
@@ -76,14 +78,21 @@ const { renderMermaid, resolveExtension } = useMermaid({
 const ErrorComponent = computed(() => resolveExtension(code.value)?.errorComponent ?? UI.value.ErrorComponent)
 
 function updateHeight() {
-  if (props.containerHeight)
-    return
-
   if (!containerRef.value)
     return
 
+  const element = containerRef.value.querySelector<SVGSVGElement>('[data-stream-markdown="mermaid"] svg')
+  if (!element)
+    return
+  const size = getSvgIntrinsicSize(element)
+  if (size && (size.width !== contentSize.value?.width || size.height !== contentSize.value?.height))
+    contentSize.value = size
+
+  if (props.containerHeight)
+    return
+
   const height = measureSvgContainerHeight(containerRef.value)
-  if (height)
+  if (height && height !== previewState.value.measuredHeight)
     previewState.value = setMermaidMeasuredHeight(previewState.value, height)
 }
 
@@ -186,11 +195,8 @@ const mermaidControls = computed(
   (): Control[] => resolveControls<CodeBlockProps>('mermaid', [], props),
 )
 
-if (!props.containerHeight) {
-  useResizeObserver(containerRef, () => {
-    updateHeight()
-  })
-}
+useResizeObserver(containerRef, updateHeight)
+watch(() => props.containerHeight, () => nextTick(updateHeight))
 </script>
 
 <template>
@@ -217,6 +223,10 @@ if (!props.containerHeight) {
 
     <component
       :is="UI.ZoomContainer"
+      auto-fit
+      :content-size="contentSize"
+      :fit-key="nodeKey"
+      :container-style="contentSize ? { width: `${contentSize.width}px`, height: `${contentSize.height}px` } : undefined"
       :show-control="showControl"
       :position="controlPosition"
       :interactive="interactive"
@@ -233,7 +243,7 @@ if (!props.containerHeight) {
 
       <div
         data-stream-markdown="mermaid"
-        class="flex select-none justify-center [&>svg]:!bg-transparent"
+        class="flex h-full select-none justify-center [&>svg]:!bg-transparent [&>svg]:!h-full [&>svg]:!max-w-none [&>svg]:!w-full"
         v-html="svg"
       />
     </component>

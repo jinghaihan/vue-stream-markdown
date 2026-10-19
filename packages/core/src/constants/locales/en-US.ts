@@ -5,6 +5,7 @@ const locale: LocaleConfig = {
     zoomIn: 'Zoom In',
     zoomOut: 'Zoom Out',
     resetZoom: 'Reset Zoom',
+    fitToContainer: 'Reset view',
     preview: 'Preview',
     source: 'Source',
     collapse: 'Collapse',
