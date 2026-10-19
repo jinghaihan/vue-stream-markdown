@@ -170,7 +170,7 @@ export function escapeMarkdownTableCell(cell: string): string {
   // biome-ignore lint/style/useForOf: "Need index access to check character codes for performance"
   for (let i = 0; i < cell.length; i += 1) {
     const char = cell[i]
-    if (char === '\\' || char === '|' || char === '\n') {
+    if (char === '\\' || char === '|' || char === '\n' || char === '&' || char === '<' || char === '>') {
       needsEscaping = true
       break
     }
@@ -190,6 +190,12 @@ export function escapeMarkdownTableCell(cell: string): string {
       parts.push('\\|')
     else if (char === '\n')
       parts.push('<br>')
+    else if (char === '&')
+      parts.push('&amp;')
+    else if (char === '<')
+      parts.push('&lt;')
+    else if (char === '>')
+      parts.push('&gt;')
     else
       parts.push(char)
   }

@@ -1,5 +1,6 @@
 // @vitest-environment happy-dom
 import type { MarkdownElement } from 'vue-stream-markdown'
+import { extractTableDataFromElement, tableDataToMarkdown } from '@stream-markdown/core'
 import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, markRaw, onMounted, onUnmounted } from 'vue'
@@ -23,6 +24,34 @@ interface MarkdownTestWrapper {
 }
 
 describe('stream markdown', () => {
+  it.each(['static', 'streaming'] as const)('preserves literal table text when exporting and rendering Markdown in %s mode', async (mode) => {
+    const original = document.createElement('table')
+    original.innerHTML = `
+      <thead><tr><th>Type &lt;T&gt;</th><th>Entities</th></tr></thead>
+      <tbody>
+        <tr><td><code>Array&lt;string&gt;</code></td><td>&amp;copy; and &amp;#124;</td></tr>
+        <tr><td>a&lt;br&gt;b<br>Next line</td><td>x &lt; y &amp; z &gt; w</td></tr>
+      </tbody>
+    `
+    const data = extractTableDataFromElement(original)
+    const wrapper = mount(Markdown, {
+      props: {
+        content: tableDataToMarkdown(data),
+        controls: false,
+        enableAnimate: false,
+        mode,
+      },
+    })
+    try {
+      await vi.dynamicImportSettled()
+      await flushPromises()
+      expect(extractTableDataFromElement(wrapper.get('table').element)).toEqual(data)
+    }
+    finally {
+      wrapper.unmount()
+    }
+  })
+
   it.each(['static', 'streaming'] as const)('renders sanitized and empty HTML links as inert text in %s mode', async (mode) => {
     const wrapper = mount(Markdown, {
       props: {
