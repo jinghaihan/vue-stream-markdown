@@ -72,7 +72,7 @@ const controlButtonProps = computed(() => model.value.controlButtonProps)
 const controls = computed((): Control[] => {
   const items = [...model.value.controls]
   if (props.autoFit) {
-    items.splice(2, 0, {
+    items.push({
       ...controlButtonProps.value,
       key: 'fitToContainer',
       icon: 'fitToContainer',
