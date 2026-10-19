@@ -158,6 +158,8 @@ See [Extensions](/config/extensions) for CDN loading, error components, and all 
 
 Rendered diagrams use the normal code-block preview/source switch and support fullscreen, SVG/PNG download, and zoom controls. See [Controls](/config/controls) for customization.
 
+Diagrams automatically fit the preview area, including fixed-height and fullscreen previews. Resizing the container updates the fit until you manually zoom or pan. Use the **Reset view** button in the zoom toolbar to return to the complete diagram; **100%** restores the original scale and centers the view.
+
 ## Streaming behavior
 
 During streaming, incomplete Mermaid fences remain readable and preview rendering is throttled. A diagram becomes previewable only when at least one configured extension reports that it supports the current source.

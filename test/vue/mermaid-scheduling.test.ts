@@ -38,7 +38,10 @@ async function mountPreview(streaming = true, codeExtension?: Extensions['code']
       isDark,
       uiComponents: {
         ...uiComponents.value,
-        ZoomContainer: defineComponent((_, { slots }) => () => h('div', slots.default?.())),
+        ZoomContainer: defineComponent({
+          props: ['contentSize'],
+          setup: (props, { slots }) => () => h('div', { 'data-content-size': JSON.stringify(props.contentSize) }, slots.default?.()),
+        }),
         Spin: defineComponent(() => () => h('span', 'Loading')),
         ErrorComponent: defineComponent({
           props: ['message'],
@@ -55,6 +58,16 @@ async function mountPreview(streaming = true, codeExtension?: Extensions['code']
 }
 
 describe('mermaid render scheduling', () => {
+  it('measures the diagram SVG instead of toolbar icons', async () => {
+    const state = await mountPreview(false)
+    const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+    icon.setAttribute('viewBox', '0 0 16 16')
+    state.wrapper.element.prepend(icon)
+    state.pending[0]!.resolve({ valid: true, svg: '<svg viewBox="0 0 1000 800"><text>Diagram</text></svg>' })
+    await flushPromises()
+    expect(state.wrapper.get('[data-content-size]').attributes('data-content-size')).toBe('{"width":1000,"height":800}')
+  })
+
   it('renders immediately, displays intermediate results and skips queued middle versions', async () => {
     const state = await mountPreview()
     expect(state.render).toHaveBeenCalledTimes(1)

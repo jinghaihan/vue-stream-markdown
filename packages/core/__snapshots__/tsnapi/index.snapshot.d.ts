@@ -257,6 +257,7 @@ export interface LocaleConfig {
     zoomIn: string;
     zoomOut: string;
     resetZoom: string;
+    fitToContainer?: string;
     preview: string;
     source: string;
     collapse: string;
@@ -588,6 +589,12 @@ export interface UITooltipProps {
   delay?: number | [number, number];
 }
 export interface UIZoomContainerProps<TStyle = UIStyleValue> {
+  autoFit?: boolean;
+  contentSize?: {
+    width: number;
+    height: number;
+  };
+  fitKey?: string;
   interactive?: boolean;
   showControl?: boolean;
   controlSize?: 'vanilla' | 'large';

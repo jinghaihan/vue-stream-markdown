@@ -5,6 +5,7 @@ const locale: LocaleConfig = {
     zoomIn: '放大',
     zoomOut: '缩小',
     resetZoom: '重置缩放',
+    fitToContainer: '重置视图',
     preview: '预览',
     source: '代码',
     collapse: '折叠',
