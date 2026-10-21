@@ -243,7 +243,7 @@ describe('markmend parser', () => {
     )
 
     expect(document.nodes).toEqual([
-      ['p', {}, ['artifact', { $: { html: 1, block: 0 } }, 'First **line**\n\nSecond line']],
+      ['artifact', { $: { html: 1, block: 1 } }, 'First **line**\n\nSecond line'],
     ])
   })
 
@@ -254,7 +254,7 @@ describe('markmend parser', () => {
     const { document } = await engine.parse('<mention>@_some_username_</mention>', 'streaming')
 
     expect(document.nodes).toEqual([
-      ['p', { $: { line: 1 } }, ['mention', { $: { html: 1, block: 0 } }, '@_some_username_']],
+      ['mention', { $: { html: 1, block: 1, line: 1 } }, '@_some_username_'],
     ])
   })
 

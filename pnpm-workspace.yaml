@@ -81,7 +81,7 @@ catalogs:
     eslint-plugin-format: ^2.0.1
     vue-tsc: ^3.3.12
   parser:
-    comark: ^0.7.0
+    comark: ^0.8.1
     markdown-it-cjk-friendly: ^3.0.0
   playground:
     '@monaco-editor/loader': ^1.7.0
