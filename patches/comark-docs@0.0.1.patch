@@ -1,7 +1,15 @@
 diff --git a/app/app.vue b/app/app.vue
+index a0f374e..0a82de0 100644
 --- a/app/app.vue
 +++ b/app/app.vue
-@@ -14,8 +14,9 @@
+@@ -1,6 +1,5 @@
+ <script setup lang="ts">
+ import type { NavigationItem } from 'comark-content'
+-import { useRoute } from 'vue-router'
+ 
+ const { seo, docs } = useAppConfig()
+ 
+@@ -14,8 +13,9 @@ const { data: navigation } = await useAsyncData('navigation', () => content.valu
  // Client-only: an SSR value gets baked into the page's ISR entry and would pin search to a stale commit.
  const { data: sha } = useAsyncData(
    () => `content-head:${content.value.apiBase}`,
@@ -13,7 +21,7 @@ diff --git a/app/app.vue b/app/app.vue
        .then(({ sha }) => sha)
        .catch((error) => {
          console.error('[search] could not resolve the content head', error)
-@@ -39,7 +40,7 @@
+@@ -39,7 +39,7 @@ onNuxtReady(() => {
  useHead({
    meta: [{ name: 'viewport', content: 'width=device-width, initial-scale=1' }],
    link: [
@@ -22,93 +30,11 @@ diff --git a/app/app.vue b/app/app.vue
      {
        rel: 'alternate',
        type: 'application/rss+xml',
-diff --git a/utils/factory.ts b/utils/factory.ts
---- a/utils/factory.ts
-+++ b/utils/factory.ts
-@@ -1,23 +1,21 @@
--import type { Tracer } from '@opentelemetry/api'
- import { type ContentOptions, comarkContent } from 'comark-content'
- import markdown from 'comark-content/plugins/markdown'
- import yaml from 'comark-content/plugins/yaml'
--import tracingOtel from 'comark-content/plugins/tracing/otel'
--import rangi from 'comark/plugins/rangi'
-+import shiki from 'comark/plugins/shiki'
- import security from 'comark/plugins/security'
- import emoji from 'comark/plugins/emoji'
- import toc from 'comark/plugins/toc'
- import mermaid from 'comark/plugins/mermaid'
--import { geistTheme } from './geist.ts'
--import { contentTracer } from '../server/utils/tracer.ts'
-+import githubDark from '@shikijs/themes/github-dark'
-+import githubLight from '@shikijs/themes/github-light'
- 
- /** Frontmatter kept in the manifest, so `list()` and `navigation()` render without reading bodies. */
- const LISTING_FIELDS = ['title', 'description', 'navigation', 'icon', 'layout']
- 
- // Bump CONTENT_PARSER_VERSION in `server/utils/cache.ts` when these plugins or their options change cached output.
- const comarkPlugins = [
--  mermaid({ theme: 'zinc-light', themeDark: 'zinc-dark' }),
--  rangi({ theme: geistTheme }),
-+  mermaid({ theme: 'github-light', themeDark: 'github-dark' }),
-+  shiki({ registerDefaultThemes: false, themes: { light: githubLight, dark: githubDark } }),
-   toc({ depth: 3 }),
-   emoji(),
-   security({
-@@ -31,7 +29,7 @@
-  * - The build-time snapshot
-  * - The runtime instance
-  */
--function create(options: Pick<ContentOptions, 'source' | 'cache' | 'basePath'>, tracer?: Tracer) {
-+function create(options: Pick<ContentOptions, 'source' | 'cache' | 'basePath'>) {
-   return comarkContent({
-     source: options.source,
-     plugins: [
-@@ -40,16 +38,15 @@
-         listingFields: LISTING_FIELDS,
-       }),
-       yaml({ listingFields: LISTING_FIELDS }),
--      tracer && tracingOtel({ tracer }),
-     ],
-     cache: options.cache,
-     basePath: options.basePath,
-   })
- }
- 
--/** An instance serving requests: traced, and cached per content SHA. */
-+/** An instance serving requests, cached per content SHA. */
- export function createRuntimeContentInstance(options: Pick<ContentOptions, 'source' | 'cache' | 'basePath'>) {
--  return create(options, contentTracer())
-+  return create(options)
- }
- 
- /**
-diff --git a/server/utils/content.ts b/server/utils/content.ts
---- a/server/utils/content.ts
-+++ b/server/utils/content.ts
-@@ -103,7 +103,9 @@
- 
-   if (!prod) {
-     prod = (async () => {
--      const instance = import.meta.dev ? await watchedDevContent() : contentAt(getHeadRef())
-+      const instance = import.meta.dev
-+        ? await watchedDevContent()
-+        : import.meta.prerender ? getBaseContent() : contentAt(getHeadRef())
-       const startedAt = performance.now()
-       await instance.init()
-       recordDuration('content.init.ms', startedAt)
-@@ -144,7 +146,7 @@
- function contentSource(): ContentSource {
-   const { docs } = useRuntimeConfig()
- 
--  if (import.meta.dev) {
-+  if (import.meta.dev || import.meta.prerender) {
-     return {
-       ...fs(docs.contentPath),
-       withRef: (ref) => gitLocalSource(ref, docs.contentDir),
 diff --git a/app/composables/useSearch.ts b/app/composables/useSearch.ts
+index a0f0d27..60a7d57 100644
 --- a/app/composables/useSearch.ts
 +++ b/app/composables/useSearch.ts
-@@ -18,11 +18,18 @@
+@@ -18,11 +18,18 @@ function searchDebug(): boolean {
   */
  export function useSearch() {
    const content = useDocsContent()
@@ -127,3 +53,100 @@ diff --git a/app/composables/useSearch.ts b/app/composables/useSearch.ts
      if (sha.value) return {
        sha: sha.value,
        isPreview,
+diff --git a/server/utils/content.ts b/server/utils/content.ts
+index 8791039..8076512 100644
+--- a/server/utils/content.ts
++++ b/server/utils/content.ts
+@@ -107,7 +107,9 @@ export async function getProdContent(): Promise<DocsContent> {
+ 
+   if (!prod) {
+     prod = (async () => {
+-      const instance = import.meta.dev ? await watchedDevContent() : contentAt(getHeadRef())
++      const instance = import.meta.dev
++        ? await watchedDevContent()
++        : import.meta.prerender ? getBaseContent() : contentAt(getHeadRef())
+       const startedAt = performance.now()
+       await instance.init()
+       recordDuration('content.init.ms', startedAt)
+@@ -148,7 +150,7 @@ async function watchedDevContent(): Promise<DocsContent> {
+ function contentSource(): ContentSource {
+   const { docs } = useRuntimeConfig()
+ 
+-  if (import.meta.dev) {
++  if (import.meta.dev || import.meta.prerender) {
+     return {
+       ...fs(docs.contentPath),
+       withRef: (ref) => gitLocalSource(ref, docs.contentDir),
+diff --git a/utils/factory.ts b/utils/factory.ts
+index 472ae01..5ad3cf6 100644
+--- a/utils/factory.ts
++++ b/utils/factory.ts
+@@ -1,14 +1,11 @@
+-import type { Tracer } from '@opentelemetry/api'
+ import type { ComarkPlugin } from 'comark'
+ import { type ContentOptions, comarkContent } from 'comark-content'
+ import markdown from 'comark-content/plugins/markdown'
+ import yaml from 'comark-content/plugins/yaml'
+-import tracingOtel from 'comark-content/plugins/tracing/otel'
+ import security from 'comark/plugins/security'
+ import emoji from 'comark/plugins/emoji'
+ import toc from 'comark/plugins/toc'
+ import mermaid from 'comark/plugins/mermaid'
+-import { contentTracer } from '../server/utils/tracer.ts'
+ 
+ /** Frontmatter kept in the manifest, so `list()` and `navigation()` render without reading bodies. */
+ const LISTING_FIELDS = ['title', 'description', 'navigation', 'icon', 'layout']
+@@ -16,7 +13,7 @@ const LISTING_FIELDS = ['title', 'description', 'navigation', 'icon', 'layout']
+ // Bump CONTENT_PARSER_VERSION in `server/utils/cache.ts` when these plugins or their options change cached output.
+ // The highlighter is the site's choice (`comarkDocs.highlighter`), so it is passed in.
+ const comarkPlugins = (highlighter: ComarkPlugin) => [
+-  mermaid({ theme: 'zinc-light', themeDark: 'zinc-dark' }),
++  mermaid({ theme: 'github-light', themeDark: 'github-dark' }),
+   highlighter,
+   toc({ depth: 3 }),
+   emoji(),
+@@ -31,7 +28,7 @@ const comarkPlugins = (highlighter: ComarkPlugin) => [
+  * - The build-time snapshot
+  * - The runtime instance
+  */
+-function create(options: Pick<ContentOptions, 'source' | 'cache' | 'basePath'>, highlighter: ComarkPlugin, tracer?: Tracer) {
++function create(options: Pick<ContentOptions, 'source' | 'cache' | 'basePath'>, highlighter: ComarkPlugin) {
+   return comarkContent({
+     source: options.source,
+     plugins: [
+@@ -40,19 +37,18 @@ function create(options: Pick<ContentOptions, 'source' | 'cache' | 'basePath'>,
+         listingFields: LISTING_FIELDS,
+       }),
+       yaml({ listingFields: LISTING_FIELDS }),
+-      tracer && tracingOtel({ tracer }),
+     ],
+     cache: options.cache,
+     basePath: options.basePath,
+   })
+ }
+ 
+-/** An instance serving requests: traced, and cached per content SHA. */
++/** An instance serving requests, cached per content SHA. */
+ export function createRuntimeContentInstance(
+   options: Pick<ContentOptions, 'source' | 'cache' | 'basePath'>,
+   highlighter: ComarkPlugin,
+ ) {
+-  return create(options, highlighter, contentTracer())
++  return create(options, highlighter)
+ }
+ 
+ /**
+diff --git a/utils/highlighter.ts b/utils/highlighter.ts
+index 270bd4e..f7bbda8 100644
+--- a/utils/highlighter.ts
++++ b/utils/highlighter.ts
+@@ -1,5 +1,6 @@
+-import rangi from 'comark/plugins/rangi'
+-import { geistTheme } from './geist.ts'
++import shiki from 'comark/plugins/shiki'
++import githubDark from '@shikijs/themes/github-dark'
++import githubLight from '@shikijs/themes/github-light'
+ 
+ /** The code highlighter content is parsed with, unless a site sets `comarkDocs.highlighter`. */
+-export default rangi({ theme: geistTheme })
++export default shiki({ registerDefaultThemes: false, themes: { light: githubLight, dark: githubDark } })
