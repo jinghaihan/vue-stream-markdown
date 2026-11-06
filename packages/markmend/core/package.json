@@ -1,7 +1,7 @@
 {
   "name": "@markmend/core",
   "type": "module",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Streaming Markdown syntax completion.",
   "author": "jinghaihan",
   "license": "MIT",
