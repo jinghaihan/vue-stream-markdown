@@ -5,8 +5,7 @@ export default defineConfig({
   entry: ['./src/index.ts'],
   exports: true,
   dts: {
-    generator: 'tsgo',
-    tsgo: {},
+    generator: 'tsc',
   },
   deps: {
     dts: {

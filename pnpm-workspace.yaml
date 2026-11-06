@@ -34,70 +34,70 @@ catalogs:
     '@streamdown/code': ^2.0.0
     '@types/react': ^19.3.0
     '@types/react-dom': ^19.3.0
-    jsdom: ^30.1.2
-    react: ^19.3.0
-    react-dom: ^19.3.0
+    jsdom: ^31.0.0
+    react: ^19.3.1
+    react-dom: ^19.3.1
     remark-gfm: ^4.0.1
     remark-parse: ^11.0.0
     remend: ^1.4.0
-    streamdown: ^2.7.0
+    streamdown: ^2.7.1
     unified: ^11.0.5
   build:
-    '@tsdown/css': ^0.23.0
-    '@vitejs/plugin-vue': ^6.0.9
-    tsdown: ^0.23.0
+    '@tsdown/css': ^0.23.5
+    '@vitejs/plugin-vue': ^6.0.10
+    tsdown: ^0.23.5
     unplugin-icons: ^24.0.0
-    vite: ^8.3.4
+    vite: ^8.3.6
   dev:
     '@typescript/native-preview': ^7.0.0-dev.20260707.2
     bumpp: ^12.3.0
-    happy-dom: ^20.14.6
-    knip: ^6.40.0
+    happy-dom: ^21.0.4
+    knip: ^6.44.1
     lightningcss: ^1.33.0
     nano-staged: ^1.0.2
     pncat: ^0.13.4
     simple-git-hooks: ^2.14.0
     taze: ^21.3.0
     tinyglobby: ^0.2.17
-    tsnapi: ^1.5.0
+    tsnapi: ^1.6.1
     tsx: ^4.23.15
-    turbo: ^2.11.7
+    turbo: ^2.11.10
     typescript: ~6.0.3
   frontend:
     '@floating-ui/dom': ^1.8.0
     '@vueuse/core': ^15.0.0
-    unocss: ^66.10.5
-    vue: ^3.5.43
+    unocss: ^66.12.0
+    vue: ^3.5.45
   icons:
-    '@iconify-json/lucide': ^1.2.141
-    '@iconify-json/simple-icons': ^1.2.99
+    '@iconify-json/lucide': ^1.2.151
+    '@iconify-json/simple-icons': ^1.2.101
   inlined:
     '@antfu/utils': ^9.3.0
   lint:
     '@nuxt/eslint': ^1.17.0
     '@octohash/eslint-config': ^0.6.1
-    '@unocss/eslint-plugin': ^66.10.5
-    eslint: ^10.12.0
+    '@unocss/eslint-plugin': ^66.12.0
+    eslint: ^10.14.0
     eslint-plugin-format: ^2.0.1
-    vue-tsc: ^3.3.12
+    vue-tsc: ^3.3.14
   parser:
     comark: ^0.8.1
     markdown-it-cjk-friendly: ^3.0.0
   playground:
     '@monaco-editor/loader': ^1.7.0
-    '@nuxtjs/color-mode': ^4.0.1
-    '@shikijs/monaco': ^4.5.0
-    '@unocss/nuxt': ^66.10.5
+    '@nuxtjs/color-mode': ^4.1.0
+    '@shikijs/monaco': ^4.6.0
+    '@unocss/nuxt': ^66.12.0
     clsx: ^2.1.1
     echarts: ^6.1.0
     lz-string-es: ^1.0.0
-    nuxt: ^4.6.0
+    nuxt: ^4.6.4
     tailwind-merge: ^3.7.0
     ufo: ^1.6.4
     vue-json-pretty: ^2.6.0
   test:
-    '@vitest/coverage-v8': ^5.0.3
+    '@vitest/coverage-v8': ^5.1.0
     '@vue/test-utils': ^2.5.1
-    vitest: ^5.0.3
+    vitest: ^5.1.0
   types:
-    '@types/node': ^26.6.4
+    '@types/node': ^26.6.6
