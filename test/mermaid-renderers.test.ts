@@ -1,5 +1,6 @@
 import type { MermaidExtension } from '@stream-markdown/core'
 import type { Component } from 'vue'
+import { pele } from '@stream-markdown/pele'
 import { describe, expect, it, vi } from 'vitest'
 import { useMermaid } from '../packages/vue/src/composables'
 
@@ -19,21 +20,35 @@ describe('mermaid extension fallback', () => {
   it('prefers Beautiful Mermaid for supported diagrams', async () => {
     const beautifulMermaid = createExtension(code => code.startsWith('flowchart'), '<svg>beautiful</svg>')
     const mermaid = createExtension(() => true, '<svg>vanilla</svg>')
-    const runtime = useMermaid({ extensions: { beautifulMermaid, mermaid } })
+    const pele = createExtension(() => true, '<svg>pele</svg>')
+    const runtime = useMermaid({ extensions: { beautifulMermaid, mermaid, pele } })
 
     const result = await runtime.renderMermaid('flowchart LR')
 
     expect(result.svg).toBe('<svg>beautiful</svg>')
     expect(beautifulMermaid.render).toHaveBeenCalledOnce()
+    expect(pele.render).not.toHaveBeenCalled()
     expect(mermaid.render).not.toHaveBeenCalled()
   })
 
-  it('falls back to Mermaid when Beautiful Mermaid does not support a diagram', async () => {
+  it('selects Pele before Mermaid for a supported diagram', async () => {
+    const beautifulMermaid = createExtension(() => false, '<svg>beautiful</svg>')
+    const mermaid = createExtension(() => true, '<svg>vanilla</svg>')
+    const runtime = useMermaid({ extensions: { beautifulMermaid, mermaid, pele: pele() } })
+    const source = 'packet-beta\n  0-7: "Header"'
+
+    expect(runtime.canRender(source)).toBe(true)
+    expect((await runtime.renderMermaid(source)).svg).toContain('pele-packet')
+    expect(beautifulMermaid.render).not.toHaveBeenCalled()
+    expect(mermaid.render).not.toHaveBeenCalled()
+  })
+
+  it('falls back to Mermaid when the other extensions do not support a diagram', async () => {
     const beautifulMermaid = createExtension(code => code.startsWith('flowchart'), '<svg>beautiful</svg>')
     const mermaid = createExtension(() => true, '<svg>vanilla</svg>')
-    const runtime = useMermaid({ extensions: { beautifulMermaid, mermaid } })
+    const runtime = useMermaid({ extensions: { beautifulMermaid, mermaid, pele: pele() } })
 
-    const result = await runtime.renderMermaid('pie title Usage')
+    const result = await runtime.renderMermaid('unknownDiagram')
 
     expect(result.svg).toBe('<svg>vanilla</svg>')
     expect(beautifulMermaid.render).not.toHaveBeenCalled()
@@ -45,5 +60,24 @@ describe('mermaid extension fallback', () => {
     const runtime = useMermaid({ extensions: { beautifulMermaid } })
 
     expect(runtime.canRender('pie title Usage')).toBe(false)
+  })
+})
+
+describe('pele extension', () => {
+  it('embeds color overrides, Shiki colors, and dark defaults in the SVG', async () => {
+    const { svg, valid } = await pele({ colors: { accent: '#abc' } }).render({
+      code: 'flowchart LR\n  A --> B',
+      isDark: true,
+      theme: {
+        colors: { 'editor.background': '#123456', 'focusBorder': '#def' },
+        settings: [{ scope: ['comment.line'], settings: { foreground: '#abc123' } }],
+      },
+    })
+
+    expect(valid).toBe(true)
+    expect(svg).toMatch(/^<svg[^>]* style="[^"]*--pele-bg:#123456;/)
+    expect(svg).toContain('--pele-accent:#abc;')
+    expect(svg).toContain('--pele-muted:#abc123;')
+    expect(svg).toContain('--pele-fg:#e6edf3;')
   })
 })

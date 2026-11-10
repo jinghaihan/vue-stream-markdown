@@ -18,6 +18,7 @@ export const alias: Record<string, string> = {
   '@stream-markdown/code': r('packages/extensions/code/src/index.ts'),
   '@stream-markdown/math': r('packages/extensions/math/src/index.ts'),
   '@stream-markdown/mermaid': r('packages/extensions/mermaid/src/index.ts'),
+  '@stream-markdown/pele': r('packages/extensions/pele/src/index.ts'),
   '@vue-stream-markdown': r('packages/vue/src'),
   'vue-stream-markdown/package.json': r('packages/vue/package.json'),
   'vue-stream-markdown/style.css': r('packages/vue/src/style.css'),

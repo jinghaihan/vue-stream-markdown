@@ -553,6 +553,9 @@ importers:
       '@stream-markdown/mermaid':
         specifier: workspace:*
         version: link:../packages/extensions/mermaid
+      '@stream-markdown/pele':
+        specifier: workspace:*
+        version: link:../packages/extensions/pele
       '@vueuse/core':
         specifier: catalog:frontend
         version: 15.0.0(vue@3.5.45(typescript@6.0.3))
@@ -639,6 +642,19 @@ importers:
         specifier: catalog:build
         version: 0.23.5(@tsdown/css@0.23.5)(@volar/typescript@2.4.30(typescript@6.0.3))(@vue/language-core@3.3.14)(oxc-resolver@11.24.2)(tsx@4.23.15)(typescript@6.0.3)(vue-tsc@3.3.14(typescript@6.0.3))
 
+  packages/extensions/pele:
+    dependencies:
+      '@stream-markdown/core':
+        specifier: workspace:*
+        version: link:../../core
+      pele:
+        specifier: ^1.13.0
+        version: 1.13.0
+    devDependencies:
+      tsdown:
+        specifier: catalog:build
+        version: 0.23.5(@tsdown/css@0.23.5)(@volar/typescript@2.4.30(typescript@6.0.3))(@vue/language-core@3.3.14)(oxc-resolver@11.24.2)(tsx@4.23.15)(typescript@6.0.3)(vue-tsc@3.3.14(typescript@6.0.3))
+
   packages/markmend/core:
     devDependencies:
       tsdown:
@@ -712,6 +728,9 @@ importers:
       '@stream-markdown/mermaid':
         specifier: workspace:*
         version: link:../../packages/extensions/mermaid
+      '@stream-markdown/pele':
+        specifier: workspace:*
+        version: link:../../packages/extensions/pele
       '@unocss/nuxt':
         specifier: catalog:playground
         version: 66.12.0(@nuxt/schema@4.6.4)(@oxc-project/types@0.153.0)(cac@7.0.0)(confbox@0.3.1)(dotenv@17.4.2)(esbuild@0.28.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(mlly@1.8.2)(oxc-parser@0.156.0)(rolldown@1.2.16)(rollup@4.67.5)(srvx@1.0.5)(unplugin@3.4.0(esbuild@0.28.2)(rolldown@1.2.16)(rollup@4.67.5)(vite@8.3.6(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))(webpack@5.109.2(cssnano@9.9.0(postcss@8.5.32))(csso@5.0.5)(esbuild@0.28.2)(lightningcss@1.33.0)(postcss@8.5.32)))(vite@8.3.6(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))(webpack@5.109.2(cssnano@9.9.0(postcss@8.5.32))(csso@5.0.5)(esbuild@0.28.2)(lightningcss@1.33.0)(postcss@8.5.32))
@@ -8145,6 +8164,10 @@ packages:
 
   pathe@2.0.3:
     resolution: {integrity: sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w==}
+
+  pele@1.13.0:
+    resolution: {integrity: sha512-Ie8UKY9x00MsuR3jO6AzUwzK2Z6MIV3Tf4EDdITiuk8Uaz8K7g0R082WqsqNaSU8DdgkrRvZThzhit83mi/uiw==}
+    engines: {node: '>=20'}
 
   perfect-debounce@2.1.0:
     resolution: {integrity: sha512-LjgdTytVFXeUgtHZr9WYViYSM/g8MkcTPYDlPa3cDqMirHjKiSZPYd6DoL7pK8AJQr+uWkQvCjHNdiMqsrJs+g==}
@@ -19575,6 +19598,8 @@ snapshots:
   path-to-regexp@8.4.2: {}
 
   pathe@2.0.3: {}
+
+  pele@1.13.0: {}
 
   perfect-debounce@2.1.0: {}
 

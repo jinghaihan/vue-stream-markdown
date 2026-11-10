@@ -17,7 +17,7 @@ export interface UserConfig {
   showDocumentResult: boolean
   shikiLightTheme: BuiltinTheme
   shikiDarkTheme: BuiltinTheme
-  mermaidRenderer: 'vanilla' | 'beautiful'
+  mermaidRenderer: 'pele' | 'beautiful' | 'vanilla'
   mermaidLightTheme: string
   mermaidDarkTheme: string
   mermaidBeautifulLightTheme: string

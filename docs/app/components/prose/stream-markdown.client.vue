@@ -9,6 +9,7 @@ import { beautifulMermaid } from '@stream-markdown/beautiful-mermaid'
 import { code } from '@stream-markdown/code'
 import { math } from '@stream-markdown/math'
 import { mermaid } from '@stream-markdown/mermaid'
+import { pele } from '@stream-markdown/pele'
 import { useMediaQuery } from '@vueuse/core'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { Markdown } from 'vue-stream-markdown'
@@ -93,18 +94,20 @@ const imageOptions = computed<ImageOptions | undefined>(() => {
 
 const playable = computed(() => props.mode === 'static')
 const isMermaid = computed(() => content.value.includes('```mermaid'))
-const mermaidRenderer = ref<'vanilla' | 'beautiful'>('beautiful')
 const codeExtension = code({ theme: ['github-light', 'github-dark'] })
 const mathExtension = math()
 const mermaidExtension = mermaid()
-const beautifulMermaidExtension = beautifulMermaid()
+const mermaidRenderers = [
+  { name: 'Pele', extensions: { pele: pele() } },
+  { name: 'Beautiful Mermaid', extensions: { beautifulMermaid: beautifulMermaid(), mermaid: mermaidExtension } },
+  { name: 'Mermaid', extensions: { mermaid: mermaidExtension } },
+] as const
+const rendererIndex = ref(0)
+const mermaidRenderer = computed(() => mermaidRenderers[rendererIndex.value] ?? mermaidRenderers[0])
 const extensions = computed(() => ({
   code: codeExtension,
   math: mathExtension,
-  mermaid: mermaidExtension,
-  ...(mermaidRenderer.value === 'beautiful'
-    ? { beautifulMermaid: beautifulMermaidExtension }
-    : {}),
+  ...mermaidRenderer.value.extensions,
 }))
 
 function toggleTyping() {
@@ -179,13 +182,14 @@ onBeforeUnmount(stopTyping)
       />
       <UButton
         v-if="isMermaid"
-        aria-label="Change Mermaid renderer"
+        :aria-label="`Change Mermaid renderer (current: ${mermaidRenderer.name})`"
+        :title="`Current renderer: ${mermaidRenderer.name}`"
         icon="i-lucide-loader-pinwheel"
         color="neutral"
         variant="ghost"
         size="xs"
         class="rounded-full"
-        @click="mermaidRenderer = mermaidRenderer === 'vanilla' ? 'beautiful' : 'vanilla'"
+        @click="rendererIndex = (rendererIndex + 1) % mermaidRenderers.length"
       />
     </div>
   </div>

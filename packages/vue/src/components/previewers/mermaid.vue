@@ -101,6 +101,7 @@ const renderContext = computed(() => [
   isDark.value,
   extensions.value?.beautifulMermaid,
   extensions.value?.mermaid,
+  extensions.value?.pele,
   extensions.value?.code,
 ] as const)
 interface RenderRequest {

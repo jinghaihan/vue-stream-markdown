@@ -1,6 +1,6 @@
 export type ModuleStrategy = 'esm' | 'umd'
 
-export type CdnModule = 'shiki' | 'mermaid' | 'beautiful-mermaid' | 'katex' | 'katex-css'
+export type CdnModule = 'shiki' | 'mermaid' | 'beautiful-mermaid' | 'pele' | 'katex' | 'katex-css'
 
 export interface CdnOptions {
   baseUrl?: string
@@ -8,6 +8,7 @@ export interface CdnOptions {
   shiki?: boolean
   mermaid?: ModuleStrategy | false
   beautifulMermaid?: ModuleStrategy | false
+  pele?: 'esm' | false
   katex?: ModuleStrategy | false
 }
 

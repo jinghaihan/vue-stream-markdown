@@ -41,6 +41,7 @@ The main package renders readable code fences without installing large third-par
 
 - `@stream-markdown/code` for [Shiki](https://shiki.style/)
 - `@stream-markdown/math` for [KaTeX](https://katex.org/)
+- `@stream-markdown/pele` for on-demand [Pele](https://pele.run/) rendering
 - `@stream-markdown/mermaid` for the official [Mermaid](https://mermaid.js.org/) renderer
 - `@stream-markdown/beautiful-mermaid` for [Beautiful Mermaid](https://github.com/lukilabs/beautiful-mermaid) diagrams
 

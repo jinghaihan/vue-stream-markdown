@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { beautifulMermaid } from '@stream-markdown/beautiful-mermaid'
 import { code } from '@stream-markdown/code'
 import { math } from '@stream-markdown/math'
-import { mermaid } from '@stream-markdown/mermaid'
+import { pele } from '@stream-markdown/pele'
 import { useClipboard } from '@vueuse/core'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { Markdown } from 'vue-stream-markdown'
@@ -13,10 +12,9 @@ const { copy, copied } = useClipboard({ legacy: true })
 const installCommand = 'pnpm add vue-stream-markdown'
 const typingDelay = 20
 const extensions = {
-  beautifulMermaid: beautifulMermaid(),
   code: code({ theme: ['github-light', 'github-dark'] }),
   math: math(),
-  mermaid: mermaid(),
+  pele: pele(),
 }
 
 const capabilities = [

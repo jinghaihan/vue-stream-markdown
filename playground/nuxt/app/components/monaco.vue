@@ -11,7 +11,7 @@ const props = withDefaults(defineProps<{
   theme?: [BuiltinTheme, BuiltinTheme]
 }>(), {
   content: '',
-  theme: () => ['github-light', 'github-dark'],
+  theme: () => ['vitesse-light', 'vitesse-dark'],
 })
 
 const emits = defineEmits<{

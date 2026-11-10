@@ -4,6 +4,7 @@ import { beautifulMermaid } from '../packages/extensions/beautiful-mermaid/src/e
 import { createShikiRuntime } from '../packages/extensions/code/src/runtime'
 import { createKatexRuntime } from '../packages/extensions/math/src/runtime'
 import { createMermaidRuntime } from '../packages/extensions/mermaid/src/runtime'
+import { pele } from '../packages/extensions/pele/src'
 
 vi.mock('@stream-markdown/core', async importOriginal => ({
   ...await importOriginal<typeof import('@stream-markdown/core')>(),
@@ -60,6 +61,33 @@ describe('cDN module guards', () => {
     await expect(extension.preload()).rejects.toThrow(
       /Invalid Beautiful Mermaid module.*THEMES.*fromShikiTheme/,
     )
+  })
+
+  it('loads the lazy Pele renderer from the CDN once for concurrent diagrams', async () => {
+    const renderAsync = vi.fn(async () => ({ svg: '<svg style=""></svg>' }))
+    vi.mocked(dynamicImport).mockResolvedValue({ renderAsync })
+    const extension = pele({ cdnOptions: { baseUrl: 'https://cdn.example.test/npm/' } })
+    const input = { code: 'flowchart LR\n  A --> B', isDark: false }
+
+    const results = await Promise.all([extension.render(input), extension.render(input)])
+
+    expect(results.every(result => result.valid)).toBe(true)
+    expect(renderAsync).toHaveBeenCalledTimes(2)
+    expect(dynamicImport).toHaveBeenCalledExactlyOnceWith(
+      expect.stringMatching(/^https:\/\/cdn\.example\.test\/npm\/pele@[^/]+\/dist\/esm\/lazy\.js$/),
+    )
+  })
+
+  it('reports an incomplete Pele module', async () => {
+    vi.mocked(dynamicImport).mockResolvedValue({})
+    const extension = pele({ cdnOptions: cdnModule() })
+
+    const result = await extension.render({ code: 'flowchart LR\n  A --> B', isDark: false })
+
+    expect(result).toMatchObject({
+      valid: false,
+      error: expect.stringMatching(/Invalid Pele module from https:\/\/cdn\.example\.test\/module\.js/),
+    })
   })
 
   it('reports an incomplete KaTeX module', async () => {

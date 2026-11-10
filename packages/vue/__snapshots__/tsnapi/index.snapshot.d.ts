@@ -16,6 +16,7 @@ export interface ExtensionOverrides {
   code?: Extensions['code'] | false;
   math?: Extensions['math'] | false;
   mermaid?: Extensions['mermaid'] | false;
+  pele?: Extensions['pele'] | false;
 }
 export interface MarkdownComponentProps {
   loading: boolean;

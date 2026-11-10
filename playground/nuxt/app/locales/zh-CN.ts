@@ -67,6 +67,7 @@ const locale: PlaygroundLocale = {
     },
     options: {
       mermaid: 'Mermaid',
+      pele: 'Pele',
       beautifulMermaid: 'Beautiful Mermaid',
       default: '默认',
       dark: '深色',

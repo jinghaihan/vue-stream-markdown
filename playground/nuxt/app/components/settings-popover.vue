@@ -18,10 +18,10 @@ const typedStepMin = defineModel<number>('typedStepMin', { required: false, defa
 const typedStepMax = defineModel<number>('typedStepMax', { required: false, default: 3 })
 const typedDelay = defineModel<number>('typedDelay', { required: false, default: 16 })
 
-const shikiLightTheme = defineModel<string>('shikiLightTheme', { required: false, default: 'github-light' })
-const shikiDarkTheme = defineModel<string>('shikiDarkTheme', { required: false, default: 'github-dark' })
+const shikiLightTheme = defineModel<string>('shikiLightTheme', { required: false, default: 'vitesse-light' })
+const shikiDarkTheme = defineModel<string>('shikiDarkTheme', { required: false, default: 'vitesse-dark' })
 
-const mermaidRenderer = defineModel<string>('mermaidRenderer', { required: false, default: 'vanilla' })
+const mermaidRenderer = defineModel<string>('mermaidRenderer', { required: false, default: 'pele' })
 const mermaidLightTheme = defineModel<string>('mermaidLightTheme', { required: false, default: 'neutral' })
 const mermaidDarkTheme = defineModel<string>('mermaidDarkTheme', { required: false, default: 'dark' })
 const mermaidBeautifulLightTheme = defineModel<string>('mermaidBeautifulLightTheme', { required: false, default: 'default' })
@@ -112,8 +112,9 @@ const SHIKI_THEMES: SelectOption[] = bundledThemesInfo.map(theme => ({
 }))
 
 const MERMAID_RENDERERS = computed<SelectOption[]>(() => [
-  { label: t('settings.options.mermaid'), value: 'vanilla' },
+  { label: t('settings.options.pele'), value: 'pele' },
   { label: t('settings.options.beautifulMermaid'), value: 'beautiful' },
+  { label: t('settings.options.mermaid'), value: 'vanilla' },
 ])
 
 const MERMAID_THEMES = computed<SelectOption[]>(() => [
@@ -302,7 +303,7 @@ watch(() => staticMode.value, () => {
           />
         </div>
 
-        <div :class="BLOCK_CLASSES">
+        <div v-if="mermaidRenderer !== 'pele'" :class="BLOCK_CLASSES">
           <Label :class="LABEL_CLASSES">{{ t('settings.labels.mermaidLightTheme') }}</Label>
           <Select
             v-model:value="mermaidLightTheme"
@@ -311,7 +312,7 @@ watch(() => staticMode.value, () => {
           />
         </div>
 
-        <div :class="BLOCK_CLASSES">
+        <div v-if="mermaidRenderer !== 'pele'" :class="BLOCK_CLASSES">
           <Label :class="LABEL_CLASSES">{{ t('settings.labels.mermaidDarkTheme') }}</Label>
           <Select
             v-model:value="mermaidDarkTheme"
@@ -320,7 +321,7 @@ watch(() => staticMode.value, () => {
           />
         </div>
 
-        <div :class="BLOCK_CLASSES">
+        <div v-if="mermaidRenderer === 'beautiful'" :class="BLOCK_CLASSES">
           <Label :class="LABEL_CLASSES">{{ t('settings.labels.beautifulMermaidLightTheme') }}</Label>
           <Select
             v-model:value="mermaidBeautifulLightTheme"
@@ -329,7 +330,7 @@ watch(() => staticMode.value, () => {
           />
         </div>
 
-        <div :class="BLOCK_CLASSES">
+        <div v-if="mermaidRenderer === 'beautiful'" :class="BLOCK_CLASSES">
           <Label :class="LABEL_CLASSES">{{ t('settings.labels.beautifulMermaidDarkTheme') }}</Label>
           <Select
             v-model:value="mermaidBeautifulDarkTheme"

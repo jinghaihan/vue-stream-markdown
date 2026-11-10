@@ -9,6 +9,7 @@ const publishedPackageDirs = [
   '../packages/extensions/code/',
   '../packages/extensions/math/',
   '../packages/extensions/mermaid/',
+  '../packages/extensions/pele/',
   '../packages/markmend/core/',
   '../packages/markmend/parser/',
   '../packages/vue/',
@@ -18,9 +19,11 @@ const optionalDependencies = [
   '@stream-markdown/code',
   '@stream-markdown/math',
   '@stream-markdown/mermaid',
+  '@stream-markdown/pele',
   'beautiful-mermaid',
   'katex',
   'mermaid',
+  'pele',
   'shiki',
 ]
 

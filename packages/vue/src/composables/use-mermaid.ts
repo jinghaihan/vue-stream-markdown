@@ -20,6 +20,8 @@ export function useMermaid(options: UseMermaidOptions = {}) {
     const configured = extensions.value
     if (configured?.beautifulMermaid?.supports(code))
       return configured.beautifulMermaid
+    if (configured?.pele?.supports(code))
+      return configured.pele
     if (configured?.mermaid?.supports(code))
       return configured.mermaid
     return undefined

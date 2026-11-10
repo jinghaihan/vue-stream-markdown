@@ -12,6 +12,7 @@ import { beautifulMermaid } from '@stream-markdown/beautiful-mermaid'
 import { code } from '@stream-markdown/code'
 import { math } from '@stream-markdown/math'
 import { mermaid } from '@stream-markdown/mermaid'
+import { pele } from '@stream-markdown/pele'
 import { useCycleList } from '@vueuse/core'
 import { decompressFromEncodedURIComponent } from 'lz-string-es'
 import { hydrateOnVisible } from 'vue'
@@ -131,6 +132,8 @@ const cdnOptions: CdnOptions = {
         return `https://esm.sh/mermaid@${version}`
       case 'beautiful-mermaid':
         return `https://esm.sh/beautiful-mermaid@${version}`
+      case 'pele':
+        return `https://esm.sh/pele@${version}/lazy`
       case 'katex':
         return `https://esm.sh/katex@${version}`
       case 'katex-css':
@@ -141,13 +144,13 @@ const cdnOptions: CdnOptions = {
   },
 }
 
-const codeExtension = code({
+const codeExtension = computed(() => code({
   cdnOptions,
-  theme: () => [userConfig.value.shikiLightTheme, userConfig.value.shikiDarkTheme],
+  theme: [userConfig.value.shikiLightTheme, userConfig.value.shikiDarkTheme],
   langAlias: {
     echarts: 'json',
   },
-})
+}))
 const mathExtension = math({ cdnOptions })
 const mermaidExtension = mermaid({
   cdnOptions,
@@ -160,10 +163,13 @@ const beautifulMermaidExtension = beautifulMermaid({
     userConfig.value.mermaidBeautifulDarkTheme,
   ],
 })
+const peleExtension = pele({ cdnOptions })
 const extensions = computed(() => ({
-  code: codeExtension,
+  code: codeExtension.value,
   math: mathExtension,
-  mermaid: mermaidExtension,
+  ...(userConfig.value.mermaidRenderer === 'pele'
+    ? { pele: peleExtension }
+    : { mermaid: mermaidExtension }),
   ...(userConfig.value.mermaidRenderer === 'beautiful'
     ? { beautifulMermaid: beautifulMermaidExtension }
     : {}),
