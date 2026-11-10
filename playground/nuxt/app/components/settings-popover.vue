@@ -18,8 +18,8 @@ const typedStepMin = defineModel<number>('typedStepMin', { required: false, defa
 const typedStepMax = defineModel<number>('typedStepMax', { required: false, default: 3 })
 const typedDelay = defineModel<number>('typedDelay', { required: false, default: 16 })
 
-const shikiLightTheme = defineModel<string>('shikiLightTheme', { required: false, default: 'github-light' })
-const shikiDarkTheme = defineModel<string>('shikiDarkTheme', { required: false, default: 'github-dark' })
+const shikiLightTheme = defineModel<string>('shikiLightTheme', { required: false, default: 'vitesse-light' })
+const shikiDarkTheme = defineModel<string>('shikiDarkTheme', { required: false, default: 'vitesse-dark' })
 
 const mermaidRenderer = defineModel<string>('mermaidRenderer', { required: false, default: 'pele' })
 const mermaidLightTheme = defineModel<string>('mermaidLightTheme', { required: false, default: 'neutral' })
