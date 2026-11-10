@@ -639,6 +639,19 @@ importers:
         specifier: catalog:build
         version: 0.23.5(@tsdown/css@0.23.5)(@volar/typescript@2.4.30(typescript@6.0.3))(@vue/language-core@3.3.14)(oxc-resolver@11.24.2)(tsx@4.23.15)(typescript@6.0.3)(vue-tsc@3.3.14(typescript@6.0.3))
 
+  packages/extensions/pele:
+    dependencies:
+      '@stream-markdown/core':
+        specifier: workspace:*
+        version: link:../../core
+      pele:
+        specifier: ^1.13.0
+        version: 1.13.0
+    devDependencies:
+      tsdown:
+        specifier: catalog:build
+        version: 0.23.5(@tsdown/css@0.23.5)(@volar/typescript@2.4.30(typescript@6.0.3))(@vue/language-core@3.3.14)(oxc-resolver@11.24.2)(tsx@4.23.15)(typescript@6.0.3)(vue-tsc@3.3.14(typescript@6.0.3))
+
   packages/markmend/core:
     devDependencies:
       tsdown:
@@ -8145,6 +8158,10 @@ packages:
 
   pathe@2.0.3:
     resolution: {integrity: sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w==}
+
+  pele@1.13.0:
+    resolution: {integrity: sha512-Ie8UKY9x00MsuR3jO6AzUwzK2Z6MIV3Tf4EDdITiuk8Uaz8K7g0R082WqsqNaSU8DdgkrRvZThzhit83mi/uiw==}
+    engines: {node: '>=20'}
 
   perfect-debounce@2.1.0:
     resolution: {integrity: sha512-LjgdTytVFXeUgtHZr9WYViYSM/g8MkcTPYDlPa3cDqMirHjKiSZPYd6DoL7pK8AJQr+uWkQvCjHNdiMqsrJs+g==}
@@ -19575,6 +19592,8 @@ snapshots:
   path-to-regexp@8.4.2: {}
 
   pathe@2.0.3: {}
+
+  pele@1.13.0: {}
 
   perfect-debounce@2.1.0: {}
 

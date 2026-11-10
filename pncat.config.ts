@@ -13,6 +13,7 @@ export default defineConfig({
     'shiki',
     'mermaid',
     'beautiful-mermaid',
+    'pele',
     'katex',
   ],
   catalogRules: mergeCatalogRules([

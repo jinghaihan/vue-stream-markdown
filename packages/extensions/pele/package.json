@@ -1,0 +1,40 @@
+{
+  "name": "@stream-markdown/pele",
+  "type": "module",
+  "version": "2.1.1",
+  "homepage": "https://github.com/jinghaihan/vue-stream-markdown#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jinghaihan/vue-stream-markdown.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jinghaihan/vue-stream-markdown/issues"
+  },
+  "keywords": [
+    "stream-markdown",
+    "pele",
+    "mermaid"
+  ],
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "prepublishOnly": "pnpm build"
+  },
+  "dependencies": {
+    "@stream-markdown/core": "workspace:*",
+    "pele": "^1.13.0"
+  },
+  "devDependencies": {
+    "tsdown": "catalog:build"
+  }
+}

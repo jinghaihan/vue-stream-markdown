@@ -80,4 +80,5 @@ export interface StreamMarkdownExtensions<
   code?: CodeExtension
   math?: MathExtension<TParserPlugin, TComponent>
   mermaid?: MermaidExtension<TComponent>
+  pele?: MermaidExtension<TComponent>
 }

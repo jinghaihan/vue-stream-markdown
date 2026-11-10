@@ -409,6 +409,7 @@ export interface StreamMarkdownExtensions<TParserPlugin = unknown, TComponent = 
   code?: CodeExtension;
   math?: MathExtension<TParserPlugin, TComponent>;
   mermaid?: MermaidExtension<TComponent>;
+  pele?: MermaidExtension<TComponent>;
 }
 export interface StreamMarkdownHooks {
   beforeDownload?: (_: DownloadEvent) => MaybePromise<boolean>;
