@@ -17,8 +17,16 @@ export interface PeleExtensionOptions<TErrorComponent = never> {
   colors?: MaybeGetter<PeleColors | undefined>;
   errorComponent?: TErrorComponent;
 }
+export interface ShikiThemeLike {
+  bg?: unknown;
+  fg?: unknown;
+  colors?: unknown;
+  tokenColors?: unknown;
+  settings?: unknown;
+}
 // #endregion
 
 // #region Functions
+export declare function fromShikiTheme(_: ShikiThemeLike): PeleColors;
 export declare function pele<TErrorComponent = never>(_?: PeleExtensionOptions<TErrorComponent>): MermaidExtension<TErrorComponent>;
 // #endregion

@@ -5,7 +5,8 @@ import { detectType, renderAsync } from 'pele/lazy'
 import { dependencies } from '../package.json'
 import { getPeleStyle } from './theme'
 
-export type { PeleColors } from './theme'
+export type { PeleColors, ShikiThemeLike } from './theme'
+export { fromShikiTheme } from './theme'
 
 export interface PeleExtensionOptions<TErrorComponent = never> {
   cdnOptions?: MaybeGetter<SharedCdnOptions | undefined>

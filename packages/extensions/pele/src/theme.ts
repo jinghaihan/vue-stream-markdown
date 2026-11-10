@@ -9,6 +9,14 @@ export interface PeleColors {
   'border'?: string
 }
 
+export interface ShikiThemeLike {
+  bg?: unknown
+  fg?: unknown
+  colors?: unknown
+  tokenColors?: unknown
+  settings?: unknown
+}
+
 const LIGHT_COLORS: Required<PeleColors> = {
   'bg': '#ffffff',
   'fg': '#1f1f1f',
@@ -56,27 +64,31 @@ function tokenColor(tokens: unknown, name: string) {
   }
 }
 
-export function getPeleStyle(
-  isDark: boolean,
-  theme: Record<string, unknown> | null | undefined,
-  overrides: PeleColors | undefined,
-): string {
-  const colors = theme?.colors as Record<string, unknown> | undefined
+/** Convert a loaded Shiki theme to Pele color overrides. */
+export function fromShikiTheme(theme: ShikiThemeLike): PeleColors {
+  const colors = theme.colors as Record<string, unknown> | undefined
   const line = hexColor(colors?.['editorLineNumber.foreground'])
-  const tokens = theme?.tokenColors ?? theme?.settings
-  const mapped: PeleColors = {
-    bg: hexColor(colors?.['editor.background']) ?? hexColor(theme?.bg),
-    fg: hexColor(colors?.['editor.foreground']) ?? hexColor(theme?.fg),
+  const tokens = theme.tokenColors ?? theme.settings
+  return {
+    bg: hexColor(colors?.['editor.background']) ?? hexColor(theme.bg),
+    fg: hexColor(colors?.['editor.foreground']) ?? hexColor(theme.fg),
     line,
     accent: hexColor(colors?.focusBorder) ?? tokenColor(tokens, 'keyword'),
     muted: tokenColor(tokens, 'comment') ?? line,
     surface: hexColor(colors?.['editor.selectionBackground']),
     border: hexColor(colors?.['editorWidget.border']),
   }
+}
 
+export function getPeleStyle(
+  isDark: boolean,
+  theme: Record<string, unknown> | null | undefined,
+  overrides: PeleColors | undefined,
+): string {
+  const mapped = theme && fromShikiTheme(theme)
   const fallback = isDark ? DARK_COLORS : LIGHT_COLORS
   return (Object.keys(fallback) as (keyof PeleColors)[]).map((key) => {
-    const color = hexColor(overrides?.[key]) ?? mapped[key] ?? fallback[key]
+    const color = hexColor(overrides?.[key]) ?? mapped?.[key] ?? fallback[key]
     return `--pele-${key}:${color};`
   }).join('')
 }

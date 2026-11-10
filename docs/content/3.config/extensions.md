@@ -135,6 +135,19 @@ const peleExtension = pele({
 
 Pass the instance as `extensions.pele`. Hex colors supplied through `colors` take precedence over the active Shiki theme, followed by the extension's light or dark defaults. The resolved colors are embedded in SVG downloads.
 
+Use `fromShikiTheme()` to give Pele a palette from a specific loaded Shiki theme. You can reuse the highlighter from the code extension.
+
+```ts
+import { code } from '@stream-markdown/code'
+import { fromShikiTheme, pele } from '@stream-markdown/pele'
+
+const codeExtension = code({ theme: ['vitesse-light', 'vitesse-dark'] })
+const highlighter = await codeExtension.getHighlighter()
+const peleExtension = pele({
+  colors: fromShikiTheme(highlighter.getTheme('vitesse-dark')),
+})
+```
+
 | Pele color | Shiki source                                          |
 | ---------- | ----------------------------------------------------- |
 | `bg`       | `editor.background`, then theme `bg`                  |
