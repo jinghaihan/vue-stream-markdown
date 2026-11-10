@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { CodeBlockVariant, SelectOption, StreamMarkdownProps } from 'vue-stream-markdown'
-import { THEMES } from 'beautiful-mermaid'
 import { bundledThemesInfo } from 'shiki'
 import { ANIMATION_SPLITS, ANIMATION_TYPES, CARETS } from 'vue-stream-markdown'
 import { useI18n } from '../composables/use-i18n'
@@ -18,14 +17,12 @@ const typedStepMin = defineModel<number>('typedStepMin', { required: false, defa
 const typedStepMax = defineModel<number>('typedStepMax', { required: false, default: 3 })
 const typedDelay = defineModel<number>('typedDelay', { required: false, default: 16 })
 
-const shikiLightTheme = defineModel<string>('shikiLightTheme', { required: false, default: 'vitesse-light' })
-const shikiDarkTheme = defineModel<string>('shikiDarkTheme', { required: false, default: 'vitesse-dark' })
+const shikiLightTheme = defineModel<string>('shikiLightTheme', { required: false, default: 'github-light' })
+const shikiDarkTheme = defineModel<string>('shikiDarkTheme', { required: false, default: 'github-dark' })
 
 const mermaidRenderer = defineModel<string>('mermaidRenderer', { required: false, default: 'pele' })
 const mermaidLightTheme = defineModel<string>('mermaidLightTheme', { required: false, default: 'neutral' })
 const mermaidDarkTheme = defineModel<string>('mermaidDarkTheme', { required: false, default: 'dark' })
-const mermaidBeautifulLightTheme = defineModel<string>('mermaidBeautifulLightTheme', { required: false, default: 'default' })
-const mermaidBeautifulDarkTheme = defineModel<string>('mermaidBeautifulDarkTheme', { required: false, default: 'zinc-dark' })
 
 const caret = defineModel<NonNullable<StreamMarkdownProps['caret']> | ''>('caret', { required: false, default: '' })
 const animation = defineModel<NonNullable<StreamMarkdownProps['animation']>>('animation', { required: false, default: 'fade-in' })
@@ -123,15 +120,6 @@ const MERMAID_THEMES = computed<SelectOption[]>(() => [
   { label: t('settings.options.forest'), value: 'forest' },
   { label: t('settings.options.neutral'), value: 'neutral' },
   { label: t('settings.options.base'), value: 'base' },
-])
-
-const MERMAID_BEAUTIFUL_THEMES = computed<SelectOption[]>(() => [
-  { label: t('settings.options.default'), value: 'default' },
-  ...Object.keys(THEMES).map(key => ({
-    label: key.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
-    value: key,
-  })),
-  ...SHIKI_THEMES,
 ])
 
 const CARETS_OPTIONS = computed<SelectOption[]>(() => [
@@ -303,7 +291,7 @@ watch(() => staticMode.value, () => {
           />
         </div>
 
-        <div v-if="mermaidRenderer !== 'pele'" :class="BLOCK_CLASSES">
+        <div v-if="mermaidRenderer === 'vanilla'" :class="BLOCK_CLASSES">
           <Label :class="LABEL_CLASSES">{{ t('settings.labels.mermaidLightTheme') }}</Label>
           <Select
             v-model:value="mermaidLightTheme"
@@ -312,30 +300,12 @@ watch(() => staticMode.value, () => {
           />
         </div>
 
-        <div v-if="mermaidRenderer !== 'pele'" :class="BLOCK_CLASSES">
+        <div v-if="mermaidRenderer === 'vanilla'" :class="BLOCK_CLASSES">
           <Label :class="LABEL_CLASSES">{{ t('settings.labels.mermaidDarkTheme') }}</Label>
           <Select
             v-model:value="mermaidDarkTheme"
             :class="CONTROL_CLASSES"
             :options="MERMAID_THEMES"
-          />
-        </div>
-
-        <div v-if="mermaidRenderer === 'beautiful'" :class="BLOCK_CLASSES">
-          <Label :class="LABEL_CLASSES">{{ t('settings.labels.beautifulMermaidLightTheme') }}</Label>
-          <Select
-            v-model:value="mermaidBeautifulLightTheme"
-            :class="CONTROL_CLASSES"
-            :options="MERMAID_BEAUTIFUL_THEMES"
-          />
-        </div>
-
-        <div v-if="mermaidRenderer === 'beautiful'" :class="BLOCK_CLASSES">
-          <Label :class="LABEL_CLASSES">{{ t('settings.labels.beautifulMermaidDarkTheme') }}</Label>
-          <Select
-            v-model:value="mermaidBeautifulDarkTheme"
-            :class="CONTROL_CLASSES"
-            :options="MERMAID_BEAUTIFUL_THEMES"
           />
         </div>
 

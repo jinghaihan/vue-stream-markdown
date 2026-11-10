@@ -49,8 +49,6 @@ export interface PlaygroundLocale {
       renderer: string
       mermaidLightTheme: string
       mermaidDarkTheme: string
-      beautifulMermaidLightTheme: string
-      beautifulMermaidDarkTheme: string
       caret: string
       animation: string
       split: string

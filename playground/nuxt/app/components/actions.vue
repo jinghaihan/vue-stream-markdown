@@ -54,14 +54,12 @@ const typedDelay = defineModel<number>('typedDelay', { required: false, default:
 const showInputEditor = defineModel<boolean>('showInputEditor', { required: false, default: false })
 const showDocumentResult = defineModel<boolean>('showDocumentResult', { required: false, default: false })
 
-const shikiLightTheme = defineModel<string>('shikiLightTheme', { required: false, default: 'vitesse-light' })
-const shikiDarkTheme = defineModel<string>('shikiDarkTheme', { required: false, default: 'vitesse-dark' })
+const shikiLightTheme = defineModel<string>('shikiLightTheme', { required: false, default: 'github-light' })
+const shikiDarkTheme = defineModel<string>('shikiDarkTheme', { required: false, default: 'github-dark' })
 
 const mermaidRenderer = defineModel<string>('mermaidRenderer', { required: false, default: 'pele' })
 const mermaidLightTheme = defineModel<string>('mermaidLightTheme', { required: false, default: 'neutral' })
 const mermaidDarkTheme = defineModel<string>('mermaidDarkTheme', { required: false, default: 'dark' })
-const mermaidBeautifulLightTheme = defineModel<string>('mermaidBeautifulLightTheme', { required: false, default: 'default' })
-const mermaidBeautifulDarkTheme = defineModel<string>('mermaidBeautifulDarkTheme', { required: false, default: 'zinc-dark' })
 
 const caret = defineModel<NonNullable<StreamMarkdownProps['caret']> | ''>('caret', { required: false, default: '' })
 const animation = defineModel<NonNullable<StreamMarkdownProps['animation']>>('animation', { required: false, default: '' })
@@ -200,8 +198,6 @@ const actions = computed((): Action[] => {
       v-model:mermaid-renderer="mermaidRenderer"
       v-model:mermaid-light-theme="mermaidLightTheme"
       v-model:mermaid-dark-theme="mermaidDarkTheme"
-      v-model:mermaid-beautiful-light-theme="mermaidBeautifulLightTheme"
-      v-model:mermaid-beautiful-dark-theme="mermaidBeautifulDarkTheme"
       :to-step="toStep"
     />
 

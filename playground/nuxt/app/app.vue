@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { CdnOptions } from '@stream-markdown/core'
+import type { BuiltinTheme } from 'shiki'
 import type {
   CodeOptions,
   ControlsConfig,
@@ -13,7 +14,8 @@ import { code } from '@stream-markdown/code'
 import { math } from '@stream-markdown/math'
 import { mermaid } from '@stream-markdown/mermaid'
 import { pele } from '@stream-markdown/pele'
-import { useCycleList } from '@vueuse/core'
+import { computedAsync, useCycleList } from '@vueuse/core'
+import { fromShikiTheme } from 'beautiful-mermaid'
 import { decompressFromEncodedURIComponent } from 'lz-string-es'
 import { hydrateOnVisible } from 'vue'
 import { Markdown, SUPPORT_LANGUAGES, useTailwindV3Theme } from 'vue-stream-markdown'
@@ -33,6 +35,7 @@ const markdownComponents: StreamMarkdownProps['components'] = {
 const { cssVariables } = useTailwindV3Theme({})
 
 const userConfig = useUserConfig()
+const { isDark } = useDark()
 
 const markdownRef = ref()
 const documentNodes = computed(() => markdownRef.value?.getDocument()?.nodes ?? [])
@@ -144,9 +147,13 @@ const cdnOptions: CdnOptions = {
   },
 }
 
+const shikiThemes = computed<[BuiltinTheme, BuiltinTheme]>(() => [
+  userConfig.value.shikiLightTheme,
+  userConfig.value.shikiDarkTheme,
+])
 const codeExtension = computed(() => code({
   cdnOptions,
-  theme: [userConfig.value.shikiLightTheme, userConfig.value.shikiDarkTheme],
+  theme: shikiThemes.value,
   langAlias: {
     echarts: 'json',
   },
@@ -156,12 +163,23 @@ const mermaidExtension = mermaid({
   cdnOptions,
   theme: () => [userConfig.value.mermaidLightTheme, userConfig.value.mermaidDarkTheme],
 })
-const beautifulMermaidExtension = beautifulMermaid({
-  cdnOptions,
-  theme: () => [
-    userConfig.value.mermaidBeautifulLightTheme,
-    userConfig.value.mermaidBeautifulDarkTheme,
-  ],
+const beautifulMermaidColors = computedAsync(async () => {
+  if (userConfig.value.mermaidRenderer !== 'beautiful')
+    return undefined
+
+  const [light, dark] = shikiThemes.value
+  const highlighter = await codeExtension.value.getHighlighter()
+  return {
+    light: fromShikiTheme(highlighter.getTheme(light)),
+    dark: fromShikiTheme(highlighter.getTheme(dark)),
+  }
+})
+const beautifulMermaidExtension = computed(() => {
+  const colors = beautifulMermaidColors.value
+  return beautifulMermaid({
+    cdnOptions,
+    config: () => isDark.value ? colors?.dark : colors?.light,
+  })
 })
 const peleExtension = pele({ cdnOptions })
 const extensions = computed(() => ({
@@ -171,7 +189,7 @@ const extensions = computed(() => ({
     ? { pele: peleExtension }
     : { mermaid: mermaidExtension }),
   ...(userConfig.value.mermaidRenderer === 'beautiful'
-    ? { beautifulMermaid: beautifulMermaidExtension }
+    ? { beautifulMermaid: beautifulMermaidExtension.value }
     : {}),
 }))
 
@@ -288,8 +306,6 @@ onMounted(() => {
         v-model:mermaid-renderer="userConfig.mermaidRenderer"
         v-model:mermaid-light-theme="userConfig.mermaidLightTheme"
         v-model:mermaid-dark-theme="userConfig.mermaidDarkTheme"
-        v-model:mermaid-beautiful-light-theme="userConfig.mermaidBeautifulLightTheme"
-        v-model:mermaid-beautiful-dark-theme="userConfig.mermaidBeautifulDarkTheme"
         v-model:caret="userConfig.caret"
         v-model:animation="userConfig.animation"
         v-model:animation-split="userConfig.animationSplit"
@@ -312,7 +328,7 @@ onMounted(() => {
         <Monaco
           ref="monacoRef"
           :content="content"
-          :theme="[userConfig.shikiLightTheme, userConfig.shikiDarkTheme]"
+          :theme="shikiThemes"
           @change="onEditorChange"
         />
       </ClientOnly>
@@ -335,6 +351,7 @@ onMounted(() => {
           ref="markdownRef"
           class="my-4"
           :mode="renderMode"
+          :is-dark="isDark"
           :caret="caret"
           :enable-animate="!userConfig.staticMode && userConfig.animation !== ''"
           :animation="userConfig.animation"

@@ -30,7 +30,7 @@ const locale: PlaygroundLocale = {
     sections: {
       general: 'General',
       codeBlock: 'Code Block',
-      shiki: 'Shiki',
+      shiki: 'Shiki Theme',
       mermaid: 'Mermaid',
       caret: 'Caret',
     },
@@ -49,8 +49,6 @@ const locale: PlaygroundLocale = {
       renderer: 'Renderer',
       mermaidLightTheme: 'Mermaid\nLight Theme',
       mermaidDarkTheme: 'Mermaid\nDark Theme',
-      beautifulMermaidLightTheme: 'Beautiful\u00A0Mermaid\nLight Theme',
-      beautifulMermaidDarkTheme: 'Beautiful\u00A0Mermaid\nDark Theme',
       caret: 'Caret',
       animation: 'Animation',
       split: 'Split',

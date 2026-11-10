@@ -20,8 +20,6 @@ export interface UserConfig {
   mermaidRenderer: 'pele' | 'beautiful' | 'vanilla'
   mermaidLightTheme: string
   mermaidDarkTheme: string
-  mermaidBeautifulLightTheme: string
-  mermaidBeautifulDarkTheme: string
   caret: NonNullable<StreamMarkdownProps['caret']> | ''
   animation: NonNullable<StreamMarkdownProps['animation']>
   animationSplit: NonNullable<StreamMarkdownProps['animationSplit']>
