@@ -1,21 +1,4 @@
-export interface PeleColors {
-  'bg'?: string
-  'fg'?: string
-  'line'?: string
-  'accent'?: string
-  'muted'?: string
-  'surface'?: string
-  'surface-alt'?: string
-  'border'?: string
-}
-
-export interface ShikiThemeLike {
-  bg?: unknown
-  fg?: unknown
-  colors?: unknown
-  tokenColors?: unknown
-  settings?: unknown
-}
+import type { PeleColors, ShikiThemeLike } from './types'
 
 const LIGHT_COLORS: Required<PeleColors> = {
   'bg': '#ffffff',
