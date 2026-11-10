@@ -38,6 +38,7 @@ function assertBeautifulMermaidModule(
 }
 
 const DIAGRAM_TYPE_PATTERN = new RegExp(`^(${BEAUTIFUL_MERMAID_SUPPORTED_PATTERNS.join('|')})`)
+const THEME_VARIABLE_RESET = '--line:initial;--accent:initial;--muted:initial;--surface:initial;--border:initial;'
 
 function extractDiagramType(code: string): string {
   for (const line of code.trim().split('\n')) {
@@ -94,7 +95,9 @@ export function createBeautifulMermaidRuntime(
         input.code,
         await getRenderOptions(input),
       )
-      return { supported: true, svg, valid: true }
+      // Keep inherited page colors out of the SVG and let its own declarations win.
+      const themedSvg = svg.replace(/^(<svg\b[^>]*?\sstyle=")/, `$1${THEME_VARIABLE_RESET}`)
+      return { supported: true, svg: themedSvg, valid: true }
     }
     catch (error) {
       return {

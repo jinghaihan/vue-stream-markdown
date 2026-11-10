@@ -1,5 +1,6 @@
 import type { MermaidExtension } from '@stream-markdown/core'
 import type { Component } from 'vue'
+import { beautifulMermaid as createBeautifulMermaid } from '@stream-markdown/beautiful-mermaid'
 import { pele } from '@stream-markdown/pele'
 import { describe, expect, it, vi } from 'vitest'
 import { useMermaid } from '../packages/vue/src/composables'
@@ -60,6 +61,17 @@ describe('mermaid extension fallback', () => {
     const runtime = useMermaid({ extensions: { beautifulMermaid } })
 
     expect(runtime.canRender('pie title Usage')).toBe(false)
+  })
+})
+
+describe('beautiful mermaid extension', () => {
+  it('isolates diagram colors from the page and preserves explicit theme colors', async () => {
+    const input = { code: 'classDiagram\n  class User {\n    +String name\n  }', isDark: true }
+    const zinc = await createBeautifulMermaid().render(input)
+    const custom = await createBeautifulMermaid({ config: { muted: '#abcdef' } }).render(input)
+
+    expect(zinc.svg).toMatch(/^<svg[^>]+ style="[^"]*--muted:initial;[^"]*--bg:#18181B;/)
+    expect(custom.svg).toMatch(/^<svg[^>]+ style="[^"]*--muted:initial;[^"]*--muted:#abcdef[;"]/)
   })
 })
 
