@@ -8,6 +8,7 @@ import type {
 import { completeMarkdownResult } from '@markmend/core'
 import { createMarkdownParser } from 'comark'
 import footnotes from 'comark/plugins/footnotes'
+import linkify from 'comark/plugins/linkify'
 import security from 'comark/plugins/security'
 import cjkFriendly from 'markdown-it-cjk-friendly'
 import { hidePendingFootnoteReferences } from './footnotes'
@@ -54,6 +55,7 @@ export function createMarkmendParser(
     plugins: [
       ...(literalTagContent ? [literalTagContent.plugin] : []),
       ...(options.parserOptions?.plugins ?? []),
+      ...(options.parserOptions?.linkify === false ? [] : [linkify({ fuzzyLink: true })]),
       ...(options.syntax?.cjk === false
         ? []
         : [{ name: 'cjk-friendly', markdownItPlugins: [cjkFriendly] }]),

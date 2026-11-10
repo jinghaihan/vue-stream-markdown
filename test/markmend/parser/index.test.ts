@@ -219,6 +219,22 @@ describe('markmend parser', () => {
     ])
   })
 
+  it.each(['static', 'streaming'] as const)('ends bare links at CJK punctuation in %s mode', async (mode) => {
+    const { document } = await createMarkmendParser().parse(
+      '访问 www.example.com/path。然后打开 https://example.com/path，再看 [链接](https://example.com/a。b)',
+      mode,
+    )
+
+    expect(document.nodes[0]?.slice(2)).toEqual([
+      '访问 ',
+      ['a', { href: 'http://www.example.com/path' }, 'www.example.com/path'],
+      '。然后打开 ',
+      ['a', { href: 'https://example.com/path' }, 'https://example.com/path'],
+      '，再看 ',
+      ['a', { href: 'https://example.com/a%E3%80%82b' }, '链接'],
+    ])
+  })
+
   it('preserves configured literal tag content as text', async () => {
     const engine = createMarkmendParser({
       literalTagContent: ['mention'],
