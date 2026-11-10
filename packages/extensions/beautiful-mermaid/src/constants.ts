@@ -19,6 +19,6 @@ export const PRESET_BEAUTIFUL_MERMAID_CONFIG: RenderOptions = {
 }
 
 export const DEFAULT_BEAUTIFUL_MERMAID_THEME: [ThemeName, ThemeName] = [
-  'github-light',
-  'github-dark',
+  'zinc-light',
+  'zinc-dark',
 ]
