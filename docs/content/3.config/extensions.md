@@ -210,6 +210,8 @@ const cdnOptions = {
   getUrl(module: string, version: string) {
     if (module === 'katex-css')
       return `https://esm.sh/katex@${version}/dist/katex.min.css`
+    if (module === 'pele')
+      return `https://esm.sh/pele@${version}/lazy`
     return `https://esm.sh/${module}@${version}`
   },
 }
@@ -219,7 +221,8 @@ const extensions = {
   math: math({ cdnOptions }),
   beautifulMermaid: beautifulMermaid({ cdnOptions }),
   mermaid: mermaid({ cdnOptions }),
+  pele: pele({ cdnOptions }),
 }
 ```
 
-You can also set `baseUrl` and provider switches such as `shiki`, `katex`, `mermaid`, or `beautifulMermaid`. Local dependencies remain the default when no CDN URL is configured.
+You can also set `baseUrl` and provider switches such as `shiki`, `katex`, `mermaid`, `beautifulMermaid`, or `pele`. Local dependencies remain the default when no CDN URL is configured. Pele uses its lazy ESM entry with `baseUrl`. Set `pele: false` to keep Pele local while other extensions use the CDN.

@@ -132,6 +132,8 @@ const cdnOptions: CdnOptions = {
         return `https://esm.sh/mermaid@${version}`
       case 'beautiful-mermaid':
         return `https://esm.sh/beautiful-mermaid@${version}`
+      case 'pele':
+        return `https://esm.sh/pele@${version}/lazy`
       case 'katex':
         return `https://esm.sh/katex@${version}`
       case 'katex-css':
@@ -161,7 +163,7 @@ const beautifulMermaidExtension = beautifulMermaid({
     userConfig.value.mermaidBeautifulDarkTheme,
   ],
 })
-const peleExtension = pele()
+const peleExtension = pele({ cdnOptions })
 const extensions = computed(() => ({
   code: codeExtension.value,
   math: mathExtension,

@@ -35,6 +35,7 @@ export interface CdnOptions {
   shiki?: boolean;
   mermaid?: ModuleStrategy | false;
   beautifulMermaid?: ModuleStrategy | false;
+  pele?: 'esm' | false;
   katex?: ModuleStrategy | false;
 }
 export interface CodeBlockControlActionOptions {
@@ -654,7 +655,7 @@ export type AnimationType = typeof ANIMATION_TYPES[number] | (string & {});
 export type BuiltinPreviewers = 'mermaid' | 'html';
 export type BuiltinUIComponents = 'Alert' | 'Button' | 'Caret' | 'Dropdown' | 'ErrorComponent' | 'Icon' | 'Image' | 'Modal' | 'Segmented' | 'Spin' | 'Tooltip' | 'ZoomContainer';
 export type CaretType = 'block' | 'circle';
-export type CdnModule = 'shiki' | 'mermaid' | 'beautiful-mermaid' | 'katex' | 'katex-css';
+export type CdnModule = 'shiki' | 'mermaid' | 'beautiful-mermaid' | 'pele' | 'katex' | 'katex-css';
 export type CodeBlockVariant = 'modern' | 'classic' | 'minimal';
 export type CodeControlsConfig<TTransformer = unknown> = boolean | {
   collapse?: boolean;

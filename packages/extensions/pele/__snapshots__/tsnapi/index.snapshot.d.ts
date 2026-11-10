@@ -13,6 +13,7 @@ export interface PeleColors {
   'border'?: string;
 }
 export interface PeleExtensionOptions<TErrorComponent = never> {
+  cdnOptions?: MaybeGetter<SharedCdnOptions | undefined>;
   colors?: MaybeGetter<PeleColors | undefined>;
   errorComponent?: TErrorComponent;
 }
