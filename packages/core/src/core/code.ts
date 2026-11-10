@@ -115,7 +115,7 @@ const DEFAULT_CODE_BLOCK_VARIANT: CodeBlockVariant = 'modern'
 export function resolveCodeLanguage(lang?: string | null): string {
   if (!lang)
     return 'plaintext'
-  return LANGUAGE_ALIAS[lang] ?? lang
+  return Object.hasOwn(LANGUAGE_ALIAS, lang) ? LANGUAGE_ALIAS[lang]! : lang
 }
 
 export function createCodeOptionsModel<TComponent = unknown>(
@@ -315,7 +315,8 @@ export function createCodeBlockControlDescriptors(
 }
 
 export function getCodeFileExtension(language: string): string | undefined {
-  return (LANGUAGE_EXTENSIONS as Record<string, string | undefined>)[language]
+  const key = language.toLowerCase()
+  return Object.hasOwn(LANGUAGE_EXTENSIONS, key) ? LANGUAGE_EXTENSIONS[key] : undefined
 }
 
 export function createCodeRendererModel(node: CodeBlockNode) {

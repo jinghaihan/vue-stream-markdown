@@ -97,16 +97,23 @@ describe('core models', () => {
       meta: 'startLine=0',
       value: 'const a = 1',
     }).startLine).toBe(1)
-    expect(createCodeBlockControlDescriptors({
+    const controls = createCodeBlockControlDescriptors({
       collapsed: true,
       fullscreen: false,
       copied: true,
-      language: 'typescript',
+      language: 'TypeScript',
       showCollapse: true,
       showCopy: true,
       showDownload: true,
       showFullscreen: true,
-    }).map(control => control.key)).toEqual(['collapse', 'copy', 'download', 'fullscreen'])
+    })
+    expect(controls.map(control => control.key)).toEqual(['collapse', 'copy', 'download', 'fullscreen'])
+    expect(controls.find(control => control.key === 'download')?.visible).toBe(true)
+    expect(createCodeBlockModel({
+      node: { lang: 'constructor', value: 'text' },
+      mode: 'source',
+    }).language).toBe('constructor')
+    expect(getCodeFileExtension('constructor')).toBeUndefined()
   })
 
   it('creates image models from renderer data and source lists', () => {
@@ -238,13 +245,13 @@ describe('core models', () => {
       key: 'download',
       filename: 'myScript',
       state: { collapsed: false, fullscreen: false },
-      node: { lang: 'ts', value: 'const a = 1' },
-      language: 'typescript',
+      node: { lang: 'Python', value: 'a = 1' },
+      language: 'Python',
       saveFile: (filename) => {
         codeDownloads.push(filename)
       },
     })
-    expect(codeDownloads).toEqual(['myScript.ts'])
+    expect(codeDownloads).toEqual(['myScript.py'])
 
     const copied: string[] = []
     await handleTableControlAction({
