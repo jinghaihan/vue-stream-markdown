@@ -1,4 +1,5 @@
 import type { UserConfig } from '../types'
+import { DEFAULT_BEAUTIFUL_MERMAID_THEME } from '@stream-markdown/beautiful-mermaid'
 import { version } from 'vue-stream-markdown/package.json'
 
 const STORAGE_KEY = `user-config-${version}`
@@ -17,6 +18,10 @@ const DEFAULT_USER_CONFIG: UserConfig = {
   mermaidRenderer: 'pele',
   mermaidLightTheme: 'neutral',
   mermaidDarkTheme: 'dark',
+  beautifulMermaidLightTheme: DEFAULT_BEAUTIFUL_MERMAID_THEME[0],
+  beautifulMermaidDarkTheme: DEFAULT_BEAUTIFUL_MERMAID_THEME[1],
+  peleLightTheme: 'light',
+  peleDarkTheme: 'dark',
   caret: '',
   animation: 'fade-in',
   animationSplit: 'auto',

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CodeBlockVariant, StreamMarkdownProps } from 'vue-stream-markdown'
-import type { Action } from '../types'
+import type { Action, UserConfig } from '../types'
 import { useClipboard } from '@vueuse/core'
 import { compressToEncodedURIComponent } from 'lz-string-es'
 import { homepage } from 'vue-stream-markdown/package.json'
@@ -57,9 +57,9 @@ const showDocumentResult = defineModel<boolean>('showDocumentResult', { required
 const shikiLightTheme = defineModel<string>('shikiLightTheme', { required: false, default: 'github-light' })
 const shikiDarkTheme = defineModel<string>('shikiDarkTheme', { required: false, default: 'github-dark' })
 
-const mermaidRenderer = defineModel<string>('mermaidRenderer', { required: false, default: 'pele' })
-const mermaidLightTheme = defineModel<string>('mermaidLightTheme', { required: false, default: 'neutral' })
-const mermaidDarkTheme = defineModel<string>('mermaidDarkTheme', { required: false, default: 'dark' })
+const mermaidRenderer = defineModel<UserConfig['mermaidRenderer']>('mermaidRenderer', { required: false, default: 'pele' })
+const diagramLightTheme = defineModel<string>('diagramLightTheme', { required: true })
+const diagramDarkTheme = defineModel<string>('diagramDarkTheme', { required: true })
 
 const caret = defineModel<NonNullable<StreamMarkdownProps['caret']> | ''>('caret', { required: false, default: '' })
 const animation = defineModel<NonNullable<StreamMarkdownProps['animation']>>('animation', { required: false, default: '' })
@@ -196,8 +196,8 @@ const actions = computed((): Action[] => {
       v-model:shiki-light-theme="shikiLightTheme"
       v-model:shiki-dark-theme="shikiDarkTheme"
       v-model:mermaid-renderer="mermaidRenderer"
-      v-model:mermaid-light-theme="mermaidLightTheme"
-      v-model:mermaid-dark-theme="mermaidDarkTheme"
+      v-model:diagram-light-theme="diagramLightTheme"
+      v-model:diagram-dark-theme="diagramDarkTheme"
       :to-step="toStep"
     />
 

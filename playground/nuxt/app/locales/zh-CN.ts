@@ -47,8 +47,6 @@ const locale: PlaygroundLocale = {
       lightTheme: '浅色主题',
       darkTheme: '深色主题',
       renderer: '渲染器',
-      mermaidLightTheme: 'Mermaid\n浅色主题',
-      mermaidDarkTheme: 'Mermaid\n深色主题',
       caret: '光标样式',
       animation: '动画',
       split: '分配方式',

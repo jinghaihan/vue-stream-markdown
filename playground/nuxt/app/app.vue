@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { CdnOptions } from '@stream-markdown/core'
-import type { BuiltinTheme } from 'shiki'
+import type { CdnOptions, MermaidRenderInput } from '@stream-markdown/core'
+import type { BuiltinTheme, BundledTheme } from 'shiki'
 import type {
   CodeOptions,
   ControlsConfig,
@@ -13,7 +13,7 @@ import { beautifulMermaid } from '@stream-markdown/beautiful-mermaid'
 import { code } from '@stream-markdown/code'
 import { math } from '@stream-markdown/math'
 import { mermaid } from '@stream-markdown/mermaid'
-import { pele } from '@stream-markdown/pele'
+import { fromShikiTheme as fromPeleShikiTheme, pele } from '@stream-markdown/pele'
 import { computedAsync, useCycleList } from '@vueuse/core'
 import { fromShikiTheme } from 'beautiful-mermaid'
 import { decompressFromEncodedURIComponent } from 'lz-string-es'
@@ -163,30 +163,68 @@ const mermaidExtension = mermaid({
   cdnOptions,
   theme: () => [userConfig.value.mermaidLightTheme, userConfig.value.mermaidDarkTheme],
 })
-const beautifulMermaidColors = computedAsync(async () => {
-  if (userConfig.value.mermaidRenderer !== 'beautiful')
+const diagramThemeKeys = {
+  vanilla: ['mermaidLightTheme', 'mermaidDarkTheme'],
+  beautiful: ['beautifulMermaidLightTheme', 'beautifulMermaidDarkTheme'],
+  pele: ['peleLightTheme', 'peleDarkTheme'],
+} as const
+const diagramLightTheme = computed({
+  get: () => userConfig.value[diagramThemeKeys[userConfig.value.mermaidRenderer][0]],
+  set: (theme: string) => { userConfig.value[diagramThemeKeys[userConfig.value.mermaidRenderer][0]] = theme },
+})
+const diagramDarkTheme = computed({
+  get: () => userConfig.value[diagramThemeKeys[userConfig.value.mermaidRenderer][1]],
+  set: (theme: string) => { userConfig.value[diagramThemeKeys[userConfig.value.mermaidRenderer][1]] = theme },
+})
+const diagramTheme = computed(() => isDark.value ? diagramDarkTheme.value : diagramLightTheme.value)
+const diagramShikiColors = computedAsync(async () => {
+  const renderer = userConfig.value.mermaidRenderer
+  const selection = diagramTheme.value
+  if (renderer === 'vanilla' || !selection.startsWith('shiki:'))
     return undefined
 
-  const [light, dark] = shikiThemes.value
+  const name = selection.slice('shiki:'.length) as BundledTheme
   const highlighter = await codeExtension.value.getHighlighter()
+  if (!highlighter.getLoadedThemes().includes(name))
+    await highlighter.loadTheme(name)
+  const theme = highlighter.getTheme(name)
   return {
-    light: fromShikiTheme(highlighter.getTheme(light)),
-    dark: fromShikiTheme(highlighter.getTheme(dark)),
+    renderer,
+    selection,
+    colors: renderer === 'pele' ? fromPeleShikiTheme(theme) : fromShikiTheme(theme),
   }
 })
+const diagramColors = computed(() => {
+  const resolved = diagramShikiColors.value
+  if (!resolved || resolved.renderer !== userConfig.value.mermaidRenderer || resolved.selection !== diagramTheme.value)
+    return undefined
+  return resolved.colors
+})
 const beautifulMermaidExtension = computed(() => {
-  const colors = beautifulMermaidColors.value
+  const theme = diagramTheme.value
   return beautifulMermaid({
     cdnOptions,
-    config: () => isDark.value ? colors?.dark : colors?.light,
+    theme: theme.startsWith('shiki:') ? undefined : [theme, theme],
+    config: diagramColors.value,
   })
 })
-const peleExtension = pele({ cdnOptions })
+const peleExtension = computed(() => {
+  const theme = diagramTheme.value
+  const extension = pele({ cdnOptions, colors: diagramColors.value })
+  return {
+    ...extension,
+    render: (input: MermaidRenderInput) => extension.render({
+      ...input,
+      isDark: theme.startsWith('shiki:') ? input.isDark : theme === 'dark',
+      theme: undefined,
+    }),
+  }
+})
 const extensions = computed(() => ({
   code: codeExtension.value,
   math: mathExtension,
   ...(userConfig.value.mermaidRenderer === 'pele'
-    ? { pele: peleExtension }
+    ? { pele: peleExtension.value }
     : { mermaid: mermaidExtension }),
   ...(userConfig.value.mermaidRenderer === 'beautiful'
     ? { beautifulMermaid: beautifulMermaidExtension.value }
@@ -304,8 +342,8 @@ onMounted(() => {
         v-model:shiki-light-theme="userConfig.shikiLightTheme"
         v-model:shiki-dark-theme="userConfig.shikiDarkTheme"
         v-model:mermaid-renderer="userConfig.mermaidRenderer"
-        v-model:mermaid-light-theme="userConfig.mermaidLightTheme"
-        v-model:mermaid-dark-theme="userConfig.mermaidDarkTheme"
+        v-model:diagram-light-theme="diagramLightTheme"
+        v-model:diagram-dark-theme="diagramDarkTheme"
         v-model:caret="userConfig.caret"
         v-model:animation="userConfig.animation"
         v-model:animation-split="userConfig.animationSplit"

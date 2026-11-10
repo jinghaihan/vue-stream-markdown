@@ -47,8 +47,6 @@ const locale: PlaygroundLocale = {
       lightTheme: 'Light Theme',
       darkTheme: 'Dark Theme',
       renderer: 'Renderer',
-      mermaidLightTheme: 'Mermaid\nLight Theme',
-      mermaidDarkTheme: 'Mermaid\nDark Theme',
       caret: 'Caret',
       animation: 'Animation',
       split: 'Split',

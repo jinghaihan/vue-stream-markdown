@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { CodeBlockVariant, SelectOption, StreamMarkdownProps } from 'vue-stream-markdown'
+import type { UserConfig } from '../types'
+import { THEMES } from 'beautiful-mermaid'
 import { bundledThemesInfo } from 'shiki'
 import { ANIMATION_SPLITS, ANIMATION_TYPES, CARETS } from 'vue-stream-markdown'
 import { useI18n } from '../composables/use-i18n'
@@ -20,9 +22,9 @@ const typedDelay = defineModel<number>('typedDelay', { required: false, default:
 const shikiLightTheme = defineModel<string>('shikiLightTheme', { required: false, default: 'github-light' })
 const shikiDarkTheme = defineModel<string>('shikiDarkTheme', { required: false, default: 'github-dark' })
 
-const mermaidRenderer = defineModel<string>('mermaidRenderer', { required: false, default: 'pele' })
-const mermaidLightTheme = defineModel<string>('mermaidLightTheme', { required: false, default: 'neutral' })
-const mermaidDarkTheme = defineModel<string>('mermaidDarkTheme', { required: false, default: 'dark' })
+const mermaidRenderer = defineModel<UserConfig['mermaidRenderer']>('mermaidRenderer', { required: false, default: 'pele' })
+const diagramLightTheme = defineModel<string>('diagramLightTheme', { required: true })
+const diagramDarkTheme = defineModel<string>('diagramDarkTheme', { required: true })
 
 const caret = defineModel<NonNullable<StreamMarkdownProps['caret']> | ''>('caret', { required: false, default: '' })
 const animation = defineModel<NonNullable<StreamMarkdownProps['animation']>>('animation', { required: false, default: 'fade-in' })
@@ -107,6 +109,17 @@ const SHIKI_THEMES: SelectOption[] = bundledThemesInfo.map(theme => ({
   label: theme.displayName,
   value: theme.id,
 }))
+const DIAGRAM_SHIKI_THEMES = SHIKI_THEMES.map(option => ({
+  ...option,
+  value: `shiki:${option.value}`,
+}))
+const BEAUTIFUL_MERMAID_THEMES: SelectOption[] = [
+  ...Object.keys(THEMES).map(value => ({
+    label: value.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
+    value,
+  })),
+  ...DIAGRAM_SHIKI_THEMES,
+]
 
 const MERMAID_RENDERERS = computed<SelectOption[]>(() => [
   { label: t('settings.options.pele'), value: 'pele' },
@@ -121,6 +134,16 @@ const MERMAID_THEMES = computed<SelectOption[]>(() => [
   { label: t('settings.options.neutral'), value: 'neutral' },
   { label: t('settings.options.base'), value: 'base' },
 ])
+const PELE_THEMES = computed<SelectOption[]>(() => [
+  { label: `Pele ${t('settings.labels.lightTheme')}`, value: 'light' },
+  { label: `Pele ${t('settings.labels.darkTheme')}`, value: 'dark' },
+  ...DIAGRAM_SHIKI_THEMES,
+])
+const diagramThemes = computed(() => ({
+  vanilla: MERMAID_THEMES.value,
+  beautiful: BEAUTIFUL_MERMAID_THEMES,
+  pele: PELE_THEMES.value,
+})[mermaidRenderer.value])
 
 const CARETS_OPTIONS = computed<SelectOption[]>(() => [
   { label: t('settings.options.none'), value: '' },
@@ -291,21 +314,21 @@ watch(() => staticMode.value, () => {
           />
         </div>
 
-        <div v-if="mermaidRenderer === 'vanilla'" :class="BLOCK_CLASSES">
-          <Label :class="LABEL_CLASSES">{{ t('settings.labels.mermaidLightTheme') }}</Label>
+        <div :class="BLOCK_CLASSES">
+          <Label :class="LABEL_CLASSES">{{ t('settings.labels.lightTheme') }}</Label>
           <Select
-            v-model:value="mermaidLightTheme"
+            v-model:value="diagramLightTheme"
             :class="CONTROL_CLASSES"
-            :options="MERMAID_THEMES"
+            :options="diagramThemes"
           />
         </div>
 
-        <div v-if="mermaidRenderer === 'vanilla'" :class="BLOCK_CLASSES">
-          <Label :class="LABEL_CLASSES">{{ t('settings.labels.mermaidDarkTheme') }}</Label>
+        <div :class="BLOCK_CLASSES">
+          <Label :class="LABEL_CLASSES">{{ t('settings.labels.darkTheme') }}</Label>
           <Select
-            v-model:value="mermaidDarkTheme"
+            v-model:value="diagramDarkTheme"
             :class="CONTROL_CLASSES"
-            :options="MERMAID_THEMES"
+            :options="diagramThemes"
           />
         </div>
 
