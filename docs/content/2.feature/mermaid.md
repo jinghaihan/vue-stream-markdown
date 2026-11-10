@@ -2,10 +2,31 @@
 title: Mermaid Diagrams
 navigation:
   icon: i-lucide-chart-network
-description: Add standard Mermaid, Beautiful Mermaid, or both with deterministic fallback behavior.
+description: Render Mermaid diagrams with Pele, Beautiful Mermaid, or the official Mermaid renderer.
 ---
 
 [Mermaid](https://mermaid.js.org/) fences remain ordinary code blocks until a diagram extension is supplied. This keeps the main package independent of large diagram runtimes.
+
+## Pele
+
+[Pele](https://pele.run/) is the recommended renderer for new projects. It loads diagram types on demand and uses your Shiki theme when the code extension is configured.
+
+```sh
+pnpm add @stream-markdown/pele
+```
+
+```vue
+<script setup lang="ts">
+import { pele } from '@stream-markdown/pele'
+import { Markdown } from 'vue-stream-markdown'
+
+const extensions = { pele: pele() }
+</script>
+
+<template>
+  <Markdown :content="content" :extensions="extensions" />
+</template>
+```
 
 ## Standard Mermaid
 
@@ -51,27 +72,9 @@ const extensions = {
 }
 ```
 
-## Use both with fallback
+## Combine renderers
 
-Both extensions can coexist:
-
-```ts
-import { beautifulMermaid } from '@stream-markdown/beautiful-mermaid'
-import { mermaid } from '@stream-markdown/mermaid'
-
-const extensions = {
-  beautifulMermaid: beautifulMermaid(),
-  mermaid: mermaid(),
-}
-```
-
-The selection order is deterministic:
-
-1. Beautiful Mermaid renders diagram types it supports.
-2. Standard Mermaid renders unsupported Beautiful Mermaid diagram types.
-3. If no configured extension supports the diagram, the source code block stays visible.
-
-This means installing only Beautiful Mermaid does not implicitly require Mermaid.
+When you configure more than one extension, the first renderer that supports the diagram type is used, in this order: Beautiful Mermaid, Pele, then standard Mermaid. Unsupported diagrams stay visible as source.
 
 ## Basic syntax
 
@@ -118,7 +121,7 @@ flowchart LR
 
 ### Pie and Gantt charts
 
-These examples demonstrate the standard Mermaid fallback when both extensions are enabled:
+Pele renders both charts. Use the renderer button to compare with other engines.
 
 ::stream-markdown{example="feature-mermaid.pieChart"}
 ::
@@ -170,9 +173,10 @@ During streaming, incomplete Mermaid fences remain readable and preview renderin
 - Verify the corresponding extension instance is included in `extensions`.
 - Installing `@stream-markdown/mermaid` also installs its Mermaid runtime.
 - Test syntax in the [Mermaid Live Editor](https://mermaid.live/).
-- Use both diagram extensions when you want Beautiful Mermaid styling plus full syntax coverage.
+- Add standard Mermaid as a fallback for types the other configured renderers do not support.
 
 ## Resources
 
+- [Pele compatibility](https://pele.run/compatibility)
 - [Mermaid documentation](https://mermaid.js.org/intro/)
 - [Beautiful Mermaid documentation](https://github.com/lukilabs/beautiful-mermaid)

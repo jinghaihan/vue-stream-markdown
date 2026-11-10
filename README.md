@@ -20,7 +20,7 @@ A markdown renderer specially optimized for streaming scenarios, inspired by [St
 
 - **Streaming-optimized rendering** - Incomplete node completion with loading states for images, tables, and code blocks to prevent visual jitter
 - **Syntax highlighting** - Highlight code with [Shiki](https://shiki.style/) through the independently installable `@stream-markdown/code` extension
-- **Diagram rendering** - Combine [Mermaid](https://mermaid.js.org/) and [Beautiful Mermaid](https://github.com/lukilabs/beautiful-mermaid) renderers with deterministic fallback
+- **Diagram rendering** - Combine [Pele](https://pele.run/), [Beautiful Mermaid](https://github.com/lukilabs/beautiful-mermaid), and [Mermaid](https://mermaid.js.org/) renderers with deterministic fallback
 - **Mathematical typesetting** - Parse mathematical notation with [Comark](https://github.com/comarkdown/comark) and render it with [KaTeX](https://katex.org/)
 - **Native HTML and custom tags** - Render safe HTML and map custom tags directly to Vue components
 - **Interactive controls** - Copy and download buttons for images, tables, and code blocks
@@ -47,6 +47,7 @@ This project also uses and benefits from:
 
 - [Comark](https://github.com/comarkdown/comark) - Compact document model and stateful incremental Markdown parser
 - [Shiki](https://shiki.style/) - Beautiful syntax highlighting
+- [Pele](https://pele.run/) - On-demand Mermaid diagram rendering
 - [Mermaid](https://mermaid.js.org/) - Diagramming and charting tool
 - [Beautiful Mermaid](https://github.com/lukilabs/beautiful-mermaid) - Beautiful Mermaid diagram renderer with Shiki integration
 - [KaTeX](https://katex.org/) - Fast math typesetting library for the web

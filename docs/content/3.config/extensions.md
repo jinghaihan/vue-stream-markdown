@@ -13,10 +13,9 @@ Extension factories receive their renderer options and return instances for the 
 
 ```vue
 <script setup lang="ts">
-import { beautifulMermaid } from '@stream-markdown/beautiful-mermaid'
 import { code } from '@stream-markdown/code'
 import { math } from '@stream-markdown/math'
-import { mermaid } from '@stream-markdown/mermaid'
+import { pele } from '@stream-markdown/pele'
 import { Markdown, MarkdownProvider } from 'vue-stream-markdown'
 import 'katex/dist/katex.min.css'
 
@@ -28,12 +27,7 @@ const extensions = {
   math: math({
     config: { throwOnError: false },
   }),
-  beautifulMermaid: beautifulMermaid({
-    theme: ['github-light', 'github-dark'],
-  }),
-  mermaid: mermaid({
-    theme: ['neutral', 'dark'],
-  }),
+  pele: pele(),
 }
 </script>
 
@@ -123,6 +117,32 @@ import 'katex/dist/katex.min.css'
 
 The extension adds both math parsing and [KaTeX](https://katex.org/) rendering. Without it, math-like source remains ordinary text.
 
+## Pele
+
+```sh
+pnpm add @stream-markdown/pele
+```
+
+```ts
+import { pele } from '@stream-markdown/pele'
+
+const peleExtension = pele({
+  colors: { accent: '#5b7bd5' },
+})
+```
+
+Pass the instance as `extensions.pele`. Hex colors supplied through `colors` take precedence over the active Shiki theme, followed by the extension's light or dark defaults. The resolved colors are embedded in SVG downloads.
+
+| Pele color | Shiki source                                          |
+| ---------- | ----------------------------------------------------- |
+| `bg`       | `editor.background`, then theme `bg`                  |
+| `fg`       | `editor.foreground`, then theme `fg`                  |
+| `line`     | `editorLineNumber.foreground`                         |
+| `accent`   | `focusBorder`, then the keyword token                 |
+| `muted`    | The comment token, then `editorLineNumber.foreground` |
+| `surface`  | `editor.selectionBackground`                          |
+| `border`   | `editorWidget.border`                                 |
+
 ## Mermaid
 
 The standard [Mermaid](https://mermaid.js.org/) renderer supports every diagram type supported by your Mermaid version:
@@ -166,16 +186,7 @@ const options: BeautifulMermaidExtensionOptions = {
 const beautifulMermaidExtension = beautifulMermaid(options)
 ```
 
-You can configure both diagram extensions at once:
-
-```ts
-const extensions = {
-  beautifulMermaid: beautifulMermaid(),
-  mermaid: mermaid(),
-}
-```
-
-The renderer tries Beautiful Mermaid only for diagram types it supports, then falls back to Mermaid. If Mermaid is omitted, unsupported diagrams stay as code blocks.
+See [Mermaid Diagrams](/feature/mermaid#combine-renderers) for the order used when several diagram extensions are configured.
 
 ## Custom error components
 

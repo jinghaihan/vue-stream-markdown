@@ -22,11 +22,8 @@ pnpm add @stream-markdown/code
 # KaTeX parsing and rendering
 pnpm add @stream-markdown/math
 
-# Mermaid renderer
-pnpm add @stream-markdown/mermaid
-
-# Beautiful Mermaid
-pnpm add @stream-markdown/beautiful-mermaid
+# Mermaid diagrams with Pele
+pnpm add @stream-markdown/pele
 ```
 
 ## Basic usage
@@ -54,10 +51,9 @@ Each extension factory owns its provider-specific configuration. Create extensio
 
 ```vue
 <script setup lang="ts">
-import { beautifulMermaid } from '@stream-markdown/beautiful-mermaid'
 import { code } from '@stream-markdown/code'
 import { math } from '@stream-markdown/math'
-import { mermaid } from '@stream-markdown/mermaid'
+import { pele } from '@stream-markdown/pele'
 import { Markdown, MarkdownProvider } from 'vue-stream-markdown'
 import 'katex/dist/katex.min.css'
 import 'vue-stream-markdown/index.css'
@@ -66,8 +62,7 @@ import 'vue-stream-markdown/theme.css'
 const extensions = {
   code: code({ theme: ['github-light', 'github-dark'] }),
   math: math(),
-  beautifulMermaid: beautifulMermaid(),
-  mermaid: mermaid(),
+  pele: pele(),
 }
 </script>
 
@@ -78,7 +73,7 @@ const extensions = {
 </template>
 ```
 
-When both diagram extensions are present, supported diagrams use Beautiful Mermaid and unsupported diagram types fall back to Mermaid. Without a matching diagram extension, the original code block remains visible.
+See [Mermaid Diagrams](/feature/mermaid) for renderer choices and fallback order.
 
 Use `MarkdownProvider` around a message list to share extension lifecycles and theme observation. A standalone `Markdown` remains supported, and instance props override provider defaults.
 

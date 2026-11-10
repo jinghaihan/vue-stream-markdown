@@ -17,6 +17,7 @@
     "@stream-markdown/code": "workspace:*",
     "@stream-markdown/math": "workspace:*",
     "@stream-markdown/mermaid": "workspace:*",
+    "@stream-markdown/pele": "workspace:*",
     "comark-docs": "github:comarkdown/comark-docs#66cade42ff1bec023b657e95a92aacdce52eeae1",
     "katex": "^0.16.38",
     "nuxt": "^4.6.4",

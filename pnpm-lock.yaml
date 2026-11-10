@@ -553,6 +553,9 @@ importers:
       '@stream-markdown/mermaid':
         specifier: workspace:*
         version: link:../packages/extensions/mermaid
+      '@stream-markdown/pele':
+        specifier: workspace:*
+        version: link:../packages/extensions/pele
       '@vueuse/core':
         specifier: catalog:frontend
         version: 15.0.0(vue@3.5.45(typescript@6.0.3))

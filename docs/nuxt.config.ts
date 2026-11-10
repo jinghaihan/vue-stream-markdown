@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url'
 import { version } from '../package.json'
 
 export default defineNuxtConfig({
@@ -38,6 +39,10 @@ export default defineNuxtConfig({
         branch: 'main',
       },
     },
+  },
+
+  alias: {
+    '@comark/nuxt/plugins/mermaid': fileURLToPath(new URL('./mermaid.ts', import.meta.url)),
   },
 
   nitro: {
