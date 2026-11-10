@@ -57,7 +57,7 @@ const showDocumentResult = defineModel<boolean>('showDocumentResult', { required
 const shikiLightTheme = defineModel<string>('shikiLightTheme', { required: false, default: 'github-light' })
 const shikiDarkTheme = defineModel<string>('shikiDarkTheme', { required: false, default: 'github-dark' })
 
-const mermaidRenderer = defineModel<string>('mermaidRenderer', { required: false, default: 'vanilla' })
+const mermaidRenderer = defineModel<string>('mermaidRenderer', { required: false, default: 'pele' })
 const mermaidLightTheme = defineModel<string>('mermaidLightTheme', { required: false, default: 'neutral' })
 const mermaidDarkTheme = defineModel<string>('mermaidDarkTheme', { required: false, default: 'dark' })
 const mermaidBeautifulLightTheme = defineModel<string>('mermaidBeautifulLightTheme', { required: false, default: 'default' })

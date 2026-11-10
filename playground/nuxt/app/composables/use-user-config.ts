@@ -14,7 +14,7 @@ const DEFAULT_USER_CONFIG: UserConfig = {
   showDocumentResult: false,
   shikiLightTheme: 'github-light',
   shikiDarkTheme: 'github-dark',
-  mermaidRenderer: 'beautiful',
+  mermaidRenderer: 'pele',
   mermaidLightTheme: 'neutral',
   mermaidDarkTheme: 'dark',
   mermaidBeautifulLightTheme: 'github-light',

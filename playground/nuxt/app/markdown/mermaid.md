@@ -180,3 +180,15 @@ xychart-beta
     bar [22, 30, 41, 53, 61, 72]
     line [18, 28, 39, 49, 58, 70]
 ```
+
+### Packet Diagrams
+
+Show the layout of a packet header with Pele:
+
+```mermaid
+packet-beta
+    0-3: "Version"
+    4-7: "Flags"
+    8-15: "Length"
+    16-31: "Checksum"
+```

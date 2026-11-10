@@ -99,6 +99,7 @@ Shiki, KaTeX, and diagram renderers are **opt-in extensions**. This playground h
 | :--- | :--- |
 | `@stream-markdown/code` | Shiki syntax highlighting |
 | `@stream-markdown/math` | KaTeX mathematical typesetting |
+| `@stream-markdown/pele`              | On-demand diagram rendering with Shiki colors |
 | `@stream-markdown/beautiful-mermaid` | Beautiful Mermaid diagram rendering |
 | `@stream-markdown/mermaid` | Official Mermaid rendering and fallback |
 

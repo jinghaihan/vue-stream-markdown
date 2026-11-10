@@ -67,6 +67,7 @@ export interface PlaygroundLocale {
     }
     options: {
       mermaid: string
+      pele: string
       beautifulMermaid: string
       default: string
       dark: string
