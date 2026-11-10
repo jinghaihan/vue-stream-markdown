@@ -4,14 +4,19 @@ import type {
   CodeToken,
 } from '@stream-markdown/core'
 import type { ThemedToken, ThemeRegistrationResolved } from 'shiki'
-import type { CodeRuntimeOptions } from './types'
+import type { CodeRuntimeOptions, ShikiRuntime } from './types'
 import { resolveGetter } from '@stream-markdown/core'
 import { DEFAULT_SHIKI_DARK_THEME, DEFAULT_SHIKI_LIGHT_THEME } from './constants'
 import { createShikiRuntime } from './runtime'
 
 export type CodeExtensionOptions = Omit<CodeRuntimeOptions, 'isDark' | 'lang'>
 
-export function code(options: CodeExtensionOptions = {}): CodeExtension {
+export interface ShikiCodeExtension extends CodeExtension {
+  /** Get the shared highlighter with this extension's configured themes loaded. */
+  getHighlighter: ShikiRuntime['getHighlighter']
+}
+
+export function code(options: CodeExtensionOptions = {}): ShikiCodeExtension {
   const convertedRows = new WeakMap<ThemedToken[], CodeToken[]>()
   const preloadRuntime = createShikiRuntime({
     ...options,
@@ -21,6 +26,7 @@ export function code(options: CodeExtensionOptions = {}): CodeExtension {
   return {
     preload: preloadRuntime.preload,
     dispose: preloadRuntime.dispose,
+    getHighlighter: preloadRuntime.getHighlighter,
     async highlight(input) {
       const runtime = createShikiRuntime({
         ...options,
