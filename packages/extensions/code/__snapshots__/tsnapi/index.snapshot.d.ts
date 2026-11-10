@@ -15,6 +15,9 @@ export interface CodeRuntimeOptions {
 export interface ShikiCdnLoaderOptions {
   cdnOptions?: MaybeGetter<SharedCdnOptions | undefined>;
 }
+export interface ShikiCodeExtension extends CodeExtension {
+  getHighlighter: ShikiRuntime['getHighlighter'];
+}
 export interface ShikiRuntime {
   installed: Promise<boolean>;
   preload: () => Promise<void>;
@@ -32,7 +35,7 @@ export type ShikiEngine = MaybePromise<RegexEngine>;
 // #endregion
 
 // #region Functions
-export declare function code(_?: CodeExtensionOptions): CodeExtension;
+export declare function code(_?: CodeExtensionOptions): ShikiCodeExtension;
 export declare function createShikiCdnLoader(_?: ShikiCdnLoaderOptions): {
   getCdnUrl: () => string | undefined;
   loadCdn: () => Promise<typeof import("shiki") | undefined>;

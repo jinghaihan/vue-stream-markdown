@@ -85,6 +85,8 @@ const options: CodeExtensionOptions = {
 const codeExtension = code(options)
 ```
 
+Call `await codeExtension.getHighlighter()` to reuse the shared Shiki highlighter with the configured themes loaded. Use `disposeShikiHighlighter()` only after all consumers have finished using the shared instance.
+
 ## Math
 
 Install `@stream-markdown/math` to add both [Comark](https://github.com/comarkdown/comark) math parsing and [KaTeX](https://katex.org/) rendering:
