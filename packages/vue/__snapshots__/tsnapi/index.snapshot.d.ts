@@ -28,7 +28,7 @@ export interface MarkdownControlContext<TNode = ElementNode> {
   nodeKey: string;
 }
 export interface MarkdownNodesProps {
-  nodes?: Node$1[];
+  nodes?: Node[];
   nodeKey?: string;
   loading?: boolean;
   hideCaret?: boolean;
@@ -79,7 +79,7 @@ export interface StreamMarkdownProvideContext {
   compactTextAnimations?: MaybeRefOrGetter<boolean>;
   enableCaret?: MaybeRefOrGetter<boolean>;
   caret?: MaybeRefOrGetter<StreamMarkdownProps['caret']>;
-  documentNodes?: MaybeRefOrGetter<Node$1[]>;
+  documentNodes?: MaybeRefOrGetter<Node[]>;
   getContainer?: () => HTMLElement | undefined;
   beforeDownload?: StreamMarkdownProps['beforeDownload'];
   onCopied?: (_: string) => void;
@@ -110,7 +110,7 @@ export interface StreamMarkdownResolvedContext {
   compactTextAnimations: ComputedRef<boolean>;
   enableCaret: ComputedRef<boolean | undefined>;
   caret: ComputedRef<string | undefined>;
-  documentNodes: ComputedRef<Node$1[]>;
+  documentNodes: ComputedRef<Node[]>;
   readonly getContainer: () => HTMLElement | undefined;
   readonly beforeDownload: NonNullable<StreamMarkdownProps['beforeDownload']>;
   readonly onCopied: (_: string) => void;
@@ -145,7 +145,7 @@ export type StreamMarkdownProps = BaseStreamMarkdownProps & {
 export type TableControlsConfig = TableControlsConfig$1<ControlTransformer<MarkdownControlContext>>;
 export type TableOptions = TableOptions$1;
 export type UIButtonProps = UIButtonProps$1<Component, CSSProperties>;
-export type UIComponents = UIComponents$1<Component, BuiltinUIComponents$1>;
+export type UIComponents = UIComponents$1<Component, BuiltinUIComponents$2>;
 export type UIErrorComponentProps = UIErrorComponentProps$1<Component>;
 export type UIIconProps = UIIconProps$1<Component, CSSProperties>;
 export type UIImageProps = UIImageProps$1<unknown, ControlsConfig> & {
@@ -277,7 +277,7 @@ export declare function useZoom(_?: ZoomOptions): {
 // #endregion
 
 // #region Variables
-export declare const CODE_PREVIEWERS: Partial<Record<string, Component>> & Record<BuiltinPreviewers$1, Component>;
+export declare const CODE_PREVIEWERS: Partial<Record<string, Component>> & Record<BuiltinPreviewers$2, Component>;
 export declare const CodeBlockRenderer: {
   new (...args: any[]): import("vue").CreateComponentPublicInstanceWithMixins<Readonly<MarkdownRendererProps> & Readonly<{}>, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, import("vue").PublicProps, {}, false, {}, {}, import("vue").GlobalComponents, import("vue").GlobalDirectives, string, {}, any, import("vue").ComponentProvideOptions, {
     P: {};
@@ -368,7 +368,7 @@ export declare const MarkdownNodes: import("vue").DefineComponent<import("vue").
   components: MarkdownComponents;
   hideCaret: boolean;
   loading: boolean;
-  nodes: Node[];
+  nodes: Node$1[];
 }, {}, {}, {}, string, import("vue").ComponentProvideOptions, true, {}, any>;
 export declare const MarkdownProvider: typeof __VLS_export;
 export declare const MathRenderer: import("vue").DefineComponent<MarkdownRendererProps, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").PublicProps, Readonly<MarkdownRendererProps> & Readonly<{}>, {}, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
