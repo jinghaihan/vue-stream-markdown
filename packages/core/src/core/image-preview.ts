@@ -54,7 +54,9 @@ export function createImagePreviewSources(
   const seen = new Set<string>()
 
   sources.forEach((url) => {
-    const transformed = transformHardenUrl ? transformHardenUrl(url) : url
+    const transformed = transformHardenUrl
+      ? transformHardenUrl(url)
+      : url
     if (!transformed || seen.has(url))
       return
 

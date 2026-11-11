@@ -18,7 +18,12 @@ export default defineConfig({
   },
 }).append(
   {
-    files: ['benchmark/**', 'docs/**', 'playground/**', 'test/**'],
+    files: [
+      'benchmark/**',
+      'docs/**',
+      'playground/**',
+      'test/**',
+    ],
     rules: {
       'slop/no-chained-type-assertions': 'off',
       'slop/no-em-dash': 'off',

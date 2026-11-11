@@ -80,7 +80,9 @@ const renderMode = computed(() => {
   const completed = !isTyping.value && typingIndex.value >= content.value.length
   return completed ? 'static' : 'streaming'
 })
-const markdownContent = computed(() => renderMode.value === 'static' ? content.value : typedContent.value)
+const markdownContent = computed(() => renderMode.value === 'static'
+  ? content.value
+  : typedContent.value)
 
 const autoScroll = computed({
   get: () => userConfig.value.autoScroll,
@@ -101,7 +103,9 @@ const copyContent = computed(() => {
 const codeOptions = computed((): CodeOptions => {
   const options: CodeOptions = {
     variant: userConfig.value.codeBlockVariant,
-    maxHeight: userConfig.value.codeMaxHeight > 0 ? userConfig.value.codeMaxHeight : undefined,
+    maxHeight: userConfig.value.codeMaxHeight > 0
+      ? userConfig.value.codeMaxHeight
+      : undefined,
     virtualScroll: userConfig.value.codeVirtualScroll,
     languageIcon: !isMobile.value,
     languageName: !isMobile.value,
@@ -114,7 +118,9 @@ const codeOptions = computed((): CodeOptions => {
       html: options,
       echarts: {
         ...options,
-        languageIcon: options.languageIcon === false ? false : ChartPie,
+        languageIcon: options.languageIcon === false
+          ? false
+          : ChartPie,
       },
     },
   }
@@ -191,7 +197,9 @@ const diagramShikiColors = computedAsync(async () => {
   return {
     renderer,
     selection,
-    colors: renderer === 'pele' ? fromPeleShikiTheme(theme) : fromShikiTheme(theme),
+    colors: renderer === 'pele'
+      ? fromPeleShikiTheme(theme)
+      : fromShikiTheme(theme),
   }
 })
 const diagramColors = computed(() => {
@@ -204,7 +212,9 @@ const beautifulMermaidExtension = computed(() => {
   const theme = diagramTheme.value
   return beautifulMermaid({
     cdnOptions,
-    theme: theme.startsWith('shiki:') ? undefined : [theme, theme],
+    theme: theme.startsWith('shiki:')
+      ? undefined
+      : [theme, theme],
     config: diagramColors.value,
   })
 })
@@ -215,7 +225,9 @@ const peleExtension = computed(() => {
     ...extension,
     render: (input: MermaidRenderInput) => extension.render({
       ...input,
-      isDark: theme.startsWith('shiki:') ? input.isDark : theme === 'dark',
+      isDark: theme.startsWith('shiki:')
+        ? input.isDark
+        : theme === 'dark',
       theme: undefined,
     }),
   }

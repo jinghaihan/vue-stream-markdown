@@ -7,7 +7,9 @@ import { useTailwindV3Theme } from '../../packages/vue/src/composables'
 function mountThemeReader(element: HTMLElement) {
   return mount(defineComponent({
     setup() {
-      useTailwindV3Theme({ element: () => element })
+      useTailwindV3Theme({
+        element: () => element,
+      })
       return () => h('div')
     },
   }))

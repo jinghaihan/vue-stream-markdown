@@ -31,13 +31,15 @@ describe('public MarkdownNodes', () => {
     const Host = defineComponent({
       setup() {
         useContext().provideContext({ enableAnimate: false, enableCaret: true })
-        return () => h('div', [h(MarkdownNodes, {
-          nodes: nodes.value,
-          nodeKey: 'selected',
-          components: { strong: Strong },
-          loading: loading.value,
-          hideCaret: hideCaret.value,
-        })])
+        return () => h('div', [
+          h(MarkdownNodes, {
+            nodes: nodes.value,
+            nodeKey: 'selected',
+            components: { strong: Strong },
+            loading: loading.value,
+            hideCaret: hideCaret.value,
+          }),
+        ])
       },
     })
     const wrapper = mount(Host)
@@ -50,7 +52,10 @@ describe('public MarkdownNodes', () => {
     expect(wrapper.findAll('strong')[1]!.attributes('data-loading')).toBe('true')
     expect(wrapper.find('[data-stream-markdown="caret"]').exists()).toBe(true)
 
-    nodes.value = [nodes.value[0]!, ['strong', {}, 'Changed tail']]
+    nodes.value = [
+      nodes.value[0]!,
+      ['strong', {}, 'Changed tail'],
+    ]
     hideCaret.value = true
     await flushPromises()
     expect(wrapper.findAll('strong')[0]!.element).toBe(stableElement)
@@ -64,7 +69,16 @@ describe('public MarkdownNodes', () => {
   })
 
   it('inherits component mappings, code extensions, and UI when rendering generated nodes', async () => {
-    const highlight = vi.fn(async () => ({ tokens: [[{ content: 'generated', htmlStyle: { color: 'red' } }]] }))
+    const highlight = vi.fn(async () => ({
+      tokens: [
+        [
+          {
+            content: 'generated',
+            htmlStyle: { color: 'red' },
+          },
+        ],
+      ],
+    }))
     const Strong = markRaw(defineComponent({
       setup(_props, { slots }) {
         return () => h('strong', { 'data-custom-strong': '' }, slots.default?.())
@@ -85,9 +99,18 @@ describe('public MarkdownNodes', () => {
       setup(props) {
         const nodes = computed<MarkdownNode[]>(() => {
           const [, , ...children] = props.node
-          return [...children, ['pre', { language: 'js' }, ['code', {}, 'generated']]]
+          return [
+            ...children,
+            [
+              'pre',
+              { language: 'js' },
+              ['code', {}, 'generated'],
+            ],
+          ]
         })
-        return () => h('blockquote', [h(MarkdownNodes, { nodes: nodes.value, nodeKey: props.nodeKey, loading: props.loading })])
+        return () => h('blockquote', [
+          h(MarkdownNodes, { nodes: nodes.value, nodeKey: props.nodeKey, loading: props.loading }),
+        ])
       },
     }))
     const wrapper = mount(Markdown, {
@@ -99,7 +122,13 @@ describe('public MarkdownNodes', () => {
         components: { blockquote: Quote, strong: Strong },
         uiComponents: { Button },
         codeOptions: { lineNumbers: false },
-        extensions: { code: { preload: async () => {}, dispose: () => {}, highlight } },
+        extensions: {
+          code: {
+            preload: async () => {},
+            dispose: () => {},
+            highlight,
+          },
+        },
       },
     })
     await vi.dynamicImportSettled()
@@ -122,7 +151,9 @@ describe('public MarkdownNodes', () => {
       setup(props) {
         return () => {
           const [, , ...nodes] = props.node
-          return h('blockquote', [h(MarkdownNodes, { nodes, nodeKey: props.nodeKey, loading: props.loading })])
+          return h('blockquote', [
+            h(MarkdownNodes, { nodes, nodeKey: props.nodeKey, loading: props.loading }),
+          ])
         }
       },
     }))

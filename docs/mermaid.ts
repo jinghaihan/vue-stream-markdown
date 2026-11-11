@@ -4,7 +4,9 @@ import { computed, defineComponent, h } from 'vue'
 import { Markdown } from 'vue-stream-markdown'
 
 const extensions = {
-  code: code({ theme: ['github-light', 'github-dark'] }),
+  code: code({
+    theme: ['github-light', 'github-dark'],
+  }),
   pele: pele(),
 }
 

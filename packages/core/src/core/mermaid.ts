@@ -60,7 +60,9 @@ export function resolveMermaidContainerHeight(
     return containerHeight
   if (typeof containerHeight === 'number')
     return `${containerHeight}px`
-  return measuredHeight ? `${measuredHeight}px` : 'auto'
+  return measuredHeight
+    ? `${measuredHeight}px`
+    : 'auto'
 }
 
 export function createMermaidRenderState(

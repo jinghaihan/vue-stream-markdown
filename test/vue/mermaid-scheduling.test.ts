@@ -11,7 +11,9 @@ const cleanups: (() => void)[] = []
 const diagram = (name: string) => `graph TD\nA-->${name}`
 const success = (name: string) => ({ valid: true, svg: `<svg><text>${name}</text></svg>` })
 
-beforeEach(() => vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'performance'] }))
+beforeEach(() => vi.useFakeTimers({
+  toFake: ['setTimeout', 'clearTimeout', 'performance'],
+}))
 afterEach(() => {
   cleanups.splice(0).forEach(cleanup => cleanup())
   vi.useRealTimers()
@@ -26,11 +28,19 @@ async function mountPreview(streaming = true, codeExtension?: Extensions['code']
   const render = vi.fn((_input: MermaidRenderInput) => new Promise<MermaidExtensionRenderResult>((resolve, reject) => {
     pending.push({ resolve, reject })
   }))
-  const extension = { supports: () => true, render, preload: async () => {}, dispose: () => {} }
+  const extension = {
+    supports: () => true,
+    render,
+    preload: async () => {},
+    dispose: () => {},
+  }
   const extensions = shallowRef<Extensions>({ mermaid: extension, code: codeExtension })
   const isDark = ref(false)
   const nodeKey = ref('diagram')
-  const node = ref<CodeBlockNode>({ value: diagram('B'), loading: streaming })
+  const node = ref<CodeBlockNode>({
+    value: diagram('B'),
+    loading: streaming,
+  })
   const App = defineComponent(() => {
     const { provideContext, uiComponents } = useContext()
     provideContext({
@@ -40,7 +50,9 @@ async function mountPreview(streaming = true, codeExtension?: Extensions['code']
         ...uiComponents.value,
         ZoomContainer: defineComponent({
           props: ['contentSize'],
-          setup: (props, { slots }) => () => h('div', { 'data-content-size': JSON.stringify(props.contentSize) }, slots.default?.()),
+          setup: (props, { slots }) => () => h('div', {
+            'data-content-size': JSON.stringify(props.contentSize),
+          }, slots.default?.()),
         }),
         Spin: defineComponent(() => () => h('span', 'Loading')),
         ErrorComponent: defineComponent({
@@ -54,7 +66,16 @@ async function mountPreview(streaming = true, codeExtension?: Extensions['code']
   const wrapper = mount(App)
   cleanups.push(() => wrapper.unmount())
   await flushPromises()
-  return { wrapper, node, nodeKey, isDark, extensions, extension, render, pending }
+  return {
+    wrapper,
+    node,
+    nodeKey,
+    isDark,
+    extensions,
+    extension,
+    render,
+    pending,
+  }
 }
 
 describe('mermaid render scheduling', () => {
@@ -112,7 +133,10 @@ describe('mermaid render scheduling', () => {
       state.pending[0]!.resolve(success('B'))
       await flushPromises()
     }
-    state.node.value = { value: diagram('Final'), loading: false }
+    state.node.value = {
+      value: diagram('Final'),
+      loading: false,
+    }
     await flushPromises()
     if (phase === 'rendering') {
       expect(state.render).toHaveBeenCalledTimes(1)
@@ -161,12 +185,17 @@ describe('mermaid render scheduling', () => {
 
   it.each(['theme', 'extension', 'node'] as const)('discards results from an obsolete %s context', async (change) => {
     const state = await mountPreview(false)
-    if (change === 'theme')
+    if (change === 'theme') {
       state.isDark.value = true
-    else if (change === 'extension')
-      state.extensions.value = { beautifulMermaid: { ...state.extension } }
-    else
+    }
+    else if (change === 'extension') {
+      state.extensions.value = {
+        beautifulMermaid: { ...state.extension },
+      }
+    }
+    else {
       state.nodeKey.value = 'another-diagram'
+    }
     await flushPromises()
     state.pending[0]!.resolve(success('Obsolete'))
     await flushPromises()
@@ -207,14 +236,20 @@ describe('mermaid render scheduling', () => {
     await flushPromises()
     themes[0]!({ name: 'light' })
     await flushPromises()
-    expect(state.render.mock.calls[0]![0]).toMatchObject({ isDark: false, theme: { name: 'light' } })
+    expect(state.render.mock.calls[0]![0]).toMatchObject({
+      isDark: false,
+      theme: { name: 'light' },
+    })
     state.pending[0]!.resolve(success('Obsolete'))
     await flushPromises()
     expect(state.wrapper.find('svg').exists()).toBe(false)
     expect(getTheme.mock.calls.map(([isDark]) => isDark)).toEqual([false, true])
     themes[1]!({ name: 'dark' })
     await flushPromises()
-    expect(state.render.mock.calls[1]![0]).toMatchObject({ isDark: true, theme: { name: 'dark' } })
+    expect(state.render.mock.calls[1]![0]).toMatchObject({
+      isDark: true,
+      theme: { name: 'dark' },
+    })
   })
 
   it.each(['rendering', 'cooldown'] as const)('cleans up during %s without starting another render', async (phase) => {

@@ -19,7 +19,9 @@ beforeEach(() => {
   document.head.append(stylesheet)
   const positions = new WeakMap<Element, number>()
   vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockImplementation(function (this: HTMLElement) {
-    return this.matches(viewportSelector) ? 200 : 0
+    return this.matches(viewportSelector)
+      ? 200
+      : 0
   })
   vi.spyOn(HTMLElement.prototype, 'scrollHeight', 'get').mockImplementation(function (this: HTMLElement) {
     const code = this.querySelector('pre > code')
@@ -29,7 +31,9 @@ beforeEach(() => {
     return 32 + (spacer
       ? Number.parseFloat(spacer.style.height) + Number.parseFloat(spacer.style.marginTop)
       : code.querySelectorAll('[data-stream-markdown="code-line"]').length * 20)
-    + (this.querySelector('[data-display-notice]') ? 50 : 0)
+    + (this.querySelector('[data-display-notice]')
+      ? 50
+      : 0)
   })
   vi.spyOn(HTMLElement.prototype, 'scrollTop', 'get').mockImplementation(function (this: HTMLElement) {
     return positions.get(this) ?? 0
@@ -40,9 +44,23 @@ beforeEach(() => {
   })
   vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
     const viewport = this.closest<HTMLElement>(viewportSelector)
-    const top = this.tagName === 'PRE' ? -(viewport?.scrollTop ?? 0) : 0
-    const width = this.getAttribute('aria-hidden') === 'true' ? (this.textContent?.length ?? 0) * 8 : 400
-    return { top, left: 0, right: width, bottom: top + 200, width, height: 200, x: 0, y: top, toJSON: () => ({}) }
+    const top = this.tagName === 'PRE'
+      ? -(viewport?.scrollTop ?? 0)
+      : 0
+    const width = this.getAttribute('aria-hidden') === 'true'
+      ? (this.textContent?.length ?? 0) * 8
+      : 400
+    return {
+      top,
+      left: 0,
+      right: width,
+      bottom: top + 200,
+      width,
+      height: 200,
+      x: 0,
+      y: top,
+      toJSON: () => ({}),
+    }
   })
 })
 
@@ -66,7 +84,14 @@ async function settle() {
 describe('virtual code blocks', () => {
   it('renders all lines when custom CSS enables wrapping', async () => {
     stylesheet.textContent += ' [data-stream-markdown="code"] { white-space: pre-wrap; }'
-    const wrapper = mount(Markdown, { attachTo: document.body, props: { content: markdown(source), mode: 'static', codeOptions: { maxHeight: 200, virtualScroll: true } } })
+    const wrapper = mount(Markdown, {
+      attachTo: document.body,
+      props: {
+        content: markdown(source),
+        mode: 'static',
+        codeOptions: { maxHeight: 200, virtualScroll: true },
+      },
+    })
     await settle()
     expect(wrapper.findAll(rows)).toHaveLength(1000)
     expect(wrapper.get('pre').attributes('data-virtual')).toBeUndefined()
@@ -80,22 +105,32 @@ describe('virtual code blocks', () => {
       setup(props) {
         return () => h(CodeBlockRenderer, props, {
           default: ({ node }: { node: CodeBlockNode }) => [
-            h(CodeRenderer, { node: { ...node, value: node.value.split('\n').slice(0, 500).join('\n') }, nodeKey: props.nodeKey }),
+            h(CodeRenderer, {
+              node: {
+                ...node,
+                value: node.value.split('\n').slice(0, 500).join('\n'),
+              },
+              nodeKey: props.nodeKey,
+            }),
             h('p', { 'data-display-notice': '' }, 'Showing 500 of 1000 lines'),
           ],
         })
       },
     }))
     const onCopied = vi.fn()
-    const wrapper = mount(Markdown, { props: {
-      content: markdown(source),
-      mode: 'static',
-      locale: 'en-US',
-      onCopied,
-      components: { pre: CustomCode },
-      codeOptions: { maxHeight: 200, virtualScroll: true },
-      controls: { code: { collapse: false, download: false } },
-    } })
+    const wrapper = mount(Markdown, {
+      props: {
+        content: markdown(source),
+        mode: 'static',
+        locale: 'en-US',
+        onCopied,
+        components: { pre: CustomCode },
+        codeOptions: { maxHeight: 200, virtualScroll: true },
+        controls: {
+          code: { collapse: false, download: false },
+        },
+      },
+    })
     await settle()
     const viewport = wrapper.get('[data-stream-markdown="code-block-content"]').element
     expect(viewport.querySelector('[data-display-notice]')?.textContent).toBe('Showing 500 of 1000 lines')
@@ -118,13 +153,26 @@ describe('virtual code blocks', () => {
 
   it.each(['modern', 'classic', 'minimal'] as const)('uses the existing %s viewport and preserves source line numbers after scrolling', async (variant) => {
     const wideSource = source.replace('line 700', 'W'.repeat(250))
-    const highlight = vi.fn(async ({ code }: { code: string }) => ({ tokens: code.split('\n').map(content => [{ content, htmlStyle: { color: 'red' } }]) }))
+    const highlight = vi.fn(async ({ code }: { code: string }) => ({
+      tokens: code.split('\n').map(content => [
+        {
+          content,
+          htmlStyle: { color: 'red' },
+        },
+      ]),
+    }))
     const wrapper = mount(Markdown, {
       props: {
         content: markdown(wideSource),
         mode: 'static',
         codeOptions: { maxHeight: 200, virtualScroll: true, variant },
-        extensions: { code: { preload: async () => {}, dispose: () => {}, highlight } },
+        extensions: {
+          code: {
+            preload: async () => {},
+            dispose: () => {},
+            highlight,
+          },
+        },
       },
     })
     await settle()
@@ -151,42 +199,76 @@ describe('virtual code blocks', () => {
   })
 
   it('requires opt-in and a bounded viewport, and respects language overrides', async () => {
-    const wrapper = mount(Markdown, { props: { content: markdown(source), mode: 'static', codeOptions: { maxHeight: 200 } } })
+    const wrapper = mount(Markdown, {
+      props: {
+        content: markdown(source),
+        mode: 'static',
+        codeOptions: { maxHeight: 200 },
+      },
+    })
     const update = wrapper as unknown as { setProps: (props: { codeOptions: Record<string, unknown> }) => Promise<void> }
     await settle()
     expect(wrapper.findAll(rows)).toHaveLength(1000)
-    await update.setProps({ codeOptions: { virtualScroll: true } })
+    await update.setProps({
+      codeOptions: { virtualScroll: true },
+    })
     await settle()
     expect(wrapper.findAll(rows)).toHaveLength(1000)
-    await update.setProps({ codeOptions: { maxHeight: 200, virtualScroll: true, language: { js: { virtualScroll: false } } } })
+    await update.setProps({
+      codeOptions: {
+        maxHeight: 200,
+        virtualScroll: true,
+        language: {
+          js: { virtualScroll: false },
+        },
+      },
+    })
     await settle()
     expect(wrapper.findAll(rows)).toHaveLength(1000)
-    await update.setProps({ codeOptions: { maxHeight: 200, language: { js: { virtualScroll: true } } } })
+    await update.setProps({
+      codeOptions: {
+        maxHeight: 200,
+        language: {
+          js: { virtualScroll: true },
+        },
+      },
+    })
     await settle()
     expect(wrapper.findAll(rows).length).toBeLessThan(40)
     wrapper.unmount()
   })
 
   it('follows appended code at the bottom and preserves a user-scrolled position', async () => {
-    const wrapper = mount(Markdown, { props: { content: markdown(source), codeOptions: { maxHeight: 200, virtualScroll: true } } })
+    const wrapper = mount(Markdown, {
+      props: {
+        content: markdown(source),
+        codeOptions: { maxHeight: 200, virtualScroll: true },
+      },
+    })
     const update = wrapper as unknown as { setProps: (props: { content: string }) => Promise<void> }
     await settle()
     const viewport = wrapper.get('[data-stream-markdown="code-block-content"]').element
     expect(wrapper.findAll(rows).at(-1)?.text()).toBe('line 999')
-    await update.setProps({ content: markdown(`${source}\nnew tail`) })
+    await update.setProps({
+      content: markdown(`${source}\nnew tail`),
+    })
     await settle()
     expect(wrapper.findAll(rows).at(-1)?.text()).toBe('new tail')
     expect(viewport.scrollTop).toBe(viewport.scrollHeight - viewport.clientHeight)
 
     viewport.scrollTop = 2000
     await settle()
-    await update.setProps({ content: markdown(`${source}\nnew tail\nmore tail`) })
+    await update.setProps({
+      content: markdown(`${source}\nnew tail\nmore tail`),
+    })
     await settle()
     expect(viewport.scrollTop).toBe(2000)
     expect(wrapper.findAll(rows).length).toBeLessThan(40)
     viewport.scrollTop = viewport.scrollHeight
     await settle()
-    await update.setProps({ content: markdown(`${source}\nnew tail\nmore tail\nlast tail`) })
+    await update.setProps({
+      content: markdown(`${source}\nnew tail\nmore tail\nlast tail`),
+    })
     await settle()
     expect(wrapper.findAll(rows).at(-1)?.text()).toBe('last tail')
     wrapper.unmount()
@@ -197,7 +279,10 @@ describe('virtual code blocks', () => {
     vi.stubGlobal('ResizeObserver', class {
       entry: typeof observers[number]
       constructor(callback: ResizeObserverCallback) {
-        this.entry = { callback, targets: new Set() }
+        this.entry = {
+          callback,
+          targets: new Set(),
+        }
         observers.push(this.entry)
       }
 
@@ -207,13 +292,25 @@ describe('virtual code blocks', () => {
     })
     const pending: (() => void)[] = []
     const highlight = vi.fn(({ code }: { code: string }) => new Promise<{ tokens: { content: string }[][] }>((resolve) => {
-      pending.push(() => resolve({ tokens: code.split('\n').map(content => [{ content }]) }))
+      pending.push(() => resolve({
+        tokens: code.split('\n').map(content => [
+          { content },
+        ]),
+      }))
     }))
-    const wrapper = mount(Markdown, { props: {
-      content: markdown(source),
-      codeOptions: { maxHeight: 200, virtualScroll: true },
-      extensions: { code: { preload: async () => {}, dispose: () => {}, highlight } },
-    } })
+    const wrapper = mount(Markdown, {
+      props: {
+        content: markdown(source),
+        codeOptions: { maxHeight: 200, virtualScroll: true },
+        extensions: {
+          code: {
+            preload: async () => {},
+            dispose: () => {},
+            highlight,
+          },
+        },
+      },
+    })
     await settle()
     pending.shift()!()
     await settle()
@@ -227,7 +324,9 @@ describe('virtual code blocks', () => {
     }
     const update = wrapper as unknown as { setProps: (props: { content: string }) => Promise<void> }
     const addition = Array.from({ length: 50 }, (_, index) => `new line ${index}`).join('\n')
-    await update.setProps({ content: markdown(`${source}\n${addition}`) })
+    await update.setProps({
+      content: markdown(`${source}\n${addition}`),
+    })
     await settle()
     const previousBottom = viewport.scrollTop
     pending.shift()!()
@@ -241,7 +340,9 @@ describe('virtual code blocks', () => {
 
     viewport.scrollTop = 2000
     await settle()
-    await update.setProps({ content: markdown(`${source}\n${addition}\nlast tail`) })
+    await update.setProps({
+      content: markdown(`${source}\n${addition}\nlast tail`),
+    })
     await settle()
     pending.shift()!()
     await settle()
@@ -259,7 +360,9 @@ describe('virtual code blocks', () => {
         locale: 'en-US',
         onCopied,
         codeOptions: { maxHeight: 200, virtualScroll: true },
-        controls: { code: { collapse: false, download: false } },
+        controls: {
+          code: { collapse: false, download: false },
+        },
       },
     })
     await settle()

@@ -53,18 +53,33 @@ export function createMarkmendParser(
   const parseMarkdown = createMarkdownParser({
     ...options.parserOptions,
     plugins: [
-      ...(literalTagContent ? [literalTagContent.plugin] : []),
+      ...(literalTagContent
+        ? [literalTagContent.plugin]
+        : []),
       ...(options.parserOptions?.plugins ?? []),
-      ...(options.parserOptions?.linkify === false ? [] : [linkify({ fuzzyLink: true })]),
+      ...(options.parserOptions?.linkify === false
+        ? []
+        : [
+            linkify({ fuzzyLink: true }),
+          ]),
       ...(options.syntax?.cjk === false
         ? []
-        : [{ name: 'cjk-friendly', markdownItPlugins: [cjkFriendly] }]),
+        : [
+            {
+              name: 'cjk-friendly',
+              markdownItPlugins: [cjkFriendly],
+            },
+          ]),
       ...(options.syntax?.security === false
         ? []
-        : [security(options.syntax?.security)]),
+        : [
+            security(options.syntax?.security),
+          ]),
       ...(options.syntax?.footnotes === false
         ? []
-        : [footnotes(options.syntax?.footnotes)]),
+        : [
+            footnotes(options.syntax?.footnotes),
+          ]),
     ],
     autoClose(markdown) {
       if (activeMode !== 'streaming') {
@@ -133,11 +148,15 @@ function resolveCompletion(completion?: Completion): (markdown: string) => Compl
   if (typeof completion === 'function') {
     return (markdown) => {
       const result = completion(markdown)
-      return typeof result === 'string' ? { markdown: result } : result
+      return typeof result === 'string'
+        ? { markdown: result }
+        : result
     }
   }
   return markdown => completeMarkdownResult(
     markdown,
-    typeof completion === 'object' ? completion : undefined,
+    typeof completion === 'object'
+      ? completion
+      : undefined,
   )
 }

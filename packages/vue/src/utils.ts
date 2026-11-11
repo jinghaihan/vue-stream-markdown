@@ -15,7 +15,9 @@ export function resolveExtensions(
       resolved[name] = extension
   }
 
-  return Object.keys(resolved).length > 0 ? resolved as Extensions : undefined
+  return Object.keys(resolved).length > 0
+    ? resolved as Extensions
+    : undefined
 }
 
 export function resolveOwnedExtensions(

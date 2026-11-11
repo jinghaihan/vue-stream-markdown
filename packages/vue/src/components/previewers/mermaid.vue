@@ -139,7 +139,12 @@ async function renderLatest() {
         result = await renderMermaid(request.code)
       }
       catch (error) {
-        result = { valid: false, error: error instanceof Error ? error.message : String(error) }
+        result = {
+          valid: false,
+          error: error instanceof Error
+            ? error.message
+            : String(error),
+        }
       }
 
       if (disposed)

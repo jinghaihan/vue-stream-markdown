@@ -89,8 +89,11 @@ export function completeStrong(
     ['*', '**', '_', '__'],
     analysis.getLastParagraph().content,
   )
-  if (hiddenBareMarker !== undefined)
-    return options?.hideBareFormattingMarkers === false ? content : hiddenBareMarker
+  if (hiddenBareMarker !== undefined) {
+    return options?.hideBareFormattingMarkers === false
+      ? content
+      : hiddenBareMarker
+  }
 
   const plan = createStrongFixPlan(content, options, analysis)
   if (plan === undefined || typeof plan === 'string')
@@ -271,7 +274,9 @@ function removeTrailingUnderscore(content: string, analysis: CompletionAnalysis)
 function appendBothStrongMarkers(content: string, markerText: string): string {
   const asteriskPosition = markerText.indexOf('**')
   const underscorePosition = markerText.indexOf('__')
-  return appendBeforeTrailingWhitespace(content, asteriskPosition < underscorePosition ? '__**' : '**__')
+  return appendBeforeTrailingWhitespace(content, asteriskPosition < underscorePosition
+    ? '__**'
+    : '**__')
 }
 
 function completeAsterisk(plan: StrongFixPlan, options: CompletionContext | undefined): string {
@@ -325,7 +330,9 @@ function analyzeStrongMarker(
   return {
     needsCompletion: afterLast.length > 0,
     needsRemoval: afterLast.length === 0 && beforeLast.length === 0,
-    lastRunLength: marker === '*' ? getAsteriskRunLength(paragraph.content, markerPosition) : 0,
+    lastRunLength: marker === '*'
+      ? getAsteriskRunLength(paragraph.content, markerPosition)
+      : 0,
   }
 }
 
@@ -359,10 +366,17 @@ function recomputeAfterTrailingStrongMarker(
   const analysis = getCompletionAnalysis(content, options)
   const paragraph = analysis.getLastParagraph(true)
   const markerText = paragraph.formattingMarkers.withoutMath(options?.singleDollarTextMath)
-  const pattern = marker === '*' ? doubleAsteriskPattern : doubleUnderscorePattern
+  const pattern = marker === '*'
+    ? doubleAsteriskPattern
+    : doubleUnderscorePattern
   const count = markerText.match(pattern)?.length ?? 0
   if (count % 2 === 0) {
-    return { analysis, content, needsCompletion: false, needsRemoval: false }
+    return {
+      analysis,
+      content,
+      needsCompletion: false,
+      needsRemoval: false,
+    }
   }
 
   const lastMarkerPosition = markerText.lastIndexOf(marker + marker)

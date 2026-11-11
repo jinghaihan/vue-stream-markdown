@@ -35,7 +35,9 @@ export function getDownloadFilename(
     return fallback
 
   const filename = (download as Record<string, unknown>).filename
-  return typeof filename === 'string' && filename ? filename : fallback
+  return typeof filename === 'string' && filename
+    ? filename
+    : fallback
 }
 
 export function filterVisibleItems<T extends { visible?: (() => boolean) | undefined }>(items: T[]): T[] {

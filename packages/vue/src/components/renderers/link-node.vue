@@ -27,7 +27,9 @@ const open = ref(false)
 const alertMounted = ref(false)
 const { copy, copied } = useClipboard({ legacy: true })
 
-const url = computed(() => typeof attributes.value.href === 'string' ? attributes.value.href : '')
+const url = computed(() => typeof attributes.value.href === 'string'
+  ? attributes.value.href
+  : '')
 const internal = computed(() => url.value.startsWith('#'))
 const footnoteBackref = computed(() => String(attributes.value.class ?? '').split(/\s+/).includes('footnote-backref'))
 const { transformedUrl, isHardenUrl } = useSanitizers({
@@ -35,9 +37,11 @@ const { transformedUrl, isHardenUrl } = useSanitizers({
   hardenOptions,
   loading: () => props.loading,
 })
-const Error = computed(() => hardenOptions.value?.errorComponent ?? UI.value.ErrorComponent)
+const ErrorComponent = computed(() => hardenOptions.value?.errorComponent ?? UI.value.ErrorComponent)
 const showFavicon = computed(() => !!transformedUrl.value && !internal.value && !footnoteBackref.value && !isHardenUrl.value)
-const faviconFallbackIcon = computed(() => /^mailto:/i.test(transformedUrl.value ?? '') ? 'mail' : 'globe')
+const faviconFallbackIcon = computed(() => /^mailto:/i.test(transformedUrl.value ?? '')
+  ? 'mail'
+  : 'globe')
 const {
   failed: faviconFailed,
   handleError: handleFaviconError,
@@ -160,7 +164,7 @@ function handleFootnoteBackref() {
       </slot>
     </a>
 
-    <component :is="Error" v-else variant="harden-link">
+    <component :is="ErrorComponent" v-else variant="harden-link">
       <slot>
         <MarkdownNodes :nodes="children" :loading="loading" :node-key="nodeKey" :hide-caret="!!waitingForDestination" />
       </slot>

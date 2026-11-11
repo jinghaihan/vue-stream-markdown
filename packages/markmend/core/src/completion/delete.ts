@@ -51,8 +51,11 @@ export function completeDelete(
     ['~', '~~'],
     analysis.getLastParagraph().content,
   )
-  if (hiddenBareMarker !== undefined)
-    return options?.hideBareFormattingMarkers === false ? content : hiddenBareMarker
+  if (hiddenBareMarker !== undefined) {
+    return options?.hideBareFormattingMarkers === false
+      ? content
+      : hiddenBareMarker
+  }
 
   // Find the last paragraph (after the last blank line)
   // A blank line is defined as a line with only whitespace

@@ -12,7 +12,9 @@ it.each([undefined, 300])('throttles math updates and renders the final content 
     const render = vi.fn(async ({ code }: MathRenderInput) => ({ html: `<span>${code}</span>` }))
     const result = scope.run(() => useMathRenderer({
       node,
-      throttle: delay === undefined ? undefined : ref(delay),
+      throttle: delay === undefined
+        ? undefined
+        : ref(delay),
       extension: {
         parserPlugin: { name: 'math' },
         preload: () => {},

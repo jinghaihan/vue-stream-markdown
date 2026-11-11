@@ -23,7 +23,9 @@ export function useDarkDetector(
 
   const isDarkProvided = computed(() => typeof toValue(darkProp) === 'boolean')
   const detectedDark = ref<boolean>(false)
-  const isDark = computed(() => isDarkProvided.value ? toValue(darkProp)! : detectedDark.value)
+  const isDark = computed(() => isDarkProvided.value
+    ? toValue(darkProp)!
+    : detectedDark.value)
 
   function detect() {
     detectedDark.value = isDocumentElementDark()

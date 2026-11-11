@@ -30,8 +30,12 @@ const fallbackAttempted = ref(false)
 
 const imageNode = computed(() => ({
   url: String(props.node[1].src ?? ''),
-  alt: typeof props.node[1].alt === 'string' ? props.node[1].alt : null,
-  title: typeof props.node[1].title === 'string' ? props.node[1].title : null,
+  alt: typeof props.node[1].alt === 'string'
+    ? props.node[1].alt
+    : null,
+  title: typeof props.node[1].title === 'string'
+    ? props.node[1].title
+    : null,
   loading: props.loading,
 }))
 
@@ -70,7 +74,7 @@ const showCaption = computed(() => imageModel.value.showCaption)
 const direction = computed(() => resolveTextDirection(title.value, dir.value))
 const controlContext = computed(() => ({ node: props.node, nodeKey: props.nodeKey }))
 
-const Error = computed(() => isHardenUrl.value
+const ErrorComponent = computed(() => isHardenUrl.value
   ? (hardenOptions.value?.errorComponent ?? UI.value.ErrorComponent)
   : (imageOptions.value?.errorComponent ?? UI.value.ErrorComponent))
 
@@ -146,7 +150,7 @@ function setMaskOpacity(opacity: number) {
         @load="handleLoaded"
         @error="handleError"
       />
-      <component :is="Error" v-else-if="imageModel.showError" :variant="imageModel.errorVariant">
+      <component :is="ErrorComponent" v-else-if="imageModel.showError" :variant="imageModel.errorVariant">
         {{ title }}
       </component>
     </div>

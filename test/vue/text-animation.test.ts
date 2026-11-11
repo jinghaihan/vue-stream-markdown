@@ -20,9 +20,24 @@ describe('text animation scheduling', () => {
     })
     await flushPromises()
     const characters = wrapper.findAll('[data-stream-markdown="text-char"]')
-    const running = { currentTime: 15, effect: { getTiming: () => ({ delay: 0 }) } }
-    const waiting = { currentTime: 10, effect: { getTiming: () => ({ delay: 40 }) } }
-    const completed = { currentTime: 300, effect: { getTiming: () => ({ delay: 20 }) } }
+    const running = {
+      currentTime: 15,
+      effect: {
+        getTiming: () => ({ delay: 0 }),
+      },
+    }
+    const waiting = {
+      currentTime: 10,
+      effect: {
+        getTiming: () => ({ delay: 40 }),
+      },
+    }
+    const completed = {
+      currentTime: 300,
+      effect: {
+        getTiming: () => ({ delay: 20 }),
+      },
+    }
     for (const [index, animation] of [running, completed, waiting].entries()) {
       Object.defineProperty(characters[index]!.element, 'getAnimations', {
         value: () => [animation],
@@ -106,8 +121,16 @@ async function finishFragments(wrapper: VueWrapper, count = Number.POSITIVE_INFI
 
 describe('text animation compaction', () => {
   it('compacts a finished prefix without replacing the paragraph, wrapper, or active tail', async () => {
-    const Caret = defineComponent({ setup: () => () => h('span', { 'data-stream-markdown': 'caret' }) })
-    const wrapper = mount(Markdown, { props: { content: '甲乙丙丁', caret: 'block', uiComponents: { Caret } } })
+    const Caret = defineComponent({
+      setup: () => () => h('span', { 'data-stream-markdown': 'caret' }),
+    })
+    const wrapper = mount(Markdown, {
+      props: {
+        content: '甲乙丙丁',
+        caret: 'block',
+        uiComponents: { Caret },
+      },
+    })
     await flushPromises()
     const paragraph = wrapper.find('p').element
     const text = wrapper.find('[data-stream-markdown="text"]').element
@@ -137,7 +160,9 @@ describe('text animation compaction', () => {
   })
 
   it('waits for earlier fragments when animations finish out of order', async () => {
-    const wrapper = mount(Markdown, { props: { content: '甲乙丙' } })
+    const wrapper = mount(Markdown, {
+      props: { content: '甲乙丙' },
+    })
     await flushPromises()
     const fragments = wrapper.findAll(FRAGMENTS)
     await fragments[2]!.trigger('animationend')
@@ -152,7 +177,9 @@ describe('text animation compaction', () => {
   })
 
   it('preserves whitespace and inline structure and animates additions to a compacted word', async () => {
-    const wrapper = mount(Markdown, { props: { content: '# 标题\n\n**加粗** 和 *强调*\n\n- 一\n- 二\n\nHello' } })
+    const wrapper = mount(Markdown, {
+      props: { content: '# 标题\n\n**加粗** 和 *强调*\n\n- 一\n- 二\n\nHello' },
+    })
     await flushPromises()
     const structure = ['h1', 'strong', 'em', 'ul', 'li'].map(tag => wrapper.findAll(tag).map(node => node.element))
     const text = wrapper.element.textContent
@@ -169,7 +196,9 @@ describe('text animation compaction', () => {
     expect(wrapper.findAll(FRAGMENTS).map(node => node.text())).toEqual(['追', '加'])
     wrapper.unmount()
 
-    const word = mount(Markdown, { props: { content: 'Hello' } })
+    const word = mount(Markdown, {
+      props: { content: 'Hello' },
+    })
     await flushPromises()
     await finishFragments(word)
     await updateMarkdown(word, { content: 'HelloWorld' })
@@ -180,11 +209,17 @@ describe('text animation compaction', () => {
   })
 
   it('retains compacted history across a renderer remount and an option toggle', async () => {
-    const wrapper = mount(Markdown, { props: { content: '甲乙' } })
+    const wrapper = mount(Markdown, {
+      props: { content: '甲乙' },
+    })
     await flushPromises()
     await finishFragments(wrapper)
-    const Paragraph = defineComponent({ setup: (_, { slots }) => () => h('p', slots.default?.()) })
-    await updateMarkdown(wrapper, { components: { p: Paragraph } })
+    const Paragraph = defineComponent({
+      setup: (_, { slots }) => () => h('p', slots.default?.()),
+    })
+    await updateMarkdown(wrapper, {
+      components: { p: Paragraph },
+    })
     await flushPromises()
     expect(wrapper.findAll(FRAGMENTS)).toHaveLength(0)
     await updateMarkdown(wrapper, { compactTextAnimations: false })
@@ -204,8 +239,13 @@ describe('text animation compaction', () => {
   })
 
   it('allows opting out and leaves custom TransitionGroup animations unchanged', async () => {
-    for (const props of [{ compactTextAnimations: false }, { animation: 'custom' }]) {
-      const wrapper = mount(Markdown, { props: { content: '甲乙', ...props } })
+    for (const props of [
+      { compactTextAnimations: false },
+      { animation: 'custom' },
+    ]) {
+      const wrapper = mount(Markdown, {
+        props: { content: '甲乙', ...props },
+      })
       await flushPromises()
       await finishFragments(wrapper)
       expect(wrapper.findAll(FRAGMENTS)).toHaveLength(2)
@@ -214,15 +254,29 @@ describe('text animation compaction', () => {
   })
 
   it.each([
-    ['Chinese', Array.from({ length: 120 }, () => '甲'.repeat(100)).join('\n\n'), 12000, 100],
-    ['English', Array.from({ length: 40 }, () => Array.from({ length: 50 }, (_, index) => `word${index}`).join(' ')).join('\n\n'), 3960, 50],
+    [
+      'Chinese',
+      Array.from({ length: 120 }, () => '甲'.repeat(100)).join('\n\n'),
+      12000,
+      100,
+    ],
+    [
+      'English',
+      Array.from({ length: 40 }, () => Array.from({ length: 50 }, (_, index) => `word${index}`).join(' ')).join('\n\n'),
+      3960,
+      50,
+    ],
   ] as const)('compacts completed paragraphs in the %s issue scenario', async (_name, content, baseline, active) => {
-    const old = mount(Markdown, { props: { content, compactTextAnimations: false } })
+    const old = mount(Markdown, {
+      props: { content, compactTextAnimations: false },
+    })
     await flushPromises()
     expect(old.findAll(FRAGMENTS)).toHaveLength(baseline)
     old.unmount()
 
-    const wrapper = mount(Markdown, { props: { content } })
+    const wrapper = mount(Markdown, {
+      props: { content },
+    })
     await flushPromises()
     const paragraphs = wrapper.findAll('p').map(node => node.element)
     await finishFragments(wrapper, wrapper.findAll(FRAGMENTS).length - active)
@@ -243,7 +297,9 @@ describe('text animation compaction', () => {
 
   it('compacts a completed prefix of a growing single paragraph', async () => {
     const content = '甲'.repeat(1000)
-    const wrapper = mount(Markdown, { props: { content } })
+    const wrapper = mount(Markdown, {
+      props: { content },
+    })
     await flushPromises()
     expect(wrapper.findAll(FRAGMENTS)).toHaveLength(1000)
     await finishFragments(wrapper, 990)

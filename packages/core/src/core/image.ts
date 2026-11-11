@@ -19,12 +19,16 @@ export interface ImageModelOptions<TComponent = unknown> {
 export function createImageModel<TComponent = unknown>(options: ImageModelOptions<TComponent>) {
   const isLoading = !!options.node.loading || !options.node.url
   const fallback = options.imageOptions?.fallback ?? ''
-  const imageSrc = options.fallbackAttempted && fallback ? fallback : options.node.url
+  const imageSrc = options.fallbackAttempted && fallback
+    ? fallback
+    : options.node.url
   const alt = String(options.node.alt ?? options.node.title ?? '')
   const title = String(options.node.title ?? options.node.alt ?? '')
-  const showCaption = (typeof options.imageOptions?.caption === 'boolean' ? options.imageOptions.caption : true)
-    && !isLoading
-    && !!title
+  const showCaption = (typeof options.imageOptions?.caption === 'boolean'
+    ? options.imageOptions.caption
+    : true)
+  && !isLoading
+  && !!title
 
   return {
     isLoading,
@@ -33,7 +37,9 @@ export function createImageModel<TComponent = unknown>(options: ImageModelOption
     alt,
     title,
     showCaption,
-    figureWidth: isLoading || !options.imageLoaded ? '100%' : 'auto',
+    figureWidth: isLoading || !options.imageLoaded
+      ? '100%'
+      : 'auto',
     showSpin: (isLoading || !options.imageLoaded) && !options.isHardenUrl,
     showImage: !isLoading && !options.isHardenUrl,
     showError: !!options.isHardenUrl || !!options.loadError,

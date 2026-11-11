@@ -33,7 +33,9 @@ async function mountZoom(autoFit = true) {
     props: ['name', 'options'],
     emits: ['click'],
     setup: (props, { emit }) => () => h('div', [
-      h('button', { onClick: event => emit('click', event) }, props.name),
+      h('button', {
+        onClick: event => emit('click', event),
+      }, props.name),
       ...(props.options ?? []).map((option: { label: string, value: string | number }) => h('button', {
         onClick: event => emit('click', event, option),
       }, option.label)),
@@ -41,7 +43,9 @@ async function mountZoom(autoFit = true) {
   })
   const Root = defineComponent(() => {
     const { provideContext, uiComponents } = useContext()
-    provideContext({ uiComponents: { ...uiComponents.value, Button } })
+    provideContext({
+      uiComponents: { ...uiComponents.value, Button },
+    })
     return () => h(ZoomContainer, {
       autoFit,
       contentSize: { width: 1000, height: 1000 },

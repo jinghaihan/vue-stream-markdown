@@ -82,7 +82,9 @@ for (let round = 1; round <= rounds; round++) {
 function median(values: number[]) {
   const sorted = [...values].sort((a, b) => a - b)
   const middle = Math.floor(sorted.length / 2)
-  return sorted.length % 2 ? sorted[middle]! : (sorted[middle - 1]! + sorted[middle]!) / 2
+  return sorted.length % 2
+    ? sorted[middle]!
+    : (sorted[middle - 1]! + sorted[middle]!) / 2
 }
 
 function packageVersion(path: string): string {
@@ -98,7 +100,10 @@ const scenarios = Array.from(measurements, ([name, implementations]) => ({
     return {
       name: implementation,
       medianOpsPerSecond: median(rates),
-      opsPerSecondRange: [Math.min(...rates), Math.max(...rates)],
+      opsPerSecondRange: [
+        Math.min(...rates),
+        Math.max(...rates),
+      ],
       medianLatencyMs: median(runs.map(run => run.latencyMs)),
       runs,
     }
@@ -112,7 +117,13 @@ const summary = {
   revision: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim(),
   rounds,
   method: 'Built artifacts, interleaved sampling within each scenario, median throughput across independent runs. DOM rendering uses jsdom and polling timers; highlighters are warmed up, controls and animation disabled.',
-  environment: { cpu: cpus()[0]?.model, platform: platform(), release: release(), arch: arch(), node: process.version },
+  environment: {
+    cpu: cpus()[0]?.model,
+    platform: platform(),
+    release: release(),
+    arch: arch(),
+    node: process.version,
+  },
   versions: Object.fromEntries([
     ['vue-stream-markdown', '../packages/vue'],
     ['@stream-markdown/code', '../packages/extensions/code'],
@@ -127,7 +138,10 @@ const summary = {
     ['jsdom', 'node_modules/jsdom'],
     ['vitest', 'node_modules/vitest'],
     ['shiki', '../packages/extensions/code/node_modules/shiki'],
-  ].map(([name, path]) => [name, packageVersion(path!)])),
+  ].map(([name, path]) => [
+    name,
+    packageVersion(path!),
+  ])),
   scenarios,
 }
 const summaryPath = resolve(output, 'latest.json')

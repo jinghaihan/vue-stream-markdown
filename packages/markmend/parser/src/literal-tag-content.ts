@@ -12,9 +12,11 @@ const REGEXP_CHARACTER_PATTERN = /[.*+?^${}()|[\]\\]/g
 export function createLiteralTagContentProcessor(
   tags: string[] | undefined,
 ): LiteralTagContentProcessor | undefined {
-  const tagNames = [...new Set(tags
-    ?.map(tag => tag.trim().toLowerCase())
-    .filter(Boolean))]
+  const tagNames = [
+    ...new Set(tags
+      ?.map(tag => tag.trim().toLowerCase())
+      .filter(Boolean)),
+  ]
 
   if (!tagNames.length)
     return undefined
@@ -56,7 +58,9 @@ function flattenLiteralTagContent(nodes: Node[], tags: Set<string>): void {
     const [tag] = node
     if (tags.has(tag.toLowerCase())) {
       const text = collectText(node)
-      node.splice(2, node.length - 2, ...(text ? [text] : []))
+      node.splice(2, node.length - 2, ...(text
+        ? [text]
+        : []))
       continue
     }
 

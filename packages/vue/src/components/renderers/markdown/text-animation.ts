@@ -29,7 +29,9 @@ export function createTextAnimationController(context: StreamMarkdownResolvedCon
     }
     const delays = scheduler.commitPass((left, right) => {
       const position = elements.get(left)!.compareDocumentPosition(elements.get(right)!)
-      return position & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1
+      return position & Node.DOCUMENT_POSITION_FOLLOWING
+        ? -1
+        : 1
     })
     if (!delays.size)
       return
@@ -50,7 +52,9 @@ export function createTextAnimationController(context: StreamMarkdownResolvedCon
   function applyDelays(delays: ReadonlyMap<string, number>) {
     const compact = context.compactTextAnimations.value
     const sample = compact
-      ? [...delays.keys()].map(key => elements.get(key)).find(element => element && element.style.animation !== 'none')
+      ? [
+          ...delays.keys(),
+        ].map(key => elements.get(key)).find(element => element && element.style.animation !== 'none')
       : undefined
     // Read CSS once before writing delays, avoiding a style flush per character.
     const animationsDisabled = sample && getComputedStyle(sample).animationName === 'none'
@@ -103,7 +107,13 @@ export function createTextAnimationController(context: StreamMarkdownResolvedCon
     compactParts(textKey: string, text: string, split: AnimationSplit) {
       let run = textRuns.get(textKey)
       if (!run) {
-        run = { prefix: '', parts: [], cursor: 0, finished: new Set(), revision: shallowRef(0) }
+        run = {
+          prefix: '',
+          parts: [],
+          cursor: 0,
+          finished: new Set(),
+          revision: shallowRef(0),
+        }
         textRuns.set(textKey, run)
       }
       // Only the block owning this text run rerenders when its prefix advances.

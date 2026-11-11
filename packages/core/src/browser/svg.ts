@@ -38,7 +38,9 @@ export function calculateSvgContainerHeight(
 ): number {
   const aspectRatio = svgSize.height / svgSize.width
   const height = containerWidth * aspectRatio
-  return height > svgSize.height ? svgSize.height : height
+  return height > svgSize.height
+    ? svgSize.height
+    : height
 }
 
 export function measureSvgContainerHeight(

@@ -28,7 +28,10 @@ describe('completeHtml', () => {
   })
 
   it('protects normalized bracket and parenthesis math', () => {
-    for (const delimiter of [['\\[', '\\]'], ['\\(', '\\)']]) {
+    for (const delimiter of [
+      ['\\[', '\\]'],
+      ['\\(', '\\)'],
+    ]) {
       expect(completeMarkdown(`${delimiter[0]}a <b${delimiter[1]}\n\nAfter`))
         .toBe('$$a <b$$\n\nAfter')
     }

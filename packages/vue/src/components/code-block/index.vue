@@ -135,8 +135,12 @@ const VariantComponent = computed(() => ({
 }[variant.value]))
 const downloadOptions = computed(() => codeBlockModel.value.downloadOptions)
 const downloadFilename = computed(() => {
-  const type = language.value === 'mermaid' ? 'mermaid' : 'code'
-  const fallback = type === 'mermaid' ? 'diagram' : 'file'
+  const type = language.value === 'mermaid'
+    ? 'mermaid'
+    : 'code'
+  const fallback = type === 'mermaid'
+    ? 'diagram'
+    : 'file'
   return getDownloadFilename(controls.value, type, fallback)
 })
 
@@ -167,7 +171,9 @@ const builtinControls = computed((): Control[] => createCodeBlockControlDescript
 }).map(item => ({
   ...item,
   name: t(item.labelKey ?? ''),
-  announcement: item.key === 'copy' && copied.value ? t('button.copied') : undefined,
+  announcement: item.key === 'copy' && copied.value
+    ? t('button.copied')
+    : undefined,
   onClick: (_event: MouseEvent, select?: SelectOption) => handleControlClick(item.key, select),
   visible: () => item.visible ?? true,
 })))
@@ -178,7 +184,9 @@ const headerControls = computed(
 )
 
 const actionCount = computed(() => headerControls.value.length
-  + (variant.value === 'minimal' && previewable.value ? 1 : 0))
+  + (variant.value === 'minimal' && previewable.value
+    ? 1
+    : 0))
 
 const modalControls = computed(
   () => resolveControls<CodeBlockProps>('code', headerControls.value, props)
@@ -186,10 +194,14 @@ const modalControls = computed(
 )
 
 const modalLabel = computed(() => t('dialog.fullscreen', 'button.maximize'))
-const modalTitleId = computed(() => showLanguageName.value ? `${props.nodeKey}-fullscreen-title` : undefined)
+const modalTitleId = computed(() => showLanguageName.value
+  ? `${props.nodeKey}-fullscreen-title`
+  : undefined)
 
 const setScrollRef: VNodeRef = (element) => {
-  scrollRef.value = element instanceof HTMLElement ? element : undefined
+  scrollRef.value = element instanceof HTMLElement
+    ? element
+    : undefined
 }
 
 watch(

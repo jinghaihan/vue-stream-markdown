@@ -32,7 +32,9 @@ const [DefineTemplate, ReuseTemplate] = createReusableTemplate()
 
 const confirmLabel = computed(() => props.confirmText || t('button.confirm'))
 const cancelLabel = computed(() => props.cancelText || t('button.cancel'))
-const keyupTarget = computed(() => open.value ? getDocument() : undefined)
+const keyupTarget = computed(() => open.value
+  ? getDocument()
+  : undefined)
 
 function handleConfirm() {
   emits('confirm')

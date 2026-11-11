@@ -29,7 +29,9 @@ const [DefineTemplate, ReuseTemplate] = createReusableTemplate()
 const isDropdown = computed(() => props.options.length > 0)
 const ariaLabel = computed(() => {
   const value = attrs['aria-label']
-  return typeof value === 'string' ? value : props.name
+  return typeof value === 'string'
+    ? value
+    : props.name
 })
 
 function onClick(event: MouseEvent) {

@@ -26,24 +26,97 @@ describe('core utilities', () => {
   it('splits text into word and whitespace parts with stable offsets', () => {
     expect(splitTextByWord('Hello  world')).toEqual(['Hello', '  ', 'world'])
     expect(createTextParts('Hello  world', 'node-key')).toEqual([
-      { key: 'node-key-0', value: 'Hello', whitespace: false, animationSplit: 'word' },
-      { key: 'node-key-5', value: '  ', whitespace: true, animationSplit: 'word' },
-      { key: 'node-key-7', value: 'world', whitespace: false, animationSplit: 'word' },
+      {
+        key: 'node-key-0',
+        value: 'Hello',
+        whitespace: false,
+        animationSplit: 'word',
+      },
+      {
+        key: 'node-key-5',
+        value: '  ',
+        whitespace: true,
+        animationSplit: 'word',
+      },
+      {
+        key: 'node-key-7',
+        value: 'world',
+        whitespace: false,
+        animationSplit: 'word',
+      },
     ])
   })
 
   it('splits text into character parts while preserving whitespace runs', () => {
-    expect(splitTextByChar('你好  world')).toEqual(['你', '好', '  ', 'w', 'o', 'r', 'l', 'd'])
-    expect(splitText('日本語\ntext', 'char')).toEqual(['日', '本', '語', '\n', 't', 'e', 'x', 't'])
+    expect(splitTextByChar('你好  world')).toEqual([
+      '你',
+      '好',
+      '  ',
+      'w',
+      'o',
+      'r',
+      'l',
+      'd',
+    ])
+    expect(splitText('日本語\ntext', 'char')).toEqual([
+      '日',
+      '本',
+      '語',
+      '\n',
+      't',
+      'e',
+      'x',
+      't',
+    ])
     expect(createTextParts('你好 world', 'node-key', 'char')).toEqual([
-      { key: 'node-key-0', value: '你', whitespace: false, animationSplit: 'char' },
-      { key: 'node-key-1', value: '好', whitespace: false, animationSplit: 'char' },
-      { key: 'node-key-2', value: ' ', whitespace: true, animationSplit: 'char' },
-      { key: 'node-key-3', value: 'w', whitespace: false, animationSplit: 'char' },
-      { key: 'node-key-4', value: 'o', whitespace: false, animationSplit: 'char' },
-      { key: 'node-key-5', value: 'r', whitespace: false, animationSplit: 'char' },
-      { key: 'node-key-6', value: 'l', whitespace: false, animationSplit: 'char' },
-      { key: 'node-key-7', value: 'd', whitespace: false, animationSplit: 'char' },
+      {
+        key: 'node-key-0',
+        value: '你',
+        whitespace: false,
+        animationSplit: 'char',
+      },
+      {
+        key: 'node-key-1',
+        value: '好',
+        whitespace: false,
+        animationSplit: 'char',
+      },
+      {
+        key: 'node-key-2',
+        value: ' ',
+        whitespace: true,
+        animationSplit: 'char',
+      },
+      {
+        key: 'node-key-3',
+        value: 'w',
+        whitespace: false,
+        animationSplit: 'char',
+      },
+      {
+        key: 'node-key-4',
+        value: 'o',
+        whitespace: false,
+        animationSplit: 'char',
+      },
+      {
+        key: 'node-key-5',
+        value: 'r',
+        whitespace: false,
+        animationSplit: 'char',
+      },
+      {
+        key: 'node-key-6',
+        value: 'l',
+        whitespace: false,
+        animationSplit: 'char',
+      },
+      {
+        key: 'node-key-7',
+        value: 'd',
+        whitespace: false,
+        animationSplit: 'char',
+      },
     ])
   })
 
@@ -53,10 +126,30 @@ describe('core utilities', () => {
     expect(splitTextByAuto('你好 world')).toEqual(['你', '好', ' ', 'world'])
     expect(splitText('你好 world')).toEqual(['你', '好', ' ', 'world'])
     expect(createTextParts('你好 world', 'node-key')).toEqual([
-      { key: 'node-key-0', value: '你', whitespace: false, animationSplit: 'char' },
-      { key: 'node-key-1', value: '好', whitespace: false, animationSplit: 'char' },
-      { key: 'node-key-2', value: ' ', whitespace: true, animationSplit: 'word' },
-      { key: 'node-key-3', value: 'world', whitespace: false, animationSplit: 'word' },
+      {
+        key: 'node-key-0',
+        value: '你',
+        whitespace: false,
+        animationSplit: 'char',
+      },
+      {
+        key: 'node-key-1',
+        value: '好',
+        whitespace: false,
+        animationSplit: 'char',
+      },
+      {
+        key: 'node-key-2',
+        value: ' ',
+        whitespace: true,
+        animationSplit: 'word',
+      },
+      {
+        key: 'node-key-3',
+        value: 'world',
+        whitespace: false,
+        animationSplit: 'word',
+      },
     ])
   })
 
@@ -97,22 +190,36 @@ describe('core utilities', () => {
     expect(resolveTableAlign(['center'], 1)).toBe('left')
 
     const child = { type: 'text', value: 'A' }
-    expect(getTableCellNodes({ children: [child] })).toEqual([child])
+    expect(getTableCellNodes({
+      children: [child],
+    })).toEqual([child])
     expect(getTableCellNodes(child)).toEqual([child])
   })
 
   it('resolves custom download filenames with safe fallbacks', () => {
     const controls = {
-      code: { download: { filename: 'myScript' } },
-      table: { download: { filename: 'report' } },
-      mermaid: { download: { filename: 'flowchart' } },
+      code: {
+        download: { filename: 'myScript' },
+      },
+      table: {
+        download: { filename: 'report' },
+      },
+      mermaid: {
+        download: { filename: 'flowchart' },
+      },
     }
 
     expect(getDownloadFilename(controls, 'code', 'file')).toBe('myScript')
     expect(getDownloadFilename(controls, 'table', 'table')).toBe('report')
     expect(getDownloadFilename(controls, 'mermaid', 'diagram')).toBe('flowchart')
-    expect(getDownloadFilename({ code: { download: true } }, 'code', 'file')).toBe('file')
-    expect(getDownloadFilename({ code: { download: { filename: '' } } }, 'code', 'file')).toBe('file')
+    expect(getDownloadFilename({
+      code: { download: true },
+    }, 'code', 'file')).toBe('file')
+    expect(getDownloadFilename({
+      code: {
+        download: { filename: '' },
+      },
+    }, 'code', 'file')).toBe('file')
     expect(getDownloadFilename(false, 'code', 'file')).toBe('file')
   })
 
@@ -130,7 +237,9 @@ describe('core utilities', () => {
     expect(isConfigEnabled(disabled, 'mermaid.download')).toBe(false)
 
     expect(getConfigValue({ code: true }, 'code.copy')).toBe(true)
-    expect(isConfigEnabled({ code: { copy: false } }, 'code.copy')).toBe(false)
+    expect(isConfigEnabled({
+      code: { copy: false },
+    }, 'code.copy')).toBe(false)
     expect(isConfigEnabled({ code: {} }, 'code.copy')).toBe(true)
   })
 

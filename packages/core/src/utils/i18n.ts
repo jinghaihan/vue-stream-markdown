@@ -21,7 +21,9 @@ export function getI18nText(messages: unknown, key: string): string {
       return undefined
     }, messages)
 
-    return typeof result === 'string' ? result : key
+    return typeof result === 'string'
+      ? result
+      : key
   }
   catch {
     return key
@@ -37,7 +39,9 @@ export function resolveSupportedLanguage(language?: string): SupportedLanguage {
     return language
 
   const normalizedLanguage = language?.toLowerCase() ?? ''
-  return ['zh', 'zh-cn', 'zh-tw'].includes(normalizedLanguage) ? 'zh-CN' : DEFAULT_LANGUAGE
+  return ['zh', 'zh-cn', 'zh-tw'].includes(normalizedLanguage)
+    ? 'zh-CN'
+    : DEFAULT_LANGUAGE
 }
 
 async function loadLocaleMessagesByLanguage(language: SupportedLanguage): Promise<LocaleConfig> {

@@ -12,7 +12,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const multilineTableData = {
   headers: ['Header\nwith break'],
-  rows: [['Line A\nLine B\nLine C']],
+  rows: [
+    ['Line A\nLine B\nLine C'],
+  ],
 }
 
 afterEach(() => {
@@ -59,14 +61,21 @@ describe('multiline table serialization', () => {
 describe('csv separators', () => {
   const tableData = {
     headers: ['Name', 'Location'],
-    rows: [['Ada', 'Paris; France']],
+    rows: [
+      ['Ada', 'Paris; France'],
+    ],
   }
 
   it('uses and escapes the configured separator', () => {
     expect(tableDataToCSV(tableData, ';')).toBe(
       'Name;Location\nAda;"Paris; France"',
     )
-    expect(tableDataToCSV({ headers: ['Name', 'Note'], rows: [['Ada', 'A\tB']] }, '\t')).toBe(
+    expect(tableDataToCSV({
+      headers: ['Name', 'Note'],
+      rows: [
+        ['Ada', 'A\tB'],
+      ],
+    }, '\t')).toBe(
       'Name\tNote\nAda\t"A\tB"',
     )
   })
@@ -74,7 +83,9 @@ describe('csv separators', () => {
   it('uses semicolons in auto mode for comma-decimal locales', () => {
     // eslint-disable-next-line prefer-arrow-callback
     vi.spyOn(Intl, 'NumberFormat').mockImplementation(function NumberFormatMock() {
-      return { format: () => '1,1' } as unknown as Intl.NumberFormat
+      return {
+        format: () => '1,1',
+      } as unknown as Intl.NumberFormat
     })
 
     expect(tableDataToCSV(tableData, 'auto')).toBe(
@@ -83,16 +94,29 @@ describe('csv separators', () => {
   })
 
   it('escapes carriage returns in CSV fields', () => {
-    expect(tableDataToCSV({ headers: ['Text'], rows: [['Line 1\rLine 2']] })).toBe(
+    expect(tableDataToCSV({
+      headers: ['Text'],
+      rows: [
+        ['Line 1\rLine 2'],
+      ],
+    })).toBe(
       'Text\n"Line 1\rLine 2"',
     )
   })
 
   it('reads valid separators from table controls and falls back to comma', () => {
-    expect(getTableCsvSeparator({ table: { csvSeparator: ';' } })).toBe(';')
-    expect(getTableCsvSeparator({ table: { csvSeparator: '\t' } })).toBe('\t')
-    expect(getTableCsvSeparator({ table: { csvSeparator: 'auto' } })).toBe('auto')
-    expect(getTableCsvSeparator({ table: { csvSeparator: 'invalid' } })).toBe(',')
+    expect(getTableCsvSeparator({
+      table: { csvSeparator: ';' },
+    })).toBe(';')
+    expect(getTableCsvSeparator({
+      table: { csvSeparator: '\t' },
+    })).toBe('\t')
+    expect(getTableCsvSeparator({
+      table: { csvSeparator: 'auto' },
+    })).toBe('auto')
+    expect(getTableCsvSeparator({
+      table: { csvSeparator: 'invalid' },
+    })).toBe(',')
     expect(getTableCsvSeparator(false)).toBe(',')
   })
 })

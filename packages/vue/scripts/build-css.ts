@@ -43,7 +43,10 @@ async function buildCSS() {
 
   const generated = await generator.generate(tokens, { preflights: true })
   const generatedCss = scopeThemeVariable(normalizeVariablePrefix(generated.css))
-  const css = [userStyle.trim(), generatedCss]
+  const css = [
+    userStyle.trim(),
+    generatedCss,
+  ]
     .filter(Boolean)
     .join('\n\n')
     .trimEnd()
@@ -95,7 +98,9 @@ function scopeThemeVariable(css: string): string {
     return ''
   })
 
-  const unique = [...new Set(blocks.filter(Boolean))]
+  const unique = [
+    ...new Set(blocks.filter(Boolean)),
+  ]
   if (!unique.length)
     return output
 

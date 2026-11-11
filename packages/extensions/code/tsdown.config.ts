@@ -11,5 +11,7 @@ export default defineConfig({
     onlyBundle: false,
     neverBundle: ['shiki'],
   },
-  plugins: [ApiSnapshot()],
+  plugins: [
+    ApiSnapshot(),
+  ],
 })

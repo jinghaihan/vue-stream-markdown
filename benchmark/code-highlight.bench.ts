@@ -4,8 +4,18 @@ import { pathToFileURL } from 'node:url'
 import { code } from '@stream-markdown/code'
 import { beforeAll, describe, it } from 'vitest'
 
-const extensions = [{ name: 'current', extension: code() }]
-const options: BenchRunOptions = { time: 1000, iterations: 5, warmupTime: 200, warmupIterations: 1 }
+const extensions = [
+  {
+    name: 'current',
+    extension: code(),
+  },
+]
+const options: BenchRunOptions = {
+  time: 1000,
+  iterations: 5,
+  warmupTime: 200,
+  warmupIterations: 1,
+}
 const APPENDS = 20
 let session = 0
 
@@ -25,7 +35,10 @@ beforeAll(async () => {
   const baseline = process.env.CODE_HIGHLIGHT_BASELINE
   if (baseline) {
     const module: typeof import('@stream-markdown/code') = await import(/* @vite-ignore */ pathToFileURL(resolve(baseline)).href)
-    extensions.unshift({ name: 'before', extension: module.code() })
+    extensions.unshift({
+      name: 'before',
+      extension: module.code(),
+    })
   }
   for (const { extension } of extensions)
     await highlight(extension, source(1))

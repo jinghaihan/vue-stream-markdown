@@ -10,10 +10,16 @@ const props = withDefaults(defineProps<{
   variant: 'down',
 })
 
-const icon = computed(() => props.variant === 'up' ? ArrowUpToLine : ArrowDownToLine)
+const icon = computed(() => props.variant === 'up'
+  ? ArrowUpToLine
+  : ArrowDownToLine)
 const { t } = useI18n()
-const name = computed(() => props.variant === 'up' ? t('common.scrollUp') : t('common.scrollDown'))
-const placement = computed(() => props.variant === 'up' ? 'bottom' : 'top')
+const name = computed(() => props.variant === 'up'
+  ? t('common.scrollUp')
+  : t('common.scrollDown'))
+const placement = computed(() => props.variant === 'up'
+  ? 'bottom'
+  : 'top')
 
 function onClick() {
   const container = props.getContainer()
@@ -21,7 +27,9 @@ function onClick() {
     return
 
   container.scrollTo({
-    top: props.variant === 'up' ? 0 : container.scrollHeight,
+    top: props.variant === 'up'
+      ? 0
+      : container.scrollHeight,
     behavior: 'smooth',
   })
 }

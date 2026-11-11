@@ -11,7 +11,9 @@ function createScheduler(now: () => number) {
 
 describe('animation timeline', () => {
   it('serializes animation units across sibling batches', () => {
-    const timeline = createAnimationTimeline({ now: () => 1000 })
+    const timeline = createAnimationTimeline({
+      now: () => 1000,
+    })
     const now = timeline.beginPass()
 
     expect(timeline.take(3, 40, now)).toEqual({ baseDelay: 0, step: 40 })
@@ -19,7 +21,9 @@ describe('animation timeline', () => {
   })
 
   it('keeps large batches in strict order', () => {
-    const timeline = createAnimationTimeline({ now: () => 1000 })
+    const timeline = createAnimationTimeline({
+      now: () => 1000,
+    })
     const now = timeline.beginPass()
     const schedule = timeline.take(20, 40, now)
     const finalDelay = schedule.baseDelay + 19 * schedule.step
@@ -31,7 +35,9 @@ describe('animation timeline', () => {
 
   it('drops stale backlog and can be reset', () => {
     let now = 1000
-    const timeline = createAnimationTimeline({ now: () => now })
+    const timeline = createAnimationTimeline({
+      now: () => now,
+    })
     const firstPass = timeline.beginPass()
     timeline.take(20, 40, firstPass)
     timeline.commitPass()
@@ -52,7 +58,9 @@ describe('animation timeline', () => {
     scheduler.schedule(createTextParts('Hello world', 'latin'))
     scheduler.schedule(createTextParts('你好', 'cjk'))
     const delays = scheduler.commitPass()
-    expect([...delays.values()]).toEqual([0, 0, 13, 27, 40])
+    expect([
+      ...delays.values(),
+    ]).toEqual([0, 0, 13, 27, 40])
   })
 
   it('keeps committed delays stable and schedules only newly inserted units', () => {
@@ -69,7 +77,9 @@ describe('animation timeline', () => {
     expect(delays.get('node-0')).toBe(0)
     expect(delays.get('node-1')).toBe(40)
     expect(delays.has('node-2')).toBe(false)
-    expect([...scheduler.commitPass().values()]).toEqual([0, 10])
+    expect([
+      ...scheduler.commitPass().values(),
+    ]).toEqual([0, 10])
   })
 
   it('can disable scheduling without disabling entry animations', () => {
@@ -106,7 +116,9 @@ describe('animation timeline', () => {
     scheduler.schedule(createTextParts('尾部', 'tail'))
     scheduler.commitPass()
     scheduler.beginPass({ enabled: true, stagger: 40 })
-    expect([...scheduler.schedule(stable).values()]).toEqual([0, 40])
+    expect([
+      ...scheduler.schedule(stable).values(),
+    ]).toEqual([0, 40])
     expect(scheduler.commitPass().size).toBe(0)
     scheduler.retain(new Set())
     scheduler.schedule(stable)
@@ -122,7 +134,9 @@ describe('animation timeline', () => {
       text += char
       scheduler.beginPass({ enabled: true, stagger: 40 })
       scheduler.schedule(createTextParts(text, 'node', 'char'))
-      expect([...scheduler.commitPass().values()]).toEqual([0])
+      expect([
+        ...scheduler.commitPass().values(),
+      ]).toEqual([0])
     }
   })
 

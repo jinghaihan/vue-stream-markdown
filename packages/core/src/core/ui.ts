@@ -19,7 +19,9 @@ export function createErrorModel(options: ErrorModelOptions = {}) {
   return {
     variant,
     icon,
-    messageKey: `error.${variant.startsWith('harden-') ? 'harden' : variant}`,
+    messageKey: `error.${variant.startsWith('harden-')
+      ? 'harden'
+      : variant}`,
     message: options.message,
     isHarden: variant.startsWith('harden-'),
   }
@@ -59,7 +61,9 @@ export function createSegmentedModel<TStyle = Record<string, unknown>>(options: 
     getButtonStyle(item: SelectOption) {
       return {
         paddingBlock: '0.25rem',
-        backgroundColor: value === item.value ? 'var(--accent)' : undefined,
+        backgroundColor: value === item.value
+          ? 'var(--accent)'
+          : undefined,
         ...(options.buttonStyle as Record<string, unknown> | undefined),
       }
     },
@@ -68,8 +72,16 @@ export function createSegmentedModel<TStyle = Record<string, unknown>>(options: 
 
 export function createPreviewSegmentedOptions(t: (key: string) => string): SelectOption[] {
   return [
-    { label: t('button.preview'), value: 'preview', icon: 'preview' },
-    { label: t('button.source'), value: 'source', icon: 'code' },
+    {
+      label: t('button.preview'),
+      value: 'preview',
+      icon: 'preview',
+    },
+    {
+      label: t('button.source'),
+      value: 'source',
+      icon: 'code',
+    },
   ]
 }
 

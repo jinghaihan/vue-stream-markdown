@@ -27,7 +27,10 @@ describe('markdown provider', () => {
     const mermaid = createMermaidExtension()
     const App = defineComponent(() => () => h(
       MarkdownProvider,
-      { extensions: { mermaid }, isDark: true },
+      {
+        extensions: { mermaid },
+        isDark: true,
+      },
       {
         default: () => [
           h(Markdown, { content: 'First', mode: 'static' }),
@@ -61,7 +64,9 @@ describe('markdown provider', () => {
     }
     const App = defineComponent(() => () => h(
       MarkdownProvider,
-      { extensions: { code } },
+      {
+        extensions: { code },
+      },
       {
         default: () => h(Markdown, {
           content: '```ts\nconst value = true\n```',
@@ -88,7 +93,9 @@ describe('markdown provider', () => {
     const localMermaid = createMermaidExtension()
     const App = defineComponent(() => () => h(
       MarkdownProvider,
-      { extensions: { mermaid: inheritedMermaid } },
+      {
+        extensions: { mermaid: inheritedMermaid },
+      },
       {
         default: () => h(Markdown, {
           content: 'Paragraph',

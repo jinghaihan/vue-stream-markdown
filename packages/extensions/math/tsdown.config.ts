@@ -11,5 +11,7 @@ export default defineConfig({
     onlyBundle: false,
     neverBundle: ['katex'],
   },
-  plugins: [ApiSnapshot()],
+  plugins: [
+    ApiSnapshot(),
+  ],
 })

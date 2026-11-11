@@ -68,10 +68,14 @@ export function tableDataToCSV(
   separator: CSVSeparator = ',',
 ): string {
   let resolvedSeparator: Exclude<CSVSeparator, 'auto'>
-  if (separator === 'auto')
-    resolvedSeparator = new Intl.NumberFormat().format(1.1).includes(',') ? ';' : ','
-  else
+  if (separator === 'auto') {
+    resolvedSeparator = new Intl.NumberFormat().format(1.1).includes(',')
+      ? ';'
+      : ','
+  }
+  else {
     resolvedSeparator = separator
+  }
 
   const { headers, rows } = data
 
@@ -93,7 +97,9 @@ export function tableDataToCSV(
     return `"${value.replace(CSV_QUOTE_PATTERN, '""')}"`
   }
 
-  const totalRows = headers.length > 0 ? rows.length + 1 : rows.length
+  const totalRows = headers.length > 0
+    ? rows.length + 1
+    : rows.length
   const csvRows: string[] = Array.from({ length: totalRows })
   let rowIndex = 0
 
@@ -147,7 +153,9 @@ export function tableDataToTSV(data: TableData): string {
     return parts.join('')
   }
 
-  const totalRows = headers.length > 0 ? rows.length + 1 : rows.length
+  const totalRows = headers.length > 0
+    ? rows.length + 1
+    : rows.length
   const tsvRows: string[] = Array.from({ length: totalRows })
   let rowIndex = 0
 
@@ -226,8 +234,11 @@ export function tableDataToMarkdown(data: TableData) {
   for (const row of rows) {
     if (row.length < headers.length) {
       const paddedRow = Array.from({ length: headers.length })
-      for (let i = 0; i < headers.length; i += 1)
-        paddedRow[i] = i < row.length ? escapeMarkdownTableCell(row[i]!) : ''
+      for (let i = 0; i < headers.length; i += 1) {
+        paddedRow[i] = i < row.length
+          ? escapeMarkdownTableCell(row[i]!)
+          : ''
+      }
 
       markdownRows[rowIndex] = `| ${paddedRow.join(' | ')} |`
       rowIndex += 1

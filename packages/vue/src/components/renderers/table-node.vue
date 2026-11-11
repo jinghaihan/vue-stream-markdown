@@ -76,10 +76,12 @@ async function copyTableContent(content: string) {
   }
 
   try {
-    await copyItems([new ClipboardItem({
-      'text/plain': new Blob([content], { type: 'text/plain' }),
-      'text/html': new Blob([table.outerHTML], { type: 'text/html' }),
-    })])
+    await copyItems([
+      new ClipboardItem({
+        'text/plain': new Blob([content], { type: 'text/plain' }),
+        'text/html': new Blob([table.outerHTML], { type: 'text/html' }),
+      }),
+    ])
   }
   catch {
     await copyText(content)
@@ -102,7 +104,9 @@ const descriptors = computed(() => createTableControlDescriptors({
 const builtinControls = computed((): Control[] => descriptors.value.map(item => ({
   ...item,
   name: t(item.labelKey ?? ''),
-  announcement: item.key === 'copy' && copied.value ? t('button.copied') : undefined,
+  announcement: item.key === 'copy' && copied.value
+    ? t('button.copied')
+    : undefined,
   onClick: (_event: MouseEvent, select?: SelectOption) => handleControlClick(item.key, select),
   visible: () => item.visible ?? true,
 })))

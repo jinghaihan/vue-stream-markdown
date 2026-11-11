@@ -12,7 +12,9 @@ const props = withDefaults(defineProps<UIIconProps>(), {
 const { icons } = useContext()
 
 const Icon = computed(() =>
-  typeof props.icon === 'string' ? icons.value[props.icon] : props.icon,
+  typeof props.icon === 'string'
+    ? icons.value[props.icon]
+    : props.icon,
 )
 const model = computed(() => createIconModel(props))
 const iconStyle = computed(() => model.value.style)

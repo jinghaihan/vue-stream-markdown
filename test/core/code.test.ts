@@ -12,7 +12,9 @@ describe('isCodePreviewable', () => {
 
   it('waits for non-progressive previews while a node is loading', () => {
     expect(isCodePreviewable({
-      previewers: { progressive: { html: false } },
+      previewers: {
+        progressive: { html: false },
+      },
       language: 'html',
       nodeLoading: true,
     })).toBe(false)
@@ -31,11 +33,15 @@ describe('isCodePreviewable', () => {
       language: 'html',
     })).toBe(true)
     expect(isCodePreviewable({
-      previewers: { components: { html: false } },
+      previewers: {
+        components: { html: false },
+      },
       language: 'html',
     })).toBe(false)
     expect(isCodePreviewable({
-      previewers: { components: { mermaid: false } },
+      previewers: {
+        components: { mermaid: false },
+      },
       language: 'mermaid',
       hasMermaid: true,
     })).toBe(false)
@@ -45,18 +51,24 @@ describe('isCodePreviewable', () => {
     const component = { name: 'Preview' }
 
     expect(isCodePreviewable({
-      previewers: { components: { json: component } },
+      previewers: {
+        components: { json: component },
+      },
       language: 'json',
       progressiveRender: true,
     })).toBe(true)
     expect(isCodePreviewable({
-      previewers: { components: { json: component } },
+      previewers: {
+        components: { json: component },
+      },
       language: 'json',
       progressiveRender: false,
       nodeLoading: true,
     })).toBe(false)
     expect(isCodePreviewable({
-      previewers: { components: { json: true } },
+      previewers: {
+        components: { json: true },
+      },
       language: 'json',
       progressiveRender: true,
     })).toBe(false)
@@ -66,13 +78,17 @@ describe('isCodePreviewable', () => {
     const component = 'custom-preview'
 
     expect(isCodePreviewable({
-      previewers: { components: { json: component } },
+      previewers: {
+        components: { json: component },
+      },
       language: 'json',
       progressiveRender: true,
       isPreviewComponent: value => value === component,
     })).toBe(true)
     expect(isCodePreviewable({
-      previewers: { components: { json: component } },
+      previewers: {
+        components: { json: component },
+      },
       language: 'json',
       progressiveRender: true,
       isPreviewComponent: () => false,

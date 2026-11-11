@@ -115,7 +115,9 @@ const DEFAULT_CODE_BLOCK_VARIANT: CodeBlockVariant = 'modern'
 export function resolveCodeLanguage(lang?: string | null): string {
   if (!lang)
     return 'plaintext'
-  return Object.hasOwn(LANGUAGE_ALIAS, lang) ? LANGUAGE_ALIAS[lang]! : lang
+  return Object.hasOwn(LANGUAGE_ALIAS, lang)
+    ? LANGUAGE_ALIAS[lang]!
+    : lang
 }
 
 export function createCodeOptionsModel<TComponent = unknown>(
@@ -316,7 +318,9 @@ export function createCodeBlockControlDescriptors(
 
 export function getCodeFileExtension(language: string): string | undefined {
   const key = language.toLowerCase()
-  return Object.hasOwn(LANGUAGE_EXTENSIONS, key) ? LANGUAGE_EXTENSIONS[key] : undefined
+  return Object.hasOwn(LANGUAGE_EXTENSIONS, key)
+    ? LANGUAGE_EXTENSIONS[key]
+    : undefined
 }
 
 export function createCodeRendererModel(node: CodeBlockNode) {
@@ -324,7 +328,9 @@ export function createCodeRendererModel(node: CodeBlockNode) {
   const lang = node.lang || ''
   const startLineMatch = node.meta?.match(CODE_META_START_LINE_PATTERN)
   const parsedStartLine = Number.parseInt(startLineMatch?.[1] ?? '', 10)
-  const startLine = parsedStartLine >= 1 ? parsedStartLine : 1
+  const startLine = parsedStartLine >= 1
+    ? parsedStartLine
+    : 1
 
   return {
     code,

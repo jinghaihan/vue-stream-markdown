@@ -17,11 +17,17 @@ export function useVirtualCodeLines(
   const trailingSpace = ref(0)
   const noWrap = ref(true)
   const enabled = computed(() => requested() && !!viewport?.bounded.value && noWrap.value)
-  const source = computed(() => enabled.value ? lines.value : [])
+  const source = computed(() => enabled.value
+    ? lines.value
+    : [])
   const { list, containerProps, wrapperProps } = useVirtualList(source, {
     itemHeight: index => rowHeight.value
-      + (index === 0 ? leadingSpace.value : 0)
-      + (index === lines.value.length - 1 ? trailingSpace.value : 0),
+      + (index === 0
+        ? leadingSpace.value
+        : 0)
+      + (index === lines.value.length - 1
+        ? trailingSpace.value
+        : 0),
     overscan: OVERSCAN,
   })
 
@@ -31,11 +37,18 @@ export function useVirtualCodeLines(
     if (!element || !container || !requested() || !viewport?.bounded.value)
       return
     const style = getComputedStyle(element)
-    noWrap.value = !['pre-wrap', 'break-spaces', 'normal', 'pre-line'].includes(style.whiteSpace)
+    noWrap.value = ![
+      'pre-wrap',
+      'break-spaces',
+      'normal',
+      'pre-line',
+    ].includes(style.whiteSpace)
     if (!noWrap.value)
       return
     const line = element.querySelector<HTMLElement>('[data-stream-markdown="code-line"]')
-    const height = Number.parseFloat((line ? getComputedStyle(line) : style).lineHeight)
+    const height = Number.parseFloat((line
+      ? getComputedStyle(line)
+      : style).lineHeight)
     if (Number.isFinite(height) && height > 0)
       rowHeight.value = height
     if (!container.clientHeight)
@@ -81,5 +94,11 @@ export function useVirtualCodeLines(
     height: `${Math.max(0, (lines.value.length - firstIndex.value) * rowHeight.value)}px`,
   }))
 
-  return { enabled, firstIndex, rowHeight, visibleLines, wrapperStyle }
+  return {
+    enabled,
+    firstIndex,
+    rowHeight,
+    visibleLines,
+    wrapperStyle,
+  }
 }

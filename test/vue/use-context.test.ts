@@ -21,7 +21,10 @@ describe('useContext', () => {
       setup() {
         const { provideContext } = useContext()
         provideContext({ mode })
-        return () => h('div', [h(Consumer), h(Consumer)])
+        return () => h('div', [
+          h(Consumer),
+          h(Consumer),
+        ])
       },
     })
 

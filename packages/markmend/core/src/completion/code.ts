@@ -28,8 +28,11 @@ export function completeCode(content: string): string {
   if (content.includes('~~~')) {
     const scan = analyzeCodeFences(content)
     const fence = scan.unclosedFence
-    if (fence?.marker.startsWith('~'))
-      return `${content}${content.endsWith('\n') ? '' : '\n'}${getCodeFencePrefix(content, fence.start) ?? ''}${fence.marker}`
+    if (fence?.marker.startsWith('~')) {
+      return `${content}${content.endsWith('\n')
+        ? ''
+        : '\n'}${getCodeFencePrefix(content, fence.start) ?? ''}${fence.marker}`
+    }
 
     const lastRange = scan.ranges.at(-1)
     if (lastRange && content[lastRange.start] === '~' && content.slice(lastRange.end).trim() === '')
@@ -166,7 +169,9 @@ function completeCodeBlock(content: string): string {
     // Check if there's a newline after the opening fence (indicating code content starts)
     // or if there's non-whitespace content (language identifier)
     const hasNewline = afterFence.includes('\n')
-    const firstLine = hasNewline ? afterFence.split('\n')[0] ?? '' : afterFence
+    const firstLine = hasNewline
+      ? afterFence.split('\n')[0] ?? ''
+      : afterFence
     const hasLanguage = firstLine.trim().length > 0
 
     // If there's actual content (language or code after newline), complete the block
@@ -251,5 +256,7 @@ function findClosedCodeBlockEnd(text: string, start: number): number | undefined
     return undefined
 
   const closeIndex = text.indexOf('```', start + 3)
-  return closeIndex === -1 ? undefined : closeIndex + 2
+  return closeIndex === -1
+    ? undefined
+    : closeIndex + 2
 }

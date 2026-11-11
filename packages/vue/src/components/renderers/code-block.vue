@@ -30,7 +30,9 @@ const codeNode = computed<CodeBlockNode>(() => {
     type: 'code',
     value: code.replace(/\n$/, ''),
     lang: language,
-    meta: typeof attrs.meta === 'string' ? attrs.meta : undefined,
+    meta: typeof attrs.meta === 'string'
+      ? attrs.meta
+      : undefined,
     loading: props.loading,
   }
 })

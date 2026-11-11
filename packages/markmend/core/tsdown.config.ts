@@ -10,5 +10,7 @@ export default defineConfig({
   deps: {
     onlyBundle: false,
   },
-  plugins: [ApiSnapshot()],
+  plugins: [
+    ApiSnapshot(),
+  ],
 })

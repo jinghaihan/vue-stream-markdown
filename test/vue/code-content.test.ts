@@ -8,10 +8,14 @@ function createTokens(htmlStyle?: Record<string, string>) {
     bg: '#fff',
     fg: '#000',
     themeName: 'test',
-    tokens: [[{
-      content: 'const value = 1',
-      htmlStyle,
-    }]],
+    tokens: [
+      [
+        {
+          content: 'const value = 1',
+          htmlStyle,
+        },
+      ],
+    ],
   }
 }
 

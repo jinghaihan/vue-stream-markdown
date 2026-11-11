@@ -11,5 +11,7 @@ export default defineConfig({
     onlyBundle: false,
     neverBundle: ['beautiful-mermaid'],
   },
-  plugins: [ApiSnapshot()],
+  plugins: [
+    ApiSnapshot(),
+  ],
 })

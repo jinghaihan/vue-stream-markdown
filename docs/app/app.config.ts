@@ -31,9 +31,18 @@ export default defineAppConfig({
   header: {
     title: 'Vue Stream Markdown',
     nav: [
-      { label: 'Guide', sections: ['guide'] },
-      { label: 'Features', sections: ['feature'] },
-      { label: 'Config', sections: ['config'] },
+      {
+        label: 'Guide',
+        sections: ['guide'],
+      },
+      {
+        label: 'Features',
+        sections: ['feature'],
+      },
+      {
+        label: 'Config',
+        sections: ['config'],
+      },
       { label: 'Playground', sections: [], to: 'https://play-vue-stream-markdown.netlify.app/' },
       { label: `v${version}`, sections: [], to: 'https://github.com/jinghaihan/vue-stream-markdown/releases' },
     ],

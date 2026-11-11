@@ -74,7 +74,9 @@ export function splitTextByAuto(text: string): string[] {
       continue
     }
 
-    const nextKind = WHITESPACE_RE.test(char) ? 'whitespace' : 'word'
+    const nextKind = WHITESPACE_RE.test(char)
+      ? 'whitespace'
+      : 'word'
     if (currentKind !== nextKind && current) {
       parts.push(current)
       current = ''
@@ -97,7 +99,9 @@ export function resolveTextAnimationSplit(
   if (split !== 'auto')
     return split
 
-  return CJK_RE.test(text) ? 'char' : 'word'
+  return CJK_RE.test(text)
+    ? 'char'
+    : 'word'
 }
 
 export function splitText(
@@ -107,7 +111,9 @@ export function splitText(
   if (split === 'auto')
     return splitTextByAuto(text)
 
-  return split === 'char' ? splitTextByChar(text) : splitTextByWord(text)
+  return split === 'char'
+    ? splitTextByChar(text)
+    : splitTextByWord(text)
 }
 
 export function createTextParts(

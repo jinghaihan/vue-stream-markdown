@@ -98,7 +98,9 @@ async function waitForText(host: HTMLElement, text: string): Promise<void> {
 async function runSession(): Promise<SessionResult> {
   const host = createHost()
   const stats: CustomRendererStats = { renderCount: 0, renderTime: 0 }
-  const components = { callout: createCallout(stats) }
+  const components = {
+    callout: createCallout(stats),
+  }
   let content = INITIAL_CONTENT
 
   renderSession(host, content, components)

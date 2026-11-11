@@ -87,20 +87,38 @@ const imageOptions = computed<ImageOptions | undefined>(() => {
   if (props.imageCaption === undefined && !props.imageFallback)
     return undefined
   return {
-    caption: props.imageCaption === undefined ? undefined : props.imageCaption !== 'false' && props.imageCaption !== false,
+    caption: props.imageCaption === undefined
+      ? undefined
+      : props.imageCaption !== 'false' && props.imageCaption !== false,
     fallback: props.imageFallback,
   }
 })
 
 const playable = computed(() => props.mode === 'static')
 const isMermaid = computed(() => content.value.includes('```mermaid'))
-const codeExtension = code({ theme: ['github-light', 'github-dark'] })
+const codeExtension = code({
+  theme: ['github-light', 'github-dark'],
+})
 const mathExtension = math()
 const mermaidExtension = mermaid()
 const mermaidRenderers = [
-  { name: 'Pele', extensions: { pele: pele() } },
-  { name: 'Beautiful Mermaid', extensions: { beautifulMermaid: beautifulMermaid(), mermaid: mermaidExtension } },
-  { name: 'Mermaid', extensions: { mermaid: mermaidExtension } },
+  {
+    name: 'Pele',
+    extensions: {
+      pele: pele(),
+    },
+  },
+  {
+    name: 'Beautiful Mermaid',
+    extensions: {
+      beautifulMermaid: beautifulMermaid(),
+      mermaid: mermaidExtension,
+    },
+  },
+  {
+    name: 'Mermaid',
+    extensions: { mermaid: mermaidExtension },
+  },
 ] as const
 const rendererIndex = ref(0)
 const mermaidRenderer = computed(() => mermaidRenderers[rendererIndex.value] ?? mermaidRenderers[0])

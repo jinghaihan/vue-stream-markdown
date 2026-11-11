@@ -3,7 +3,9 @@ export function useDark() {
   const isDark = ref<boolean>(false)
 
   function toggle() {
-    color.preference = color.value === 'dark' ? 'light' : 'dark'
+    color.preference = color.value === 'dark'
+      ? 'light'
+      : 'dark'
   }
 
   function toggleDark(event: MouseEvent) {

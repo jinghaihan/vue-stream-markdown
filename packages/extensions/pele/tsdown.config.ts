@@ -11,5 +11,7 @@ export default defineConfig({
     onlyBundle: false,
     neverBundle: ['pele/lazy'],
   },
-  plugins: [ApiSnapshot()],
+  plugins: [
+    ApiSnapshot(),
+  ],
 })

@@ -12,5 +12,7 @@ export function resolveCodeOptions<TComponent = unknown>(
 }
 
 export function isCodeOptionEnabled(value: unknown, defaultValue: boolean = true): boolean {
-  return typeof value === 'boolean' ? value : defaultValue
+  return typeof value === 'boolean'
+    ? value
+    : defaultValue
 }

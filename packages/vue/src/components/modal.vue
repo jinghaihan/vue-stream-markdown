@@ -30,8 +30,12 @@ const modalStyle = computed(() => ({
   zIndex: props.zIndex,
 }))
 const showHeader = computed(() => !!props.title || !!slots.title || !!slots.extra)
-const accessibleLabel = computed(() => props.ariaLabel || (!props.titleId ? props.title : undefined))
-const keyupTarget = computed(() => open.value ? getDocument() : undefined)
+const accessibleLabel = computed(() => props.ariaLabel || (!props.titleId
+  ? props.title
+  : undefined))
+const keyupTarget = computed(() => open.value
+  ? getDocument()
+  : undefined)
 
 useEventListener(keyupTarget, 'keyup', (event) => {
   if (isEscapeKeyEvent(event)) {

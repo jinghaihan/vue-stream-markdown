@@ -169,7 +169,9 @@ describe('stream markdown', () => {
       props: {
         content: '```ts\nconst value = 1\n```',
         codeOptions: { variant: 'minimal' },
-        controls: { code: { collapse: true } },
+        controls: {
+          code: { collapse: true },
+        },
         mode: 'static',
       },
     })
@@ -371,7 +373,9 @@ describe('stream markdown', () => {
   })
 
   it('keeps unresolved footnote markers invisible until their definitions arrive', async () => {
-    const wrapper = mount(Markdown, { props: { content: 'Text[^note]', mode: 'streaming' } })
+    const wrapper = mount(Markdown, {
+      props: { content: 'Text[^note]', mode: 'streaming' },
+    })
     const update = wrapper as unknown as MarkdownTestWrapper
     await flushPromises()
     expect(wrapper.get('span[hidden]').isVisible()).toBe(false)
@@ -389,7 +393,12 @@ describe('stream markdown', () => {
   it('grows all four late footnotes without replacing settled text or waiting for static mode', async () => {
     const content = footnoteContent
     const start = content.indexOf('\n[^1]:')
-    const wrapper = mount(Markdown, { props: { content: content.slice(0, start), mode: 'streaming' } })
+    const wrapper = mount(Markdown, {
+      props: {
+        content: content.slice(0, start),
+        mode: 'streaming',
+      },
+    })
     const update = wrapper as unknown as MarkdownTestWrapper
     await flushPromises()
     const bodyWord = wrapper.get('[data-stream-markdown="text-word"]').element
@@ -595,7 +604,9 @@ describe('stream markdown', () => {
     })
     const wrapper = mount(Markdown, {
       props: {
-        components: { callout: markRaw(Callout) },
+        components: {
+          callout: markRaw(Callout),
+        },
         content: '::callout{type="info"}\nNotice\n::',
         mode: 'static',
       },

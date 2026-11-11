@@ -20,9 +20,15 @@ function assertBeautifulMermaidModule(
 ): asserts module is typeof import('beautiful-mermaid') {
   const candidate = module as Partial<typeof import('beautiful-mermaid')> | null
   const missing = [
-    typeof candidate?.renderMermaidSVGAsync === 'function' ? undefined : 'renderMermaidSVGAsync',
-    candidate?.THEMES && typeof candidate.THEMES === 'object' ? undefined : 'THEMES',
-    typeof candidate?.fromShikiTheme === 'function' ? undefined : 'fromShikiTheme',
+    typeof candidate?.renderMermaidSVGAsync === 'function'
+      ? undefined
+      : 'renderMermaidSVGAsync',
+    candidate?.THEMES && typeof candidate.THEMES === 'object'
+      ? undefined
+      : 'THEMES',
+    typeof candidate?.fromShikiTheme === 'function'
+      ? undefined
+      : 'fromShikiTheme',
   ].filter((name): name is string => !!name)
 
   if (missing.length > 0) {
@@ -103,7 +109,9 @@ export function createBeautifulMermaidRuntime(
       return {
         supported: true,
         valid: false,
-        error: error instanceof Error ? error.message : String(error),
+        error: error instanceof Error
+          ? error.message
+          : String(error),
       }
     }
   }

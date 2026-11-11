@@ -43,16 +43,16 @@ catalogs:
     streamdown: ^2.7.1
     unified: ^11.0.5
   build:
-    '@tsdown/css': ^0.23.5
+    '@tsdown/css': ^0.23.7
     '@vitejs/plugin-vue': ^6.0.10
-    tsdown: ^0.23.5
+    tsdown: ^0.23.7
     unplugin-icons: ^24.0.0
-    vite: ^8.3.6
+    vite: ^8.3.8
   dev:
     '@typescript/native-preview': ^7.0.0-dev.20260707.2
     bumpp: ^12.3.0
     happy-dom: ^21.0.4
-    knip: ^6.44.1
+    knip: ^6.45.0
     lightningcss: ^1.33.0
     nano-staged: ^1.0.2
     pncat: ^0.13.4
@@ -69,19 +69,19 @@ catalogs:
     unocss: ^66.12.0
     vue: ^3.5.45
   icons:
-    '@iconify-json/lucide': ^1.2.151
-    '@iconify-json/simple-icons': ^1.2.101
+    '@iconify-json/lucide': ^1.2.153
+    '@iconify-json/simple-icons': ^1.2.102
   inlined:
     '@antfu/utils': ^9.3.0
   lint:
     '@nuxt/eslint': ^1.17.0
-    '@octohash/eslint-config': ^0.6.1
+    '@octohash/eslint-config': ^0.7.0
     '@unocss/eslint-plugin': ^66.12.0
     eslint: ^10.14.0
     eslint-plugin-format: ^2.0.1
     vue-tsc: ^3.3.14
   parser:
-    comark: ^0.9.0
+    comark: ^0.9.1
     markdown-it-cjk-friendly: ^3.0.0
   playground:
     '@monaco-editor/loader': ^1.7.0

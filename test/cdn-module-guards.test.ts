@@ -20,7 +20,9 @@ function cdnModule() {
 describe('cDN module guards', () => {
   beforeEach(() => {
     vi.stubGlobal('window', {})
-    vi.stubGlobal('document', { createElement: () => ({}) })
+    vi.stubGlobal('document', {
+      createElement: () => ({}),
+    })
   })
 
   afterEach(() => {
@@ -53,7 +55,9 @@ describe('cDN module guards', () => {
   })
 
   it('reports an incomplete Beautiful Mermaid module', async () => {
-    vi.mocked(dynamicImport).mockResolvedValue({ renderMermaidSVGAsync: () => {} })
+    vi.mocked(dynamicImport).mockResolvedValue({
+      renderMermaidSVGAsync: () => {},
+    })
     const extension = beautifulMermaid({
       cdnOptions: cdnModule(),
     })
@@ -66,10 +70,15 @@ describe('cDN module guards', () => {
   it('loads the lazy Pele renderer from the CDN once for concurrent diagrams', async () => {
     const renderAsync = vi.fn(async () => ({ svg: '<svg style=""></svg>' }))
     vi.mocked(dynamicImport).mockResolvedValue({ renderAsync })
-    const extension = pele({ cdnOptions: { baseUrl: 'https://cdn.example.test/npm/' } })
+    const extension = pele({
+      cdnOptions: { baseUrl: 'https://cdn.example.test/npm/' },
+    })
     const input = { code: 'flowchart LR\n  A --> B', isDark: false }
 
-    const results = await Promise.all([extension.render(input), extension.render(input)])
+    const results = await Promise.all([
+      extension.render(input),
+      extension.render(input),
+    ])
 
     expect(results.every(result => result.valid)).toBe(true)
     expect(renderAsync).toHaveBeenCalledTimes(2)
@@ -80,7 +89,9 @@ describe('cDN module guards', () => {
 
   it('reports an incomplete Pele module', async () => {
     vi.mocked(dynamicImport).mockResolvedValue({})
-    const extension = pele({ cdnOptions: cdnModule() })
+    const extension = pele({
+      cdnOptions: cdnModule(),
+    })
 
     const result = await extension.render({ code: 'flowchart LR\n  A --> B', isDark: false })
 
@@ -91,7 +102,9 @@ describe('cDN module guards', () => {
   })
 
   it('reports an incomplete KaTeX module', async () => {
-    vi.mocked(dynamicImport).mockResolvedValue({ render: () => {} })
+    vi.mocked(dynamicImport).mockResolvedValue({
+      render: () => {},
+    })
     const runtime = createKatexRuntime({
       cdnOptions: cdnModule(),
     })

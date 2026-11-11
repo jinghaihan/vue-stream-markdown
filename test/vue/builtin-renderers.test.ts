@@ -32,7 +32,15 @@ describe('public built-in renderers', () => {
     }))
     const node = ref<CodeBlockNode>({ value: 'select 1', lang: 'javascript' })
     const App = defineComponent(() => {
-      useContext().provideContext({ extensions: { code: { highlight, preload: async () => {}, dispose: () => {} } } })
+      useContext().provideContext({
+        extensions: {
+          code: {
+            highlight,
+            preload: async () => {},
+            dispose: () => {},
+          },
+        },
+      })
       return () => h(CodeRenderer, { node: node.value, nodeKey: 'same-block' })
     })
     const wrapper = mount(App)
@@ -44,12 +52,32 @@ describe('public built-in renderers', () => {
     await flushPromises()
     expect(highlight).toHaveBeenCalledTimes(2)
     expect(highlight).toHaveBeenLastCalledWith({ code: 'select 1', language: 'sql', isDark: false })
-    pending[1]!({ grammarState: { lang: 'sql' }, tokens: [[{ content: 'select 1', htmlStyle: { color: 'blue' } }]] })
+    pending[1]!({
+      grammarState: { lang: 'sql' },
+      tokens: [
+        [
+          {
+            content: 'select 1',
+            htmlStyle: { color: 'blue' },
+          },
+        ],
+      ],
+    })
     await flushPromises()
     expect(wrapper.get('pre').attributes('data-language')).toBe('sql')
     expect(wrapper.get('[data-stream-markdown="code-line"] span').attributes('style')).toContain('color: blue')
 
-    pending[0]!({ grammarState: { lang: 'javascript' }, tokens: [[{ content: 'select 1', htmlStyle: { color: 'red' } }]] })
+    pending[0]!({
+      grammarState: { lang: 'javascript' },
+      tokens: [
+        [
+          {
+            content: 'select 1',
+            htmlStyle: { color: 'red' },
+          },
+        ],
+      ],
+    })
     await flushPromises()
     expect(wrapper.get('pre').attributes('data-language')).toBe('sql')
     expect(wrapper.get('[data-stream-markdown="code-line"] span').attributes('style')).toContain('color: blue')
@@ -71,7 +99,13 @@ describe('public built-in renderers', () => {
       setup(props) {
         return () => h(CodeBlockRenderer, props, {
           default: ({ node }: { node: CodeBlockNode }) => [
-            h(CodeRenderer, { node: { ...node, value: node.value.slice(0, 4) }, nodeKey: props.nodeKey }),
+            h(CodeRenderer, {
+              node: {
+                ...node,
+                value: node.value.slice(0, 4),
+              },
+              nodeKey: props.nodeKey,
+            }),
             h('p', { 'data-display-notice': '' }, `${node.value.length} characters total`),
           ],
         })
@@ -84,7 +118,14 @@ describe('public built-in renderers', () => {
         enableAnimate: false,
         components: { pre: CustomCode },
         uiComponents: { Button },
-        controls: { code: { collapse: false, copy: false, download: false, fullscreen: true } },
+        controls: {
+          code: {
+            collapse: false,
+            copy: false,
+            download: false,
+            fullscreen: true,
+          },
+        },
       },
     })
     await vi.dynamicImportSettled()
@@ -102,11 +143,36 @@ describe('public built-in renderers', () => {
   })
 
   it.each([
-    ['pre', CodeBlockRenderer, '```js\nconst value = 1\n```', '[data-stream-markdown="code-block"]'],
-    ['a', LinkRenderer, '[**Example**](https://example.com)', '[data-stream-markdown="link"]'],
-    ['img', ImageRenderer, '![Example](https://example.com/image.png)', '[data-stream-markdown="image-figure"]'],
-    ['math', MathRenderer, '$$\nx^2\n$$', '[data-stream-markdown="math"]'],
-    ['table', TableRenderer, '| Name |\n| --- |\n| **Example** |', '[data-stream-markdown="table"]'],
+    [
+      'pre',
+      CodeBlockRenderer,
+      '```js\nconst value = 1\n```',
+      '[data-stream-markdown="code-block"]',
+    ],
+    [
+      'a',
+      LinkRenderer,
+      '[**Example**](https://example.com)',
+      '[data-stream-markdown="link"]',
+    ],
+    [
+      'img',
+      ImageRenderer,
+      '![Example](https://example.com/image.png)',
+      '[data-stream-markdown="image-figure"]',
+    ],
+    [
+      'math',
+      MathRenderer,
+      '$$\nx^2\n$$',
+      '[data-stream-markdown="math"]',
+    ],
+    [
+      'table',
+      TableRenderer,
+      '| Name |\n| --- |\n| **Example** |',
+      '[data-stream-markdown="table"]',
+    ],
   ] as const)('preserves official rendering when wrapping %s', async (tag, renderer, content, selector) => {
     const Strong = markRaw(defineComponent({
       setup(_props, { slots }) {
@@ -119,10 +185,25 @@ describe('public built-in renderers', () => {
       enableAnimate: false,
       linkOptions: { favicon: false },
       codeOptions: { lineNumbers: false },
-      extensions: { math: math() },
+      extensions: {
+        math: math(),
+      },
     }
-    const original = mount(Markdown, { props: { ...props, components: { strong: Strong } } })
-    const wrapped = mount(Markdown, { props: { ...props, components: { strong: Strong, [tag]: wrapRenderer(renderer) } } })
+    const original = mount(Markdown, {
+      props: {
+        ...props,
+        components: { strong: Strong },
+      },
+    })
+    const wrapped = mount(Markdown, {
+      props: {
+        ...props,
+        components: {
+          strong: Strong,
+          [tag]: wrapRenderer(renderer),
+        },
+      },
+    })
     await vi.dynamicImportSettled()
     await flushPromises()
 
@@ -140,7 +221,9 @@ describe('public built-in renderers', () => {
   it('retains link destination feedback when wrapping a streaming link', async () => {
     const wrapper = mount(Markdown, {
       props: {
-        components: { a: wrapRenderer(LinkRenderer) },
+        components: {
+          a: wrapRenderer(LinkRenderer),
+        },
         content: '[Example](https://exa',
         mode: 'streaming',
         enableAnimate: false,
@@ -160,7 +243,16 @@ describe('public built-in renderers', () => {
   })
 
   it('renders only the code body by default and can enable its wrapper', async () => {
-    const highlight = vi.fn(async () => ({ tokens: [[{ content: 'short', htmlStyle: { color: 'red' } }]] }))
+    const highlight = vi.fn(async () => ({
+      tokens: [
+        [
+          {
+            content: 'short',
+            htmlStyle: { color: 'red' },
+          },
+        ],
+      ],
+    }))
     const showWrapper = ref<boolean>()
     const Body = markRaw(defineComponent({
       inheritAttrs: false,
@@ -178,7 +270,13 @@ describe('public built-in renderers', () => {
         components: { pre: Body },
         content: '```js\nfull source\n```',
         mode: 'static',
-        extensions: { code: { preload: async () => {}, dispose: () => {}, highlight } },
+        extensions: {
+          code: {
+            preload: async () => {},
+            dispose: () => {},
+            highlight,
+          },
+        },
       },
     })
     await vi.dynamicImportSettled()

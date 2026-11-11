@@ -83,7 +83,9 @@ const controls = computed((): Control[] => {
     const { visible: _visible, ...rest } = item
     return {
       ...rest,
-      name: item.label ?? t(item.labelKey ?? '', item.key === 'fitToContainer' ? 'button.resetZoom' : undefined),
+      name: item.label ?? t(item.labelKey ?? '', item.key === 'fitToContainer'
+        ? 'button.resetZoom'
+        : undefined),
       onClick: (_event: MouseEvent, select?: SelectOption) => {
         if (item.key === 'fitToContainer') {
           userInteracted = false

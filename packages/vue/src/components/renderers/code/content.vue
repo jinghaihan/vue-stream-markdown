@@ -37,7 +37,9 @@ export default defineComponent({
   setup(props) {
     const lines = computed<CodeToken[][]>(() => props.tokens?.tokens ?? props.code
       .split('\n')
-      .map(content => [{ content, htmlStyle: {} }]))
+      .map(content => [
+        { content, htmlStyle: {} },
+      ]))
     const lineNumberWidth = computed(() => `${Math.max(2, String(props.startLine + lines.value.length - 1).length)}ch`)
     const pre = ref<HTMLElement>()
     const widthMeasure = ref<HTMLElement>()
@@ -53,7 +55,9 @@ export default defineComponent({
         for (const char of line) {
           columns += char === '\t'
             ? 8 - columns % 8
-            : /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u.test(char) ? 2 : 1
+            : /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u.test(char)
+              ? 2
+              : 1
         }
         if (columns > maxColumns) {
           widest = line
@@ -81,7 +85,9 @@ export default defineComponent({
           'class': props.showLineNumbers
             ? 'relative block min-h-4 text-sm before:inline-block before:mr-4 before:w-[var(--stream-markdown-line-number-width)] before:select-none before:text-right before:font-mono before:text-[13px] before:text-muted-foreground/50 before:content-[counter(line)] before:[counter-increment:line]'
             : 'relative block min-h-4 text-sm',
-          'style': enabled.value ? { height: `${rowHeight.value}px` } : undefined,
+          'style': enabled.value
+            ? { height: `${rowHeight.value}px` }
+            : undefined,
           'key': index,
         },
         renderList(line, (token, tokenIndex) => h(
@@ -111,7 +117,9 @@ export default defineComponent({
           'data-bg': props.tokens?.bg,
           'data-fg': props.tokens?.fg,
           'class': [
-            props.tokens ? ['shiki', props.tokens.themeName] : undefined,
+            props.tokens
+              ? ['shiki', props.tokens.themeName]
+              : undefined,
             props.languageClass,
             'p-4 font-mono text-sm',
           ],
@@ -119,7 +127,9 @@ export default defineComponent({
             '--stream-markdown-line-number-width': props.showLineNumbers ? lineNumberWidth.value : undefined,
             'counterReset': `line ${props.startLine + (enabled.value ? firstIndex.value : 0) - 1}`,
             'color': props.tokens?.fg ?? 'inherit',
-            'minWidth': enabled.value && width.value ? `calc(${width.value}px + ${props.showLineNumbers ? '3rem + var(--stream-markdown-line-number-width)' : '2rem'})` : undefined,
+            'minWidth': enabled.value && width.value
+              ? `calc(${width.value}px + ${props.showLineNumbers ? '3rem + var(--stream-markdown-line-number-width)' : '2rem'})`
+              : undefined,
           },
         },
         h(
@@ -127,14 +137,22 @@ export default defineComponent({
           {
             translate: 'no',
             class: 'text-sm font-mono',
-            style: enabled.value ? { display: 'block', position: 'relative' } : undefined,
+            style: enabled.value
+              ? { display: 'block', position: 'relative' }
+              : undefined,
           },
           enabled.value
             ? [
                 h('span', {
                   'ref': widthMeasure,
                   'aria-hidden': 'true',
-                  'style': { position: 'absolute', visibility: 'hidden', whiteSpace: 'pre', userSelect: 'none', pointerEvents: 'none' },
+                  'style': {
+                    position: 'absolute',
+                    visibility: 'hidden',
+                    whiteSpace: 'pre',
+                    userSelect: 'none',
+                    pointerEvents: 'none',
+                  },
                 }, widestLine.value),
                 h('div', { style: wrapperStyle.value }, renderLines()),
               ]

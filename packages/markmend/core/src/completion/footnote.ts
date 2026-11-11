@@ -76,7 +76,9 @@ function removeIncompleteReferenceInLastParagraph(
   }
 
   const lineEnd = lastParagraph.indexOf('\n', incompleteRefPos)
-  const refEnd = lineEnd !== -1 ? lineEnd : lastParagraph.length
+  const refEnd = lineEnd !== -1
+    ? lineEnd
+    : lastParagraph.length
 
   let refStart = incompleteRefPos
   if (refStart > 0 && lastParagraph[refStart - 1] === ' ') {

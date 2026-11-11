@@ -14,5 +14,7 @@ export default defineConfig({
       'mermaid',
     ],
   },
-  plugins: [ApiSnapshot()],
+  plugins: [
+    ApiSnapshot(),
+  ],
 })

@@ -69,8 +69,12 @@ export function resolveAttributes(attrs: ElementNode[1]): Record<string, unknown
     if (rawName === '$')
       continue
 
-    const name = rawName.startsWith(':') ? rawName.slice(1) : rawName
-    resolved[name] = rawName.startsWith(':') ? resolveBoundValue(rawValue) : rawValue
+    const name = rawName.startsWith(':')
+      ? rawName.slice(1)
+      : rawName
+    resolved[name] = rawName.startsWith(':')
+      ? resolveBoundValue(rawValue)
+      : rawValue
   }
   return resolved
 }

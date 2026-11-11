@@ -12,7 +12,9 @@ const { copy, copied } = useClipboard({ legacy: true })
 const installCommand = 'pnpm add vue-stream-markdown'
 const typingDelay = 20
 const extensions = {
-  code: code({ theme: ['github-light', 'github-dark'] }),
+  code: code({
+    theme: ['github-light', 'github-dark'],
+  }),
   math: math(),
   pele: pele(),
 }

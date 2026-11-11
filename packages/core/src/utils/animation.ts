@@ -30,7 +30,9 @@ export interface TextAnimationScheduler {
 }
 
 function defaultNow(): number {
-  return typeof performance === 'undefined' ? Date.now() : performance.now()
+  return typeof performance === 'undefined'
+    ? Date.now()
+    : performance.now()
 }
 
 export function createAnimationTimeline(
@@ -92,7 +94,9 @@ export function createTextAnimationScheduler(
         return delays
 
       const now = timeline.beginPass()
-      const parts = [...pendingParts.values()]
+      const parts = [
+        ...pendingParts.values(),
+      ]
       if (compareKeys)
         parts.sort((left, right) => compareKeys(left.key, right.key))
       const count = parts.filter(part => !part.whitespace).length
@@ -101,7 +105,9 @@ export function createTextAnimationScheduler(
       const window = lastBatchTime === undefined
         ? stagger
         : Math.min(stagger, Math.max(0, now - lastBatchTime))
-      const step = count > 1 ? window / (count - 1) : 0
+      const step = count > 1
+        ? window / (count - 1)
+        : 0
       let index = 0
       let previousDelay = 0
       for (const part of parts) {
@@ -148,5 +154,7 @@ export function getTransitionName(animation: string): string {
 export function normalizeAnimationDuration(duration: number | string | undefined): string | undefined {
   if (duration === undefined)
     return undefined
-  return typeof duration === 'number' ? `${duration}ms` : duration
+  return typeof duration === 'number'
+    ? `${duration}ms`
+    : duration
 }

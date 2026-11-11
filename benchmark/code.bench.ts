@@ -13,7 +13,9 @@ import { h, nextTick, render } from 'vue'
 import { Markdown as VueStreamMarkdown } from 'vue-stream-markdown'
 
 const APPEND_COUNT = 20
-const vueExtensions = { code: createCodeExtension() }
+const vueExtensions = {
+  code: createCodeExtension(),
+}
 const benchmarkOptions: BenchRunOptions = {
   time: 1000,
   warmupTime: 300,

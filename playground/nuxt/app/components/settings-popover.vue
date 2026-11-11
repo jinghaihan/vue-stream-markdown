@@ -40,7 +40,9 @@ const codeMaxHeightInput = computed({
   get: () => codeMaxHeight.value,
   set: (value: number | string) => {
     const height = Number(value)
-    codeMaxHeight.value = Number.isFinite(height) ? Math.max(0, height) : 0
+    codeMaxHeight.value = Number.isFinite(height)
+      ? Math.max(0, height)
+      : 0
   },
 })
 
@@ -48,7 +50,9 @@ const animationDurationInput = computed({
   get: () => animationDuration.value,
   set: (value: number | string) => {
     const nextValue = Number(value)
-    animationDuration.value = Number.isFinite(nextValue) ? nextValue : 180
+    animationDuration.value = Number.isFinite(nextValue)
+      ? nextValue
+      : 180
   },
 })
 
@@ -56,7 +60,9 @@ const animationStaggerInput = computed({
   get: () => animationStagger.value,
   set: (value: number | string) => {
     const nextValue = Number(value)
-    animationStagger.value = Number.isFinite(nextValue) ? Math.max(0, nextValue) : 40
+    animationStagger.value = Number.isFinite(nextValue)
+      ? Math.max(0, nextValue)
+      : 40
   },
 })
 
@@ -122,17 +128,41 @@ const BEAUTIFUL_MERMAID_THEMES: SelectOption[] = [
 ]
 
 const MERMAID_RENDERERS = computed<SelectOption[]>(() => [
-  { label: t('settings.options.pele'), value: 'pele' },
-  { label: t('settings.options.beautifulMermaid'), value: 'beautiful' },
-  { label: t('settings.options.mermaid'), value: 'vanilla' },
+  {
+    label: t('settings.options.pele'),
+    value: 'pele',
+  },
+  {
+    label: t('settings.options.beautifulMermaid'),
+    value: 'beautiful',
+  },
+  {
+    label: t('settings.options.mermaid'),
+    value: 'vanilla',
+  },
 ])
 
 const MERMAID_THEMES = computed<SelectOption[]>(() => [
-  { label: t('settings.options.default'), value: 'default' },
-  { label: t('settings.options.dark'), value: 'dark' },
-  { label: t('settings.options.forest'), value: 'forest' },
-  { label: t('settings.options.neutral'), value: 'neutral' },
-  { label: t('settings.options.base'), value: 'base' },
+  {
+    label: t('settings.options.default'),
+    value: 'default',
+  },
+  {
+    label: t('settings.options.dark'),
+    value: 'dark',
+  },
+  {
+    label: t('settings.options.forest'),
+    value: 'forest',
+  },
+  {
+    label: t('settings.options.neutral'),
+    value: 'neutral',
+  },
+  {
+    label: t('settings.options.base'),
+    value: 'base',
+  },
 ])
 const PELE_THEMES = computed<SelectOption[]>(() => [
   { label: `Pele ${t('settings.labels.lightTheme')}`, value: 'light' },
@@ -146,12 +176,18 @@ const diagramThemes = computed(() => ({
 })[mermaidRenderer.value])
 
 const CARETS_OPTIONS = computed<SelectOption[]>(() => [
-  { label: t('settings.options.none'), value: '' },
+  {
+    label: t('settings.options.none'),
+    value: '',
+  },
   ...Object.entries(CARETS).map(([key, value]) => ({ label: value, value: key })),
 ])
 
 const ANIMATION_OPTIONS = computed<SelectOption[]>(() => [
-  { label: t('settings.options.none'), value: '' },
+  {
+    label: t('settings.options.none'),
+    value: '',
+  },
   ...ANIMATION_TYPES.map(value => ({
     label: value.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
     value,
@@ -168,9 +204,18 @@ const ANIMATION_SPLIT_OPTIONS = computed<SelectOption[]>(() => ANIMATION_SPLITS.
 })))
 
 const CODE_BLOCK_VARIANT_OPTIONS = computed<SelectOption[]>(() => [
-  { label: t('settings.options.modern'), value: 'modern' },
-  { label: t('settings.options.classic'), value: 'classic' },
-  { label: t('settings.options.minimal'), value: 'minimal' },
+  {
+    label: t('settings.options.modern'),
+    value: 'modern',
+  },
+  {
+    label: t('settings.options.classic'),
+    value: 'classic',
+  },
+  {
+    label: t('settings.options.minimal'),
+    value: 'minimal',
+  },
 ])
 
 function onTypingIndexChange() {

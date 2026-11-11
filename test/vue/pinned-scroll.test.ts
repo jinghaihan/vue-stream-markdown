@@ -25,7 +25,9 @@ afterEach(() => {
 async function flushScrollWatchers() {
   await nextTick()
   await nextTick()
-  const pending = [...frames.values()]
+  const pending = [
+    ...frames.values(),
+  ]
   frames.clear()
   pending.forEach(callback => callback(0))
   await nextTick()
@@ -50,7 +52,10 @@ function mountPinnedScroll() {
   const element = wrapper.element as HTMLElement
   const readScrollHeight = vi.fn(() => scrollHeight)
   Object.defineProperties(element, {
-    clientHeight: { configurable: true, get: () => 100 },
+    clientHeight: {
+      configurable: true,
+      get: () => 100,
+    },
     scrollHeight: { configurable: true, get: readScrollHeight },
   })
 

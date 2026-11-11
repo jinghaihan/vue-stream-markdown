@@ -60,7 +60,9 @@ const blockedProtocols = new Set([
 const HTTP_PROTOCOL_PATTERN = /^https?:$/
 
 function transformDataUrl(url: string, isImage: boolean, allowDataImages: boolean): string | null {
-  return isImage && allowDataImages && url.startsWith('data:image/') ? url : null
+  return isImage && allowDataImages && url.startsWith('data:image/')
+    ? url
+    : null
 }
 
 function transformBlobUrl(url: string): string | null {
@@ -70,7 +72,9 @@ function transformBlobUrl(url: string): string | null {
       return null
 
     const afterProtocol = url.substring(5)
-    return afterProtocol && afterProtocol !== 'invalid' ? url : null
+    return afterProtocol && afterProtocol !== 'invalid'
+      ? url
+      : null
   }
   catch {
     return null
@@ -95,7 +99,9 @@ function isAllowedHttpPrefix(
 }
 
 function normalizeHttpUrl(url: URL, inputWasRelative: boolean): string {
-  return inputWasRelative ? url.pathname + url.search + url.hash : url.href
+  return inputWasRelative
+    ? url.pathname + url.search + url.hash
+    : url.href
 }
 
 function transformHttpUrl(

@@ -63,10 +63,14 @@ export async function incrementalCodeToTokens(highlighter: Highlighter, code: st
 
   const pool = states.get(highlighter) ?? []
   const index = pool.findIndex(state => state.key === key && code.startsWith(state.prefix))
-  const previous = index < 0 ? undefined : pool.splice(index, 1)[0]
+  const previous = index < 0
+    ? undefined
+    : pool.splice(index, 1)[0]
   const prefix = code.slice(0, lastNewline + 1)
   // Bootstrap an existing block in one Shiki call; stream only subsequent lines.
-  const initial = previous ? undefined : highlighter.codeToTokens(prefix, options)
+  const initial = previous
+    ? undefined
+    : highlighter.codeToTokens(prefix, options)
   const completedRows = previous?.rows ?? initial?.tokens.slice(0, -1) ?? []
   const grammarState = previous?.grammarState ?? initial?.grammarState
   if (!grammarState)
@@ -80,7 +84,9 @@ export async function incrementalCodeToTokens(highlighter: Highlighter, code: st
     highlighter: {
       ...highlighter,
       codeToTokens(line: string, config: CodeToTokensOptions<string, string>) {
-        const normalized = line.endsWith('\r') ? line.slice(0, -1) : line
+        const normalized = line.endsWith('\r')
+          ? line.slice(0, -1)
+          : line
         result = highlighter.codeToTokens(normalized, config as TokenOptions)
         shiftOffsets(result.tokens, offset)
         // The official tokenizer consumes only the first row, then appends a newline token.
@@ -97,8 +103,16 @@ export async function incrementalCodeToTokens(highlighter: Highlighter, code: st
   const rows = completedRows.concat(newRows)
   if (!result || !tokenizer.lastStableGrammarState)
     return highlighter.codeToTokens(code, options)
-  pool.unshift({ key, prefix, rows, grammarState: tokenizer.lastStableGrammarState })
+  pool.unshift({
+    key,
+    prefix,
+    rows,
+    grammarState: tokenizer.lastStableGrammarState,
+  })
   pool.length = Math.min(pool.length, MAX_STATES)
   states.set(highlighter, pool)
-  return { ...result, tokens: rows.concat([tail]) }
+  return {
+    ...result,
+    tokens: rows.concat([tail]),
+  }
 }

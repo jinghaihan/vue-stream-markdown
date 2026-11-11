@@ -17,7 +17,9 @@ function assertKatexModule(
 ): asserts module is typeof import('katex') {
   const candidate = module as Partial<typeof import('katex')> | null
   const missing = [
-    typeof candidate?.renderToString === 'function' ? undefined : 'renderToString',
+    typeof candidate?.renderToString === 'function'
+      ? undefined
+      : 'renderToString',
   ].filter((name): name is string => !!name)
 
   if (missing.length > 0) {
@@ -38,13 +40,18 @@ export function createKatexRuntime(options: MathRuntimeOptions = {}): KatexRunti
   })
 
   async function hasKatex() {
-    return cdnLoader.getCdnUrl() ? true : await hasBundledKatexModule()
+    return cdnLoader.getCdnUrl()
+      ? true
+      : await hasBundledKatexModule()
   }
 
   async function getKatex(): Promise<typeof import('katex')> {
     const katexImport = await cdnLoader.loadCdn() ?? await import('katex')
     const katexModule = katexImport.default && typeof katexImport.default === 'object'
-      ? { ...katexImport, ...katexImport.default }
+      ? {
+          ...katexImport,
+          ...katexImport.default,
+        }
       : katexImport
     assertKatexModule(katexModule, cdnLoader.getCdnUrl() ?? 'the local "katex" package')
     return katexModule

@@ -124,7 +124,9 @@ export function hideBareFormattingMarker(
   const trimmedLastLine = lastLine.trim()
   const separatesListMarker = trimmedLastLine[0] === '-'
     && (trimmedLastLine[1] === ' ' || trimmedLastLine[1] === '\t')
-  const listItemContent = separatesListMarker ? trimmedLastLine.slice(2) : undefined
+  const listItemContent = separatesListMarker
+    ? trimmedLastLine.slice(2)
+    : undefined
   if (listItemContent !== undefined && containsOnlyMarkers(listItemContent))
     return content.slice(0, lastLineStart)
 
@@ -155,7 +157,9 @@ export function findLastNonEmptyLineIndex(lines: string[]): number {
  */
 export function getLastNonEmptyLine(lines: string[]): string | undefined {
   const index = findLastNonEmptyLineIndex(lines)
-  return index >= 0 ? lines[index] : undefined
+  return index >= 0
+    ? lines[index]
+    : undefined
 }
 
 /**
@@ -176,7 +180,9 @@ export function calculateAbsolutePosition(
   }
 
   const beforeParagraph = lines.slice(0, paragraphStartIndex).join('\n')
-  return beforeParagraph.length > 0 ? beforeParagraph.length + 1 + relativePos : relativePos
+  return beforeParagraph.length > 0
+    ? beforeParagraph.length + 1 + relativePos
+    : relativePos
 }
 
 /**
@@ -192,7 +198,9 @@ export function calculateParagraphOffset(paragraphStartIndex: number, lines: str
   }
 
   const beforeParagraph = lines.slice(0, paragraphStartIndex).join('\n')
-  return beforeParagraph.length > 0 ? beforeParagraph.length + 1 : 0
+  return beforeParagraph.length > 0
+    ? beforeParagraph.length + 1
+    : 0
 }
 
 /**
@@ -303,8 +311,13 @@ export function analyzeCodeFences(content: string): CodeFenceScan {
       const start = tilde.index + (tilde[1]?.length ?? 0)
       markers.push(start)
       const closing = findTildeClosingFence(content, tilde.index + tilde[0].length, marker.length, tilde[1] ?? '')
-      if (!closing)
-        return { markers, ranges, unclosedFence: { start, marker } }
+      if (!closing) {
+        return {
+          markers,
+          ranges,
+          unclosedFence: { start, marker },
+        }
+      }
 
       ranges.push({ start, end: closing.end })
       markers.push(closing.start)
@@ -314,8 +327,13 @@ export function analyzeCodeFences(content: string): CodeFenceScan {
 
     markers.push(backtick)
     const closing = content.indexOf('```', backtick + 3)
-    if (closing === -1)
-      return { markers, ranges, unclosedFence: { start: backtick, marker: '```' } }
+    if (closing === -1) {
+      return {
+        markers,
+        ranges,
+        unclosedFence: { start: backtick, marker: '```' },
+      }
+    }
 
     ranges.push({ start: backtick, end: closing + 3 })
     markers.push(closing)
@@ -606,7 +624,9 @@ export function maskPairedMarkerRuns(content: string, marker: '*' | '_'): string
     while (index < content.length && content[index] === marker)
       index += 1
 
-    const markerToKeep = (index - runStart) % 2 === 1 ? index - 1 : -1
+    const markerToKeep = (index - runStart) % 2 === 1
+      ? index - 1
+      : -1
     for (let markerIndex = runStart; markerIndex < index; markerIndex += 1) {
       if (markerIndex !== markerToKeep)
         characters[markerIndex] = ' '
@@ -917,6 +937,8 @@ function findUnescapedDollar(text: string, start: number): number {
 export function appendBeforeTrailingWhitespace(content: string, suffix: string): string {
   const match = content.match(trailingWhitespacePattern)
   const trailing = match ? match[0] : ''
-  const withoutTrailing = trailing.length > 0 ? content.slice(0, -trailing.length) : content
+  const withoutTrailing = trailing.length > 0
+    ? content.slice(0, -trailing.length)
+    : content
   return `${withoutTrailing}${suffix}${trailing}`
 }

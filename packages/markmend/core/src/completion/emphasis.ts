@@ -64,8 +64,11 @@ export function completeEmphasis(
     ['*', '_'],
     analysis.getLastParagraph().content,
   )
-  if (hiddenBareMarker !== undefined)
-    return options?.hideBareFormattingMarkers === false ? content : hiddenBareMarker
+  if (hiddenBareMarker !== undefined) {
+    return options?.hideBareFormattingMarkers === false
+      ? content
+      : hiddenBareMarker
+  }
 
   if (!hasOddAsteriskRun && !hasOddUnderscoreRun)
     return content
@@ -194,7 +197,9 @@ function completeEmphasisMarkers(
   if (needsAsterisk && needsUnderscore) {
     const firstStarPos = asteriskMarkers.indexOf('*')
     const firstUnderscorePos = underscoreMarkers.indexOf('_')
-    return firstStarPos < firstUnderscorePos ? `${content}_*` : `${content}*_`
+    return firstStarPos < firstUnderscorePos
+      ? `${content}_*`
+      : `${content}*_`
   }
 
   if (needsAsterisk)

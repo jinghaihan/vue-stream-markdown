@@ -11,7 +11,9 @@ interface PlaygroundI18n {
 }
 
 function resolveLanguage(locale: string): PlaygroundLanguage {
-  return locale in PLAYGROUND_LOCALES ? locale as PlaygroundLanguage : 'en-US'
+  return locale in PLAYGROUND_LOCALES
+    ? locale as PlaygroundLanguage
+    : 'en-US'
 }
 
 function getMessage(messages: PlaygroundLocale, key: string): string | undefined {
@@ -21,7 +23,9 @@ function getMessage(messages: PlaygroundLocale, key: string): string | undefined
     return (current as Record<string, unknown>)[segment]
   }, messages)
 
-  return typeof value === 'string' ? value : undefined
+  return typeof value === 'string'
+    ? value
+    : undefined
 }
 
 export function provideI18n(locale: Ref<string>) {

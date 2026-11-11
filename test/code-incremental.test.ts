@@ -2,12 +2,26 @@ import { code, createShikiRuntime, disposeShikiHighlighter } from '@stream-markd
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { incrementalCodeToTokens } from '../packages/extensions/code/src/incremental'
 
-const options = { lang: 'typescript', themes: { light: 'github-light', dark: 'github-dark' } } as const
+const options = {
+  lang: 'typescript',
+  themes: { light: 'github-light', dark: 'github-dark' },
+} as const
 type CodeToTokensOptions = Parameters<typeof incrementalCodeToTokens>[2]
 let highlighter: Awaited<ReturnType<ReturnType<typeof createShikiRuntime>['getHighlighter']>>
 
 beforeAll(async () => {
-  highlighter = await createShikiRuntime({ lang: 'typescript', langs: ['javascript', 'python', 'html', 'css', 'json', 'bash', 'markdown'] }).getHighlighter()
+  highlighter = await createShikiRuntime({
+    lang: 'typescript',
+    langs: [
+      'javascript',
+      'python',
+      'html',
+      'css',
+      'json',
+      'bash',
+      'markdown',
+    ],
+  }).getHighlighter()
 })
 afterAll(disposeShikiHighlighter)
 
@@ -25,7 +39,9 @@ describe('incremental Shiki highlighting', () => {
     for (const newline of ['\n', '\r\n']) {
       let source = ''
       const chunks = [
-        `// ${newline === '\n' ? 'lf' : 'crlf'}${newline}`,
+        `// ${newline === '\n'
+          ? 'lf'
+          : 'crlf'}${newline}`,
         '/* open',
         newline,
         `comment */${newline}`,
@@ -82,7 +98,10 @@ describe('incremental Shiki highlighting', () => {
     await compare(prefixes[0]?.replace('value', 'renamed') ?? '')
     await compare(`${prefixes[0]}let other = true`, { ...options, lang: 'javascript' })
     await compare(`${prefixes[0]}let other = true`, { ...options, defaultColor: false })
-    await compare(`${prefixes[0]}let other = true`, { ...options, themes: { light: 'github-dark', dark: 'github-light' } })
+    await compare(`${prefixes[0]}let other = true`, {
+      ...options,
+      themes: { light: 'github-dark', dark: 'github-light' },
+    })
   })
 
   it('evicts older blocks beyond the four-entry limit', async () => {
@@ -115,7 +134,9 @@ describe('incremental Shiki highlighting', () => {
 
   it('reuses converted extension rows and respects changing option getters', async () => {
     let defaultColor: string | false = 'light'
-    const extension = code({ codeToTokenOptions: () => ({ ...options, defaultColor }) })
+    const extension = code({
+      codeToTokenOptions: () => ({ ...options, defaultColor }),
+    })
     const prefix = '// converted\nconst value = 1;\n'
     const first = await extension.highlight({ code: prefix, language: 'typescript', isDark: false })
     const next = await extension.highlight({ code: `${prefix}value++`, language: 'typescript', isDark: true })

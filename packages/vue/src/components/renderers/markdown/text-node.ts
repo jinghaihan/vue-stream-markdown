@@ -48,16 +48,23 @@ export function renderTextNode(
   const compact = useCssAnimation && context.compactTextAnimations.value
   const { prefix, parts } = compact
     ? textAnimationScheduler.compactParts(textKey, text, context.animationSplit.value)
-    : { prefix: '', parts: createTextParts(text, textKey, context.animationSplit.value) }
+    : {
+        prefix: '',
+        parts: createTextParts(text, textKey, context.animationSplit.value),
+      }
   textAnimationScheduler.schedule(parts)
   const children = () => [
-    ...compact ? [prefix] : [],
+    ...compact
+      ? [prefix]
+      : [],
     ...parts.map((part) => {
       if (compact && part.whitespace)
         return part.value
       return h('span', {
         'key': part.key,
-        'data-stream-markdown': part.whitespace ? 'text-space' : `text-${part.animationSplit}`,
+        'data-stream-markdown': part.whitespace
+          ? 'text-space'
+          : `text-${part.animationSplit}`,
         'class': [
           '[text-decoration:inherit]',
           !part.whitespace && 'inline-block max-w-full whitespace-pre-wrap break-words',

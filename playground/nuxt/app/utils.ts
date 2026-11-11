@@ -17,8 +17,11 @@ export function filterObjectKeys(value: unknown, exclude: string[]) {
   return JSON.stringify(
     value,
     (key: string, value: unknown) => {
-      if ([...exclude.filter(v => !!v)].includes(key))
+      if ([
+        ...exclude.filter(v => !!v),
+      ].includes(key)) {
         return
+      }
 
       if (typeof value === 'function')
         return `function ${value.name}(...)`

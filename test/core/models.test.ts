@@ -107,7 +107,12 @@ describe('core models', () => {
       showDownload: true,
       showFullscreen: true,
     })
-    expect(controls.map(control => control.key)).toEqual(['collapse', 'copy', 'download', 'fullscreen'])
+    expect(controls.map(control => control.key)).toEqual([
+      'collapse',
+      'copy',
+      'download',
+      'fullscreen',
+    ])
     expect(controls.find(control => control.key === 'download')?.visible).toBe(true)
     expect(createCodeBlockModel({
       node: { lang: 'constructor', value: 'text' },
@@ -139,10 +144,17 @@ describe('core models', () => {
       rotate: 0,
     }))
     const preview = createImagePreviewModel({
-      sources: ['a.png', 'b.png', 'a.png', 'blocked.png'],
+      sources: [
+        'a.png',
+        'b.png',
+        'a.png',
+        'blocked.png',
+      ],
       src: 'a.png',
       controls: true,
-      transformHardenUrl: url => url === 'blocked.png' ? null : url,
+      transformHardenUrl: url => url === 'blocked.png'
+        ? null
+        : url,
       hasDownload: true,
       preview: true,
       loaded: true,
@@ -180,7 +192,12 @@ describe('core models', () => {
       renderingCode: '\\frac{1}{',
       errorMessage: 'Unexpected end of input',
     })).toMatchObject({ loading: true, error: false })
-    expect(getTableContent('csv', { headers: ['A', 'B'], rows: [['1', '2']] }, ';')).toMatchObject({
+    expect(getTableContent('csv', {
+      headers: ['A', 'B'],
+      rows: [
+        ['1', '2'],
+      ],
+    }, ';')).toMatchObject({
       content: 'A;B\n1;2',
       extension: 'csv',
     })
@@ -191,7 +208,10 @@ describe('core models', () => {
       showDownload: true,
       showFullscreen: true,
     }).map(control => control.icon)).toEqual(['check', 'download', 'minimize'])
-    expect(createErrorModel({ variant: 'harden-link', hasIcon: name => name === 'link' })).toMatchObject({
+    expect(createErrorModel({
+      variant: 'harden-link',
+      hasIcon: name => name === 'link',
+    })).toMatchObject({
       icon: 'link',
       messageKey: 'error.harden',
       isHarden: true,
@@ -204,10 +224,18 @@ describe('core models', () => {
 
     expect(createHtmlPreviewModel({ value: ' <div /> ' })).toEqual({ code: '<div />' })
     expect(resolveHtmlPreviewSandbox(undefined)).toBe('allow-scripts')
-    expect(resolveHtmlPreviewAutoHeight({ html: { autoHeight: false } })).toBe(false)
-    expect(resolveHtmlPreviewHeight({ html: { height: 480 } })).toBe('480px')
-    expect(resolveHtmlPreviewMaxHeight({ html: { maxHeight: '80vh' } })).toBe('80vh')
-    expect(resolveHtmlPreviewMaxHeightValue({ html: { maxHeight: '800px' } })).toBe(800)
+    expect(resolveHtmlPreviewAutoHeight({
+      html: { autoHeight: false },
+    })).toBe(false)
+    expect(resolveHtmlPreviewHeight({
+      html: { height: 480 },
+    })).toBe('480px')
+    expect(resolveHtmlPreviewMaxHeight({
+      html: { maxHeight: '80vh' },
+    })).toBe('80vh')
+    expect(resolveHtmlPreviewMaxHeightValue({
+      html: { maxHeight: '800px' },
+    })).toBe(800)
     expect(resolveHtmlPreviewMeasurementMode('allow-scripts allow-same-origin', true)).toBe('dom')
     expect(resolveHtmlPreviewMeasurementMode('allow-scripts', true)).toBe('message')
     expect(createHtmlPreviewSrcdoc('<body><div>Hello</div></body>')).toContain('<script>')

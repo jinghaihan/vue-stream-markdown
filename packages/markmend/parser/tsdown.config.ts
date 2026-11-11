@@ -17,5 +17,7 @@ export default defineConfig({
     neverBundle: ['@markmend/core'],
     onlyBundle: false,
   },
-  plugins: [ApiSnapshot()],
+  plugins: [
+    ApiSnapshot(),
+  ],
 })

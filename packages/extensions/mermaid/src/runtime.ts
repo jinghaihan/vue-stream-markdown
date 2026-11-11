@@ -21,7 +21,9 @@ async function hasBundledMermaidModule() {
 }
 
 function toError(error: unknown): string {
-  return error instanceof Error ? error.message : String(error)
+  return error instanceof Error
+    ? error.message
+    : String(error)
 }
 
 function assertMermaidModule(
@@ -30,9 +32,15 @@ function assertMermaidModule(
 ): asserts module is Mermaid {
   const candidate = module as Partial<Mermaid> | null
   const missing = [
-    typeof candidate?.initialize === 'function' ? undefined : 'initialize',
-    typeof candidate?.parse === 'function' ? undefined : 'parse',
-    typeof candidate?.render === 'function' ? undefined : 'render',
+    typeof candidate?.initialize === 'function'
+      ? undefined
+      : 'initialize',
+    typeof candidate?.parse === 'function'
+      ? undefined
+      : 'parse',
+    typeof candidate?.render === 'function'
+      ? undefined
+      : 'render',
   ].filter((name): name is string => !!name)
 
   if (missing.length > 0) {
@@ -56,7 +64,9 @@ export function createMermaidRuntime(options: MermaidRuntimeOptions = {}): Merma
       return code
 
     const [light, dark] = resolveGetter(options.theme) ?? DEFAULT_MERMAID_THEME
-    const theme = resolveGetter(options.isDark) ? dark : light
+    const theme = resolveGetter(options.isDark)
+      ? dark
+      : light
     return `%%{init: {"theme": "${theme}"}}%%\n${code}`
   }
 
@@ -81,7 +91,9 @@ export function createMermaidRuntime(options: MermaidRuntimeOptions = {}): Merma
       return
 
     const cdnLoader = createCdnLoader()
-    const hasRuntime = cdnLoader.getCdnUrl() ? true : await hasBundledMermaidModule()
+    const hasRuntime = cdnLoader.getCdnUrl()
+      ? true
+      : await hasBundledMermaidModule()
     if (!hasRuntime)
       throw new Error('Mermaid module is not available')
 
@@ -109,7 +121,10 @@ export function createMermaidRuntime(options: MermaidRuntimeOptions = {}): Merma
       return { valid: true }
     }
     catch (error) {
-      return { valid: false, error: toError(error) }
+      return {
+        valid: false,
+        error: toError(error),
+      }
     }
   }
 
@@ -126,7 +141,10 @@ export function createMermaidRuntime(options: MermaidRuntimeOptions = {}): Merma
     }
     catch (error) {
       document.getElementById(`d${id}`)?.remove()
-      return { valid: false, error: toError(error) }
+      return {
+        valid: false,
+        error: toError(error),
+      }
     }
   }
 

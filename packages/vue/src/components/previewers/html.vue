@@ -37,7 +37,9 @@ const code = computed(() => {
   return model.value.code
 })
 
-const height = computed(() => measuredHeight.value === undefined ? fallbackHeight.value : `${measuredHeight.value}px`)
+const height = computed(() => measuredHeight.value === undefined
+  ? fallbackHeight.value
+  : `${measuredHeight.value}px`)
 
 function updateMeasuredHeight(nextHeight: number | undefined) {
   if (nextHeight === undefined || nextHeight <= 0)
@@ -88,7 +90,9 @@ watch(measurementMode, () => {
 })
 
 useEventListener(
-  typeof window === 'undefined' ? undefined : window,
+  typeof window === 'undefined'
+    ? undefined
+    : window,
   'message',
   handleMessage,
 )

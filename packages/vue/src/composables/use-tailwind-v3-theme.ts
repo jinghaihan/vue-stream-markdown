@@ -24,8 +24,12 @@ function getThemeSignature(element: HTMLElement): string {
   return [
     element.getAttribute('class'),
     element.getAttribute('style'),
-    documentElement === element ? null : documentElement?.getAttribute('class'),
-    documentElement === element ? null : documentElement?.getAttribute('style'),
+    documentElement === element
+      ? null
+      : documentElement?.getAttribute('class'),
+    documentElement === element
+      ? null
+      : documentElement?.getAttribute('style'),
   ].join('\0')
 }
 
@@ -59,7 +63,9 @@ export function useTailwindV3Theme(options: UseTailwindV3ThemeOptions) {
   const { stop } = useMutationObserver(
     () => {
       const documentElement = getDocumentElement()
-      return element.value && documentElement ? [element.value, documentElement] : []
+      return element.value && documentElement
+        ? [element.value, documentElement]
+        : []
     },
     generateCSS,
     {

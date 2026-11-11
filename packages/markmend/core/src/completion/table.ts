@@ -164,7 +164,9 @@ function getTableHeaderState(row: string): TableHeaderState {
   const trimmedRow = row.trim()
   const isComplete = trimmedRow.endsWith('|')
     && !isEscapedCharacter(trimmedRow, trimmedRow.length - 1)
-  const completedRow = isComplete ? row : `${trimmedRow} |`
+  const completedRow = isComplete
+    ? row
+    : `${trimmedRow} |`
 
   return {
     row,
@@ -184,7 +186,9 @@ function completeLastTableHeader(
   const newContent = header.isComplete
     ? content
     : `${beforeHeaderRow}${header.completedRow}${afterHeaderRow}`
-  return newContent.endsWith('\n') ? `${newContent}${separator}` : `${newContent}\n${separator}`
+  return newContent.endsWith('\n')
+    ? `${newContent}${separator}`
+    : `${newContent}\n${separator}`
 }
 
 function completeMatchingSeparator(

@@ -28,15 +28,56 @@ function mountNodes(nodes: ShallowRef<Node[]>, components = {}) {
 describe('markdown renderer', () => {
   it('renders semantic nodes and bound attributes directly', async () => {
     const nodes = shallowRef<Node[]>([
-      ['h2', { id: 'title' }, ['strong', {}, 'Title']],
-      ['p', {}, 'Visit ', ['a', { href: 'https://example.com' }, 'example']],
-      ['ul', { class: 'contains-task-list' }, [
-        'li',
+      [
+        'h2',
+        { id: 'title' },
+        ['strong', {}, 'Title'],
+      ],
+      [
+        'p',
         {},
-        ['input', { ':checked': 'true', ':disabled': 'true', 'type': 'checkbox' }],
-        'Done',
-      ]],
-      ['table', {}, ['thead', {}, ['tr', {}, ['th', {}, 'Name']]], ['tbody', {}, ['tr', {}, ['td', {}, 'Value']]]],
+        'Visit ',
+        [
+          'a',
+          { href: 'https://example.com' },
+          'example',
+        ],
+      ],
+      [
+        'ul',
+        { class: 'contains-task-list' },
+        [
+          'li',
+          {},
+          [
+            'input',
+            { ':checked': 'true', ':disabled': 'true', 'type': 'checkbox' },
+          ],
+          'Done',
+        ],
+      ],
+      [
+        'table',
+        {},
+        [
+          'thead',
+          {},
+          [
+            'tr',
+            {},
+            ['th', {}, 'Name'],
+          ],
+        ],
+        [
+          'tbody',
+          {},
+          [
+            'tr',
+            {},
+            ['td', {}, 'Value'],
+          ],
+        ],
+      ],
     ])
     const wrapper = mountNodes(nodes)
     await vi.dynamicImportSettled()
@@ -59,7 +100,33 @@ describe('markdown renderer', () => {
 
   it('keeps explicit table alignment over the left-aligned header default', async () => {
     const nodes = shallowRef<Node[]>([
-      ['table', {}, ['thead', {}, ['tr', {}, ['th', { style: 'text-align:left' }, 'Left'], ['th', { style: 'text-align:center' }, 'Center'], ['th', { style: 'text-align:right' }, 'Right']]]],
+      [
+        'table',
+        {},
+        [
+          'thead',
+          {},
+          [
+            'tr',
+            {},
+            [
+              'th',
+              { style: 'text-align:left' },
+              'Left',
+            ],
+            [
+              'th',
+              { style: 'text-align:center' },
+              'Center',
+            ],
+            [
+              'th',
+              { style: 'text-align:right' },
+              'Right',
+            ],
+          ],
+        ],
+      ],
     ])
     const wrapper = mountNodes(nodes)
     await vi.dynamicImportSettled()
@@ -76,7 +143,13 @@ describe('markdown renderer', () => {
 
   it('renders ordered list markers without clipping multi-digit values', async () => {
     const nodes = shallowRef<Node[]>([
-      ['ol', { start: '98' }, ['li', {}, 'Ninety-eight'], ['li', {}, 'Ninety-nine'], ['li', {}, 'One hundred']],
+      [
+        'ol',
+        { start: '98' },
+        ['li', {}, 'Ninety-eight'],
+        ['li', {}, 'Ninety-nine'],
+        ['li', {}, 'One hundred'],
+      ],
     ])
     const wrapper = mountNodes(nodes)
 
@@ -99,7 +172,11 @@ describe('markdown renderer', () => {
         return () => h('aside', { 'data-type': props.type }, slots.default?.())
       },
     })
-    const node: Node = ['callout', { type: 'info' }, ['strong', {}, 'Notice']]
+    const node: Node = [
+      'callout',
+      { type: 'info' },
+      ['strong', {}, 'Notice'],
+    ]
     const wrapper = mountNodes(shallowRef<Node[]>([node]), { callout: Callout })
 
     expect(wrapper.get('aside').attributes('data-type')).toBe('info')
@@ -109,11 +186,17 @@ describe('markdown renderer', () => {
 
   it('preserves reused block elements across incremental documents', async () => {
     const stable: Node = ['p', {}, 'Stable']
-    const nodes = shallowRef<Node[]>([stable, ['p', {}, 'Tail']])
+    const nodes = shallowRef<Node[]>([
+      stable,
+      ['p', {}, 'Tail'],
+    ])
     const wrapper = mountNodes(nodes)
     const stableElement = wrapper.findAll('p')[0]!.element
 
-    nodes.value = [stable, ['p', {}, 'Tail grows']]
+    nodes.value = [
+      stable,
+      ['p', {}, 'Tail grows'],
+    ]
     await nextTick()
 
     expect(wrapper.findAll('p')[0]!.element).toBe(stableElement)

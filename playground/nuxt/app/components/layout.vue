@@ -10,7 +10,9 @@ const showInputEditor = defineModel<boolean>('showInputEditor', { required: fals
 const showDocumentResult = defineModel<boolean>('showDocumentResult', { required: false, default: false })
 
 const showMarkdown = computed(
-  () => isMobile.value ? (!showInputEditor.value && !showDocumentResult.value) : true,
+  () => isMobile.value
+    ? (!showInputEditor.value && !showDocumentResult.value)
+    : true,
 )
 
 // when is mobile, only one section can be shown at a time

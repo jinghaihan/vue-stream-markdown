@@ -18,7 +18,9 @@ export function createPeleCdnLoader(options: PeleExtensionOptions['cdnOptions'])
 
     const baseUrl = cdnOptions?.baseUrl
     const url = cdnOptions?.getUrl?.('pele', PELE_VERSION)
-      ?? (baseUrl ? `${removeTrailingSlash(baseUrl)}/pele@${PELE_VERSION}/dist/esm/lazy.js` : undefined)
+      ?? (baseUrl
+        ? `${removeTrailingSlash(baseUrl)}/pele@${PELE_VERSION}/dist/esm/lazy.js`
+        : undefined)
     if (!url)
       return renderAsync
 

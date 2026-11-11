@@ -63,7 +63,9 @@ const scenarios = [
 ] as const
 
 const streamdownCodePlugins = { code }
-const vueExtensions = { code: createCodeExtension() }
+const vueExtensions = {
+  code: createCodeExtension(),
+}
 
 const benchmarkOptions: BenchRunOptions = {
   time: 1000,
@@ -117,13 +119,17 @@ function renderReact(root: Root, content: string): void {
       controls: false,
       isAnimating: false,
       mode: 'streaming',
-      plugins: content.includes('```') ? streamdownCodePlugins : undefined,
+      plugins: content.includes('```')
+        ? streamdownCodePlugins
+        : undefined,
     }, content))
   })
 }
 
 function expectedStableText(document: string): string {
-  return document === WITH_CODE ? 'export const rate' : 'EMEA'
+  return document === WITH_CODE
+    ? 'export const rate'
+    : 'EMEA'
 }
 
 function expectsHighlight(document: string): boolean {

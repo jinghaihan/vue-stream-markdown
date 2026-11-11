@@ -102,7 +102,9 @@ const resolvedDarkProp = computed(() => {
 const { isDark, stop: stopDarkModeObserver } = useDarkDetector(
   resolvedDarkProp,
   cssVariables,
-  { manageOverlay: () => !provider },
+  {
+    manageOverlay: () => !provider,
+  },
 )
 const { locale } = useLocaleDetector(localeProp)
 const extensions = computed(() => resolveExtensions(
@@ -125,7 +127,9 @@ const parser = createMarkmendParser({
     ...props.parserOptions,
     plugins: [
       ...(props.parserOptions?.plugins ?? []),
-      ...(extensions.value?.math ? [extensions.value.math.parserPlugin] : []),
+      ...(extensions.value?.math
+        ? [extensions.value.math.parserPlugin]
+        : []),
     ],
   },
   syntax: {

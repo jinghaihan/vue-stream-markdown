@@ -160,17 +160,23 @@ describe('isWithinMathBlock', () => {
 describe('code block range helpers', () => {
   it('finds closed code block ranges and ignores trailing unclosed fences', () => {
     const ranges = findClosedCodeBlockRanges('```js\na\n```\ntext\n```ts\nb')
-    expect(ranges).toEqual([{ start: 0, end: 11 }])
+    expect(ranges).toEqual([
+      { start: 0, end: 11 },
+    ])
   })
 
   it('checks range overlap correctly', () => {
-    const ranges = [{ start: 2, end: 8 }]
+    const ranges = [
+      { start: 2, end: 8 },
+    ]
     expect(isRangeOverlappingRanges(3, 4, ranges)).toBe(true)
     expect(isRangeOverlappingRanges(0, 2, ranges)).toBe(false)
   })
 
   it('checks positions inside ranges correctly', () => {
-    const ranges = [{ start: 2, end: 8 }]
+    const ranges = [
+      { start: 2, end: 8 },
+    ]
     expect(isPositionInRanges(2, ranges)).toBe(true)
     expect(isPositionInRanges(8, ranges)).toBe(false)
   })

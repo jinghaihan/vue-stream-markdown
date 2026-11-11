@@ -69,7 +69,9 @@ export function createNodeRenderer(options: NodeRendererOptions): NodeRenderer {
         loading,
         key,
         hideCaret,
-        hasCustomListItem ? undefined : resolveOrderedListStart(attrs),
+        hasCustomListItem
+          ? undefined
+          : resolveOrderedListStart(attrs),
       ))
     }
 
@@ -77,7 +79,10 @@ export function createNodeRenderer(options: NodeRendererOptions): NodeRenderer {
       ...attrs,
       key,
       'class': [...className, ORDERED_LIST_STYLES.item],
-      'style': [attrs.style, { paddingInlineStart: 0 }],
+      'style': [
+        attrs.style,
+        { paddingInlineStart: 0 },
+      ],
       'data-stream-markdown': resolveDataAttribute(tag),
     }, [
       h('span', {
@@ -252,7 +257,9 @@ export function createNodeRenderer(options: NodeRendererOptions): NodeRenderer {
       }, renderNodes(children, loading, key, hideCaret))
     }
 
-    const inlineEnd = firstBlockIndex === -1 ? children.length : firstBlockIndex
+    const inlineEnd = firstBlockIndex === -1
+      ? children.length
+      : firstBlockIndex
     const inlineChildren = children.slice(0, inlineEnd)
     const blockChildren = children.slice(inlineEnd)
     const paragraph: Node = ['p', {}, ...inlineChildren]

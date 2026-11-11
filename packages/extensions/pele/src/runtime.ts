@@ -42,7 +42,9 @@ export function createPeleRuntime(options: Pick<PeleExtensionOptions, 'cdnOption
         return {
           supported: true,
           valid: false,
-          error: error instanceof Error ? error.message : String(error),
+          error: error instanceof Error
+            ? error.message
+            : String(error),
         }
       }
     },

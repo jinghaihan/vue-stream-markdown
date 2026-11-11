@@ -57,12 +57,24 @@ export function getTableContent(
 ): TableContent {
   switch (format) {
     case 'markdown':
-      return { content: tableDataToMarkdown(tableData), mimeType: 'text/markdown', extension: 'md' }
+      return {
+        content: tableDataToMarkdown(tableData),
+        mimeType: 'text/markdown',
+        extension: 'md',
+      }
     case 'tsv':
-      return { content: tableDataToTSV(tableData), mimeType: 'text/tsv', extension: 'tsv' }
+      return {
+        content: tableDataToTSV(tableData),
+        mimeType: 'text/tsv',
+        extension: 'tsv',
+      }
     case 'csv':
     default:
-      return { content: tableDataToCSV(tableData, csvSeparator), mimeType: 'text/csv', extension: 'csv' }
+      return {
+        content: tableDataToCSV(tableData, csvSeparator),
+        mimeType: 'text/csv',
+        extension: 'csv',
+      }
   }
 }
 

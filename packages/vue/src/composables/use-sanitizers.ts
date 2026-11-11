@@ -31,5 +31,10 @@ export function useSanitizers(options: UseSanitizersOptions) {
     )
   }
 
-  return { hardenOptions, transformHardenUrl, transformedUrl, isHardenUrl }
+  return {
+    hardenOptions,
+    transformHardenUrl,
+    transformedUrl,
+    isHardenUrl,
+  }
 }

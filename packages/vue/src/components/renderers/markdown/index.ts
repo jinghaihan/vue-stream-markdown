@@ -29,7 +29,9 @@ export default defineComponent({
   },
   setup(props) {
     const context = useContext()
-    const parent = props.nodeKey ? inject(MARKDOWN_RENDER_CONTEXT, undefined) : undefined
+    const parent = props.nodeKey
+      ? inject(MARKDOWN_RENDER_CONTEXT, undefined)
+      : undefined
     const components = computed(() => props.components ?? parent?.components.value ?? {})
     const completionInfo = computed(() => props.completionInfo ?? parent?.completionInfo.value)
     const imageSources = computed(() => parent?.imageSources.value ?? collectImageSources(props.nodes))
@@ -95,7 +97,9 @@ export default defineComponent({
       const renderedTextKeys = new Set<string>()
       const activePaths = new Set<string>()
       props.nodes.forEach((node, index) => {
-        const path = props.nodeKey ? `${props.nodeKey}-${index}` : resolveTopLevelPath(node, index)
+        const path = props.nodeKey
+          ? `${props.nodeKey}-${index}`
+          : resolveTopLevelPath(node, index)
         activePaths.add(path)
         for (const key of renderedTextKeysByPath.get(path) ?? [])
           renderedTextKeys.add(key)
@@ -119,8 +123,12 @@ export default defineComponent({
         animatedTextKeys.clear()
       const lastIndex = findLastRenderableIndex(props.nodes)
       return props.nodes.map((node, index) => {
-        const path = props.nodeKey ? `${props.nodeKey}-${index}` : resolveTopLevelPath(node, index)
-        const tag = typeof node === 'string' ? 'text' : node[0] ?? 'comment'
+        const path = props.nodeKey
+          ? `${props.nodeKey}-${index}`
+          : resolveTopLevelPath(node, index)
+        const tag = typeof node === 'string'
+          ? 'text'
+          : node[0] ?? 'comment'
         return h(MarkdownBlock, {
           key: `${path}-${tag}`,
           components: components.value,

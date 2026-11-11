@@ -103,9 +103,11 @@ const actions = computed((): Action[] => {
       name: t('actions.clearContent'),
       icon: typedEnable.value ? CircleStop : BrushClean,
       buttonClass: typedEnable.value
-        ? [isDark.value
-            ? 'bg-destructive/30 hover:bg-destructive/50'
-            : 'bg-destructive hover:bg-red text-destructive-foreground']
+        ? [
+            isDark.value
+              ? 'bg-destructive/30 hover:bg-destructive/50'
+              : 'bg-destructive hover:bg-red text-destructive-foreground',
+          ]
         : [],
       visible: () => !staticMode.value,
       onClick: () => props.terminateTypeWriting(),
@@ -117,11 +119,15 @@ const actions = computed((): Action[] => {
       onClick: () => props.prevStep(),
     }),
     wrapAction({
-      name: typedEnable.value ? t('actions.stopTyping') : t('actions.startTyping'),
+      name: typedEnable.value
+        ? t('actions.stopTyping')
+        : t('actions.startTyping'),
       icon: typedEnable.value ? CirclePause : CirclePlay,
       buttonClass: typedEnable.value
         ? []
-        : [isDark.value ? 'text-green-200' : 'text-green-800'],
+        : [
+            isDark.value ? 'text-green-200' : 'text-green-800',
+          ],
       variant: 'toggle',
       defaultActive: typedEnable.value,
       onClick: () => {

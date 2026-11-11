@@ -21,12 +21,12 @@ const { html, error, errorMessage } = useMathRenderer({
   throttle,
 })
 
-const Error = computed(() => extensions.value?.math?.errorComponent ?? UI.value.ErrorComponent)
+const ErrorComponent = computed(() => extensions.value?.math?.errorComponent ?? UI.value.ErrorComponent)
 </script>
 
 <template>
   <component
-    :is="Error"
+    :is="ErrorComponent"
     v-if="error"
     variant="katex"
     :message="errorMessage"

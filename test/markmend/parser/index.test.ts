@@ -22,7 +22,9 @@ describe('markmend parser', () => {
         const streamed = await engine.parse(source, 'streaming')
         const settled = await createMarkmendParser().parse(source, 'static')
 
-        const withoutSourcePositions = (key: string, value: unknown) => key === '$' ? undefined : value
+        const withoutSourcePositions = (key: string, value: unknown) => key === '$'
+          ? undefined
+          : value
         expect(JSON.stringify(streamed.document.nodes, withoutSourcePositions))
           .toBe(JSON.stringify(settled.document.nodes, withoutSourcePositions))
         expect(JSON.stringify(streamed.document.nodes).match(/"pre",/g)).toHaveLength(1)
@@ -34,7 +36,9 @@ describe('markmend parser', () => {
       const closed = `# Stable\n\n${opening}${fence}js\n${continuation}abcdef\n${continuation}${fence}\n\nDone`
       const streamed = await engine.parse(closed, 'streaming')
       const settled = await engine.parse(closed, 'static')
-      expect(JSON.stringify(streamed.document.nodes, (key, value) => key === '$' ? undefined : value))
+      expect(JSON.stringify(streamed.document.nodes, (key, value) => key === '$'
+        ? undefined
+        : value))
         .toBe(JSON.stringify(settled.document.nodes))
     }
   })
@@ -43,7 +47,11 @@ describe('markmend parser', () => {
     const engine = createMarkmendParser()
     const body = '{"type":"card","text":"~~literal **bold `code \\\\(math\\\\)"}'
     const source = `~~~json\n${body}`
-    const expectedCode = ['code', { class: 'language-json' }, body]
+    const expectedCode = [
+      'code',
+      { class: 'language-json' },
+      body,
+    ]
 
     await engine.parse('~~~json\n{"type":"card"', 'streaming')
 
@@ -55,13 +63,30 @@ describe('markmend parser', () => {
     }
 
     const { document } = await engine.parse(source, 'static')
-    expect(document.nodes).toEqual([['pre', { language: 'json' }, expectedCode]])
+    expect(document.nodes).toEqual([
+      [
+        'pre',
+        { language: 'json' },
+        expectedCode,
+      ],
+    ])
   })
 
   it('hides pending references only during streaming and resolves them when definitions arrive', async () => {
     const engine = createMarkmendParser()
     const pending = await engine.parse('Text[^note]', 'streaming')
-    expect(pending.document.nodes).toEqual([['p', {}, 'Text', ['span', { hidden: true }, '^note']]])
+    expect(pending.document.nodes).toEqual([
+      [
+        'p',
+        {},
+        'Text',
+        [
+          'span',
+          { hidden: true },
+          '^note',
+        ],
+      ],
+    ])
     const resolved = await engine.parse('Text[^note]\n\n[^note]: Growing', 'streaming')
     expect(JSON.stringify(resolved.document.nodes)).toContain('fnref-note')
     expect(JSON.stringify(resolved.document.nodes)).not.toContain('"hidden":true')
@@ -75,7 +100,9 @@ describe('markmend parser', () => {
     const serialized = JSON.stringify(result.document.nodes)
     expect(serialized.match(/"hidden":true/g)).toHaveLength(1)
     expect(serialized).toContain('["code",{},"[^1]"]')
-    const disabled = await createMarkmendParser({ syntax: { footnotes: false } }).parse('Text[^note]', 'streaming')
+    const disabled = await createMarkmendParser({
+      syntax: { footnotes: false },
+    }).parse('Text[^note]', 'streaming')
     expect(JSON.stringify(disabled.document.nodes)).not.toContain('"hidden":true')
   })
 
@@ -141,12 +168,14 @@ describe('markmend parser', () => {
         return `${markdown}\n<!-- completed -->`
       },
       parserOptions: {
-        plugins: [{
-          name: 'observe-pre',
-          pre(state) {
-            events.push(['pre', state.markdown])
+        plugins: [
+          {
+            name: 'observe-pre',
+            pre(state) {
+              events.push(['pre', state.markdown])
+            },
           },
-        }],
+        ],
       },
     })
 
@@ -164,14 +193,16 @@ describe('markmend parser', () => {
     const observed: string[] = []
     const engine = createMarkmendParser({
       parserOptions: {
-        plugins: [{
-          name: 'observe-order',
-          async pre(state) {
-            if (state.markdown.includes('first'))
-              await new Promise(resolve => setTimeout(resolve, 10))
-            observed.push(state.markdown)
+        plugins: [
+          {
+            name: 'observe-order',
+            async pre(state) {
+              if (state.markdown.includes('first'))
+                await new Promise(resolve => setTimeout(resolve, 10))
+              observed.push(state.markdown)
+            },
           },
-        }],
+        ],
       },
     })
 
@@ -180,21 +211,27 @@ describe('markmend parser', () => {
     const [firstResult, secondResult] = await Promise.all([first, second])
 
     expect(observed).toEqual(['first', 'second'])
-    expect(firstResult.document.nodes).toEqual([['p', {}, 'first']])
-    expect(secondResult.document.nodes).toEqual([['p', {}, 'second']])
+    expect(firstResult.document.nodes).toEqual([
+      ['p', {}, 'first'],
+    ])
+    expect(secondResult.document.nodes).toEqual([
+      ['p', {}, 'second'],
+    ])
     expect(engine.getDocument()).toBe(secondResult.document)
   })
 
   it('keeps the last successful document when parsing fails', async () => {
     const engine = createMarkmendParser({
       parserOptions: {
-        plugins: [{
-          name: 'reject-invalid',
-          pre(state) {
-            if (state.markdown === 'invalid')
-              throw new Error('invalid markdown')
+        plugins: [
+          {
+            name: 'reject-invalid',
+            pre(state) {
+              if (state.markdown === 'invalid')
+                throw new Error('invalid markdown')
+            },
           },
-        }],
+        ],
       },
     })
 
@@ -205,7 +242,9 @@ describe('markmend parser', () => {
     expect(engine.getDocument()).toBe(validResult.document)
     await expect(engine.parse('recovered', 'static')).resolves.toMatchObject({
       document: {
-        nodes: [['p', {}, 'recovered']],
+        nodes: [
+          ['p', {}, 'recovered'],
+        ],
       },
     })
   })
@@ -215,7 +254,12 @@ describe('markmend parser', () => {
     const { document } = await engine.parse('**中文加粗。**后文', 'static')
 
     expect(document.nodes).toEqual([
-      ['p', {}, ['strong', {}, '中文加粗。'], '后文'],
+      [
+        'p',
+        {},
+        ['strong', {}, '中文加粗。'],
+        '后文',
+      ],
     ])
   })
 
@@ -227,11 +271,23 @@ describe('markmend parser', () => {
 
     expect(document.nodes[0]?.slice(2)).toEqual([
       '访问 ',
-      ['a', { href: 'http://www.example.com/path' }, 'www.example.com/path'],
+      [
+        'a',
+        { href: 'http://www.example.com/path' },
+        'www.example.com/path',
+      ],
       '。然后打开 ',
-      ['a', { href: 'https://example.com/path' }, 'https://example.com/path'],
+      [
+        'a',
+        { href: 'https://example.com/path' },
+        'https://example.com/path',
+      ],
       '，再看 ',
-      ['a', { href: 'https://example.com/a%E3%80%82b' }, '链接'],
+      [
+        'a',
+        { href: 'https://example.com/a%E3%80%82b' },
+        '链接',
+      ],
     ])
   })
 
@@ -245,7 +301,26 @@ describe('markmend parser', () => {
     )
 
     expect(document.nodes).toEqual([
-      ['p', {}, ['mention', { $: { html: 1, block: 0 }, user_id: '123' }, '@_some_username_'], ' and ', ['other', { $: { html: 1, block: 0 } }, ['em', {}, 'italic']]],
+      [
+        'p',
+        {},
+        [
+          'mention',
+          {
+            $: { html: 1, block: 0 },
+            user_id: '123',
+          },
+          '@_some_username_',
+        ],
+        ' and ',
+        [
+          'other',
+          {
+            $: { html: 1, block: 0 },
+          },
+          ['em', {}, 'italic'],
+        ],
+      ],
     ])
   })
 
@@ -259,7 +334,13 @@ describe('markmend parser', () => {
     )
 
     expect(document.nodes).toEqual([
-      ['artifact', { $: { html: 1, block: 1 } }, 'First **line**\n\nSecond line'],
+      [
+        'artifact',
+        {
+          $: { html: 1, block: 1 },
+        },
+        'First **line**\n\nSecond line',
+      ],
     ])
   })
 
@@ -270,7 +351,13 @@ describe('markmend parser', () => {
     const { document } = await engine.parse('<mention>@_some_username_</mention>', 'streaming')
 
     expect(document.nodes).toEqual([
-      ['mention', { $: { html: 1, block: 1, line: 1 } }, '@_some_username_'],
+      [
+        'mention',
+        {
+          $: { html: 1, block: 1, line: 1 },
+        },
+        '@_some_username_',
+      ],
     ])
   })
 
@@ -288,7 +375,16 @@ describe('markmend parser', () => {
       ['p', {}, input],
     ])
     expect(mathDocument.nodes).toEqual([
-      ['p', {}, 'Inline ', ['math', { class: 'math inline', content: 'x^2' }, 'x^2']],
+      [
+        'p',
+        {},
+        'Inline ',
+        [
+          'math',
+          { class: 'math inline', content: 'x^2' },
+          'x^2',
+        ],
+      ],
     ])
   })
 
@@ -323,7 +419,15 @@ describe('markmend parser', () => {
         type: 'custom',
       },
       document: {
-        nodes: [['p', { $: { line: 1 } }, 'streaming completed']],
+        nodes: [
+          [
+            'p',
+            {
+              $: { line: 1 },
+            },
+            'streaming completed',
+          ],
+        ],
       },
     })
   })

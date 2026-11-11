@@ -30,7 +30,9 @@ interface ThemeToken {
 const HEX_COLOR = /^#(?:[\da-f]{3,4}|[\da-f]{6}|[\da-f]{8})$/i
 
 function hexColor(value: unknown) {
-  return typeof value === 'string' && HEX_COLOR.test(value) ? value : undefined
+  return typeof value === 'string' && HEX_COLOR.test(value)
+    ? value
+    : undefined
 }
 
 function tokenColor(tokens: unknown, name: string) {
@@ -38,7 +40,9 @@ function tokenColor(tokens: unknown, name: string) {
     return undefined
 
   for (const token of tokens as (ThemeToken | undefined)[]) {
-    const scopes = Array.isArray(token?.scope) ? token.scope : [token?.scope]
+    const scopes = Array.isArray(token?.scope)
+      ? token.scope
+      : [token?.scope]
     if (scopes.some(scope => typeof scope === 'string' && (scope === name || scope.startsWith(`${name}.`)))) {
       const foreground = hexColor(token?.settings?.foreground)
       if (foreground)

@@ -38,8 +38,12 @@ function normalizeShikiModule(module: typeof import('shiki')): typeof import('sh
     defaultExport = undefined
   }
 
-  if (defaultExport && typeof defaultExport === 'object')
-    return { ...module, ...defaultExport }
+  if (defaultExport && typeof defaultExport === 'object') {
+    return {
+      ...module,
+      ...defaultExport,
+    }
+  }
 
   return module
 }
@@ -50,9 +54,15 @@ function assertShikiModule(
 ): asserts module is typeof import('shiki') {
   const candidate = module as Partial<typeof import('shiki')> | null
   const missing = [
-    typeof candidate?.createHighlighter === 'function' ? undefined : 'createHighlighter',
-    Array.isArray(candidate?.bundledThemesInfo) ? undefined : 'bundledThemesInfo',
-    Array.isArray(candidate?.bundledLanguagesInfo) ? undefined : 'bundledLanguagesInfo',
+    typeof candidate?.createHighlighter === 'function'
+      ? undefined
+      : 'createHighlighter',
+    Array.isArray(candidate?.bundledThemesInfo)
+      ? undefined
+      : 'bundledThemesInfo',
+    Array.isArray(candidate?.bundledLanguagesInfo)
+      ? undefined
+      : 'bundledLanguagesInfo',
   ].filter((name): name is string => !!name)
 
   if (missing.length > 0) {
@@ -109,7 +119,9 @@ export function createShikiRuntime(options: CodeRuntimeOptions = {}): ShikiRunti
   }
 
   async function hasShiki() {
-    return cdnLoader.getCdnUrl() ? true : await hasBundledShikiModule()
+    return cdnLoader.getCdnUrl()
+      ? true
+      : await hasBundledShikiModule()
   }
 
   async function getThemes() {

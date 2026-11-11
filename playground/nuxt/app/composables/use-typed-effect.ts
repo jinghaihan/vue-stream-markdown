@@ -30,7 +30,12 @@ export function useTypedEffect(options: UseTypedEffectOptions) {
   const intervalId = ref<NodeJS.Timeout | null>(null)
 
   watch(
-    [typingIndex, isTyping, minStep, maxStep],
+    [
+      typingIndex,
+      isTyping,
+      minStep,
+      maxStep,
+    ],
     () => {
       if (!enabled.value || !isString(content.value))
         return
@@ -127,7 +132,9 @@ export function useTypedEffect(options: UseTypedEffectOptions) {
 }
 
 function normalizeStep(value: number | undefined, fallback: number): number {
-  return Number.isFinite(value) ? Math.max(1, Math.floor(value!)) : fallback
+  return Number.isFinite(value)
+    ? Math.max(1, Math.floor(value!))
+    : fallback
 }
 
 function resolveRandomStep(min: number, max: number): number {
@@ -151,7 +158,9 @@ function getNextSegment(content: string, index: number): string {
   }
 
   const codePoint = content.codePointAt(index)
-  return codePoint === undefined ? '' : String.fromCodePoint(codePoint)
+  return codePoint === undefined
+    ? ''
+    : String.fromCodePoint(codePoint)
 }
 
 function getPreviousSegment(content: string, index: number): { index: number, segment: string } {

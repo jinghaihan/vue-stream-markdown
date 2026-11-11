@@ -7,7 +7,9 @@ export function dynamicImport<T>(url: string): Promise<T> {
 }
 
 export function getModuleStrategy(option?: ModuleStrategy | boolean): ModuleStrategy {
-  return option === 'umd' ? 'umd' : 'esm'
+  return option === 'umd'
+    ? 'umd'
+    : 'esm'
 }
 
 export function isModuleEnabled(option?: ModuleStrategy | boolean): boolean {

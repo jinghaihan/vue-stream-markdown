@@ -8,11 +8,17 @@ const collapsed = defineModel<boolean>('collapsed', { required: true })
 const { icons, uiComponents: UI } = useContext()
 const { t } = useI18n()
 
-const name = computed(() => t(mode.value === 'source' ? 'button.preview' : 'button.source'))
-const icon = computed(() => mode.value === 'source' ? icons.value.preview : icons.value.code)
+const name = computed(() => t(mode.value === 'source'
+  ? 'button.preview'
+  : 'button.source'))
+const icon = computed(() => mode.value === 'source'
+  ? icons.value.preview
+  : icons.value.code)
 
 function toggle() {
-  mode.value = mode.value === 'source' ? 'preview' : 'source'
+  mode.value = mode.value === 'source'
+    ? 'preview'
+    : 'source'
   collapsed.value = false
 }
 </script>

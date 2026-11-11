@@ -62,7 +62,10 @@ function resolveContext(context: StreamMarkdownProvideContext): StreamMarkdownRe
   const documentNodes = computed(() => toValue(context.documentNodes) ?? [])
 
   function provideContext(overrides: Partial<StreamMarkdownProvideContext>) {
-    const providedContext = { ...context, ...overrides }
+    const providedContext = {
+      ...context,
+      ...overrides,
+    }
     resolveContext(providedContext)
     provide(CONTEXT_KEY, providedContext)
   }
