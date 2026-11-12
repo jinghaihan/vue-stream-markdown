@@ -42,7 +42,7 @@ export default defineNuxtConfig({
   },
 
   alias: {
-    '@comark/nuxt/plugins/mermaid': fileURLToPath(new URL('./mermaid.ts', import.meta.url)),
+    '@comark/vue/plugins/mermaid': fileURLToPath(new URL('./mermaid.ts', import.meta.url)),
   },
 
   nitro: {
