@@ -5,6 +5,17 @@ export type TableAlign = 'left' | 'center' | 'right'
 
 const CSV_QUOTE_PATTERN = /"/g
 
+interface ExtractedTableCell {
+  text: string
+  markdown: string
+}
+
+// Keep real images separate from lookalike Markdown text without changing TableData.
+const tableMarkdownCells = new WeakMap<TableData, {
+  headers: ExtractedTableCell[]
+  rows: ExtractedTableCell[][]
+}>()
+
 export function resolveTableAlign(
   align: Array<TableAlign | null | undefined> | undefined,
   index: number,
@@ -21,39 +32,95 @@ export function getTableCellNodes<TNode = unknown>(
   return [cell as TNode]
 }
 
-function extractTableCellText(node: Node): string {
-  if (node.nodeType === Node.TEXT_NODE)
-    return node.textContent ?? ''
+function imageToMarkdown(image: Element): string {
+  const alt = (image.getAttribute('alt') ?? '').replace(/[\r\n]+/g, ' ')
+  const escapedAlt = escapeMarkdownTableCell(alt)
+  const src = (image.getAttribute('src') ?? '')
+    .replace(/[\\\s()<>"'`|]/g, char => encodeURIComponent(char)
+      .replace(/[()']/g, punctuation => `%${punctuation.charCodeAt(0).toString(16).toUpperCase()}`))
+  // Comark keeps Markdown escapes/entities in image alt attributes verbatim.
+  // Inline HTML preserves complex labels in both static and streaming mode.
+  if (escapedAlt !== alt.replace(/\|/g, '\\|'))
+    return `<img src="${escapeHtmlAttribute(src)}" alt="${escapeHtmlAttribute(alt)}">`
+  return `![${escapedAlt}](${src.replace(/&/g, '\\&')})`
+}
 
-  if (node.nodeType !== Node.ELEMENT_NODE)
-    return ''
+function escapeHtmlAttribute(value: string): string {
+  return value.replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\|/g, '&#124;')
+}
 
-  const element = node as HTMLElement
-  if (element.tagName === 'BR')
-    return '\n'
+function extractTableCell(cell: Element): ExtractedTableCell {
+  const parts: Array<string | Element> = []
 
-  return Array.from(element.childNodes).map(extractTableCellText).join('')
+  function appendText(value: string): void {
+    const lastIndex = parts.length - 1
+    const last = parts[lastIndex]
+    if (typeof last === 'string')
+      parts[lastIndex] = last + value
+    else
+      parts.push(value)
+  }
+
+  function visit(node: Node): void {
+    if (node.nodeType === Node.TEXT_NODE) {
+      appendText(node.textContent ?? '')
+      return
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE)
+      return
+
+    const element = node as Element
+    if (element.getAttribute('data-stream-markdown') === 'image-figure') {
+      const image = element.querySelector('img')
+      if (image)
+        visit(image)
+      return
+    }
+    if (element.tagName === 'IMG') {
+      parts.push(element)
+      return
+    }
+    if (element.tagName === 'BR') {
+      appendText('\n')
+      return
+    }
+    for (const child of element.childNodes)
+      visit(child)
+  }
+
+  visit(cell)
+  const first = parts[0]
+  if (typeof first === 'string')
+    parts[0] = first.trimStart()
+  const lastIndex = parts.length - 1
+  const last = parts[lastIndex]
+  if (typeof last === 'string')
+    parts[lastIndex] = last.trimEnd()
+
+  return {
+    text: parts.map(part => typeof part === 'string'
+      ? part
+      : part.getAttribute('alt') ?? '').join('').trim(),
+    markdown: parts.map(part => typeof part === 'string'
+      ? escapeMarkdownTableCell(part)
+      : imageToMarkdown(part)).join('').trim(),
+  }
 }
 
 export function extractTableDataFromElement(tableElement: HTMLElement): TableData {
-  const headers: string[] = []
-  const rows: string[][] = []
-
-  const headerCells = Array.from(tableElement.querySelectorAll('thead th'))
-  for (const cell of headerCells)
-    headers.push(extractTableCellText(cell).trim())
-
-  const bodyRows = Array.from(tableElement.querySelectorAll('tbody tr'))
-  for (const row of bodyRows) {
-    const rowData: string[] = []
-    const cells = Array.from(row.querySelectorAll('td'))
-    for (const cell of cells)
-      rowData.push(extractTableCellText(cell).trim())
-
-    rows.push(rowData)
+  const headers = Array.from(tableElement.querySelectorAll(':scope > thead > tr > th, :scope > thead > tr > td'), extractTableCell)
+  const rows = Array.from(tableElement.querySelectorAll(':scope > tbody > tr, :scope > tr'), row =>
+    Array.from(row.querySelectorAll(':scope > th, :scope > td'), extractTableCell))
+  const data: TableData = {
+    headers: headers.map(cell => cell.text),
+    rows: rows.map(row => row.map(cell => cell.text)),
   }
-
-  return { headers, rows }
+  tableMarkdownCells.set(data, { headers, rows })
+  return data
 }
 
 export function getTableCsvSeparator(config: unknown): CSVSeparator {
@@ -172,83 +239,50 @@ export function tableDataToTSV(data: TableData): string {
   return tsvRows.join('\n')
 }
 
+const MARKDOWN_TABLE_ENTITIES: Record<string, string> = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  // Backslash-bracket escapes are also LaTeX delimiters in streaming mode.
+  '[': '&#91;',
+  ']': '&#93;',
+  '\r\n': '<br>',
+  '\r': '<br>',
+  '\n': '<br>',
+}
+
 export function escapeMarkdownTableCell(cell: string): string {
-  let needsEscaping = false
-
-  // biome-ignore lint/style/useForOf: "Need index access to check character codes for performance"
-  for (let i = 0; i < cell.length; i += 1) {
-    const char = cell[i]
-    if (char === '\\' || char === '|' || char === '\n' || char === '&' || char === '<' || char === '>') {
-      needsEscaping = true
-      break
-    }
-  }
-
-  if (!needsEscaping)
-    return cell
-
-  const parts: string[] = []
-
-  // biome-ignore lint/style/useForOf: "Need index access to check character codes for performance"
-  for (let i = 0; i < cell.length; i += 1) {
-    const char = cell[i]!
-    if (char === '\\')
-      parts.push('\\\\')
-    else if (char === '|')
-      parts.push('\\|')
-    else if (char === '\n')
-      parts.push('<br>')
-    else if (char === '&')
-      parts.push('&amp;')
-    else if (char === '<')
-      parts.push('&lt;')
-    else if (char === '>')
-      parts.push('&gt;')
-    else
-      parts.push(char)
-  }
-
-  return parts.join('')
+  return cell.replace(/\r\n|[\\|`*_~[\]$@&<>\r\n]|:(?=\/\/)|www\./gi, (value) => {
+    if (value.toLowerCase() === 'www.')
+      return `${value.slice(0, 3)}\\.`
+    return MARKDOWN_TABLE_ENTITIES[value] ?? `\\${value}`
+  })
 }
 
 export function tableDataToMarkdown(data: TableData) {
   const { headers, rows } = data
-
-  if (headers.length === 0)
+  let columnCount = headers.length
+  for (const row of rows)
+    columnCount = Math.max(columnCount, row.length)
+  if (columnCount === 0)
     return ''
 
-  const markdownRows: string[] = Array.from({ length: rows.length + 2 })
-  let rowIndex = 0
+  const extracted = tableMarkdownCells.get(data)
 
-  const escapedHeaders = headers.map(h => escapeMarkdownTableCell(h))
-  markdownRows[rowIndex] = `| ${escapedHeaders.join(' | ')} |`
-  rowIndex += 1
-
-  const separatorParts = Array.from({ length: headers.length })
-  for (let i = 0; i < headers.length; i += 1)
-    separatorParts[i] = '---'
-
-  markdownRows[rowIndex] = `| ${separatorParts.join(' | ')} |`
-  rowIndex += 1
-
-  for (const row of rows) {
-    if (row.length < headers.length) {
-      const paddedRow = Array.from({ length: headers.length })
-      for (let i = 0; i < headers.length; i += 1) {
-        paddedRow[i] = i < row.length
-          ? escapeMarkdownTableCell(row[i]!)
-          : ''
-      }
-
-      markdownRows[rowIndex] = `| ${paddedRow.join(' | ')} |`
-      rowIndex += 1
-      continue
-    }
-
-    const escapedRow = row.map(cell => escapeMarkdownTableCell(cell))
-    markdownRows[rowIndex] = `| ${escapedRow.join(' | ')} |`
-    rowIndex += 1
+  function serializeRow(row: string[], cells?: ExtractedTableCell[]): string {
+    const values = Array.from({ length: columnCount }, (_, index) => {
+      const text = row[index] ?? ''
+      const cell = cells?.[index]
+      return cell?.text === text
+        ? cell.markdown
+        : escapeMarkdownTableCell(text)
+    })
+    return `| ${values.join(' | ')} |`
   }
 
-  return markdownRows.join('\n')
+  return [
+    serializeRow(headers, extracted?.headers),
+    `| ${Array.from({ length: columnCount }).fill('---').join(' | ')} |`,
+    ...rows.map((row, index) => serializeRow(row, extracted?.rows[index])),
+  ].join('\n')
 }
