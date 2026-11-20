@@ -31,6 +31,8 @@ describe('stream markdown', () => {
       <tbody>
         <tr><td><code>Array&lt;string&gt;</code></td><td>&amp;copy; and &amp;#124;</td></tr>
         <tr><td>a&lt;br&gt;b<br>Next line</td><td>x &lt; y &amp; z &gt; w</td></tr>
+        <tr><td><code>**hello** _word_ ~~deleted~~ \`code\`</code></td><td>[link](url) ![image](url)</td></tr>
+        <tr><td><span>https</span>://example.com and <span>www</span>.example.com</td><td>name@example.com</td></tr>
       </tbody>
     `
     const data = extractTableDataFromElement(original)
@@ -46,6 +48,35 @@ describe('stream markdown', () => {
       await vi.dynamicImportSettled()
       await flushPromises()
       expect(extractTableDataFromElement(wrapper.get('table').element)).toEqual(data)
+      expect(wrapper.get('table').findAll('a')).toHaveLength(0)
+    }
+    finally {
+      wrapper.unmount()
+    }
+  })
+
+  it.each(['static', 'streaming'] as const)('preserves images and literal image syntax when exporting and rendering tables in %s mode', async (mode) => {
+    const original = document.createElement('table')
+    original.innerHTML = '<tbody><tr><th scope="row">Logo</th><td>Before <img alt="A | [logo]" src="/my%20logo.png?a=1&amp;b=2"> after</td><td>![fake](/fake.png)</td></tr></tbody>'
+    const data = extractTableDataFromElement(original)
+    const wrapper = mount(Markdown, {
+      props: {
+        content: tableDataToMarkdown(data),
+        controls: false,
+        enableAnimate: false,
+        mode,
+      },
+    })
+    try {
+      await vi.dynamicImportSettled()
+      await flushPromises()
+      const table = wrapper.get('table')
+      const image = table.get('img')
+
+      expect(image.attributes('src')).toBe('/my%20logo.png?a=1&b=2')
+      expect(image.attributes('alt')).toBe('A | [logo]')
+      expect(table.findAll('img')).toHaveLength(1)
+      expect(extractTableDataFromElement(table.element).rows).toEqual(data.rows)
     }
     finally {
       wrapper.unmount()
